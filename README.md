@@ -1,1 +1,1 @@
-# tycoon
+# tycoon project
