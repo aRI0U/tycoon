@@ -13,7 +13,7 @@ import scalafx.application.JFXApp
 import scalafx.application.JFXApp.PrimaryStage
 
 import scalafx.scene.Scene
-import scalafx.scene.Group
+import scalafx.scene.layout.StackPane
 
 //
 
@@ -33,29 +33,34 @@ import scalafx.scene.text.Text
 import scalafx.scene.image.{Image,ImageView}
 import scalafx.scene.control._
 
+
 object Main extends JFXApp {
 
 
   val game = new Game()
 
-  val content = new Group()
+  val content = new StackPane()
 
   val startScreen = new StartScreen()
   val gameScreen = new GameScreen(game)
 
+  content.getChildren().add(startScreen)
+
   stage = new PrimaryStage {
     title = "Tycoon"
-    maximized = true
     resizable = true
+    maximized = true
     minWidth = 600
     minHeight = 400
-    scene = startScreen
+    scene = new Scene(new StackPane(content))
   }
 
   startScreen.setOnStart(new Runnable {
     def run() {
-      stage.scene = gameScreen
-      stage.maximized = true
+      content.getChildren().clear()
+      content.getChildren().add(gameScreen)
+      // stage.maximized = true
+      // game.start()
     }
   })
 
