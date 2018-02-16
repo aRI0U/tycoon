@@ -13,6 +13,7 @@ import scalafx.scene.text.Text
 import scalafx.geometry.{Pos, Insets}
 import scalafx.scene.control.Button
 import scalafx.scene.input.MouseEvent
+import scalafx.scene.image.{Image, ImageView}
 
 
 class StartScreen extends BorderPane
@@ -22,8 +23,9 @@ class StartScreen extends BorderPane
   def setOnStart(r : Runnable) = {
     onStart = r
   }
-
-  style = "-fx-background-color: linear-gradient(blue, pink, blue)"
+  val photo = new Image("file:src/main/resources/Train_screen1")
+  style = "-fx-background-image"
+    //"-fx-background-color: linear-gradient(blue, pink, blue)"
 
   center = new HBox {
     alignment = Pos.Center

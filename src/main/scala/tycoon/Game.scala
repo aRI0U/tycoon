@@ -27,6 +27,10 @@ class Game
     }
   }
 
+  def create_town (case_x : Int,case_y : Int) : Unit = {
+
+  }
+
 
   private final val loop = new GameLoop()
 

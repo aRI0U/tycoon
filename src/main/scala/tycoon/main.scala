@@ -6,7 +6,8 @@
 // https://github.com/scalafx/ProScalaFX/blob/master/src/proscalafx/ch04/reversi/ui/Reversi.scala
 package tycoon
 
-import tycoon.ui.{StartScreen, GameScreen}
+import tycoon.ui.{StartScreen, GameScreen,CreationGameScreen}
+
 
 import scalafx.Includes._
 import scalafx.application.JFXApp
@@ -43,6 +44,7 @@ object Main extends JFXApp {
 
   val startScreen = new StartScreen()
   val gameScreen = new GameScreen(game)
+  val creationscreen = new CreationGameScreen(game)
 
   content.getChildren().add(startScreen)
 
@@ -58,7 +60,7 @@ object Main extends JFXApp {
   startScreen.setOnStart(new Runnable {
     def run() {
       content.getChildren().clear()
-      content.getChildren().add(gameScreen)
+      content.getChildren().add(creationscreen)
       // stage.maximized = true
       // game.start()
     }
