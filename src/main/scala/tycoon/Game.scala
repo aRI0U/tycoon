@@ -1,14 +1,9 @@
 package tycoon
 
-
-
 import javafx.animation.AnimationTimer
-
 
 class Game
 {
-
-
   private class GameLoop extends AnimationTimer
   {
     var startNanoTime : Long = System.nanoTime()
@@ -49,7 +44,5 @@ class Game
     // update game
 
   }
-
-
 
 }
