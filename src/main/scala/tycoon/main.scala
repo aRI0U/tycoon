@@ -66,6 +66,7 @@ object Main extends JFXApp {
 
   // https://gist.github.com/james-d/a249470377fb3c58784a9349a22641c4
 
+  // var/val : public (visible from outside) ; nothing : private
 
 }
 

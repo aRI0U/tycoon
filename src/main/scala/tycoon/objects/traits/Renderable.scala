@@ -1,9 +1,9 @@
 package traits
 
-import game.Position
 
 trait Renderable {
-  var pos : Position
+  var pos_x : Int
+  var pos_y : Int
   val sprite : String
   var visible : Boolean
 }
