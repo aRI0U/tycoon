@@ -1,14 +1,9 @@
 package tycoon
 
-
-
 import javafx.animation.AnimationTimer
-
 
 class Game
 {
-
-
   private class GameLoop extends AnimationTimer
   {
     var startNanoTime : Long = System.nanoTime()
@@ -25,6 +20,10 @@ class Game
 
       update(elapsedTime)
     }
+  }
+
+  def create_town (case_x : Int,case_y : Int) : Unit = {
+
   }
 
 
@@ -49,7 +48,5 @@ class Game
     // update game
 
   }
-
-
 
 }

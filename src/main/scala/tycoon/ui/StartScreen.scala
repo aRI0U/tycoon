@@ -8,11 +8,12 @@ import scalafx.application.Platform
 
 import scalafx.scene.paint.Color._
 import scalafx.scene.paint.{Stops, LinearGradient}
-import scalafx.scene.layout.{BorderPane, HBox, StackPane}
+import scalafx.scene.layout.{BorderPane, HBox, StackPane, BackgroundImage, BackgroundRepeat, BackgroundPosition, BackgroundSize, Background}
 import scalafx.scene.text.Text
 import scalafx.geometry.{Pos, Insets}
 import scalafx.scene.control.Button
 import scalafx.scene.input.MouseEvent
+import scalafx.scene.image.{Image, ImageView}
 
 
 class StartScreen extends BorderPane
@@ -22,9 +23,11 @@ class StartScreen extends BorderPane
   def setOnStart(r : Runnable) = {
     onStart = r
   }
-
-  style = "-fx-background-color: linear-gradient(blue, pink, blue)"
-
+  val bg = new Image("file:src/main/resources/Train_screen1.jpeg")
+  // style = "-fx-background-image"
+    //"-fx-background-color: linear-gradient(blue, pink, blue)"
+  background = new Background(Array(new BackgroundImage(bg, BackgroundRepeat.NoRepeat, BackgroundRepeat.NoRepeat,
+    BackgroundPosition.Center, BackgroundSize.Default)))
   center = new HBox {
     alignment = Pos.Center
     children = Seq(
