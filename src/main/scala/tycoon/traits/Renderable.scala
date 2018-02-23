@@ -20,6 +20,9 @@ trait Renderable {
     view.layoutY = layout_y
   }
 
+  /*def posX = view.layoutX
+  def posY = view.layoutY*/
+
   def setViewRect(tileset_x : Double, tileset_y : Double, width : Double, height : Double) = {
     view.viewport = new Rectangle2D(tileset_x, tileset_y, width, height)
   }

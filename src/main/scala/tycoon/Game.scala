@@ -36,13 +36,12 @@ class Game
   var townsList = new ListBuffer[Town]()
 
   def create_town (case_x : Int,case_y : Int) : Unit = {
-    val T = new BasicTown(case_x, case_y)
-    townsList += T
-    entities += T
+    val town = new BasicTown(case_x, case_y)
+    townsList += town
+    entities += town
     // afficher la town
   }
 
-  var trainsList = new ListBuffer[Train]()
 
 
 

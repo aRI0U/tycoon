@@ -1,5 +1,8 @@
 package structure
 
+
+import scalafx.scene.image.Image
+
 abstract class Town(x:Integer, y:Integer) extends Structure(x, y) {
   val r = scala.util.Random
   val name = "Jeanne"
@@ -19,4 +22,11 @@ abstract class Town(x:Integer, y:Integer) extends Structure(x, y) {
       intern_time = intern_time - 1
     }
   }
+
+
+  var tileset = new Image("file:src/main/resources/tileset.png")
+  var width = 32
+  var height = 32
+  var tileset_x = 32
+  var tileset_y = 32
 }

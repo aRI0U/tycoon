@@ -5,7 +5,7 @@ import scala.collection.mutable.ListBuffer
 
 import carriage._
 
-class BasicTrain(x:Integer, y:Integer) extends Train(x, y) {
+abstract class BasicTrain(x:Integer, y:Integer) extends Train(x, y) {
   var pos_x = x
   var pos_y = y
   val sprite = "bite"
