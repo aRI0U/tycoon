@@ -7,6 +7,11 @@ import scalafx.collections.ObservableBuffer
 import scalafx.collections.ObservableBuffer._
 
 
+import scala.collection.mutable.ListBuffer
+
+import traits.Renderable
+import structure._
+
 class Game
 {
   var entities = new ObservableBuffer[Renderable]()
@@ -28,9 +33,17 @@ class Game
     }
   }
 
-  def create_town (case_x : Int,case_y : Int) : Unit = {
+  var townsList = new ListBuffer[Town]()
 
+  def create_town (case_x : Int,case_y : Int) : Unit = {
+    val T = new BasicTown(case_x, case_y)
+    townsList += T
+    entities += T
+    // afficher la town
   }
+
+  var trainsList = new ListBuffer[Train]()
+
 
 
   private final val loop = new GameLoop()
