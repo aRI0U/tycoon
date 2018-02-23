@@ -29,4 +29,8 @@ class GameScreen(var game : Game) extends BorderPane
   style = "-fx-background-color: lightgreen"
   center = tiledPane
 
+  onMouseClicked = (e: MouseEvent) => {
+    tiledPane.pixelToCase(e.getSceneX(), e.getSceneY())
+  }
+
 }
