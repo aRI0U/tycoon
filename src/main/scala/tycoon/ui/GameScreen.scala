@@ -23,8 +23,7 @@ import scala.collection.mutable.{HashMap, HashSet}
 
 class GameScreen(var game : Game) extends BorderPane
 {
-  final val tileset = new Image("file:src/main/resources/tileset.png")
-  var tiledPane = new DraggableTiledPane(32, 32, tileset)
+  var tiledPane = new DraggableTiledPane(game.tilemap, game.map_min_col, game.map_max_col, game.map_min_row, game.map_max_row)
 
   style = "-fx-background-color: lightgreen"
   center = tiledPane

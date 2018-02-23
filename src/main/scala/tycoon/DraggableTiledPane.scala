@@ -17,7 +17,7 @@ import scalafx.scene.control.Button
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.input.{MouseEvent, KeyEvent}
 
-import scala.collection.mutable.{HashMap, HashSet}
+import scala.collection.mutable.{HashMap}
 
 /* TODO
 
@@ -34,11 +34,14 @@ tryhard: mettre tt le calcul dans un autre thread
 
 
 
-class DraggableTiledPane(tile_width : Int, tile_height : Int, tileset : Image)
+class DraggableTiledPane(tilemap:HashMap[GridLocation, Tile], map_min_col:Int, map_max_col:Int, map_min_row:Int, map_max_row:Int)
 extends BorderPane {
   // amount scrolled left and up, in pixels
   private var x_offset = DoubleProperty(0)
   private var y_offset = DoubleProperty(0)
+
+  var tile_width = 32
+  var tile_height = 32
 
   // number of whole tiles shifted left and up
   private var tile_x_offset = new ReadOnlyIntegerWrapper()
@@ -50,27 +53,16 @@ extends BorderPane {
   private var mouse_anchor_x : Double = 0
   private var mouse_anchor_y : Double = 0
 
-  private final var tilemap : HashMap[GridLocation, Tile]
-    = HashMap.empty[GridLocation, Tile]
-
   // temporary for test
-  // map size in tiles
-  val map_width : Int = 200
-  val map_height : Int = 200
-  // min & max, cols & row
-  val map_min_col : Int = - map_width / 2
-  val map_max_col : Int = map_min_col + map_width - 1
-  val map_min_row : Int = - map_height / 2
-  val map_max_row : Int = map_min_row + map_height - 1
 
-  for (col <- map_min_col to map_max_col) {
+/*  for (col <- map_min_col to map_max_col) {
     for (row <- map_min_row to map_max_row) {
       val pos = new GridLocation(col, row)
       val tile = new Tile(tile_width, tile_height, tileset, 0, 0) //32 * (((col%15)+15)%15), 32 * (((row%15)+15)%15))
       tilemap += (pos -> tile)
     }
   }
-
+ */
   val padding_arround : Double = 100
 
   val min_offset_x = new ReadOnlyDoubleWrapper()

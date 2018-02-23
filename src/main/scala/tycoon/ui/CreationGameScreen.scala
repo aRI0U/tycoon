@@ -26,12 +26,21 @@ import scala.collection.mutable.HashMap
 
 class CreationGameScreen(var game : Game) extends BorderPane
 {
-  game.entities.onChange((source, changes) => { println("entity added") })
+  game.entities.onChange((source, changes) => {
+    println("entity added")
+
+
+
+
+
+
+  })
+
 
    
   center = new BorderPane {
     final val tileset = new Image("file:src/main/resources/tileset.png")
-    var tiledPane = new DraggableTiledPane(32, 32, tileset)
+    var tiledPane = new DraggableTiledPane(game.tilemap, game.map_min_col, game.map_max_col, game.map_min_row, game.map_max_row)
 
     style = "-fx-background-color: lightgreen"
     center = tiledPane
@@ -42,7 +51,8 @@ class CreationGameScreen(var game : Game) extends BorderPane
       /*
       def f( t :Town) :Boolean =  {if ((t.pos_X,t.pos_Y) == (x,y)) {return true} else return false}
       if ((x,y) == game.townsList.find(f_)) {*/
-        game.create_town (x,y)
+      game.create_town (x,y)
+
     }
 
     onKeyPressed = (k: KeyEvent) => k.code match {

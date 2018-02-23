@@ -5,9 +5,9 @@ import traits.Renderable
 import javafx.animation.AnimationTimer
 import scalafx.collections.ObservableBuffer
 import scalafx.collections.ObservableBuffer._
+import scalafx.scene.image.Image
 
-
-import scala.collection.mutable.ListBuffer
+import scala.collection.mutable.{HashMap, ListBuffer}
 
 import traits.Renderable
 import structure._
@@ -73,6 +73,29 @@ class Game
 
     // update game
 
+  }
+
+
+  var tilemap : HashMap[GridLocation, Tile]
+    = HashMap.empty[GridLocation, Tile]
+
+  val tileset = new Image("file:src/main/resources/tileset.png")
+
+  // map size in tiles
+  val map_width : Int = 200
+  val map_height : Int = 200
+  // min & max, cols & row
+  val map_min_col : Int = - map_width / 2
+  val map_max_col : Int = map_min_col + map_width - 1
+  val map_min_row : Int = - map_height / 2
+  val map_max_row : Int = map_min_row + map_height - 1
+
+  for (col <- map_min_col to map_max_col) {
+    for (row <- map_min_row to map_max_row) {
+      val pos = new GridLocation(col, row)
+      val tile = new Tile(32, 32, tileset, 0, 0) //32 * (((col%15)+15)%15), 32 * (((row%15)+15)%15))
+      tilemap += (pos -> tile)
+    }
   }
 
 }
