@@ -3,10 +3,8 @@ package tycoon
 import scalafx.geometry.Rectangle2D
 import scalafx.scene.image.{Image, ImageView}
 
-class Tile(width : Double, height : Double, tileset : Image, tileset_x : Double, tileset_y : Double) {
-  private var view : ImageView = new ImageView(tileset)
-  var displayed : Boolean = false
-  view.viewport = new Rectangle2D(tileset_x, tileset_y, width, height)
+import traits.Renderable
 
-  def getView : ImageView = view
+class Tile(var width : Double, var height : Double, var tileset : Image, var tileset_x : Double, var tileset_y : Double) extends Renderable {
+  setViewRect(tileset_x, tileset_y, width, height)
 }

@@ -23,6 +23,8 @@ import scala.collection.mutable.HashMap
 
 class CreationGameScreen(var game : Game) extends BorderPane
 {
+  game.entities.onChange((source, changes) => { println("entity added") })
+
   style = "-fx-background-color: lightblue;"
 
   //Valeur relative au déplacement, à modifier. En pixels.
@@ -30,6 +32,8 @@ class CreationGameScreen(var game : Game) extends BorderPane
   val shift_y : Int = 0
 
   //Taille d'une case en pixels.
+
+
   val size : Int = 32
 
   def mouse_to_box(e : MouseEvent) : (Int,Int) = {

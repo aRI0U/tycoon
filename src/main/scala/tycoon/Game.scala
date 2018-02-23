@@ -1,15 +1,21 @@
 package tycoon
 
+import traits.Renderable
+
 import javafx.animation.AnimationTimer
+import scalafx.collections.ObservableBuffer
+import scalafx.collections.ObservableBuffer._
+
 
 class Game
 {
+  var entities = new ObservableBuffer[Renderable]()
+
   private class GameLoop extends AnimationTimer
   {
     var startNanoTime : Long = System.nanoTime()
 
-    override def handle(currentNanoTime: Long)
-    {
+    override def handle(currentNanoTime: Long)    {
       var elapsedTime : Double = (currentNanoTime - startNanoTime) / 1000000000.0
       startNanoTime = currentNanoTime
 
