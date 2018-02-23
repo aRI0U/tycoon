@@ -2,8 +2,8 @@ package traits
 
 
 trait Renderable {
-  var pos_x : Int
-  var pos_y : Int
+  var pos_x : Integer
+  var pos_y : Integer
   val sprite : String
   var visible : Boolean
 }

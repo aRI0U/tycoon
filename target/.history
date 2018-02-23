@@ -1,0 +1,11 @@
+run
+compile
+run
+compile
+run
+compile
+run
+q
+run
+sbt
+run

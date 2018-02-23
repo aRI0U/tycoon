@@ -2,6 +2,11 @@ package tycoon
 
 import javafx.animation.AnimationTimer
 
+import scala.collection.mutable.ListBuffer
+
+import traits.Renderable
+import structure._
+
 class Game
 {
   private class GameLoop extends AnimationTimer
@@ -22,8 +27,12 @@ class Game
     }
   }
 
-  def create_town (case_x : Int,case_y : Int) : Unit = {
+  var townsList = new ListBuffer[Town]()
 
+  def create_town (case_x : Int,case_y : Int) : Unit = {
+    val T = new BasicTown(case_x, case_y)
+    townsList += T
+    // afficher la town
   }
 
 
