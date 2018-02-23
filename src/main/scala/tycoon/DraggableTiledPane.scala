@@ -23,7 +23,7 @@ import scala.collection.mutable.{HashMap, HashSet}
 
 ajouter le double click (ou espace) qui ramène au centre
 mettre le tileset qq part dans Game et le passer en argument à draggable truc
-|-> mieux: mettre DraggableTiledPane dans instance de Game avec un getter 
+|-> mieux: mettre DraggableTiledPane dans instance de Game avec un getter
 ajouter un déplacement avec les touches haut bas gauche droite (just incrémenter/décrémenter offset)
 class Tile extends Renderable qui prend en param un ImageView et qui gère son viewport etc
 
@@ -66,7 +66,7 @@ extends BorderPane {
   for (col <- map_min_col to map_max_col) {
     for (row <- map_min_row to map_max_row) {
       val pos = new GridLocation(col, row)
-      val tile = new Tile(tile_width, tile_height, tileset, 32 * (((col%15)+15)%15), 32 * (((row%15)+15)%15))
+      val tile = new Tile(tile_width, tile_height, tileset, 0, 0) //32 * (((col%15)+15)%15), 32 * (((row%15)+15)%15))
       tilemap += (pos -> tile)
     }
   }
@@ -120,8 +120,7 @@ extends BorderPane {
       {
         val layout_x : Double = (this.width.value / 2) + tile_width * (pos.column + tile_x_offset.get()) + x_offset.get() % tile_width
         val layout_y : Double = (this.height.value / 2) + tile_height * (pos.row + tile_y_offset.get()) + y_offset.get() % tile_height
-        tile.getView.layoutX = layout_x
-        tile.getView.layoutY = layout_y
+        tile.setPos(layout_x, layout_y)
         if (!tile.displayed) {
           tile.displayed = true
           children.add(tile.getView)
@@ -131,6 +130,13 @@ extends BorderPane {
         children.remove(tile.getView)
       }
     }
+  }
+
+  def pixelToCase(x : Double, y : Double) = {
+    val caseX : Int = Math.floor((x - (this.width.value / 2) - x_offset.get()) / tile_width).toInt
+    val caseY : Int = Math.floor((y - (this.height.value / 2) - y_offset.get()) / tile_height).toInt
+
+    (caseX, caseY)
   }
 
   // move the entire pane (sur double click ?)

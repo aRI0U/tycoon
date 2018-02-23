@@ -60,7 +60,7 @@ object Main extends JFXApp {
   startScreen.setOnStart(new Runnable {
     def run() {
       content.getChildren().clear()
-      content.getChildren().add(gameScreen)
+      content.getChildren().add(creationscreen)
       // stage.maximized = true
       // game.start()
     }
