@@ -26,9 +26,9 @@ import scala.collection.mutable.HashMap
 
 class CreationGameScreen(var game : Game) extends BorderPane
 {
-  game.entities.onChange((source, changes) => { println("entity added") })
+  game.entities.onChange((source, changes) => { println(source, changes) })
 
-   
+
   center = new BorderPane {
     final val tileset = new Image("file:src/main/resources/tileset.png")
     var tiledPane = new DraggableTiledPane(32, 32, tileset)
@@ -36,7 +36,7 @@ class CreationGameScreen(var game : Game) extends BorderPane
     style = "-fx-background-color: lightgreen"
     center = tiledPane
 
-    //Creation of a City 
+    //Creation of a City
     onMouseClicked = (e: MouseEvent) => {
       val (x,y) = tiledPane.pixelToCase(e.getSceneX(),e.getSceneY())
       /*

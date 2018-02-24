@@ -44,7 +44,7 @@ object Main extends JFXApp {
 
   val startScreen = new StartScreen()
   val gameScreen = new GameScreen(game)
-  val creationscreen = new CreationGameScreen(game)
+  val creationscreen = new CreationGameScreen(game) // GameCreationScreen
 
   content.getChildren().add(startScreen)
 
