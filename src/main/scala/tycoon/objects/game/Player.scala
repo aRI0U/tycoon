@@ -1,4 +1,4 @@
-package game
+package tycoon.objects.game
 
 class Player {
   val name: String = "Jeanne"

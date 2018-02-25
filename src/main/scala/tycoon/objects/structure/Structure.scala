@@ -1,6 +1,6 @@
-package structure
+package tycoon.objects.structure
 
-import traits.Renderable
+import tycoon.ui.Renderable
 
 abstract class Structure(x:Integer, y:Integer) extends Renderable {
   var pos_x = x

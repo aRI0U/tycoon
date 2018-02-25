@@ -1,10 +1,12 @@
-package traits
+package tycoon.ui
 
 import scalafx.geometry.Rectangle2D
 import scalafx.scene.image.{Image, ImageView}
 
 
 trait Renderable {
+
+
   var tileset : Image
   var width : Double
   var height : Double

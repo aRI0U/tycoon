@@ -1,4 +1,4 @@
-package carriage
+package tycoon.objects.carriage
 
 abstract class BasicPassengerCarriage extends PassengerCarriage {
   val cost = 20

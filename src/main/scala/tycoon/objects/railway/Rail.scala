@@ -1,6 +1,6 @@
-package railway
+package tycoon.objects.railway
 
-import traits.Renderable
+import tycoon.ui.Renderable
 
 abstract class Rail(x:Integer, y:Integer) extends Renderable {
   val cost : Integer

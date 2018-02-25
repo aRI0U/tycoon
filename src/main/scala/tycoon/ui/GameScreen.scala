@@ -2,7 +2,6 @@ package tycoon.ui
 
 
 import tycoon.Game
-import tycoon.DraggableTiledPane
 
 import scalafx.Includes._
 import scalafx.scene.Scene
@@ -23,14 +22,9 @@ import scala.collection.mutable.{HashMap, HashSet}
 
 class GameScreen(var game : Game) extends BorderPane
 {
-  final val tileset = new Image("file:src/main/resources/tileset.png")
-  var tiledPane = new DraggableTiledPane(32, 32, tileset)
+  var tiledPane = new DraggableTiledPane(game.tilemap, game.padding)
 
   style = "-fx-background-color: lightgreen"
   center = tiledPane
-
-  onMouseClicked = (e: MouseEvent) => {
-    tiledPane.pixelToCase(e.getSceneX(), e.getSceneY())
-  }
 
 }

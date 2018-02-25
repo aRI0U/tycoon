@@ -1,23 +1,38 @@
 package tycoon.ui
 
-
 import scalafx.Includes._
-import scalafx.scene.{Scene, Node}
-
 import scalafx.application.Platform
-
-import scalafx.scene.paint.Color._
-import scalafx.scene.paint.{Stops, LinearGradient}
-import scalafx.scene.layout.{BorderPane, HBox, StackPane, BackgroundImage, BackgroundRepeat, BackgroundPosition, BackgroundSize, Background}
-import scalafx.scene.text.Text
-import scalafx.geometry.{Pos, Insets}
+import scalafx.geometry.Pos
 import scalafx.scene.control.Button
 import scalafx.scene.input.MouseEvent
-import scalafx.scene.media._
-import scalafx.scene.image.{Image, ImageView}
+import scalafx.scene.layout.{BorderPane, HBox}
 
-import scalafx.collections.ObservableBuffer
-import scalafx.scene.chart.PieChart
+
+class StartScreen extends BorderPane
+{
+  private var onStart = new Runnable { def run() {} }
+
+  def setOnStart(r : Runnable) = {
+    onStart = r
+  }
+
+  center = new HBox {
+    alignment = Pos.Center
+    children = Seq(
+      new Button {
+        text = "New Game"
+        onMouseClicked = (e: MouseEvent) => onStart.run()
+      },
+      new Button {
+        text = "Exit"
+        onMouseClicked = (e: MouseEvent) => Platform.exit()
+      }
+    )
+  }
+}
+
+
+/*
 
 class StartScreen extends BorderPane
 {
@@ -87,19 +102,11 @@ class StartScreen extends BorderPane
                   -fx-text-fill: purple;
                   -fx-font-size: 18px;
                   -fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0.8) , 0, 0.0 , 0 , 1);"""
-        onMouseClicked = (e: MouseEvent) => { changebg() ; iliketrains.play() 
+        onMouseClicked = (e: MouseEvent) => { changebg() ; iliketrains.play()
          }
-      },
-      new PieChart {
-        title = "I like trains"
-        data = ObservableBuffer(
-          PieChart.Data("TRAINS", 20),
-          PieChart.Data("TRAINS", 30),
-          PieChart.Data("TRAINS", 10),
-          PieChart.Data("TRAINS", 40)
-        )
       }
     )
   }
 
 }
+*/

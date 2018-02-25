@@ -1,4 +1,4 @@
-package railway
+package tycoon.objects.railway
 
 abstract class BasicRail(x: Integer, y:Integer) extends Rail(x, y) {
   val cost = 10

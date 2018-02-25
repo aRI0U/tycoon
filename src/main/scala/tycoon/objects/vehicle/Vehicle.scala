@@ -1,6 +1,6 @@
-package vehicle
+package tycoon.objects.vehicle
 
-import traits.Renderable
+import tycoon.ui.Renderable
 import traits.Movable
 
 abstract class Vehicle(x:Integer, y:Integer) extends Renderable with Movable {

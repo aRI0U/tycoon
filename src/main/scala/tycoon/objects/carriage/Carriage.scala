@@ -1,6 +1,6 @@
-package carriage
+package tycoon.objects.carriage
 
-import traits.Renderable
+import tycoon.ui.Renderable
 import traits.Movable
 
 abstract class Carriage extends Renderable with Movable {

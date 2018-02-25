@@ -1,4 +1,4 @@
-package structure
+package tycoon.objects.structure
 
 
 import scalafx.scene.image.Image
