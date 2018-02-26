@@ -41,11 +41,12 @@ class TileMap {
     } map += (new GridLocation(col, row) -> new Tile(tile))
   }
 
-  def fillBorder(tile: Tile, borderSize: Int) : Unit = {
+  def fillBorder(tile: Tile, borderSize: Int, shift: Int = 0) : Unit = {
     for {
-      col <- col_min - borderSize to col_max + borderSize
-      row <- row_min - borderSize to row_max + borderSize
-      if (col < col_min || col > col_max || row < row_min || row > row_max)
+      col <- (col_min - borderSize - shift) to (col_max + borderSize + shift)
+      row <- (row_min - borderSize - shift) to (row_max + borderSize + shift)
+      if (col < col_min - shift || col > col_max + shift
+        || row < row_min - shift || row > row_max + shift)
     } map += (new GridLocation(col, row) -> new Tile(tile))
   }
 }

@@ -17,7 +17,7 @@ import scalafx.scene.control.Button
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.input.{MouseEvent, KeyEvent}
 
-import scala.collection.mutable.{HashMap}
+import scala.collection.mutable.{HashMap, ListBuffer}
 
 
 class DraggableTiledPane(tm: TileMap, paddingTiles: Int)
@@ -58,6 +58,17 @@ extends BorderPane {
     min_offset_y = math.min((this.height.value / 2) - ((tm.row_max + 1) * tm.tile_height) - padding_around_y, 0)
     max_offset_y = math.max((- this.height.value / 2) + (- tm.row_min * tm.tile_height)  + padding_around_y, 0)
   }
+
+  // tiles other than the tilemap (entities)
+  // these may be placed everywhere and have different sizes
+  // also their position may change without any drag but that can be handled in Tile or via a Movable trait
+  private var entities = new ListBuffer[Renderable]()
+  def addEntity(e: Renderable) = {
+    entities += e
+
+    children.add(e.getView)
+  }
+
 
   // for enabling dragging
   onMousePressed = (e : MouseEvent) => {
@@ -109,7 +120,7 @@ extends BorderPane {
         val layout_x : Double = (this.width.value / 2) + tm.tile_width * (pos.column + tile_x_offset.get()) + x_offset.get() % tm.tile_width
         val layout_y : Double = (this.height.value / 2) + tm.tile_height * (pos.row + tile_y_offset.get()) + y_offset.get() % tm.tile_height
 
-        tile.setPos(layout_x, layout_y)
+        tile.setScreenPos(layout_x, layout_y)
 
         if (!tile.displayed) {
           // if tile was not displayed yet, add it to the scene
@@ -124,11 +135,18 @@ extends BorderPane {
     }
   }
 
-  // given a pixel on the screen, return the GridLocation in which it is, depending on the offset
-  def pixelToCase(x : Double, y : Double) : GridLocation = {
-    val col : Int = Math.floor((x - (this.width.value / 2) - x_offset.get()) / tm.tile_width).toInt
-    val row : Int = Math.floor((y - (this.height.value / 2) - y_offset.get()) / tm.tile_height).toInt
+    // given a position on the screen (in pixels), return the GridLocation in which it is, depending on the offset
+    def screenPxToGridLoc(x : Double, y : Double) : GridLocation = {
+      val col : Int = Math.floor((x - (this.width.value / 2) - x_offset.get()) / tm.tile_width).toInt
+      val row : Int = Math.floor((y - (this.height.value / 2) - y_offset.get()) / tm.tile_height).toInt
 
-    new GridLocation(col, row)
-  }
+      new GridLocation(col, row)
+    }
+    /* // given a position on the screen (in pixels), return the GridLocation in which it is, depending on the offset
+    def pixelToCase(x : Double, y : Double) : GridLocation = {
+      val col : Int = Math.floor((x - (this.width.value / 2) - x_offset.get()) / tm.tile_width).toInt
+      val row : Int = Math.floor((y - (this.height.value / 2) - y_offset.get()) / tm.tile_height).toInt
+
+      new GridLocation(col, row)
+    }*/
 }

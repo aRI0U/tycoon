@@ -1,6 +1,7 @@
 package tycoon.ui
 
 import tycoon.{Game, GridLocation}
+import tycoon.objects.structure.Town
 
 
 import scalafx.Includes._
@@ -22,24 +23,44 @@ import scala.collection.mutable.HashMap
 import scalafx.scene.control.{TextField, Button}
 import scalafx.scene.input.MouseEvent
 import scalafx.scene.layout.{BorderPane, HBox}
-
+import scalafx.collections.ObservableBuffer
+import scalafx.collections.ObservableBuffer._ // Add, Remove, Reorder, Update
 
 
 class GameCreationScreen(var game : Game) extends BorderPane
 {
-  //game.entities.onChange((source, changes) => { println(source, changes) })
+  game.entities.onChange((_, changes) => {
+    for (change <- changes)
+      change match {
+        case Add(_, added) =>
+          added.foreach(town => {
+            tiledPane.addEntity(town)
+          })
+        case Remove(pos, removed)           => ()
+        case Reorder(from, to, permutation) => ()
+        case Update(pos, updated)           => ()
+      }
+  })
+
+  private val tiledPane = new DraggableTiledPane(game.tilemap, game.padding)
+
+  private val min_towns : Int = 2
+  private val max_towns : Int = 5
+
+  private var nb_towns : Int = 0
 
   center = new BorderPane {
-    var tiledPane = new DraggableTiledPane(game.tilemap, game.padding)
 
     style = "-fx-background-color: lightgreen"
     center = tiledPane
 
-    // creation of a City
+    // creation of a city
     onMouseClicked = (e: MouseEvent) => {
       requestFocus()
-      val pos : GridLocation = tiledPane.pixelToCase(e.getSceneX(), e.getSceneY())
-      game.create_town(pos)
+      val pos : GridLocation = tiledPane.screenPxToGridLoc(e.getSceneX(), e.getSceneY())
+      if(game.createTown(pos)) {
+        nb_towns += 1
+      }
     }
   }
 
@@ -47,29 +68,30 @@ class GameCreationScreen(var game : Game) extends BorderPane
     style = """-fx-background-color: linear-gradient(darkgreen, green, green);
                -fx-border-color: transparent transparent black transparent;
                -fx-border-width: 1;"""
-
     alignment = Pos.Center
+
     children = Seq(
       new Text {
-        text = "Click to place 1 up to 5 cities"
+        text = "Click to place " + min_towns + " up to " + max_towns + " cities"
         margin = Insets(10)
       },
       new Text {
-        text = "=>"
+        text = "→"
         margin = Insets(10)
       },
       new TextField {
-        promptText = "Enter your name"
+        promptText = "Choose a name"
         margin = Insets(10)
       },
       new Text {
-        text = "=>"
+        text = "→"
         margin = Insets(10)
       },
       new Button {
-        text = "Play (SPACE)"
+        text = "Play"
         margin = Insets(10)
       }
     )
+    onMouseClicked = (e: MouseEvent) => { requestFocus() }
   }
 }

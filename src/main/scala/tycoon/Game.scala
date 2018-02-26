@@ -45,7 +45,9 @@ class Game
   def init (map_width : Int, map_height : Int) : Unit = {
     tilemap.setSize(map_width, map_height)
     tilemap.fill(Sprite.tile_grass)
-    tilemap.fillBorder(Sprite.tile_tree, 50)
+    tilemap.fillBorder(Sprite.tile_tree, 1)
+    tilemap.fillBorder(Sprite.tile_rock, 2, 1)
+    tilemap.fillBorder(Sprite.tile_grass, 50, 3)
   }
   def start () : Unit = {
     loop.start()
@@ -59,10 +61,17 @@ class Game
 
   }
 
-  def create_town (pos: GridLocation) : Unit = {
-    /*val town = new BasicTown(case_x, case_y)
-    towns += town
-    entities += town*/
+  def createTown (pos: GridLocation) : Boolean = {
+    val town = new BasicTown(pos)
+    var valid = true
+    for (other_town <- towns)
+      if (town.intersects(other_town))
+        valid = false
+    if (valid) {
+      towns += town
+      entities += town
+    }
+    valid
   }
 
 

@@ -8,36 +8,30 @@ import scalafx.scene.image.{Image,ImageView}
 
 class Tile(tileset: Image, viewport: Rectangle2D) {
 
-  //val tileset = new Image("file:src/main/resources/tileset.png")
-  var sprite : ImageView = new ImageView(tileset)
-  sprite.viewport = viewport
-  //view.viewport = new Rectangle2D(0,0,32,32)
-
-  //var view : ImageView = new ImageView(sprite)
+  private var _sprite : ImageView = new ImageView(tileset)
+  _sprite.viewport = viewport
 
   def this(tile : Tile) {
     this(new Image(tile.sprite.image.get()), new Rectangle2D(tile.sprite.viewport.get()))
   }
-  // sprite size
-  //def width : Double = sprite.viewport.width
-  //def height : Double = sprite.viewport.height // /!\ voir si ça permet de changer ou si c'est juste un getter
 
-  // screen-relative coordinates (top-left corner is (0;0))
-  //def layoutX : Double = sprite.layoutX
-  //def layoutY : Double = sprite.layoutY
+  private var _displayed : Boolean = false
 
-  // absolute coordinates
-  //var gridPos : GridLocation
-
-  def setPos(x: Double, y: Double) = {
+  def setScreenPos(x: Double, y: Double) = {
     sprite.layoutX = x
     sprite.layoutY = y
   }
+
+  // def move(dx, dy) dans Movable qui change aussi le screenPos
 
   def width : Int = viewport.width.toInt
   def height : Int = viewport.height.toInt
 
   def getView : ImageView = sprite
 
-  var displayed : Boolean = false
+  def displayed : Boolean = _displayed
+  def displayed_= (new_displayed: Boolean) = _displayed = new_displayed
+
+  def sprite : ImageView = _sprite
+  def sprite_= (new_sprite: ImageView) = _sprite = new_sprite
 }
