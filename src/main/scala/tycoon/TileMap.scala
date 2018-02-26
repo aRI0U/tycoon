@@ -4,6 +4,8 @@ package tycoon
 import tycoon.ui.Tile
 import scala.collection.mutable.HashMap
 
+import scalafx.geometry.Rectangle2D
+
 
 class TileMap {
   val map = HashMap.empty[GridLocation, Tile]
@@ -23,6 +25,8 @@ class TileMap {
 
   def tile_width : Int = _tile_width
   def tile_height : Int = _tile_height
+
+  def gridRect : Rectangle2D = new Rectangle2D(col_min , row_min , col_max - col_min + 1, row_max - row_min + 1)
 
   def setSize(width: Int, height: Int) : Unit = {
     _col_min = - width / 2

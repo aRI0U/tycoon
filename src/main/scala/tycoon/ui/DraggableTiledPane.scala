@@ -65,8 +65,7 @@ extends BorderPane {
   private var entities = new ListBuffer[Renderable]()
   def addEntity(e: Renderable) = {
     entities += e
-
-    children.add(e.getView)
+    layoutEntities()
   }
 
 
@@ -92,20 +91,23 @@ extends BorderPane {
     if (y_offset.get() <= min_offset_y) y_offset.set(min_offset_y)
     else if (y_offset.get() >= max_offset_y) y_offset.set(max_offset_y)
 
-    layoutChildren()
+    layoutTilemap()
+    layoutEntities()
   }
 
   // recompute layout and offsets limits when window is resized
   this.width.onChange {
     compute_offset_limits_x()
-    layoutChildren()
+    layoutTilemap()
+    layoutEntities()
   }
   this.height.onChange {
     compute_offset_limits_y()
-    layoutChildren()
+    layoutTilemap()
+    layoutEntities()
   }
 
-  def layoutChildren() = {
+  def layoutTilemap() = {
     // maximal rectangle of the tilemap that can be displayed
     val min_col : Int = - Math.ceil(((this.width.value / 2) + x_offset.get()) / tm.tile_width).toInt
     val max_col : Int = Math.ceil(((this.width.value / 2) - x_offset.get()) / tm.tile_width).toInt - 1
@@ -120,14 +122,14 @@ extends BorderPane {
         val layout_x : Double = (this.width.value / 2) + tm.tile_width * (pos.column + tile_x_offset.get()) + x_offset.get() % tm.tile_width
         val layout_y : Double = (this.height.value / 2) + tm.tile_height * (pos.row + tile_y_offset.get()) + y_offset.get() % tm.tile_height
 
-        tile.setScreenPos(layout_x, layout_y)
+        tile.setLayout(layout_x, layout_y)
 
         if (!tile.displayed) {
           // if tile was not displayed yet, add it to the scene
           tile.displayed = true
           children.add(tile.getView)
         }
-      } else if (!pos.inRangeInclusive(min_col, max_col, min_row, max_row) && tile.displayed) {
+      } else if (tile.displayed) {
         // if tile was displayed but is not in range anymore, remove it from the scene
         tile.displayed = false
         children.remove(tile.getView)
@@ -135,13 +137,42 @@ extends BorderPane {
     }
   }
 
-    // given a position on the screen (in pixels), return the GridLocation in which it is, depending on the offset
-    def screenPxToGridLoc(x : Double, y : Double) : GridLocation = {
-      val col : Int = Math.floor((x - (this.width.value / 2) - x_offset.get()) / tm.tile_width).toInt
-      val row : Int = Math.floor((y - (this.height.value / 2) - y_offset.get()) / tm.tile_height).toInt
+  def layoutEntities() = {
+    // move the entities according to the offset
+    for (e <- entities) {
+      val layout_x : Double = (this.width.value / 2) + tm.tile_width * (e.gridLoc.column + tile_x_offset.get()) + x_offset.get() % tm.tile_width
+      val layout_y : Double = (this.height.value / 2) + tm.tile_height * (e.gridLoc.row + tile_y_offset.get()) + y_offset.get() % tm.tile_height
 
-      new GridLocation(col, row)
+      if ((layout_x + e.width > 0 && layout_x < this.width.value)
+        && (layout_y + e.height > 0 && layout_y < this.height.value))
+      {
+        // if entity is within scene, display it
+        e.setLayout(layout_x, layout_y)
+
+        if (!e.displayed) {
+          // if entity was not displayed yet, add it to the scene
+          e.displayed = true
+          children.add(e.getView)
+        }
+        else { // opti
+          children.remove(e.getView)
+          children.add(e.getView)
+        }
+      } else if (e.displayed) {
+        // if entity was displayed but is not in range anymore, remove it from the scene
+        e.displayed = false
+        children.remove(e.getView)
+      }
     }
+  }
+
+  // given a position on the screen (in pixels), return the GridLocation in which it is, depending on the offset
+  def screenPxToGridLoc(x : Double, y : Double) : GridLocation = {
+    val col : Int = Math.floor((x - (this.width.value / 2) - x_offset.get()) / tm.tile_width).toInt
+    val row : Int = Math.floor((y - (this.height.value / 2) - y_offset.get()) / tm.tile_height).toInt
+
+    new GridLocation(col, row)
+  }
     /* // given a position on the screen (in pixels), return the GridLocation in which it is, depending on the offset
     def pixelToCase(x : Double, y : Double) : GridLocation = {
       val col : Int = Math.floor((x - (this.width.value / 2) - x_offset.get()) / tm.tile_width).toInt

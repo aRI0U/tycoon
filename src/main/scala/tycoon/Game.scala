@@ -63,15 +63,22 @@ class Game
 
   def createTown (pos: GridLocation) : Boolean = {
     val town = new BasicTown(pos)
-    var valid = true
-    for (other_town <- towns)
-      if (town.intersects(other_town))
-        valid = false
-    if (valid) {
-      towns += town
-      entities += town
+    // check whether town is within the map boundaries
+    if (tilemap.gridRect.contains(town.gridRect))
+    {
+      // if so, check whether it intersects with an other town
+      var valid = true
+      for (other <- towns) {
+        if (other.gridIntersects(town))
+          valid = false
+      }
+      if (valid) {
+        towns += town
+        entities += town
+      }
+      valid
     }
-    valid
+    else false
   }
 
 

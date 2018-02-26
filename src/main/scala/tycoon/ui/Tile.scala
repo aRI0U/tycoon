@@ -17,7 +17,8 @@ class Tile(tileset: Image, viewport: Rectangle2D) {
 
   private var _displayed : Boolean = false
 
-  def setScreenPos(x: Double, y: Double) = {
+  // set position in the scene
+  def setLayout(x: Double, y: Double) = {
     sprite.layoutX = x
     sprite.layoutY = y
   }
@@ -34,4 +35,6 @@ class Tile(tileset: Image, viewport: Rectangle2D) {
 
   def sprite : ImageView = _sprite
   def sprite_= (new_sprite: ImageView) = _sprite = new_sprite
+
+
 }

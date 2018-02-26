@@ -45,21 +45,36 @@ class GameCreationScreen(var game : Game) extends BorderPane
   private val tiledPane = new DraggableTiledPane(game.tilemap, game.padding)
 
   private val min_towns : Int = 2
-  private val max_towns : Int = 5
+  private val max_towns : Int = 50 // tmp
 
   private var nb_towns : Int = 0
+
+  // check whether click is simple click or drag
+  private var mouse_anchor_x : Double = 0
+  private var mouse_anchor_y : Double = 0
 
   center = new BorderPane {
 
     style = "-fx-background-color: lightgreen"
     center = tiledPane
 
-    // creation of a city
-    onMouseClicked = (e: MouseEvent) => {
+    onMousePressed = (e: MouseEvent) => {
       requestFocus()
-      val pos : GridLocation = tiledPane.screenPxToGridLoc(e.getSceneX(), e.getSceneY())
-      if(game.createTown(pos)) {
-        nb_towns += 1
+
+      mouse_anchor_x = e.x
+      mouse_anchor_y = e.y
+    }
+
+    onMouseReleased = (e: MouseEvent) => {
+      if (e.x == mouse_anchor_x && e.y == mouse_anchor_y) {
+        // creation of a city
+        if (nb_towns < max_towns) {
+          val pos : GridLocation = tiledPane.screenPxToGridLoc(e.x, e.y)
+
+          if(game.createTown(pos)) {
+            nb_towns += 1
+          }
+        }
       }
     }
   }
