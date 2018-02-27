@@ -7,6 +7,9 @@ import tycoon.objects.structure.Town
 import scalafx.Includes._
 import scalafx.scene.Scene
 
+import scalafx.beans.property.{StringProperty, IntegerProperty}
+import scalafx.beans.binding.Bindings
+
 import scalafx.scene.paint.Color._
 import scalafx.scene.paint.{Stops, LinearGradient}
 import scalafx.scene.layout.{BorderPane, VBox}
@@ -29,25 +32,31 @@ import scalafx.collections.ObservableBuffer._ // Add, Remove, Reorder, Update
 
 class GameCreationScreen(var game : Game) extends BorderPane
 {
+  private var onValidate = new Runnable { def run() {} }
+
+  def setOnValidate(r : Runnable) = {
+    onValidate = r
+  }
+
+  private val tiledPane = new DraggableTiledPane(game.tilemap, game.padding)
+
   game.entities.onChange((_, changes) => {
     for (change <- changes)
       change match {
         case Add(_, added) =>
-          added.foreach(town => {
-            tiledPane.addEntity(town)
-          })
-        case Remove(pos, removed)           => ()
-        case Reorder(from, to, permutation) => ()
-        case Update(pos, updated)           => ()
+          added.foreach(town => tiledPane.addEntity(town))
+        case Remove(_, removed) =>
+          removed.foreach(town => tiledPane.removeEntity(town))
+        case _ => ()
       }
   })
 
-  private val tiledPane = new DraggableTiledPane(game.tilemap, game.padding)
-
   private val min_towns : Int = 2
-  private val max_towns : Int = 50 // tmp
+  private val max_towns : Int = 5
 
-  private var nb_towns : Int = 0
+  private var nb_towns = IntegerProperty(0)
+  private var nb_towns_str = new StringProperty
+  nb_towns_str <== nb_towns.asString
 
   // check whether click is simple click or drag
   private var mouse_anchor_x : Double = 0
@@ -68,11 +77,11 @@ class GameCreationScreen(var game : Game) extends BorderPane
     onMouseReleased = (e: MouseEvent) => {
       if (e.x == mouse_anchor_x && e.y == mouse_anchor_y) {
         // creation of a city
-        if (nb_towns < max_towns) {
+        if (nb_towns.get() < max_towns) {
           val pos : GridLocation = tiledPane.screenPxToGridLoc(e.x, e.y)
 
           if(game.createTown(pos)) {
-            nb_towns += 1
+            nb_towns.set(nb_towns.get() + 1)
           }
         }
       }
@@ -85,19 +94,26 @@ class GameCreationScreen(var game : Game) extends BorderPane
                -fx-border-width: 1;"""
     alignment = Pos.Center
 
+    private val name_field = new TextField {
+      promptText = "Choose a name"
+      margin = Insets(10)
+    }
+
     children = Seq(
       new Text {
         text = "Click to place " + min_towns + " up to " + max_towns + " cities"
         margin = Insets(10)
       },
       new Text {
+        text <== nb_towns_str + "/" + max_towns
+        fill <== when (nb_towns >= min_towns) choose Blue otherwise Red
+        margin = Insets(10)
+      },
+      new Text {
         text = "→"
         margin = Insets(10)
       },
-      new TextField {
-        promptText = "Choose a name"
-        margin = Insets(10)
-      },
+      name_field,
       new Text {
         text = "→"
         margin = Insets(10)
@@ -105,6 +121,27 @@ class GameCreationScreen(var game : Game) extends BorderPane
       new Button {
         text = "Play"
         margin = Insets(10)
+
+        onMouseClicked = (e: MouseEvent) => {
+          if (nb_towns.get() >= min_towns && name_field.text.get().length() > 0) {
+            game.setPlayerName(name_field.text.get())
+            onValidate.run()
+          }
+        }
+      },
+      new Text {
+        text = "|"
+        margin = Insets(10)
+      },
+      new Button {
+        text = "Reset"
+        margin = Insets(10)
+
+        onMouseClicked = (e: MouseEvent) => {
+          nb_towns.set(0)
+          name_field.text = ""
+          game.removeAllTowns()
+        }
       }
     )
     onMouseClicked = (e: MouseEvent) => { requestFocus() }

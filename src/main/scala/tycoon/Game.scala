@@ -61,6 +61,10 @@ class Game
 
   }
 
+  def setPlayerName (name: String) : Unit = {
+    // TODO class Player
+  }
+
   def createTown (pos: GridLocation) : Boolean = {
     val town = new BasicTown(pos)
     // check whether town is within the map boundaries
@@ -79,6 +83,11 @@ class Game
       valid
     }
     else false
+  }
+
+  def removeAllTowns() : Unit = {
+    towns.clear()
+    entities.clear()
   }
 
 

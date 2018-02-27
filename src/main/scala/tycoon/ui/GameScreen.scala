@@ -17,14 +17,33 @@ import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.input.{MouseEvent, KeyEvent}
 
 import scala.collection.mutable.{HashMap, HashSet}
+import scalafx.collections.ObservableBuffer
+import scalafx.collections.ObservableBuffer._ // Add, Remove, Reorder, Update
 
 
 
 class GameScreen(var game : Game) extends BorderPane
 {
-  var tiledPane = new DraggableTiledPane(game.tilemap, game.padding)
 
-  style = "-fx-background-color: lightgreen"
-  center = tiledPane
+
+  private val tiledPane = new DraggableTiledPane(game.tilemap, game.padding)
+
+  
+  game.entities.onChange((_, changes) => {
+    for (change <- changes)
+      change match {
+        case Add(_, added) => ()
+        case Remove(pos, removed)           => ()
+        case Reorder(from, to, permutation) => ()
+        case Update(pos, updated)           => ()
+      }
+  })
+
+  center = new BorderPane {
+
+    style = "-fx-background-color: lightgreen"
+    center = tiledPane
+
+  }
 
 }

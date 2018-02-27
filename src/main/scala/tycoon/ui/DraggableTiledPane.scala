@@ -20,8 +20,9 @@ import scalafx.scene.input.{MouseEvent, KeyEvent}
 import scala.collection.mutable.{HashMap, ListBuffer}
 
 
-class DraggableTiledPane(tm: TileMap, paddingTiles: Int)
+class DraggableTiledPane(val tm: TileMap, val paddingTiles: Int)
 extends BorderPane {
+
   // amount scrolled left and up, in pixels
   private var x_offset = DoubleProperty(0)
   private var y_offset = DoubleProperty(0)
@@ -63,9 +64,18 @@ extends BorderPane {
   // these may be placed everywhere and have different sizes
   // also their position may change without any drag but that can be handled in Tile or via a Movable trait
   private var entities = new ListBuffer[Renderable]()
+
   def addEntity(e: Renderable) = {
     entities += e
     layoutEntities()
+  }
+  def removeEntity(e: Renderable) = {
+    entities -= e
+    if (e.displayed) {
+      e.displayed = false
+      children.remove(e.getView)
+    }
+    //layoutEntities()
   }
 
 
@@ -152,6 +162,7 @@ extends BorderPane {
         if (!e.displayed) {
           // if entity was not displayed yet, add it to the scene
           e.displayed = true
+
           children.add(e.getView)
         }
         else { // opti
