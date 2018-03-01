@@ -3,9 +3,10 @@ package tycoon
 
 import tycoon.ui.Tile
 import scala.collection.mutable.HashMap
+import scalafx.scene.image.Image
 
 import scalafx.geometry.Rectangle2D
-
+import  scala.util.Random
 
 class TileMap {
   val map = HashMap.empty[GridLocation, Tile]
@@ -35,16 +36,18 @@ class TileMap {
     _row_max = _row_min + height - 1
   }
 
-  def fill(tile: Tile) : Unit = {
+  def fill(tile_array : Array[Tile]) : Unit = {
     map.clear()
-    _tile_width = tile.width
-    _tile_height = tile.height
+    _tile_width = tile_array(1).width
+    _tile_height = tile_array(1).height
+    var r = scala.util.Random
+    var i = 0
     for {
       col <- col_min to col_max
       row <- row_min to row_max
-    } map += (new GridLocation(col, row) -> new Tile(tile))
-  }
+    } map += (new GridLocation(col, row) -> new Tile(tile_array(scala.util.Random.nextInt(3))))
 
+}
   def fillBorder(tile: Tile, borderSize: Int, shift: Int = 0) : Unit = {
     for {
       col <- (col_min - borderSize - shift) to (col_max + borderSize + shift)

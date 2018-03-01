@@ -47,7 +47,7 @@ class Game
     tilemap.fill(Sprite.tile_grass)
     tilemap.fillBorder(Sprite.tile_tree, 1)
     tilemap.fillBorder(Sprite.tile_rock, 2, 1)
-    tilemap.fillBorder(Sprite.tile_grass, 50, 3)
+    tilemap.fillBorder(Sprite.tile_grass(1), 50, 3)
   }
   def start () : Unit = {
     loop.start()

@@ -1,0 +1,6 @@
+[0m[[0m[31merror[0m] [0m[0m/home/tibo/Documents/Prog/Git/tycoon/tycoon/src/main/scala/tycoon/Game.scala:50:31: type mismatch;[0m
+[0m[[0m[31merror[0m] [0m[0m found   : Array[tycoon.ui.Tile][0m
+[0m[[0m[31merror[0m] [0m[0m required: tycoon.ui.Tile[0m
+[0m[[0m[31merror[0m] [0m[0m    tilemap.fillBorder(Sprite.tile_grass, 50, 3)[0m
+[0m[[0m[31merror[0m] [0m[0m                              ^[0m
+[0m[[0m[31merror[0m] [0m[0mone error found[0m
