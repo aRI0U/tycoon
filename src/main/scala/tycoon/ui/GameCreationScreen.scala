@@ -95,7 +95,7 @@ class GameCreationScreen(var game : Game) extends BorderPane
     alignment = Pos.Center
 
     private val name_field = new TextField {
-      promptText = "Choose a name"
+      promptText = "Choose a player name"
       margin = Insets(10)
     }
 
