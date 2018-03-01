@@ -184,6 +184,11 @@ extends BorderPane {
 
     new GridLocation(col, row)
   }
+
+  def moveToCenter() : Unit = {
+    x_offset.set(0)
+    y_offset.set(0)
+  }
     /* // given a position on the screen (in pixels), return the GridLocation in which it is, depending on the offset
     def pixelToCase(x : Double, y : Double) : GridLocation = {
       val col : Int = Math.floor((x - (this.width.value / 2) - x_offset.get()) / tm.tile_width).toInt

@@ -23,20 +23,25 @@ import scalafx.collections.ObservableBuffer._ // Add, Remove, Reorder, Update
 
 import scalafx.scene.control.{TextField, Button}
 import scalafx.scene.input.MouseEvent
-import scalafx.scene.layout.{BorderPane, HBox}
+import scalafx.scene.layout.{BorderPane, HBox, VBox}
+
+import scalafx.beans.property.{StringProperty, IntegerProperty}
+import scalafx.beans.binding.Bindings
 
 class GameScreen(var game : Game) extends BorderPane
 {
 
 
-  private val tiledPane = new DraggableTiledPane(game.tilemap, game.padding)
+  // private val tiledPane = new DraggableTiledPane(game.tilemap, game.padding)
 
 
   game.entities.onChange((_, changes) => {
     for (change <- changes)
       change match {
-        case Add(_, added) => ()
-        case Remove(pos, removed)           => ()
+        case Add(_, added) =>
+          added.foreach(town => game.tiledPane.addEntity(town))
+        case Remove(_, removed) =>
+          removed.foreach(town => game.tiledPane.removeEntity(town))
         case Reorder(from, to, permutation) => ()
         case Update(pos, updated)           => ()
       }
@@ -45,10 +50,29 @@ class GameScreen(var game : Game) extends BorderPane
   private var mouse_anchor_x : Double = 0
   private var mouse_anchor_y : Double = 0
 
-  center = new BorderPane {
+
+  def init () : Unit = {
+    center = gamePane
+    top = menuPane
+    gamePane.center = game.tiledPane // update
+  }
+
+  def maybeClickEntityAt(pos: GridLocation) {
+    for (ent <- game.entities) {
+      if (ent.gridContains(pos)) {
+        println("entity clicked!!")
+        // TODO add trait clickable to some entities
+        // which will implement a method containing what to display in the side bar
+        // or better do onclick method in this trait and take as parameter pane in which to print
+        return
+      }
+    }
+  }
+
+
+  private val gamePane = new BorderPane {
 
     style = "-fx-background-color: lightgreen"
-    center = tiledPane
 
     onMousePressed = (e: MouseEvent) => {
       requestFocus()
@@ -60,19 +84,18 @@ class GameScreen(var game : Game) extends BorderPane
     onMouseReleased = (e: MouseEvent) => {
       if (e.x == mouse_anchor_x && e.y == mouse_anchor_y) {
         // Select entity and then shows information on side bar
+        val pos : GridLocation = game.tiledPane.screenPxToGridLoc(e.x, e.y)
 
+        maybeClickEntityAt(pos)
       }
     }
   }
   //should have entyties transmission ... Like the Class Player should be created in Game creation screen and transmited.
   //same question for the cities ect..
-  val player_class = new Player
 
-  private var player_money = player_class.money
-  val player_name = player_class.name
   //val city_number =  nb_towns.get()
 
-  top = new HBox {
+  private val menuPane = new HBox {
     style = """-fx-background-color: linear-gradient(burlywood, burlywood, brown);
                -fx-border-color: transparent transparent black transparent;
                -fx-border-width: 1;"""
@@ -84,33 +107,23 @@ class GameScreen(var game : Game) extends BorderPane
     }
 */
     children = Seq(
-      new Text {
-        text = "player : " + player_name + "   "
+      new VBox {
+        children = Seq(
+          new Text {
+            text <== game.playerName
+            margin = Insets(10)
+          },
+          new Text {
+            text <== game.playerMoney.asString + " $"
+            fill <== when (game.playerMoney > 0) choose Green otherwise Red
+            margin = Insets(10)
+          })
         margin = Insets(10)
       },
       new Text {
-        text =  "Capital :"
+        text = "Actions :"
         margin = Insets(10)
       },
-      new Text {
-        text =  player_class.money + " $    "
-        if (player_class.money >0) {
-          fill = Green
-        }
-        else {fill = Red}
-        margin = Insets(10)
-      },
-      new Text {
-        text = "Acitons :"
-        margin = Insets(10)
-      },
-      /*
-      name_field,
-      new Text {
-        text = "→"
-        margin = Insets(10)
-      },
-      */
       new Button {
         text = "Rail construction"
         margin = Insets(10)

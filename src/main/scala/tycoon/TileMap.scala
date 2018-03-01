@@ -38,14 +38,13 @@ class TileMap {
 
   def fill(tile_array : Array[Tile]) : Unit = {
     map.clear()
-    _tile_width = tile_array(1).width
-    _tile_height = tile_array(1).height
-    var r = scala.util.Random
-    var i = 0
+    _tile_width = tile_array(0).width
+    _tile_height = tile_array(0).height
+    val r = scala.util.Random
     for {
       col <- col_min to col_max
       row <- row_min to row_max
-    } map += (new GridLocation(col, row) -> new Tile(tile_array(scala.util.Random.nextInt(3))))
+    } map += (new GridLocation(col, row) -> new Tile(tile_array(r.nextInt(3))))
 
 }
   def fillBorder(tile: Tile, borderSize: Int, shift: Int = 0) : Unit = {
