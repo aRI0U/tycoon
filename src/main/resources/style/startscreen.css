@@ -1,0 +1,34 @@
+.bevel-grey {
+    -fx-background-color:
+        linear-gradient(#f2f2f2, #d6d6d6),
+        linear-gradient(#fcfcfc 0%, #d9d9d9 20%, #d6d6d6 100%),
+        linear-gradient(#dddddd 0%, #f6f6f6 50%);
+    -fx-background-radius: 8,7,6;
+    -fx-background-insets: 0,1,2;
+    -fx-text-fill: black;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+    -fx-padding: 10;
+    -fx-font-family: courier;
+}
+.bevel-grey:hover {
+    -fx-background-radius: 10;
+    -fx-background-insets: 0,1,1;
+    -fx-effect: dropshadow( three-pass-box , rgba(100,100,100,0.6) , 3, 0.0 , 0 , 1 );
+}
+
+#body {
+  -fx-background-image: url("../ios-linen.jpg");
+  -fx-background-repeat: repeat;
+}
+
+#game_title {
+  -fx-font-size: 48pt;
+  -fx-font-family: times;
+  -fx-fill: #EEEEEE;
+  -fx-line-height: 44px;
+  -fx-letter-spacing: -2px;
+  -fx-font-weight: bold;
+  -fx-stroke: #111111;
+  -fx-stroke-type: outside;
+  -fx-stroke-width: 2;
+}
