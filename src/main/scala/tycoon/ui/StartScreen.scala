@@ -7,8 +7,9 @@ import scalafx.scene.control.Button
 import scalafx.scene.input.MouseEvent
 import scalafx.scene.layout.{BorderPane, HBox, VBox}
 import scalafx.scene.text.Text
+import scalafx.scene.media.AudioClip
 
-
+// MUSICS: http://freemusicarchive.org/genre/Chiptune/?sort=track_interest
 
 class StartScreen extends BorderPane
 {
@@ -20,6 +21,11 @@ class StartScreen extends BorderPane
 
   stylesheets += "style/startscreen.css"
   id = "body"
+
+
+  private val theme = new AudioClip("file:src/main/resources/startscreen_music.mp3")
+  theme.cycleCount = 10000
+  theme.play()
 
   center = new VBox {
     alignment = Pos.Center
