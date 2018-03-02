@@ -1,6 +1,6 @@
 package tycoon
 
-import tycoon.ui.{StartScreen, GameCreationScreen, GameScreen, RailCreation}
+import tycoon.ui.{StartScreen, GameCreationScreen, GameScreen, RailCreation, MineCreation}
 
 import scalafx.Includes._
 import scalafx.application.JFXApp
@@ -16,6 +16,7 @@ object Main extends JFXApp {
   val gameCreationScreen = new GameCreationScreen(game)
   val gameScreen = new GameScreen(game)
   val railCreation = new RailCreation(game)
+  val mineCreation = new MineCreation(game)
 
   val content = new StackPane()
   content.getChildren().add(startScreen)
@@ -50,8 +51,33 @@ object Main extends JFXApp {
     def run() {
       content.getChildren().clear()
       content.getChildren().add(railCreation)
-      gameCreationScreen.init()
+      railCreation.init()
       //railCreation.init()
+    }
+  })
+
+  gameScreen.setOnMineClick(new Runnable {
+    def run() {
+      content.getChildren().clear()
+      content.getChildren().add(mineCreation)
+      mineCreation.init()
+      //railCreation.init()
+    }
+  })
+
+  mineCreation.setOnFinished(new Runnable {
+    def run() {
+      content.getChildren().clear()
+      content.getChildren().add(gameScreen)
+      gameScreen.init()
+    }
+  })
+
+  railCreation.setOnFinished(new Runnable {
+    def run() {
+      content.getChildren().clear()
+      content.getChildren().add(gameScreen)
+      gameScreen.init()
     }
   })
 }

@@ -15,7 +15,7 @@ object Sprite {
   val tile_grass2= new Tile(tileset, new Rectangle2D(32, 32, 32, 32))
   val tile_grass3= new Tile(tileset, new Rectangle2D(64, 32, 32, 32))
   val tile_tree = new Tile(tileset, new Rectangle2D(32, 32, 32, 32))
-  val tile_rock = new Tile(tileset, new Rectangle2D(32*2 , 32 , 32, 32))
+  val tile_rock = new Tile(tileset, new Rectangle2D(32*2 , 32*3 , 32, 32))
   val tile_house = new Tile(tileset, new Rectangle2D(0, 32 * 3, 64, 32))
   val tile_mine = new Tile(tileset, new Rectangle2D(32 * 2, 32 * 3, 32, 32))
 

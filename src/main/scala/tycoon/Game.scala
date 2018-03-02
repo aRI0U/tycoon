@@ -40,6 +40,10 @@ class Game(map_width : Int, map_height : Int)
 
   var entities = new ObservableBuffer[Renderable]()
 
+  val mine_price = 200
+  val rail_price = 10
+
+  var mines = new ListBuffer[Mine]()
   var towns = new ListBuffer[Town]()
   var trains = new ListBuffer[Train]()
 
@@ -102,7 +106,29 @@ class Game(map_width : Int, map_height : Int)
     towns.clear()
     entities.clear()
   }
-
+  def createMine (pos: GridLocation) : Boolean = {
+    val mine = new Mine(pos)
+    // check whether mine is within the map boundaries
+    if (tilemap.gridRect.contains(mine.gridRect))
+    {
+      // if so, check whether it intersects with an other entity
+      var valid = true
+      for (other <- entities) {
+        if (other.gridIntersects(mine))
+          valid = false
+      }
+      if (valid) {
+        mines += mine
+        entities += mine
+      }
+      valid
+    }
+    else false
+  }
+  def removeAllMines() : Unit = {
+    towns.clear()
+    entities.clear()
+  }
 
 
 

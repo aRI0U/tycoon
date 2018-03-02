@@ -34,7 +34,10 @@ class GameScreen(var game : Game) extends BorderPane
   def setOnRailClick(r : Runnable) = {
     onRailClick = r
   }
-
+  private var onMineClick = new Runnable { def run() {} }
+  def setOnMineClick(r : Runnable) = {
+    onMineClick = r
+  }
   // private val tiledPane = new DraggableTiledPane(game.tilemap, game.padding)
 
 
@@ -140,6 +143,7 @@ class GameScreen(var game : Game) extends BorderPane
         margin = Insets(10)
 
         onMouseClicked = (e: MouseEvent) => {
+          onMineClick.run()
           //Open new game mode about mine construction
         }
       }
