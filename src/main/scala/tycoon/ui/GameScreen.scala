@@ -1,8 +1,7 @@
 package tycoon.ui
 
 import tycoon.{Game, GridLocation}
-import tycoon.objects.game._
-import tycoon.ui._
+import tycoon.Player
 
 import scalafx.Includes._
 import scalafx.scene.Scene

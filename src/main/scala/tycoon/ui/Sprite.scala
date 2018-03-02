@@ -1,9 +1,8 @@
-package tycoon.objects
+package tycoon.ui
 
 import scalafx.geometry.Rectangle2D
 import scalafx.scene.image.{Image, ImageView}
 
-import tycoon.ui.Tile
 
 
 object Sprite {

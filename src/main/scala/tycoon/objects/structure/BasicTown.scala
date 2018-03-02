@@ -2,7 +2,7 @@ package tycoon.objects.structure
 
 import scala.util.Random
 import tycoon.GridLocation
-import tycoon.objects.Sprite
+import tycoon.ui.Sprite
 import tycoon.ui.Tile
 
 class BasicTown(pos: GridLocation) extends Town(pos) {

@@ -6,7 +6,7 @@ import scalafx.scene.image.Image
 
 import tycoon.objects.carriage._
 
-abstract class BasicTrain(x:Integer, y:Integer) extends Train(x, y) {
+abstract class BasicTrain(x: Int, y: Int) extends Train(x, y) {
   var pos_x = x
   var pos_y = y
   var visible = true

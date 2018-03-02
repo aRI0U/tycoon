@@ -2,8 +2,8 @@ package tycoon.objects.railway
 
 import tycoon.ui.Renderable
 
-abstract class Rail(x:Integer, y:Integer) extends Renderable {
-  val cost : Integer
-  val max_speed : Integer
-  val max_weight : Integer
+abstract class Rail(x: Int, y: Int) extends Renderable {
+  val cost : Int
+  val max_speed : Int
+  val max_weight : Int
 }

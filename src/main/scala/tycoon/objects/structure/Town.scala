@@ -8,8 +8,8 @@ abstract class Town(pos: GridLocation) extends Structure(pos) {
   protected val r = scala.util.Random
 
   private val name = "Jeanne"
-  protected var population : Integer
-  private var waiting_passengers : Integer = 0
+  protected var population : Int
+  private var waiting_passengers : Int = 0
 
   private var intern_time : Double = 0
   def update_population (dt: Double) {

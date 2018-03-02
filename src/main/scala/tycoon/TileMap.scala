@@ -6,7 +6,7 @@ import scala.collection.mutable.HashMap
 import scalafx.scene.image.Image
 
 import scalafx.geometry.Rectangle2D
-import  scala.util.Random
+import scala.util.Random
 
 class TileMap {
   val map = HashMap.empty[GridLocation, Tile]

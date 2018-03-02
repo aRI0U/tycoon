@@ -4,9 +4,8 @@ package tycoon
 
 import tycoon.objects.structure._
 import tycoon.objects.vehicle._
-import tycoon.objects.Sprite
+import tycoon.ui.Sprite
 import tycoon.ui.{Tile, Renderable, DraggableTiledPane}
-import tycoon.objects.game.Player
 
 import javafx.animation.AnimationTimer
 import scalafx.collections.ObservableBuffer
