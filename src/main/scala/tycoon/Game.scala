@@ -3,6 +3,7 @@
 package tycoon
 
 import tycoon.objects.structure._
+import tycoon.objects.railway._
 import tycoon.objects.vehicle._
 import tycoon.ui.Sprite
 import tycoon.ui.{Tile, Renderable, DraggableTiledPane}
@@ -43,6 +44,7 @@ class Game(map_width : Int, map_height : Int)
   val mine_price = 200
   val rail_price = 10
 
+  var rails = new ListBuffer[Rail]()
   var mines = new ListBuffer[Mine]()
   var towns = new ListBuffer[Town]()
   var trains = new ListBuffer[Train]()
@@ -126,10 +128,94 @@ class Game(map_width : Int, map_height : Int)
     else false
   }
   def removeAllMines() : Unit = {
-    towns.clear()
+    mines.clear()
     entities.clear()
   }
 
 
+  ///TODO/////def createTrail (pos: GridLocation) : Boolean = {
+
+
+//Rail become a trail_head if it is next to a town (see later for train station), or if it is conected to a tail_head
+  def createRail (pos: GridLocation) : Boolean = {
+    //depending of the situation should choos here between straight and turning rail
+    val rail = new BasicRail(pos)
+
+    // check whether rail is within the map boundaries
+    if (tilemap.gridRect.contains(rail.gridRect))
+    {
+      // if so, check whether it intersects with an other entity
+      var valid = true
+      for (other <- entities) {
+        if (other.gridIntersects(rail))
+          valid = false
+      }
+      //looking for a trail_head around there
+      //list of surounding entities (Renderable)
+      var env = new ListBuffer[Any]
+      var boxleft = new GridLocation(pos.column, pos.row + 1)
+      var boxright = new GridLocation(pos.column, pos.row-1)
+      var boxup  = new GridLocation(pos.column+1, pos.row)
+      var boxbelow  = new GridLocation(pos.column-1, pos.row)
+      val boxes = Array(boxleft,boxup,boxright,boxbelow)
+      // boxleft.row = 1 + boxleft.row
+      // boxright.row-=1
+      // boxup.collumn+=1
+      // boxbelow.collumn-=1
+      for (other <- entities) {
+        for (i : Int <- 0 to 3) {
+          if (other.gridContains(boxes(i)) ) {
+            val pair = (other,i)
+            env += pair
+          }
+        }
+      }
+      def orientation(o : Int, d : Int) : Int = {
+        //gives an integer between 0 and 5 acording to the coresponding orientation of the rail
+        if ((o == 0 && d == 3) ||(d == 0 && o == 3) )
+          return 1
+        if ((o == 1 && d == 4) ||(d == 1 && o == 4) )
+          return 0
+        else return 2
+      }
+      def checkType(pair : Any) = pair match {
+        case (t: Town,i : Int) => true
+        case (r: BasicRail,i : Int)=> {
+          rail.origin = i
+          r.orientation = orientation(r.origin, i)
+          if (r.orientation ==1) {
+            r.tile_update = new Tile(Sprite.tile_straight_rail2)
+          }
+          true
+            //We determin the orientation of the previous rail by combinating rail.origin and here i the direction of the folowing.
+            //So we conclude about rail.orientation
+          // i match {
+            // case 0 => r
+            // case 1 =>
+            // case 2 =>
+            // case 3 =>
+          //}
+        }
+        case _ => false
+      }
+      var valid_bis = false
+      for (pair <- env) {
+        if (checkType(pair))
+          valid_bis = true
+      }
+      if (valid &&  valid_bis) {
+        rails += rail
+        entities += rail
+      }
+      valid & valid_bis
+    }
+    else false
+  }
+
+  def removeAllRails() : Unit = {
+    //add some temporary list if deletion has to be made
+    rails.clear()
+    entities.clear()
+  }
 
 }

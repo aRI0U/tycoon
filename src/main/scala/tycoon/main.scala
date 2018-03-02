@@ -52,7 +52,6 @@ object Main extends JFXApp {
       content.getChildren().clear()
       content.getChildren().add(railCreation)
       railCreation.init()
-      //railCreation.init()
     }
   })
 
@@ -61,7 +60,6 @@ object Main extends JFXApp {
       content.getChildren().clear()
       content.getChildren().add(mineCreation)
       mineCreation.init()
-      //railCreation.init()
     }
   })
 
