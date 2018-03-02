@@ -3,7 +3,7 @@ package tycoon.ui
 import scalafx.geometry.Rectangle2D
 import scalafx.scene.image.{Image, ImageView}
 
-
+//http://designwoop.com/2012/03/20-free-subtle-textures-for-backgrounds/
 
 object Sprite {
   private val tileset = new Image("file:src/main/resources/3.png")

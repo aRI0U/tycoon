@@ -11,8 +11,9 @@ import scalafx.scene.paint.Color._
 import scalafx.scene.paint.{Stops, LinearGradient}
 import scalafx.scene.layout.{BorderPane, VBox, StackPane, Pane}
 import scalafx.scene.text.Text
-import scalafx.geometry.{Pos, HPos, VPos, Insets, Rectangle2D}
-import scalafx.scene.control.Button
+import scalafx.geometry.{Pos, HPos, VPos, Insets, Rectangle2D, Orientation}
+import scalafx.geometry.Orientation._
+import scalafx.scene.control.{Button, Separator}
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.input.{MouseEvent, KeyEvent}
 
@@ -34,7 +35,7 @@ class GameScreen(var game : Game) extends BorderPane
   // private val tiledPane = new DraggableTiledPane(game.tilemap, game.padding)
 
 
-  game.entities.onChange((_, changes) => {
+  game.entities.onChange((_, changes) => { // also used for game creation
     for (change <- changes)
       change match {
         case Add(_, added) =>
@@ -52,7 +53,7 @@ class GameScreen(var game : Game) extends BorderPane
 
   def init () : Unit = {
     center = gamePane
-    top = menuPane
+    left = menuPane
     gamePane.center = game.tiledPane // update
   }
 
@@ -94,33 +95,31 @@ class GameScreen(var game : Game) extends BorderPane
 
   //val city_number =  nb_towns.get()
 
-  private val menuPane = new HBox {
-    style = """-fx-background-color: linear-gradient(burlywood, burlywood, brown);
-               -fx-border-color: transparent transparent black transparent;
-               -fx-border-width: 1;"""
-    alignment = Pos.TOP_LEFT
-/*
-    private val name_field = new TextField {
-      promptText = "Choose a name"
-      margin = Insets(10)
-    }
-*/
+  private val menuPane = new VBox {
+    //style = """-fx-background-color: linear-gradient(burlywood, burlywood, brown);
+    style = """-fx-border-color: transparent transparent black transparent;
+               -fx-border-width: 1;
+               -fx-background-image: url("wood_pattern.png");
+               -fx-background-repeat: repeat;"""
+
     children = Seq(
-      new VBox {
-        children = Seq(
-          new Text {
-            text <== game.playerName
-            margin = Insets(10)
-          },
-          new Text {
-            text <== game.playerMoney.asString + " $"
-            fill <== when (game.playerMoney > 0) choose Green otherwise Red
-            margin = Insets(10)
-          })
-        margin = Insets(10)
+      new Text {
+        text <== StringProperty("Player: ").concat(game.playerName)
+        margin = Insets(5)
       },
       new Text {
-        text = "Actions :"
+        text <== StringProperty("Balance: $").concat(game.playerMoney.asString)
+        fill <== when (game.playerMoney > 0) choose Green otherwise Red
+        margin = Insets(5)
+      },
+      new Separator {
+        orientation = Orientation.Horizontal
+        style = """-fx-border-style: solid;
+                   -fx-background-color: black;
+                   -fx-border-color: black;"""
+      },
+      new Text {
+        text = "Actions : TODO"
         margin = Insets(10)
       },
       new Button {

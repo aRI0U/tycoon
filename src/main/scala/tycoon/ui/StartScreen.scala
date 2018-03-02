@@ -2,10 +2,12 @@ package tycoon.ui
 
 import scalafx.Includes._
 import scalafx.application.Platform
-import scalafx.geometry.Pos
+import scalafx.geometry.{Pos, Insets}
 import scalafx.scene.control.Button
 import scalafx.scene.input.MouseEvent
-import scalafx.scene.layout.{BorderPane, HBox}
+import scalafx.scene.layout.{BorderPane, HBox, VBox}
+import scalafx.scene.text.Text
+
 
 
 class StartScreen extends BorderPane
@@ -16,16 +18,40 @@ class StartScreen extends BorderPane
     onStart = r
   }
 
-  center = new HBox {
+  stylesheets += "style/startscreen.css"
+  id = "body"
+
+  center = new VBox {
     alignment = Pos.Center
     children = Seq(
-      new Button {
-        text = "New Game"
-        onMouseClicked = (e: MouseEvent) => onStart.run()
+      new Text {
+        alignment = Pos.Center
+        text = "Tycoon Game"
+        margin = Insets(50)
+        id = "game_title"
       },
-      new Button {
-        text = "Exit"
-        onMouseClicked = (e: MouseEvent) => Platform.exit()
+      new HBox {
+        alignment = Pos.Center
+        children = Seq(
+          new Button {
+            text = "New Game"
+            onMouseClicked = _ => onStart.run()
+            margin = Insets(20)
+            styleClass += "bevel-grey"
+          },
+          new Button {
+            text = "Exit"
+            onMouseClicked = _ => Platform.exit()
+            margin = Insets(20)
+            styleClass += "bevel-grey"
+          },
+          new Button {
+            text = "Credits"
+            onMouseClicked = _ => ()
+            margin = Insets(20)
+            styleClass += "bevel-grey"
+          }
+        )
       }
     )
   }
