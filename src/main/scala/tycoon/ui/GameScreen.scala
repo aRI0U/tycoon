@@ -29,7 +29,10 @@ import scalafx.beans.binding.Bindings
 
 class GameScreen(var game : Game) extends BorderPane
 {
-
+  private var onRailClick = new Runnable { def run() {} }
+  def setOnRailClick(r : Runnable) = {
+    onRailClick = r
+  }
 
   // private val tiledPane = new DraggableTiledPane(game.tilemap, game.padding)
 
@@ -128,6 +131,7 @@ class GameScreen(var game : Game) extends BorderPane
         margin = Insets(10)
 
         onMouseClicked = (e: MouseEvent) => {
+          onRailClick.run()
             //Open new game mode about mine construction
         }
       },
