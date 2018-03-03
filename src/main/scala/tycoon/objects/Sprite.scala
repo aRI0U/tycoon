@@ -19,6 +19,7 @@ object Sprite {
   val tile_rock = new Tile(tileset, new Rectangle2D(32*2 , 32 , 32, 32))
   val tile_house = new Tile(tileset, new Rectangle2D(0, 32 * 3, 64, 32))
 
+
   //Array of grass tiles, lately choosen randomly
   var tile_grass = Array(tile_grass1, tile_grass2,tile_grass3)
 
