@@ -1,11 +1,11 @@
 package tycoon
 
-import tycoon.ui.{StartScreen, GameCreationScreen, GameScreen, RailCreation, MineCreation}
+import tycoon.ui._
 
 import scalafx.Includes._
 import scalafx.application.JFXApp
 import scalafx.application.JFXApp.PrimaryStage
-import scalafx.scene.Scene
+import scalafx.scene.{Scene, PerspectiveCamera, Camera}
 import scalafx.scene.layout.StackPane
 
 
@@ -20,21 +20,47 @@ object Main extends JFXApp {
 
   val content = new StackPane()
   content.getChildren().add(startScreen)
+  startScreen.init()
 
-  stage = new PrimaryStage {
+  val appScene = new Scene(new StackPane(content))
+
+  val appStage = new PrimaryStage {
     title = "Tycoon Game"
     resizable = true
     //maximized = true
     minWidth = 700
     minHeight = 500
-    scene = new Scene(new StackPane(content))
+    scene = appScene
   }
+
+  stage = appStage
 
   startScreen.setOnStart(new Runnable {
     def run() {
       content.getChildren().clear()
       content.getChildren().add(gameCreationScreen)
       gameCreationScreen.init()
+    }
+  })
+
+  startScreen.setOnOpenCredits(new Runnable {
+    def run() {
+      val creditsScreen = new CreditsScreen
+      creditsScreen.setOnExit(new Runnable {
+        def run() {
+          content.getChildren().clear()
+          content.getChildren().add(startScreen)
+          startScreen.init()
+          //appScene.camera = new Camera
+          appStage.resizable = true
+        }
+      })
+
+      content.getChildren().clear()
+      content.getChildren().add(creditsScreen)
+      appScene.camera = new PerspectiveCamera
+      //creditsScreen.init()
+      appStage.resizable = false
     }
   })
 

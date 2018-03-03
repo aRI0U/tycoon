@@ -14,9 +14,13 @@ import scalafx.scene.media.AudioClip
 class StartScreen extends BorderPane
 {
   private var onStart = new Runnable { def run() {} }
+  private var onOpenCredits = new Runnable { def run() {} }
 
   def setOnStart(r : Runnable) = {
     onStart = r
+  }
+  def setOnOpenCredits(r : Runnable) = {
+    onOpenCredits = r
   }
 
   stylesheets += "style/startscreen.css"
@@ -25,7 +29,11 @@ class StartScreen extends BorderPane
 
   private val theme = new AudioClip("file:src/main/resources/startscreen_music.mp3")
   theme.cycleCount = 10000
-  theme.play()
+
+
+  def init() = {
+    theme.play()
+  }
 
   center = new VBox {
     alignment = Pos.Center
@@ -53,7 +61,7 @@ class StartScreen extends BorderPane
           },
           new Button {
             text = "Credits"
-            onMouseClicked = _ => ()
+            onMouseClicked = _ => { theme.stop() ; onOpenCredits.run() }
             margin = Insets(20)
             styleClass += "bevel-grey"
           }
