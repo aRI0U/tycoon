@@ -12,7 +12,7 @@ case class BasicRail(pos: GridLocation, tile_type : Int) extends Rail(pos) {
   val max_weight = 1000
   var road_head = true
 
-  val road = new Road(pos)
+  var road = new Road(pos)
   road.length+=1
 
   var linked_to = this
