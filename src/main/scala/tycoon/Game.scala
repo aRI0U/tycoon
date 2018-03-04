@@ -74,7 +74,10 @@ class Game(map_width : Int, map_height : Int)
 
   private def update(dt : Double) : Unit = {
 
-    // update game
+    for (town <- towns)
+    {
+      town.update(dt)
+    }
 
   }
 

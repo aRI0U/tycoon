@@ -63,13 +63,15 @@ class GameScreen(var game : Game) extends BorderPane
     gamePane.center = game.tiledPane // update
   }
 
+  private val txt_tmp : String = "salut"
+
   def maybeClickEntityAt(pos: GridLocation) {
     for (ent <- game.entities) {
       if (ent.gridContains(pos)) {
-        println("entity clicked!!")
-        // TODO add trait clickable to some entities
-        // which will implement a method containing what to display in the side bar
-        // or better do onclick method in this trait and take as parameter pane in which to print
+        ent match {
+          case _ : Printable => println("i can display data")
+          case _ : Renderable => ()
+        }
         return
       }
     }
@@ -137,7 +139,6 @@ class GameScreen(var game : Game) extends BorderPane
             //Open new game mode about mine construction
         }
       },
-
       new Button {
         text = "Mine Construction"
         margin = Insets(10)
@@ -146,6 +147,17 @@ class GameScreen(var game : Game) extends BorderPane
           onMineClick.run()
           //Open new game mode about mine construction
         }
+      },
+      new Separator {
+        orientation = Orientation.Horizontal
+        style = """-fx-border-style: solid;
+                   -fx-background-color: black;
+                   -fx-border-color: black;"""
+      },
+      new Text {
+        text <== StringProperty(txt_tmp)//.concat(game.playerMoney.asString)
+        //fill <== when (game.playerMoney > 0) choose Green otherwise Red
+        margin = Insets(5)
       }
     )
     onMouseClicked = (e: MouseEvent) => { requestFocus() }
