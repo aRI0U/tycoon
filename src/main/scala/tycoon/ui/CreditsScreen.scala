@@ -54,7 +54,7 @@ class CreditsScreen extends StackPane
     styleClass += "credits"
   }
   private val ctxt4 = new Label {
-    text = "Tycoon Game"
+    text = "The Tycoon Game"
     styleClass += "credits"
     styleClass += "bigger"
   }
@@ -70,20 +70,9 @@ class CreditsScreen extends StackPane
     styleClass += "bigger"
   }
   private val ctxt7 = new Label {
-    text = """It is a dark time for the
-Cachanais. Although the Death
-Compilator has been destroyed,
-Imperial troops have driven the
-Rebel students from their hidden
-base and pursued them across
-the campus.
+    text = """It is a dark time for the Cachanais. Although the Death Compilator has been destroyed, Imperial troops have driven the Rebel students from their hidden base and pursued them across the campus.
 
-Evading the dreaded Imperial
-ENS teachers, a group of freedom
-fighters led by Nate Scalawalker
-has established a new secret
-game on the remote ice world
-of Github."""
+Evading the dreaded Imperial ENS leaders, a group of freedom fighters led by Nate Scalawalker has established a new secret game on the remote ice world of Github."""
     wrapText = true
     prefWidth = 400
     styleClass += "credits"
