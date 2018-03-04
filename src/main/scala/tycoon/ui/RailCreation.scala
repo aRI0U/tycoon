@@ -42,6 +42,8 @@ class RailCreation(var game: Game) extends BorderPane {
   private var cost_str = new StringProperty
   cost_str <== cost.asString
 
+  private var rail_nb = 0
+
 //appenrantly gives 0.... now
   private var initial_money = game.playerMoney.get()
 
@@ -55,6 +57,8 @@ class RailCreation(var game: Game) extends BorderPane {
     center = gamePane
     left = menuPane
     gamePane.center = game.tiledPane // update
+    _cost.set(0)
+    rail_nb = 0
   }
 
   private val gamePane = new BorderPane {
@@ -77,6 +81,7 @@ class RailCreation(var game: Game) extends BorderPane {
           if (game.createRail(pos)) {
             cost_= (_cost.get() + game.rail_price)
             game.playerMoney.set(game.playerMoney.get()-game.rail_price)
+            rail_nb+=1
           }
 
         }
@@ -122,13 +127,16 @@ class RailCreation(var game: Game) extends BorderPane {
         text = "Remove last rail"
         margin = Insets(10)
         onMouseClicked = (e: MouseEvent) => {
-          game.removeAllRails()
-          game.playerMoney.set(game.playerMoney.get() + game.rail_price)
-          cost_= (_cost.get() - game.rail_price)
+          if (rail_nb>0) {
+            game.removeAllRails()
+            game.playerMoney.set(game.playerMoney.get() + game.rail_price)
+            cost_= (_cost.get() - game.rail_price)
+            rail_nb -= 1
+          }
         }
       },
       new Button {
-        text = "Exit construction"
+        text = "Validation"
         margin = Insets(10)
         onMouseClicked = (e: MouseEvent) => {
           onFinished.run()

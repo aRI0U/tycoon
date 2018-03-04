@@ -180,22 +180,50 @@ class Game(map_width : Int, map_height : Int)
           previous_rail_update.tile.getView.rotate = 270
       }
       def checkType(pair : Any) = pair match {
-        case (t: Town,i : Int) => true
+        case (t: Town,i : Int) => {
+          println(t)
+          if (rail.road.start_town == None) {
+            rail.road.start_town = Some(t)
+            println(t)
+          }
+          else {
+            rail.road.end_town = Some(t)
+            rail.road.finished = true
+            println(rail.road.length)
+            println(rail.road.finished)
+            println(rail.road.end_town)
+          }
+          if (rail.road.finished) {
+            false
+          }
+          else true
+        }
         case (previous_rail: BasicRail,i : Int)=> {
-          rail.origin = i
-          previous_rail.orientation = i
-          if ((previous_rail.origin +  previous_rail.orientation) % 2 ==1) {
-            entities-= previous_rail
-            rails-=previous_rail
-            val previous_rail_update = new BasicRail(previous_rail.pos, 1)
-            entities+= previous_rail_update
-            rails+= previous_rail_update
-            turning(previous_rail.origin,previous_rail.orientation,previous_rail_update)
+          //could need more selection to define the previous rail, use rails list ?
+          if ((previous_rail.road_head == true) && (previous_rail.road.finished == false)) {
+              rail.road.rails ++= previous_rail.road.rails
+              rail.road.start_town = previous_rail.road.start_town
+              rail.road.length += previous_rail.road.length
+
+              previous_rail.road_head = false
+
+              rail.origin = i
+              previous_rail.orientation = i
+              if ((previous_rail.origin +  previous_rail.orientation) % 2 ==1) {
+                entities-= previous_rail
+                rails-=previous_rail
+                val previous_rail_update = new BasicRail(previous_rail.pos, 1)
+                entities+= previous_rail_update
+                rails+= previous_rail_update
+                turning(previous_rail.origin,previous_rail.orientation,previous_rail_update)
+                previous_rail_update.road_head = false
+              }
+              if (rail.origin == 1 || rail.origin == 3) {
+                rail.tile.getView.rotate = 90
+              }
+              true
           }
-          if (rail.origin == 1 || rail.origin == 3) {
-            rail.tile.getView.rotate = 90
-          }
-          true
+          else false
         }
         case _ => false
       }
