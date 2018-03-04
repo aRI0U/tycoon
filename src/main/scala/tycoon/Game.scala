@@ -111,6 +111,7 @@ class Game(map_width : Int, map_height : Int)
     towns.clear()
     entities.clear()
   }
+
   def createMine (pos: GridLocation) : Boolean = {
     val mine = new Mine(pos)
     // check whether mine is within the map boundaries
@@ -131,8 +132,8 @@ class Game(map_width : Int, map_height : Int)
     else false
   }
   def removeAllMines() : Unit = {
-    mines.clear()
-    entities.clear()
+    mines.remove(mines.size-1)
+    entities.remove(entities.size-1)
   }
 
 
@@ -142,7 +143,7 @@ class Game(map_width : Int, map_height : Int)
 //Rail become a trail_head if it is next to a town (see later for train station), or if it is conected to a tail_head
   def createRail (pos: GridLocation) : Boolean = {
     //depending of the situation should choos here between straight and turning rail
-    val rail = new BasicRail(pos)
+    val rail = new BasicRail(pos, 0)
 
     // check whether rail is within the map boundaries
     if (tilemap.gridRect.contains(rail.gridRect))
@@ -156,15 +157,12 @@ class Game(map_width : Int, map_height : Int)
       //looking for a trail_head around there
       //list of surounding entities (Renderable)
       var env = new ListBuffer[Any]
+      //left is probably actualy below ect...
       var boxleft = new GridLocation(pos.column, pos.row + 1)
       var boxright = new GridLocation(pos.column, pos.row-1)
       var boxup  = new GridLocation(pos.column+1, pos.row)
       var boxbelow  = new GridLocation(pos.column-1, pos.row)
       val boxes = Array(boxleft,boxup,boxright,boxbelow)
-      // boxleft.row = 1 + boxleft.row
-      // boxright.row-=1
-      // boxup.collumn+=1
-      // boxbelow.collumn-=1
       for (other <- entities) {
         for (i : Int <- 0 to 3) {
           if (other.gridContains(boxes(i)) ) {
@@ -173,31 +171,31 @@ class Game(map_width : Int, map_height : Int)
           }
         }
       }
-      def orientation(o : Int, d : Int) : Int = {
-        //gives an integer between 0 and 5 acording to the coresponding orientation of the rail
-        if ((o == 0 && d == 3) ||(d == 0 && o == 3) )
-          return 1
-        if ((o == 1 && d == 4) ||(d == 1 && o == 4) )
-          return 0
-        else return 2
+      def turning(o : Int, d : Int,previous_rail_update : BasicRail) : Unit = {
+        if ((o == 3 && d == 0) ||(d == 1 && o == 2) )
+          previous_rail_update.tile.getView.rotate = 180
+        if ((o == 0 && d == 1) ||(d == 2 && o == 3) )
+          previous_rail_update.tile.getView.rotate = 90
+        if ((o == 1 && d == 0) ||(d == 3 && o == 2) )
+          previous_rail_update.tile.getView.rotate = 270
       }
       def checkType(pair : Any) = pair match {
         case (t: Town,i : Int) => true
-        case (r: BasicRail,i : Int)=> {
+        case (previous_rail: BasicRail,i : Int)=> {
           rail.origin = i
-          r.orientation = orientation(r.origin, i)
-          if (r.orientation ==1) {
-            r.tile_update = new Tile(Sprite.tile_straight_rail2)
+          previous_rail.orientation = i
+          if ((previous_rail.origin +  previous_rail.orientation) % 2 ==1) {
+            entities-= previous_rail
+            rails-=previous_rail
+            val previous_rail_update = new BasicRail(previous_rail.pos, 1)
+            entities+= previous_rail_update
+            rails+= previous_rail_update
+            turning(previous_rail.origin,previous_rail.orientation,previous_rail_update)
+          }
+          if (rail.origin == 1 || rail.origin == 3) {
+            rail.tile.getView.rotate = 90
           }
           true
-            //We determin the orientation of the previous rail by combinating rail.origin and here i the direction of the folowing.
-            //So we conclude about rail.orientation
-          // i match {
-            // case 0 => r
-            // case 1 =>
-            // case 2 =>
-            // case 3 =>
-          //}
         }
         case _ => false
       }
@@ -217,8 +215,7 @@ class Game(map_width : Int, map_height : Int)
 
   def removeAllRails() : Unit = {
     //add some temporary list if deletion has to be made
-    rails.clear()
-    entities.clear()
+    rails.remove(rails.size-1)
+    entities.remove(entities.size-1)
   }
-
 }

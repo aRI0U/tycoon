@@ -113,13 +113,18 @@ class RailCreation(var game: Game) extends BorderPane {
         fill <== when ( _cost < initial_money) choose Green otherwise Red
         margin = Insets(10)
       },
+      new Text {
+        text = "explaining rules of  rail construction.."
+        margin = Insets(10)
+      },
+
       new Button {
-        text = "Remove (todo, just last constructions...)"
+        text = "Remove last rail"
         margin = Insets(10)
         onMouseClicked = (e: MouseEvent) => {
           game.removeAllRails()
-          game.playerMoney = initial_money
-          cost_= (0)
+          game.playerMoney.set(game.playerMoney.get() + game.rail_price)
+          cost_= (_cost.get() - game.rail_price)
         }
       },
       new Button {

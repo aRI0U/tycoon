@@ -10,8 +10,8 @@ import scala.collection.mutable.{HashMap, ListBuffer}
 class Trail(rails : ListBuffer[Rail]) {
 
   //temporary
-  val tile = new Tile(Sprite.tile_straight_rail1)
+  val tile = new Tile(Sprite.tile_straight_rail2)
 
-  val tile_straight = new Tile(Sprite.tile_straight_rail1)
+  val tile_straight = new Tile(Sprite.tile_straight_rail2)
   val tile_turning = new Tile(Sprite.tile_turning_rail)
 }

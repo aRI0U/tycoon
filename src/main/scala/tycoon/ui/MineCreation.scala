@@ -135,6 +135,12 @@ class MineCreation(var game: Game) extends BorderPane {
         fill <== when (_cost < initial_money) choose Green otherwise Red
         margin = Insets(10)
       },
+
+      new Text {
+        text = "explaining rules of  mine construction.."
+        margin = Insets(10)
+      },
+      
       new Button {
         text = "Remove (todo, just last constructions...)"
         margin = Insets(10)

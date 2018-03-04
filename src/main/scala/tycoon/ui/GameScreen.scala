@@ -158,6 +158,15 @@ class GameScreen(var game : Game) extends BorderPane
         text <== StringProperty(txt_tmp)//.concat(game.playerMoney.asString)
         //fill <== when (game.playerMoney > 0) choose Green otherwise Red
         margin = Insets(5)
+      },
+      new Button {
+        text = "Abandon"
+        margin = Insets(10)
+
+        onMouseClicked = (e: MouseEvent) => {
+          println ("should return to menu")
+          //Open new game mode about mine construction
+        }
       }
     )
     onMouseClicked = (e: MouseEvent) => { requestFocus() }
