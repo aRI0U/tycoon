@@ -96,6 +96,7 @@ class Game(map_width : Int, map_height : Int)
   def playerMoney : IntegerProperty = player.money
   def playerMoney_= (new_money: Int) = player.money = new_money
 
+
   def createTown (pos: GridLocation) : Boolean = {
     val town = new BasicTown(pos, nb_structures)
     // check whether town is within the map boundaries

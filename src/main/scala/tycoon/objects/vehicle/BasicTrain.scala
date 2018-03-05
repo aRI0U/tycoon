@@ -50,10 +50,15 @@ class BasicTrain(road : Road) extends Train(road) {
 
   def update (dt : Double) {
     update_box(dt)
+    /*location match {
+      case Some(town) => departure()
+      case None => update_box(dt)
+    }
+    arrival()*/
   }
-
+ 
   // var pos_y = y
-  var visible = true
+  var visible = false
   var speed = 10
   var destination_x = 0
   var destination_y = 0

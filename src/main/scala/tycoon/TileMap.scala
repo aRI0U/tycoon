@@ -2,9 +2,10 @@ package tycoon
 
 
 import tycoon.ui.Tile
-import scala.collection.mutable.HashMap
-import scalafx.scene.image.Image
 
+import scala.collection.mutable.HashMap
+
+import scalafx.scene.image.Image
 import scalafx.geometry.Rectangle2D
 import scala.util.Random
 

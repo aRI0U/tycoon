@@ -75,7 +75,7 @@ class GameScreen(var game : Game) extends BorderPane
           ent match {
             case rail : BasicRail => {
               if (buy_train.get()){
-                println("you just cliqued a rail")
+                println("you just clicked on a rail")
                 if (buy_train.get()){
                   if (game.createTrain(rail)) {
                     //money changes
@@ -192,7 +192,7 @@ class GameScreen(var game : Game) extends BorderPane
           margin = Insets(10)
 
           onMouseClicked = (e: MouseEvent) => {
-            //Open new game mode about mine construction
+            //Open new game mode about train construction
             if (buy_train.get()) {
               buy_train.set(false)
             }
@@ -200,7 +200,7 @@ class GameScreen(var game : Game) extends BorderPane
           }
         },
         new Text {
-          text <== when (buy_train) choose ("Now click a rail") otherwise ("")
+          text <== when (buy_train) choose ("Now select a rail") otherwise ("")
           margin = Insets(5)
         },
         new Separator {

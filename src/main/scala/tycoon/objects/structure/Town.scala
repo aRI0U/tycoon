@@ -1,18 +1,24 @@
 package tycoon.objects.structure
 
-import tycoon.GridLocation
-import scalafx.beans.property.{IntegerProperty, StringProperty}
+import scala.collection.mutable.ListBuffer
+import scala.Array
 
+import tycoon.GridLocation
+import tycoon.Game
+
+import scalafx.beans.property.{IntegerProperty, StringProperty}
 
 
 abstract class Town(pos: GridLocation, id: Int) extends Structure(pos, id) {
 
   protected val r = scala.util.Random
 
-  protected val _name = StringProperty("Jeanne")
+  var city_names : ListBuffer[String] = new ListBuffer
+  city_names += ("Paris", "Lyon", "Toulouse", "Saclay", "Nice", "Strasbourg", "Mulhouse", "Aulnay-sous-Bois", "Cachan", "Hamburg", "Berlin", "Brno", "Stuttgart", "Wien", "Köln")
+
+  protected val _name = StringProperty(city_names(id))
   protected var _population = IntegerProperty(0)
   protected var _waiting_passengers = IntegerProperty(0)
-
 
   printData += Pair("Name", _name)
 
@@ -31,9 +37,10 @@ abstract class Town(pos: GridLocation, id: Int) extends Structure(pos, id) {
     population += i/50
   }
 
+  // to ameliorate to manage where people want to go
   def update_waiters () = {
-    val i = r.nextInt(population)
-    waiting_passengers += i/30
+    val new_waiters = (r.nextInt(population))/30
+    waiting_passengers += new_waiters
     if (waiting_passengers > population) waiting_passengers = population
   }
 
