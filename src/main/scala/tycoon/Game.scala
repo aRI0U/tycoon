@@ -146,6 +146,7 @@ class Game(map_width : Int, map_height : Int)
   def removeAllMines() : Unit = {
     mines.remove(mines.size-1)
     entities.remove(entities.size-1)
+    nb_structures -= 1
   }
 
 
