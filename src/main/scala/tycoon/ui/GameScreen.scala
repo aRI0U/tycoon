@@ -6,14 +6,14 @@ import tycoon.Player
 import scalafx.Includes._
 import scalafx.scene.Scene
 import scalafx.beans.property._
-
+import scalafx.application.Platform
 import scalafx.scene.paint.Color._
 import scalafx.scene.paint.{Stops, LinearGradient}
 import scalafx.scene.layout.{BorderPane, VBox, StackPane, Pane}
 import scalafx.scene.text.Text
 import scalafx.geometry.{Pos, HPos, VPos, Insets, Rectangle2D, Orientation}
 import scalafx.geometry.Orientation._
-import scalafx.scene.control.{Button, Separator}
+import scalafx.scene.control.{Button, Separator, ButtonType, Alert}
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.input.{MouseEvent, KeyEvent}
 
@@ -27,6 +27,7 @@ import scalafx.scene.layout.{BorderPane, HBox, VBox}
 
 import scalafx.beans.property.{StringProperty, IntegerProperty}
 import scalafx.beans.binding.Bindings
+import scala.collection.mutable.ListBuffer
 
 class GameScreen(var game : Game) extends BorderPane
 {
@@ -63,18 +64,28 @@ class GameScreen(var game : Game) extends BorderPane
     gamePane.center = game.tiledPane // update
   }
 
-  private val txt_tmp : String = "salut"
-
   def maybeClickEntityAt(pos: GridLocation) {
     for (ent <- game.entities) {
       if (ent.gridContains(pos)) {
-        ent match {
-          case _ : Printable => println("i can display data")
-          case _ : Renderable => ()
-        }
+        bindPrintData(ent.printData)
         return
       }
     }
+  }
+
+  def bindPrintData(data: ListBuffer[(String, StringProperty)]) {
+
+    menuPane.center = new VBox {
+      for (elt <- data) {
+        val item = new Text {
+          text <== StringProperty(elt._1 + ": ").concat(elt._2)
+          margin = Insets(5)
+        }
+
+        children.add(item)
+      }
+    }
+
   }
 
 
@@ -103,72 +114,83 @@ class GameScreen(var game : Game) extends BorderPane
 
   //val city_number =  nb_towns.get()
 
-  private val menuPane = new VBox {
+  private val menuPane = new BorderPane {
     //style = """-fx-background-color: linear-gradient(burlywood, burlywood, brown);
-    style = """-fx-border-color: transparent transparent black transparent;
+    style = """-fx-border-color: transparent black transparent transparent;
                -fx-border-width: 1;
-               -fx-background-image: url("wood_pattern.png");
-               -fx-background-repeat: repeat;"""
+               -fx-background-color: #DDD;"""
 
-    children = Seq(
-      new Text {
-        text <== StringProperty("Player: ").concat(game.playerName)
-        margin = Insets(5)
-      },
-      new Text {
-        text <== StringProperty("Balance: $").concat(game.playerMoney.asString)
-        fill <== when (game.playerMoney > 0) choose Green otherwise Red
-        margin = Insets(5)
-      },
-      new Separator {
-        orientation = Orientation.Horizontal
-        style = """-fx-border-style: solid;
-                   -fx-background-color: black;
-                   -fx-border-color: black;"""
-      },
-      new Text {
-        text = "Actions : TODO"
-        margin = Insets(10)
-      },
-      new Button {
-        text = "Rail construction"
-        margin = Insets(10)
+    top = new VBox {
+      children = Seq(
+        new Text {
+          text <== StringProperty("Player: ").concat(game.playerName)
+          margin = Insets(5)
+        },
+        new Text {
+          text <== StringProperty("Balance: $").concat(game.playerMoney.asString)
+          fill <== when (game.playerMoney > 0) choose Green otherwise Red
+          margin = Insets(5)
+        },
+        new Separator {
+          orientation = Orientation.Horizontal
+          style = """-fx-border-style: solid;
+                     -fx-background-color: black;
+                     -fx-border-color: black;"""
+        },
+        new Text {
+          text = "Actions : TODO"
+          margin = Insets(10)
+        },
+        new Button {
+          text = "Rail construction"
+          margin = Insets(10)
 
-        onMouseClicked = (e: MouseEvent) => {
-          onRailClick.run()
+          onMouseClicked = (e: MouseEvent) => {
+            onRailClick.run()
+              //Open new game mode about mine construction
+          }
+        },
+        new Button {
+          text = "Mine Construction"
+          margin = Insets(10)
+
+          onMouseClicked = (e: MouseEvent) => {
+            onMineClick.run()
             //Open new game mode about mine construction
+          }
+        },
+        new Separator {
+          orientation = Orientation.Horizontal
+          style = """-fx-border-style: solid;
+                     -fx-background-color: black;
+                     -fx-border-color: black;"""
         }
-      },
-      new Button {
-        text = "Mine Construction"
+      )
+    }
+
+    bottom = new VBox {
+      alignment = Pos.BottomCenter
+      children = Seq(new Button {
+        text = "Quit Game"
         margin = Insets(10)
 
         onMouseClicked = (e: MouseEvent) => {
-          onMineClick.run()
-          //Open new game mode about mine construction
-        }
-      },
-      new Separator {
-        orientation = Orientation.Horizontal
-        style = """-fx-border-style: solid;
-                   -fx-background-color: black;
-                   -fx-border-color: black;"""
-      },
-      new Text {
-        text <== StringProperty(txt_tmp)//.concat(game.playerMoney.asString)
-        //fill <== when (game.playerMoney > 0) choose Green otherwise Red
-        margin = Insets(5)
-      },
-      new Button {
-        text = "Abandon"
-        margin = Insets(10)
+          val alert = new Alert(Alert.AlertType.Warning) {
+            title = "Careful!"
+            headerText = "If you leave now, your progress will not be saved."
+            contentText = "Are you sure you want to leave?"
+            buttonTypes = Seq(ButtonType.Cancel, ButtonType.Yes)
+          }
 
-        onMouseClicked = (e: MouseEvent) => {
-          println ("should return to menu")
-          //Open new game mode about mine construction
+          val result = alert.showAndWait()
+          result match {
+            case Some(ButtonType.Yes) => Platform.exit()
+            case _                   => ()
+          }
         }
-      }
-    )
-    onMouseClicked = (e: MouseEvent) => { requestFocus() }
+      })
+    }
+
+    //onMouseClicked = (e: MouseEvent) => { requestFocus() }
   }
 }

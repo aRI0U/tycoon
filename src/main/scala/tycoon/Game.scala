@@ -59,7 +59,7 @@ class Game(map_width : Int, map_height : Int)
   val padding = 4
   tilemap.setSize(map_width, map_height)
   tilemap.fill(Sprite.tiles_grass)
-  tilemap.fillBorder(Sprite.tile_mine, 1) // TMP
+  tilemap.fillBorder(Sprite.tile_tree, 1) // TMP
   tilemap.fillBorder(Sprite.tile_rock, 2, 1)
   tilemap.fillBorder(Sprite.tiles_grass(1), 50, 3)
   val tiledPane = new DraggableTiledPane(tilemap, padding)
@@ -184,17 +184,16 @@ class Game(map_width : Int, map_height : Int)
       }
       def checkType(pair : Any) = pair match {
         case (t: Town,i : Int) => {
-          println(t)
           if (rail.road.start_town == None) {
             rail.road.start_town = Some(t)
-            println(t)
           }
-          else {
+          rail.road.end_town = Some(t)
+          if (!(rail.road.end_town == rail.road.start_town)) {
             rail.road.end_town = Some(t)
             rail.road.finished = true
-            println(rail.road.length)
-            println(rail.road.finished)
-            println(rail.road.end_town)
+            for (rail_member <- rail.road.rails) {
+              rail_member.road = rail.road
+            }
           }
           if (rail.road.finished) {
             false
@@ -202,11 +201,22 @@ class Game(map_width : Int, map_height : Int)
           else true
         }
         case (previous_rail: BasicRail,i : Int)=> {
-          //could need more selection to define the previous rail, use rails list ?
           if ((previous_rail.road_head == true) && (previous_rail.road.finished == false)) {
               rail.road.rails ++= previous_rail.road.rails
-              rail.road.start_town = previous_rail.road.start_town
               rail.road.length += previous_rail.road.length
+              if (rail.road.start_town == None) {
+                rail.road.start_town = previous_rail.road.start_town
+              }
+              else {
+                if (!(rail.road.start_town == previous_rail.road.start_town)) {
+                  rail.road.end_town = rail.road.start_town
+                  rail.road.start_town = previous_rail.road.start_town
+                  rail.road.finished = true
+                  for (rail_member <- rail.road.rails) {
+                    rail_member.road = rail.road
+                  }
+                }
+              }
 
               previous_rail.road_head = false
 

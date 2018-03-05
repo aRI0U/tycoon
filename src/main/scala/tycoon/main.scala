@@ -10,7 +10,7 @@ import scalafx.scene.layout.StackPane
 
 
 object Main extends JFXApp {
-  val game = new Game(30, 10)
+  val game = new Game(100, 100)
 
   val startScreen = new StartScreen()
   val gameCreationScreen = new GameCreationScreen(game)

@@ -44,7 +44,7 @@ class TileMap {
     for {
       col <- col_min to col_max
       row <- row_min to row_max
-    } map += (new GridLocation(col, row) -> new Tile(tile_array(r.nextInt(3))))
+    } map += (new GridLocation(col, row) -> new Tile(tile_array(r.nextInt(6))))
 
 }
   def fillBorder(tile: Tile, borderSize: Int, shift: Int = 0) : Unit = {

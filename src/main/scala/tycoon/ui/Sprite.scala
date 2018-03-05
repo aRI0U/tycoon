@@ -8,13 +8,13 @@ import javafx.scene._
 //http://designwoop.com/2012/03/20-free-subtle-textures-for-backgrounds/
 
 object Sprite {
-  private val tileset = new Image("file:src/main/resources/3.png")
+  private val tileset = new Image("file:src/main/resources/Sprite4.png")
 
   val tile_width = 32
   val tile_height = 32
 
-  val tile_tree = new Tile(tileset, new Rectangle2D(32, 32, 32, 32))
-  val tile_rock = new Tile(tileset, new Rectangle2D(32*2 , 32*3 , 32, 32))
+  val tile_tree = new Tile(tileset, new Rectangle2D(96, 32*2, 32, 32))
+  val tile_rock = new Tile(tileset, new Rectangle2D(96 , 32*3 , 32, 32))
   val tile_house = new Tile(tileset, new Rectangle2D(0, 32 * 3, 64, 32))
   val tile_mine = new Tile(tileset, new Rectangle2D(32 * 2, 32 * 3, 32, 32))
 
@@ -36,6 +36,10 @@ object Sprite {
   val tile_grass1 = new Tile(tileset, new Rectangle2D(0, 32, 32, 32))
   val tile_grass2= new Tile(tileset, new Rectangle2D(32, 32, 32, 32))
   val tile_grass3= new Tile(tileset, new Rectangle2D(64, 32, 32, 32))
+  val tile_grass4= new Tile(tileset, new Rectangle2D(96, 32, 32, 32))
+  val tile_grass5= new Tile(tileset, new Rectangle2D(96, 0, 32, 32))
+  val tile_grass6= new Tile(tileset, new Rectangle2D(64, 0, 32, 32))
+
   //Array of grass tiles, lately choosen randomly
-  val tiles_grass = Array(tile_grass1, tile_grass2,tile_grass3)
+  val tiles_grass = Array(tile_grass1, tile_grass2,tile_grass3,tile_grass4,tile_grass5,tile_grass6)
 }
