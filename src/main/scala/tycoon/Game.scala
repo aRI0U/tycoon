@@ -29,10 +29,10 @@ class Game(map_width : Int, map_height : Int)
       var elapsedTime : Double = (currentNanoTime - startNanoTime) / 1000000000.0
       startNanoTime = currentNanoTime
 
-      if (elapsedTime > 0.01)
-        elapsedTime = 0.01
+      //if (elapsedTime > 0.01)
+      //    elapsedTime = 0.01
 
-      //println(1000000000.0 / elapsedTime + " FPS")
+      println(1.0 / elapsedTime + " FPS")
 
       update(elapsedTime)
     }
