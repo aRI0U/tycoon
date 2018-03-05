@@ -10,7 +10,7 @@ class Mine(pos: GridLocation) extends Structure(pos) {
   protected val r = scala.util.Random
 
   protected var ore_amount = 50 + r.nextInt(50)
-  val tile = new Tile(Sprite.tile_rock)
+  val tile = new Tile(Sprite.tile_mine)
   //val price = game.mine_price //To choose
   gridLoc = pos
 }

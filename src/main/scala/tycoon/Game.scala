@@ -56,7 +56,7 @@ class Game(map_width : Int, map_height : Int)
   val padding = 4
   tilemap.setSize(map_width, map_height)
   tilemap.fill(Sprite.tiles_grass)
-  tilemap.fillBorder(Sprite.tile_mine, 1) // TMP
+  tilemap.fillBorder(Sprite.tile_tree, 1) // TMP
   tilemap.fillBorder(Sprite.tile_rock, 2, 1)
   tilemap.fillBorder(Sprite.tiles_grass(1), 50, 3)
   val tiledPane = new DraggableTiledPane(tilemap, padding)
