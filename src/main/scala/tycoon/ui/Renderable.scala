@@ -5,12 +5,13 @@ import tycoon.GridLocation
 import scalafx.geometry.Rectangle2D
 import scalafx.scene.image.ImageView
 
-trait Renderable {
+trait Renderable extends Printable {
   protected val tile: Tile
   private var _gridLoc: GridLocation = new GridLocation(0, 0)
 
   def getView : ImageView = tile.getView
   def viewport = tile.getView.viewport.get()
+
 
   private var _gridRect : Rectangle2D = new Rectangle2D(0, 0, 0, 0)
 

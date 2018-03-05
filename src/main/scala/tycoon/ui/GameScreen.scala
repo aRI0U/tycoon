@@ -27,6 +27,7 @@ import scalafx.scene.layout.{BorderPane, HBox, VBox}
 
 import scalafx.beans.property.{StringProperty, IntegerProperty}
 import scalafx.beans.binding.Bindings
+import scala.collection.mutable.ListBuffer
 
 class GameScreen(var game : Game) extends BorderPane
 {
@@ -63,18 +64,28 @@ class GameScreen(var game : Game) extends BorderPane
     gamePane.center = game.tiledPane // update
   }
 
-  private val txt_tmp : String = "salut"
-
   def maybeClickEntityAt(pos: GridLocation) {
     for (ent <- game.entities) {
       if (ent.gridContains(pos)) {
-        ent match {
-          case _ : Printable => println("i can display data")
-          case _ : Renderable => ()
-        }
+        bindPrintData(ent.printData)
         return
       }
     }
+  }
+
+  def bindPrintData(data: ListBuffer[(String, StringProperty)]) {
+
+    menuPane.center = new VBox {
+      for (elt <- data) {
+        val item = new Text {
+          text <== StringProperty(elt._1 + ": ").concat(elt._2)
+          margin = Insets(5)
+        }
+
+        children.add(item)
+      }
+    }
+
   }
 
 
@@ -107,8 +118,7 @@ class GameScreen(var game : Game) extends BorderPane
     //style = """-fx-background-color: linear-gradient(burlywood, burlywood, brown);
     style = """-fx-border-color: transparent black transparent transparent;
                -fx-border-width: 1;
-               -fx-background-image: url("wood_pattern.png");
-               -fx-background-repeat: repeat;"""
+               -fx-background-color: #DDD;"""
 
     top = new VBox {
       children = Seq(
@@ -154,11 +164,6 @@ class GameScreen(var game : Game) extends BorderPane
           style = """-fx-border-style: solid;
                      -fx-background-color: black;
                      -fx-border-color: black;"""
-        },
-        new Text {
-          text <== StringProperty(txt_tmp)//.concat(game.playerMoney.asString)
-          //fill <== when (game.playerMoney > 0) choose Green otherwise Red
-          margin = Insets(5)
         }
       )
     }
@@ -166,7 +171,7 @@ class GameScreen(var game : Game) extends BorderPane
     bottom = new VBox {
       alignment = Pos.BottomCenter
       children = Seq(new Button {
-        text = "Quit"
+        text = "Quit Game"
         margin = Insets(10)
 
         onMouseClicked = (e: MouseEvent) => {
