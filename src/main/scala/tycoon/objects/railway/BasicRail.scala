@@ -14,10 +14,15 @@ case class BasicRail(pos: GridLocation, tile_type : Int) extends Rail(pos) {
 
   var road = new Road(pos)
   road.length+=1
+  road.rails += this
 
-  var linked_to = this
+  var next = this
+  var previous = this
   var origin = 0
   var orientation = 0
+
+  def position : GridLocation = pos
+  def get_tile_type : Int = tile_type
 
   def gives_tile (i : Int) : Tile = {
     if (i==0) return (new Tile(Sprite.tile_straight_rail1))

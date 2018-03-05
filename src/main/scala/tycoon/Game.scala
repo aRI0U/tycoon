@@ -53,7 +53,7 @@ class Game(map_width : Int, map_height : Int)
   var rails = new ListBuffer[Rail]()
   var mines = new ListBuffer[Mine]()
   var towns = new ListBuffer[Town]()
-  var trains = new ListBuffer[Train]()
+  var trains = new ListBuffer[BasicTrain]()
 
   private val loop = new GameLoop()
 
@@ -79,11 +79,16 @@ class Game(map_width : Int, map_height : Int)
   def stop () : Unit = {}
 
   private def update(dt : Double) : Unit = {
-
+    //update trains posiition here ?
+    for (train <- trains)
+    {
+      train.update(dt)
+    }
     for (town <- towns)
     {
       town.update(dt)
     }
+    tiledPane.layoutEntities
 
   }
 
@@ -210,10 +215,16 @@ class Game(map_width : Int, map_height : Int)
           }
           else true
         }
+        //trensmission of road properties from the prévious rail to the next one
         case (previous_rail: BasicRail,i : Int)=> {
           if ((previous_rail.road_head == true) && (previous_rail.road.finished == false)) {
               rail.road.rails ++= previous_rail.road.rails
               rail.road.length += previous_rail.road.length
+              println (rail.road.rails)
+
+              rail.previous = previous_rail
+              previous_rail.next = rail
+
               if (rail.road.start_town == None) {
                 rail.road.start_town = previous_rail.road.start_town
               }
@@ -227,7 +238,6 @@ class Game(map_width : Int, map_height : Int)
                   }
                 }
               }
-
               previous_rail.road_head = false
 
               rail.origin = i
@@ -271,4 +281,24 @@ class Game(map_width : Int, map_height : Int)
     entities.remove(entities.size-1)
     // TODO: actualize data in the graph
   }
+  def createTrain (rail: BasicRail) : Boolean = {
+    var train = new BasicTrain(rail.road)
+    // check if there is an other train ??
+    var valid = true
+    /*if (tilemap.gridRect.contains(mine.gridRect))
+    {
+      // if so, check whether it intersects with an other entity
+      var valid = true
+      for (other <- entities) {
+        if (other.gridIntersects(mine))
+          valid = false
+      }
+      */
+      if (valid) {
+        trains += train
+        entities += train
+      }
+      valid
+    }
+
 }

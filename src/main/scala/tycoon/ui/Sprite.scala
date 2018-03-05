@@ -17,6 +17,7 @@ object Sprite {
   val tile_rock = new Tile(tileset, new Rectangle2D(96 , 32*3 , 32, 32))
   val tile_house = new Tile(tileset, new Rectangle2D(0, 32 * 3, 64, 32))
   val tile_mine = new Tile(tileset, new Rectangle2D(32 * 2, 32 * 3, 32, 32))
+  val tile_locomotive = new Tile(tileset, new Rectangle2D(32, 32 * 2, 32, 32))
 
   //straight reils
   val tile_straight_rail1 = new Tile(tileset, new Rectangle2D(0, 0 , 32, 32))

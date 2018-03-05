@@ -2,6 +2,7 @@ package tycoon.ui
 
 import tycoon.{Game, GridLocation}
 import tycoon.Player
+import tycoon.objects.railway.BasicRail
 
 import scalafx.Includes._
 import scalafx.scene.Scene
@@ -64,25 +65,52 @@ class GameScreen(var game : Game) extends BorderPane
     gamePane.center = game.tiledPane // update
   }
 
+
+  private val txt_tmp : String = "salut"
+  private var buy_train = BooleanProperty(false)
+
   def maybeClickEntityAt(pos: GridLocation) {
     for (ent <- game.entities) {
       if (ent.gridContains(pos)) {
-        bindPrintData(ent.printData)
-        return
+          ent match {
+            case rail : BasicRail => {
+              if (buy_train.get()){
+                println("you just cliqued a rail")
+                if (buy_train.get()){
+                  if (game.createTrain(rail)) {
+                    //money changes
+                  return
+
+                  //train création
+                  }
+                }
+              }
+            }
+            case _ => {
+              println("b")
+              bindPrintData(ent.printData)
+              println("c")
+              return
+            }
+        }
+        // else {
+        //   bindPrintData(ent.printData)
+        //   return
+        // }
       }
     }
   }
-
   def bindPrintData(data: ListBuffer[(String, StringProperty)]) {
-
     menuPane.center = new VBox {
       for (elt <- data) {
         val item = new Text {
           text <== StringProperty(elt._1 + ": ").concat(elt._2)
+          println ("a")
           margin = Insets(5)
         }
 
         children.add(item)
+        println ("a")
       }
     }
 
@@ -158,6 +186,22 @@ class GameScreen(var game : Game) extends BorderPane
             onMineClick.run()
             //Open new game mode about mine construction
           }
+        },
+        new Button {
+          text = "Buy a train"
+          margin = Insets(10)
+
+          onMouseClicked = (e: MouseEvent) => {
+            //Open new game mode about mine construction
+            if (buy_train.get()) {
+              buy_train.set(false)
+            }
+            else buy_train.set(true)
+          }
+        },
+        new Text {
+          text <== when (buy_train) choose ("Now click a rail") otherwise ("")
+          margin = Insets(5)
         },
         new Separator {
           orientation = Orientation.Horizontal

@@ -29,7 +29,8 @@ abstract class Town(pos: GridLocation, id: Int) extends Structure(pos, id) {
   def update_population (dt: Double) = {
     intern_time += dt
     if (intern_time > 1) {
-      for (i <- 0 to population) // faut opti ça sinon ca fait 1000000 tours de boucle par seconde
+      for (i <- 0 to population) // faut opti ça sinon ca fait 1000000 tours de boucle par seconde,
+      //ça explique pourquoi mon ordi respire si fort :D
         if (r.nextInt(100) == 0)
           population += 1
       intern_time -= 1
@@ -41,7 +42,7 @@ abstract class Town(pos: GridLocation, id: Int) extends Structure(pos, id) {
     update_population(dt)
   }
 
-
+  def position : GridLocation = pos
   def name : String = _name.get()
   def name_= (new_name: String) = _name.set(new_name)
   def population : Int = _population.get()
