@@ -33,7 +33,7 @@ class Game(map_width : Int, map_height : Int)
       if (elapsedTime > 0.01)
         elapsedTime = 0.01
 
-      //println(1000000000.0 / elapsedTime + " FPS")
+      println(1000000000.0 / elapsedTime + " FPS")
 
       update(elapsedTime)
     }
@@ -44,7 +44,6 @@ class Game(map_width : Int, map_height : Int)
   val mine_price = 200
   val rail_price = 10
 
-  var trains = new ListBuffer[Train]()
   var rails = new ListBuffer[Rail]()
   var mines = new ListBuffer[Mine]()
   var towns = new ListBuffer[Town]()
@@ -258,10 +257,10 @@ class Game(map_width : Int, map_height : Int)
     entities.remove(entities.size-1)
   }
   def createTrain (rail: BasicRail) : Boolean = {
-    val train = new Train(rail.road)
+    var train = new BasicTrain(rail.road)
     // check if there is an other train ??
     var valid = true
-    if (tilemap.gridRect.contains(mine.gridRect))
+    /*if (tilemap.gridRect.contains(mine.gridRect))
     {
       // if so, check whether it intersects with an other entity
       var valid = true
@@ -269,12 +268,12 @@ class Game(map_width : Int, map_height : Int)
         if (other.gridIntersects(mine))
           valid = false
       }
+      */
       if (valid) {
         trains += train
         entities += train
       }
       valid
     }
-    else false
-  }
+
 }
