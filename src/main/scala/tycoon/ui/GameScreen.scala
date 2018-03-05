@@ -72,24 +72,31 @@ class GameScreen(var game : Game) extends BorderPane
   def maybeClickEntityAt(pos: GridLocation) {
     for (ent <- game.entities) {
       if (ent.gridContains(pos)) {
-        ent match {
-          case rail : BasicRail => {
-             println("you just cliqued a rail")
-             if (buy_train.get()){
-               if (game.createTrain(rail)) {
-                //money changes
+          ent match {
+            case rail : BasicRail => {
+              if (buy_train.get()){
+                println("you just cliqued a rail")
+                if (buy_train.get()){
+                  if (game.createTrain(rail)) {
+                    //money changes
+                  return
 
-               //train création
-               }
-             }
-          }
-          case _ => {
-            if (ent.gridContains(pos)) {
+                  //train création
+                  }
+                }
+              }
+            }
+            case _ => {
+              println("b")
               bindPrintData(ent.printData)
+              println("c")
               return
             }
-          }
         }
+        // else {
+        //   bindPrintData(ent.printData)
+        //   return
+        // }
       }
     }
   }
@@ -98,10 +105,12 @@ class GameScreen(var game : Game) extends BorderPane
       for (elt <- data) {
         val item = new Text {
           text <== StringProperty(elt._1 + ": ").concat(elt._2)
+          println ("a")
           margin = Insets(5)
         }
 
         children.add(item)
+        println ("a")
       }
     }
 
