@@ -12,6 +12,8 @@ class Vertex(s: Structure) {
   var links : ListBuffer[(Int,Road)] = new ListBuffer
 }
 
+// Each game has an abstract graph, whose nodes are structures and edges are roads. This graph is used to compute the shortest routes from different towns.
+
 class Graph {
   var content : ListBuffer[Vertex] = new ListBuffer
 
@@ -43,7 +45,7 @@ class Graph {
     }
   }
 
-
+  // returns true iff m < n (None means infinity)
   def optionMin(m: Option[Int], n: Option[Int]) : Boolean = {
     m match {
       case None => false
@@ -54,6 +56,7 @@ class Graph {
     }
   }
 
+  // returns m+n iff m and n are both integers, and infinity (None) otherwise
   def optionSum(m: Option[Int], n: Option[Int]) : Option[Int] = {
     m match {
       case None => None
@@ -64,8 +67,6 @@ class Graph {
     }
   }
 
-
-
   def shortestRoute(departure: Structure, arrival: Structure) : ListBuffer[Road] = {
     // initialization
     var l = content.length
@@ -74,7 +75,6 @@ class Graph {
     d(departure.structure_id) = Some(0)
 
     var not_visited : ListBuffer[Vertex] = content.clone
-
     var previous : Array[Option[(Int, Road)]] = new Array[Option[(Int, Road)]](l)
     for (i <- 0 to l-1) previous(i) = None
 
@@ -110,7 +110,7 @@ class Graph {
           final_path += p._2
           last_step = p._1
         }
-        case _ => println ("supposed to be impossible...")
+        case _ => println ("what's going on...")
       }
     }
     final_path

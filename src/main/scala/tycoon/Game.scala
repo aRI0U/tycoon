@@ -1,5 +1,3 @@
-
-
 package tycoon
 
 import tycoon.objects.structure._
@@ -215,7 +213,7 @@ class Game(map_width : Int, map_height : Int)
           }
           else true
         }
-        //trensmission of road properties from the prévious rail to the next one
+        //transmission of road properties from the prévious rail to the next one
         case (previous_rail: BasicRail,i : Int)=> {
           if ((previous_rail.road_head == true) && (previous_rail.road.finished == false)) {
               rail.road.rails ++= previous_rail.road.rails

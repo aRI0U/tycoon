@@ -12,6 +12,6 @@ class Road(pos : GridLocation) {
   var finished : Boolean = false
   var start_town : Option[Town] = None
   var end_town : Option[Town] = None
-  var rails : ListBuffer[BasicRail] = new ListBuffer
+  var rails : ListBuffer[Rail] = new ListBuffer
   var length : Int = 0
 }

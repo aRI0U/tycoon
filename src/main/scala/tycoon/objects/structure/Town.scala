@@ -26,20 +26,24 @@ abstract class Town(pos: GridLocation, id: Int) extends Structure(pos, id) {
 
 
   private var intern_time : Double = 0
-  def update_population (dt: Double) = {
-    intern_time += dt
-    if (intern_time > 1) {
-      for (i <- 0 to population) // faut opti ça sinon ca fait 1000000 tours de boucle par seconde,
-      //ça explique pourquoi mon ordi respire si fort :D
-        if (r.nextInt(100) == 0)
-          population += 1
-      intern_time -= 1
-    }
+  def update_population () = {
+    val i = r.nextInt(population)
+    population += i/50
   }
 
+  def update_waiters () = {
+    val i = r.nextInt(population)
+    waiting_passengers += i/30
+    if (waiting_passengers > population) waiting_passengers = population
+  }
 
   def update(dt: Double) = {
-    update_population(dt)
+    intern_time += dt
+    if (intern_time > 1) {
+      update_population()
+      update_waiters()
+      intern_time -= 1
+    }
   }
 
   def position : GridLocation = pos
