@@ -2,6 +2,7 @@ package tycoon.ui
 
 import tycoon.{Game, GridLocation}
 import tycoon.Player
+import tycoon.objects.railway.BasicRail
 
 import scalafx.Includes._
 import scalafx.scene.Scene
@@ -64,11 +65,22 @@ class GameScreen(var game : Game) extends BorderPane
   }
 
   private val txt_tmp : String = "salut"
+  private var buy_train = BooleanProperty(false)
 
   def maybeClickEntityAt(pos: GridLocation) {
     for (ent <- game.entities) {
       if (ent.gridContains(pos)) {
         ent match {
+          case rail : BasicRail => {
+             println("you just cliqued a rail")
+             if (buy_train.get()){
+               if (createTrain(rail)) {
+                //money changes
+
+               //train création
+               }
+             }
+          }
           case _ : Printable => println("i can display data")
           case _ : Renderable => ()
         }
@@ -148,6 +160,22 @@ class GameScreen(var game : Game) extends BorderPane
             onMineClick.run()
             //Open new game mode about mine construction
           }
+        },
+        new Button {
+          text = "Buy a train"
+          margin = Insets(10)
+
+          onMouseClicked = (e: MouseEvent) => {
+            //Open new game mode about mine construction
+            if (buy_train.get()) {
+              buy_train.set(false)
+            }
+            else buy_train.set(true)
+          }
+        },
+        new Text {
+          text <== when (buy_train) choose ("Now click a rail") otherwise ("")
+          margin = Insets(5)
         },
         new Separator {
           orientation = Orientation.Horizontal

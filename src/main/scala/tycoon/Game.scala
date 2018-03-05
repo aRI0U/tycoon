@@ -44,6 +44,7 @@ class Game(map_width : Int, map_height : Int)
   val mine_price = 200
   val rail_price = 10
 
+  var trains = new ListBuffer[Train]()
   var rails = new ListBuffer[Rail]()
   var mines = new ListBuffer[Mine]()
   var towns = new ListBuffer[Town]()
@@ -255,5 +256,25 @@ class Game(map_width : Int, map_height : Int)
     //add some temporary list if deletion has to be made
     rails.remove(rails.size-1)
     entities.remove(entities.size-1)
+  }
+  def createTrain (rail: BasicRail) : Boolean = {
+    val train = new Train(rail.road)
+    // check if there is an other train ??
+    var valid = true
+    if (tilemap.gridRect.contains(mine.gridRect))
+    {
+      // if so, check whether it intersects with an other entity
+      var valid = true
+      for (other <- entities) {
+        if (other.gridIntersects(mine))
+          valid = false
+      }
+      if (valid) {
+        trains += train
+        entities += train
+      }
+      valid
+    }
+    else false
   }
 }

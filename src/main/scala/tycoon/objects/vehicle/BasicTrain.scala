@@ -14,5 +14,6 @@ abstract class BasicTrain(x: Int, y: Int) extends Train(x, y) {
   var destination_x = 0
   var destination_y = 0
   val weight = 50
+  var Trail = new ListBuffer[Rail]()
   var carriagesList = new ListBuffer[Carriage]()
 }
