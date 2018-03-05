@@ -11,5 +11,5 @@ abstract class Rail(pos: GridLocation) extends Renderable {
   val cost : Int
   val max_speed : Int
   val max_weight : Int
-  val trail_head : Boolean
+  // val road_head : Boolean
 }
