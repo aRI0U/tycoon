@@ -17,6 +17,7 @@ import scalafx.scene.control.Button
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.input.{MouseEvent, KeyEvent}
 
+import scalafx.animation.{Timeline, Interpolator}
 import scala.collection.mutable.{HashMap, ListBuffer}
 
 
@@ -65,6 +66,11 @@ extends BorderPane {
   // also their position may change without any drag but that can be handled in Tile or via a Movable trait
   private var entities = new ListBuffer[Renderable]()
 
+  // camera sliding when mouse is released for fluid dragging
+  private var cameraSliding = new Timeline
+  private var delta_x : Double = 0
+  private var delta_y : Double = 0
+
   def addEntity(e: Renderable) = {
     entities += e
     layoutEntities()
@@ -78,18 +84,32 @@ extends BorderPane {
     //layoutEntities()
   }
 
+  x_offset.onChange {
+    layoutTilemap()
+    layoutEntities()
+  }
+  y_offset.onChange {
+    layoutTilemap()
+    layoutEntities()
+  }
 
-  // for enabling dragging
   onMousePressed = (e : MouseEvent) => {
+    // for enabling dragging
     mouse_anchor_x = e.getSceneX()
     mouse_anchor_y = e.getSceneY()
+
+    // for enabling camera sliding
+    delta_x = 0
+    delta_y = 0
+    cameraSliding.stop()
   }
+
 
   // update offsets and pane layout when dragging
   onMouseDragged = (e : MouseEvent) => {
     // compute the new offsets
-    val delta_x : Double = e.getSceneX() - mouse_anchor_x
-    val delta_y : Double = e.getSceneY() - mouse_anchor_y
+    delta_x = e.getSceneX() - mouse_anchor_x
+    delta_y = e.getSceneY() - mouse_anchor_y
     x_offset.set(x_offset.get() + delta_x)
     y_offset.set(y_offset.get() + delta_y)
     mouse_anchor_x = e.getSceneX()
@@ -101,8 +121,26 @@ extends BorderPane {
     if (y_offset.get() <= min_offset_y) y_offset.set(min_offset_y)
     else if (y_offset.get() >= max_offset_y) y_offset.set(max_offset_y)
 
-    layoutTilemap()
-    layoutEntities()
+    /*layoutTilemap()
+    layoutEntities()*/
+  }
+
+  onMouseReleased = _ => {
+    val coef : Double = 8
+    val x_begin : Double = x_offset.get()
+    val x_end : Double = math.max(math.min(x_offset.get() + delta_x * coef, max_offset_x), min_offset_x)
+    val y_begin : Double = y_offset.get()
+    val y_end : Double = math.max(math.min(y_offset.get() + delta_y * coef, max_offset_y), min_offset_y)
+
+    cameraSliding = new Timeline {
+      keyFrames = Seq(
+        at (0 s) { x_offset -> x_begin},
+        at (0.5 s) { x_offset -> x_end tween Interpolator.EaseOut},
+        at (0 s) { y_offset -> y_begin },
+        at (0.5 s) { y_offset -> y_end tween Interpolator.EaseOut}
+      )
+    }
+    cameraSliding.play()
   }
 
   // recompute layout and offsets limits when window is resized
