@@ -5,6 +5,7 @@ package tycoon
 import tycoon.objects.structure._
 import tycoon.objects.railway._
 import tycoon.objects.vehicle._
+import tycoon.objects.graph._
 import tycoon.ui.Sprite
 import tycoon.ui.{Tile, Renderable, DraggableTiledPane}
 
@@ -40,6 +41,11 @@ class Game(map_width : Int, map_height : Int)
   }
 
   var entities = new ObservableBuffer[Renderable]()
+
+  var game_map = new Map(map_width, map_height)
+  var game_graph = new Graph
+
+  var nb_structures = 0
 
   val mine_price = 200
   val rail_price = 10
@@ -93,7 +99,7 @@ class Game(map_width : Int, map_height : Int)
   def playerMoney_= (new_money: Int) = player.money = new_money
 
   def createTown (pos: GridLocation) : Boolean = {
-    val town = new BasicTown(pos)
+    val town = new BasicTown(pos, nb_structures)
     // check whether town is within the map boundaries
     if (tilemap.gridRect.contains(town.gridRect))
     {
@@ -106,6 +112,9 @@ class Game(map_width : Int, map_height : Int)
       if (valid) {
         towns += town
         entities += town
+        nb_structures += 1
+        game_graph.newStructure(town)
+
       }
       valid
     }
@@ -115,10 +124,11 @@ class Game(map_width : Int, map_height : Int)
   def removeAllTowns() : Unit = {
     towns.clear()
     entities.clear()
+    nb_structures = 0
   }
 
   def createMine (pos: GridLocation) : Boolean = {
-    val mine = new Mine(pos)
+    val mine = new Mine(pos, nb_structures)
     // check whether mine is within the map boundaries
     if (tilemap.gridRect.contains(mine.gridRect))
     {
@@ -131,6 +141,8 @@ class Game(map_width : Int, map_height : Int)
       if (valid) {
         mines += mine
         entities += mine
+        nb_structures += 1
+        game_graph.newStructure(mine)
       }
       valid
     }
@@ -147,7 +159,7 @@ class Game(map_width : Int, map_height : Int)
 
 //Rail become a trail_head if it is next to a town (see later for train station), or if it is conected to a tail_head
   def createRail (pos: GridLocation) : Boolean = {
-    //depending of the situation should choos here between straight and turning rail
+    //depending of the situation should choose here between straight and turning rail
     val rail = new BasicRail(pos, 0)
 
     // check whether rail is within the map boundaries
@@ -255,6 +267,7 @@ class Game(map_width : Int, map_height : Int)
       if (valid &&  valid_bis) {
         rails += rail
         entities += rail
+        game_map.addToMap(pos, true)
       }
       valid & valid_bis
     }
@@ -265,6 +278,7 @@ class Game(map_width : Int, map_height : Int)
     //add some temporary list if deletion has to be made
     rails.remove(rails.size-1)
     entities.remove(entities.size-1)
+    // TODO: actualize data in the graph
   }
   def createTrain (rail: BasicRail) : Boolean = {
     var train = new BasicTrain(rail.road)

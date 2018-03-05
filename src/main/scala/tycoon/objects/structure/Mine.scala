@@ -6,7 +6,7 @@ import tycoon.Game
 import tycoon.ui.Sprite
 import tycoon.ui.Tile
 
-class Mine(pos: GridLocation) extends Structure(pos) {
+class Mine(pos: GridLocation, id: Int) extends Structure(pos, id) {
   protected val r = scala.util.Random
 
   protected var ore_amount = 50 + r.nextInt(50)

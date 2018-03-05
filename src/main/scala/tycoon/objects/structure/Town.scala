@@ -5,7 +5,7 @@ import scalafx.beans.property.{IntegerProperty, StringProperty}
 
 
 
-abstract class Town(pos: GridLocation) extends Structure(pos) {
+abstract class Town(pos: GridLocation, id: Int) extends Structure(pos, id) {
 
   protected val r = scala.util.Random
 
