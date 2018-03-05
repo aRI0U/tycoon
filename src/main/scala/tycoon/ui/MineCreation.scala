@@ -75,6 +75,8 @@ class MineCreation(var game: Game) extends BorderPane {
     center = gamePane
     left = menuPane
     gamePane.center = game.tiledPane // update
+    _cost.set( 0)
+    nb_mines.set(0)
   }
 
   private val gamePane = new BorderPane {
@@ -140,15 +142,17 @@ class MineCreation(var game: Game) extends BorderPane {
         text = "explaining rules of  mine construction.."
         margin = Insets(10)
       },
-      
+
       new Button {
-        text = "Remove (todo, just last constructions...)"
+        text = "Remove"
         margin = Insets(10)
         onMouseClicked = (e: MouseEvent) => {
-          nb_mines.set(0)
-          game.removeAllMines()
-          game.playerMoney = initial_money
-          cost_= (0)
+          if (nb_mines.get()>0) {
+            nb_mines.set(nb_mines.get()-1)
+            game.removeAllMines()
+            game.playerMoney.set(game.playerMoney.get()+game.mine_price)
+            cost_= (_cost.get() - game.mine_price)
+          }
         }
       },
       new Button {
