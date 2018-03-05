@@ -4,6 +4,6 @@ import tycoon.ui.{Renderable, Printable}
 import tycoon.GridLocation
 
 
-abstract class Structure(pos: GridLocation) extends Renderable {
-
+abstract class Structure(pos: GridLocation, id: Int) extends Renderable {
+  val structure_id = id
 }

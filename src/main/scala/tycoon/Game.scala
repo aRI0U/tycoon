@@ -43,6 +43,9 @@ class Game(map_width : Int, map_height : Int)
   var entities = new ObservableBuffer[Renderable]()
 
   var game_map = new Map(map_width, map_height)
+  var game_graph = new Graph
+
+  var nb_structures = 0
 
   val mine_price = 200
   val rail_price = 10
@@ -91,7 +94,7 @@ class Game(map_width : Int, map_height : Int)
   def playerMoney_= (new_money: Int) = player.money = new_money
 
   def createTown (pos: GridLocation) : Boolean = {
-    val town = new BasicTown(pos)
+    val town = new BasicTown(pos, nb_structures)
     // check whether town is within the map boundaries
     if (tilemap.gridRect.contains(town.gridRect))
     {
@@ -104,6 +107,9 @@ class Game(map_width : Int, map_height : Int)
       if (valid) {
         towns += town
         entities += town
+        nb_structures += 1
+        game_graph.newStructure(town)
+
       }
       valid
     }
@@ -113,10 +119,11 @@ class Game(map_width : Int, map_height : Int)
   def removeAllTowns() : Unit = {
     towns.clear()
     entities.clear()
+    nb_structures = 0
   }
 
   def createMine (pos: GridLocation) : Boolean = {
-    val mine = new Mine(pos)
+    val mine = new Mine(pos, nb_structures)
     // check whether mine is within the map boundaries
     if (tilemap.gridRect.contains(mine.gridRect))
     {
@@ -129,6 +136,8 @@ class Game(map_width : Int, map_height : Int)
       if (valid) {
         mines += mine
         entities += mine
+        nb_structures += 1
+        game_graph.newStructure(mine)
       }
       valid
     }
