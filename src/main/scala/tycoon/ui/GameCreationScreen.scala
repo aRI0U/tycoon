@@ -52,7 +52,7 @@ class GameCreationScreen(var game : Game) extends BorderPane
   })
 */
   private val min_towns : Int = 0 // tmp
-  private val max_towns : Int = 5
+  private val max_towns : Int = 15
 
   private var nb_towns = IntegerProperty(0)
   private var nb_towns_str = new StringProperty
