@@ -6,9 +6,9 @@ import tycoon.objects.carriage._
 import tycoon.objects.railway._
 import tycoon.objects.structure._
 
-abstract case class Train(road : Road) extends Vehicle(road) {
+abstract case class Train(town : Town) extends Vehicle(town) {
   var carriagesList : ListBuffer[Carriage]
-  var location : Option[Town] = road.start_town
+  var location : Option[Town] = Some(town)
   var visible : Boolean
 
   def boarding () = {
@@ -26,7 +26,7 @@ abstract case class Train(road : Road) extends Vehicle(road) {
   }
 
   def landing () = {
-    road.end_town match {
+    location match {
       case Some(town) => {
         for (carriage <- carriagesList) {
           carriage match {
@@ -39,16 +39,6 @@ abstract case class Train(road : Road) extends Vehicle(road) {
     }
   }
 
-  def departure () = {
-    location = None
-    visible = true
-    println("bite")
-  }
-
-  def arrival () = {
-    location = road.end_town
-    visible = false
-  }
 
 /*  var current_rail = road.rails(0)
 
