@@ -58,7 +58,7 @@ class BasicTrain(town : Town) extends Train(town) {
       case None => update_box(dt)
     }
   }*/
- 
+
   // var pos_y = y
   var visible = false
   var speed = 10
@@ -71,7 +71,10 @@ class BasicTrain(town : Town) extends Train(town) {
   val tile = new Tile(Sprite.tile_locomotive)
   var carriagesList = new ListBuffer[Carriage]()
   var pos : GridLocation = location match {
-    case Some(structure) => structure.position
+    case Some(structure : Town) => {
+      new GridLocation(structure.position.get_x +1,structure.position.get_y)
+    }
+    case Some(structure ) => structure.position
     case None => current_rail match {
       case Some(rail) => rail.position
       case None => new GridLocation(0,0) // not supposed to happen
