@@ -7,21 +7,30 @@ import tycoon.objects.railway._
 import tycoon.objects.structure._
 import tycoon.objects.vehicle._
 import tycoon.Game
+import tycoon.GridLocation
 
 class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
 
   var on_the_road = true
+  var dir_indicator = 1
+
 
   var current_road : Option[Road]= None
   println (itinerary)
 
   def departure () = {
+
     train.boarding()
     for (carriage <- train.carriages_list) {
       game.playerMoney.set(game.playerMoney.get() + carriage.passengers * carriage.ticket_price)
       println(carriage.passengers)
     }
     val start = train.location.get
+
+    //to select the right direction according to the construction sens
+    if (train.location.get == itinerary(itinerary.size - 1).start_town.get) dir_indicator = 0
+    else dir_indicator = 1
+
     println("departure")
     train.location = None
     start.list_trains -= train
@@ -29,7 +38,7 @@ class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
     current_road = Some(itinerary(itinerary.size - 1))
     itinerary.remove(itinerary.size - 1)
     for (rail <- (current_road.get).rails) {
-      if (rail.previous == rail) {
+      if (rail.direction((dir_indicator - 1) %2) == rail) {
        train.current_rail = Some(rail)
       }
     }
@@ -45,9 +54,14 @@ class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
       case None => ()
     }
     train.landing()
+
+    if (dir_indicator == 1) {train.location = road.start_town}
+    else {train.location = road.end_town}
+
     train.visible = false
     train.current_rail = None
-    train.gridLoc = (train.location.get).position
+    //intern_time -=1(train.location.get).position
+    train.gridLoc = new GridLocation(train.location.get.position.get_x +1,train.location.get.position.get_y)
     if (itinerary.size == 0) {
       on_the_road = false
     }
@@ -70,14 +84,18 @@ class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
       case Some(rail) => {
         intern_time += dt
         if (intern_time > 1) {
-          if (rail == rail.next) arrival(road)
-          else {
-            train.current_rail = Some(rail.next)
-            train.gridLoc = rail.next.position
+          if (rail.direction(dir_indicator) == rail) {
+            arrival(road)
             intern_time -=1
+          }
+          else {
+            train.current_rail = Some(rail.direction(dir_indicator))
+            train.gridLoc = rail.direction(dir_indicator).position
+            intern_time -=1
+          }
             //in order  to update the graphic
             //game.tiledPane.layoutEntities
-          }
+
         }
       }
       case None => {

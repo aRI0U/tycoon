@@ -17,10 +17,15 @@ abstract class Rail(pos: GridLocation, tile_type: Int) extends Renderable {
   road.length+=1
   road.rails += this
 
-  var next = this
-  var previous = this
+  var next : Rail = this
+  var previous : Rail = this
   var origin = 0
   var orientation = 0
+
+  def direction(i : Int) : Rail = {
+    if (i==0) return next
+    else return previous
+  }
 
   def position : GridLocation = pos
   def get_tile_type : Int = tile_type
