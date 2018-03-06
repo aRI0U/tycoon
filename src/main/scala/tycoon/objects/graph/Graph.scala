@@ -56,26 +56,6 @@ class Graph {
     }
   }
 
- /* def removeRoad(road:Road) = {
-    val departure_id = road.start_town.structure_id
-    val arrival_id = road.end_town.structure_id
-    for (vertex <- content) {
-      vertex.origin match {
-        case departure_id => {
-          for (linked_station <- vertex.links) {
-            if (linked_station._1 == arrival_id) vertex.links -= linked_station
-          }
-        }
-        case arrival_id => {
-          for (linked_station <- vertex.links) {
-            if (linked_station._1 == departure_id) vertex.links -= linked_station
-          }
-        }
-        case _ => ;
-      }
-    }
-  }
-  */
   def print_graph() {
     for (vertex <- content) {
       println (vertex.origin + ":")

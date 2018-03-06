@@ -176,10 +176,6 @@ class Game(map_width : Int, map_height : Int)
     nb_structures -= 1
   }
 
-
-  ///TODO/////def createTrail (pos: GridLocation) : Boolean = {
-
-
 //Rail become a trail_head if it is next to a town (see later for train station), or if it is conected to a tail_head
   def createRail (pos: GridLocation) : Boolean = {
     //depending of the situation should choose here between straight and turning rail
@@ -237,7 +233,7 @@ class Game(map_width : Int, map_height : Int)
           }
           else true
         }
-        //transmission of road properties from the prévious rail to the next one
+        //transmission of road properties from the previous rail to the next one
         case (previous_rail: BasicRail,i : Int)=> {
           if ((previous_rail.road_head == true) && (previous_rail.road.finished == false)) {
               rail.road.rails ++= previous_rail.road.rails
@@ -303,33 +299,21 @@ class Game(map_width : Int, map_height : Int)
     rails.remove(rails.size-1)
     entities.remove(entities.size-1)
     rails(rails.size-1).road_head = true
-    // TODO: actualize data in the graph
   }
+
   def createTrain (town: Town) : Boolean = {
     var train = new BasicTrain(town, 3)
     
 
     // check if there is an other train ??
-    var valid = true
-    /*if (tilemap.gridRect.contains(mine.gridRect))
-    {
-      // if so, check whether it intersects with an other entity
-      var valid = true
-      for (other <- entities) {
-        if (other.gridIntersects(mine))
-          valid = false
-      }
-      */
-    if (valid) {
-      town.addTrain(train)
-      trains += train
-      entities += train
+    town.addTrain(train)
+    trains += train
+    entities += train
 
-      // paying
-      playerMoney.set(playerMoney.get() - train.cost)
-      for (carriage <- train.carriages_list) playerMoney.set(playerMoney.get() - carriage.cost)
-    }
-    valid
+    // paying
+    playerMoney.set(playerMoney.get() - train.cost)
+    for (carriage <- train.carriages_list) playerMoney.set(playerMoney.get() - carriage.cost)
+    true
   }
 
   def createRoute (departure: Structure, arrival: Structure, train: Train) {
