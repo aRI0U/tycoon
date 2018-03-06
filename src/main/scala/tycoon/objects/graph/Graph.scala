@@ -24,6 +24,7 @@ class Graph {
 
   def newRoad(road:Road) : Unit = {
     if (road.finished) {
+      print_graph()
       road.start_town match {
         case None => println("unfinished road?")
         case Some(s_town) => road.end_town match {
@@ -32,17 +33,15 @@ class Graph {
             val s_id = s_town.structure_id
             val e_id = e_town.structure_id
             for (vertex <- content) {
-              vertex.origin match {
-                case s_id => vertex.links += ((e_id, road))
-                case e_id => vertex.links += ((s_id, road))
-                case _ => ;
-              }
+              if (vertex.origin == s_id) vertex.links += ((e_id, road))
+              else {if (vertex.origin == e_id) vertex.links += ((s_id, road))}
             }
             println("added road from " + s_id + " to " + e_id)
           }
         }
       }
     }
+    print_graph()
   }
 
   def removeStructure(s:Structure) = {
@@ -77,7 +76,14 @@ class Graph {
     }
   }
   */
-
+  def print_graph() {
+    for (vertex <- content) {
+      println (vertex.origin + ":")
+      for (link <- vertex.links) {
+        println(link._1)
+      }
+    }
+  }
 
   // returns true iff m < n (None means infinity)
   def optionMin(m: Option[Int], n: Option[Int]) : Boolean = {
@@ -103,15 +109,18 @@ class Graph {
 
   def shortestRoute(departure: Structure, arrival: Structure) : ListBuffer[Road] = {
     // initialization
+    print_graph()
     val l = content.length
+    println(l)
     var d : Array[Option[Int]] = new Array[Option[Int]](l)
     for (i <- 0 to l-1) d(i) = None
     d(departure.structure_id) = Some(0)
 
     var not_visited : ListBuffer[Vertex] = content.clone
+    println(not_visited)
     var previous : Array[Option[(Int, Road)]] = new Array[Option[(Int, Road)]](l)
     for (i <- 0 to l-1) previous(i) = None
-
+    
     while (!(not_visited.isEmpty)) {
       // find closest structure
       var mini : Option[Int] = None
@@ -138,14 +147,14 @@ class Graph {
     var final_path = new ListBuffer[Road]
     var last_step = arrival.structure_id
     var k = l
-    while ((last_step != departure.structure_id) && (k > 0)) {
+    while ((last_step != departure.structure_id)) {
       var predecessor = previous(last_step)
       predecessor match {
         case Some(p) => {
           final_path += p._2
           last_step = p._1
         }
-        case _ => println ("what's going on...")
+        case _ => throw new IllegalStateException("no path")
       }
     }
     final_path

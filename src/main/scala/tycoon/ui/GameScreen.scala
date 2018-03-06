@@ -143,7 +143,7 @@ class GameScreen(var game : Game) extends BorderPane
 
       children = Seq(
         new Text {
-          text = "cliquez sur une ville pour acheter un train"
+          text = "select a town to add a train in it"
           margin = Insets(10)
         },
         new Button {
@@ -212,8 +212,13 @@ class GameScreen(var game : Game) extends BorderPane
                 if (first_town != town) {
                   first_town.getTrain() match {
                     case Some(train) => {
-                      game.createRoute(first_town, town, train)
-                      println("create trip from " + first_town.name + " to " + town.name)
+                      try {
+                        game.createRoute(first_town, town, train)
+                        println("create trip from " + first_town.name + " to " + town.name)
+                      }
+                      catch {
+                        case e: IllegalStateException => println("trains cannot fly!")
+                      }
                     }
                     case None => println("no train no gain")
                   }

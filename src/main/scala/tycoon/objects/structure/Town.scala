@@ -41,7 +41,7 @@ abstract case class Town(pos: GridLocation, id: Int) extends Structure(pos, id) 
   def update_waiters () = {
     val new_waiters = (r.nextInt(population))/30
     waiting_passengers += new_waiters
-    if (waiting_passengers > population) waiting_passengers = population
+    if (waiting_passengers > population/3) waiting_passengers = population/3
   }
 
   def update(dt: Double) = {
