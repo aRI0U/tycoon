@@ -327,8 +327,9 @@ class Game(map_width : Int, map_height : Int)
   }
 
   def createRoute (departure: Structure, arrival: Structure, train: Train) {
-    val route = new Route(game_graph.shortestRoute(departure, arrival), train)
+    val route = new Route(game_graph.shortestRoute(departure, arrival), train, this)
     println (game_graph.shortestRoute(departure, arrival))
     routes += route
+    println (route.current_road)
   }
 }

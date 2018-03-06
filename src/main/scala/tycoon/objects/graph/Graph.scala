@@ -145,7 +145,13 @@ class Graph {
           final_path += p._2
           last_step = p._1
         }
-        case _ => println ("what's going on...")
+        case _ => {
+          ///ATENTION prboblem around there
+          ///Seems like final_path is givig just the last roads...
+          /// + some index out of  boud prbss :*
+          k-=1
+          println ("what's going on...")
+        }
       }
     }
     final_path
