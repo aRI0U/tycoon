@@ -47,16 +47,14 @@ class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
   }
 
   def arrival (road: Road) = {
-    val end = road.end_town
-    train.location = end
-    end match {
+    if (dir_indicator == 1) {train.location = road.start_town}
+    else {train.location = road.end_town}
+    println(train.location.get.population)
+    train.location match {
       case Some(s) => s.list_trains += train
       case None => ()
     }
     train.landing()
-
-    if (dir_indicator == 1) {train.location = road.start_town}
-    else {train.location = road.end_town}
 
     train.visible = false
     train.current_rail = None
@@ -67,17 +65,6 @@ class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
     }
   }
 
-  //train.current_rail = Some(itinerary(itinerary.size-1).rails(0))
-  //train.gridLoc = train.current_rail.get.position
-  //in order  to update the graphic
-  //game.tiledPane.layoutEntities
-
-  // looking for the first rail of the trail
-/*  for (rail <- road.rails) {
-    if (rail.previous == rail) {
-      current_rail = rail
-    }
-  }*/
   protected var intern_time : Double = 0
   def update_box (dt: Double, road : Road) = {
     train.current_rail match {
@@ -100,10 +87,6 @@ class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
       }
       case None => {
       }
-
-        //need to orientate the locooo
-       // if (current_rail.get_tile_type == 1) {
-         // train.tile.getView.rotate = 90
     }
   }
 
