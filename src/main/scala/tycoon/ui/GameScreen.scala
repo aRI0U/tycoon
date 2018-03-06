@@ -231,7 +231,7 @@ class GameScreen(var game : Game) extends BorderPane
               }
             }
           }
-          case _ => {}
+          case _ => { }
         }
         bindPrintData(ent.printData)
         return
