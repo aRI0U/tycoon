@@ -294,8 +294,9 @@ class GameScreen(var game : Game) extends BorderPane
   private val menuPane = new BorderPane {
     id = "menu"
 
-    top = new VBox {
+    bottom = new VBox {
       children = Seq(
+        new Separator { orientation = Orientation.Horizontal ; styleClass += "sep" },
         new Text {
           text = "Time: TODO"
           margin = Insets(5)
@@ -309,12 +310,13 @@ class GameScreen(var game : Game) extends BorderPane
           fill <== when (game.playerMoney > 0) choose Green otherwise Red
           margin = Insets(5)
         },
-        new Separator { orientation = Orientation.Horizontal ; styleClass += "sep" }
+        new Separator { orientation = Orientation.Horizontal ; styleClass += "sep" },
+        new HelpAndQuitButtons
       )
     }
 
 
-    center = actionsPane
+    top = actionsPane
 
     bottom = new HelpAndQuitButtons
 
