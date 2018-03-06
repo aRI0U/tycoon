@@ -301,6 +301,7 @@ class Game(map_width : Int, map_height : Int)
     //add some temporary list if deletion has to be made
     rails.remove(rails.size-1)
     entities.remove(entities.size-1)
+    rails(rails.size-1).road_head = true
     // TODO: actualize data in the graph
   }
   def createTrain (town: Town) : Boolean = {
@@ -327,6 +328,7 @@ class Game(map_width : Int, map_height : Int)
 
   def createRoute (departure: Structure, arrival: Structure, train: Train) {
     val route = new Route(game_graph.shortestRoute(departure, arrival), train)
+    println (game_graph.shortestRoute(departure, arrival))
     routes += route
   }
 }
