@@ -45,6 +45,40 @@ class Graph {
     }
   }
 
+  def removeStructure(s:Structure) = {
+    val id = s.structure_id
+    for (vertex <- content) {
+      if (vertex.origin == id) content -= vertex
+      else {
+        for (linked_station <- vertex.links) {
+          if (linked_station._1 == id) vertex.links -= linked_station
+        }
+      }
+    }
+  }
+
+ /* def removeRoad(road:Road) = {
+    val departure_id = road.start_town.structure_id
+    val arrival_id = road.end_town.structure_id
+    for (vertex <- content) {
+      vertex.origin match {
+        case departure_id => {
+          for (linked_station <- vertex.links) {
+            if (linked_station._1 == arrival_id) vertex.links -= linked_station
+          }
+        }
+        case arrival_id => {
+          for (linked_station <- vertex.links) {
+            if (linked_station._1 == departure_id) vertex.links -= linked_station
+          }
+        }
+        case _ => ;
+      }
+    }
+  }
+  */
+
+
   // returns true iff m < n (None means infinity)
   def optionMin(m: Option[Int], n: Option[Int]) : Boolean = {
     m match {
@@ -69,7 +103,7 @@ class Graph {
 
   def shortestRoute(departure: Structure, arrival: Structure) : ListBuffer[Road] = {
     // initialization
-    var l = content.length
+    val l = content.length
     var d : Array[Option[Int]] = new Array[Option[Int]](l)
     for (i <- 0 to l-1) d(i) = None
     d(departure.structure_id) = Some(0)
@@ -103,7 +137,8 @@ class Graph {
     }
     var final_path = new ListBuffer[Road]
     var last_step = arrival.structure_id
-    while (last_step != departure.structure_id) {
+    var k = l
+    while ((last_step != departure.structure_id) && (k > 0)) {
       var predecessor = previous(last_step)
       predecessor match {
         case Some(p) => {
