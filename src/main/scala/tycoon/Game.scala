@@ -239,6 +239,7 @@ class Game(map_width : Int, map_height : Int)
                   rail.road.end_town = rail.road.start_town
                   rail.road.start_town = previous_rail.road.start_town
                   rail.road.finished = true
+                  game_graph.newRoad(rail.road)
                   for (rail_member <- rail.road.rails) {
                     rail_member.road = rail.road
                   }
@@ -289,6 +290,7 @@ class Game(map_width : Int, map_height : Int)
   }
   def createTrain (town: Town) : Boolean = {
     var train = new BasicTrain(town)
+
     // check if there is an other train ??
     var valid = true
     /*if (tilemap.gridRect.contains(mine.gridRect))
@@ -300,11 +302,12 @@ class Game(map_width : Int, map_height : Int)
           valid = false
       }
       */
-      if (valid) {
-        trains += train
-        entities += train
-      }
-      valid
+    if (valid) {
+      town.addTrain(train)
+      trains += train
+      entities += train
+    }
+    valid
   }
 
   def createRoute (departure: Structure, arrival: Structure, train: Train) {

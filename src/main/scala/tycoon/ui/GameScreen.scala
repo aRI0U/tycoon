@@ -182,8 +182,13 @@ class GameScreen(var game : Game) extends BorderPane
             if (tripCreationMode) {
               if (first_town_selected.get()) {
                 if (first_town != town) {
-                  //game.createRoute(first_town.name, town.name)
-                  println("create trip from " + first_town.name + " to " + town.name)
+                  first_town.getTrain() match {
+                    case Some(train) => {
+                      game.createRoute(first_town, town, train)
+                      println("create trip from " + first_town.name + " to " + town.name)
+                    }
+                    case None => println("no train no gain")
+                  }
                   tripCreationMode = false
                   menuPane.center = actionsPane
                 }
