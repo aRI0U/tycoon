@@ -6,16 +6,20 @@ import tycoon.objects.carriage._
 import tycoon.objects.railway._
 import tycoon.objects.structure._
 
-abstract case class Train(town : Town) extends Vehicle(town) {
-  var carriagesList : ListBuffer[Carriage]
+abstract class Train(town : Town, nb_carriages : Int) extends Vehicle(town) {
+  var carriages_list : ListBuffer[Carriage]
   var location : Option[Town] = Some(town)
   var visible : Boolean
   var current_rail : Option[Rail]
 
+  def add_carriage (carriage:Carriage) {
+    for (i <- 1 to nb_carriages) carriages_list += carriage
+  }
+
   def boarding () = {
     location match {
       case Some(town) => {
-        for (carriage <- carriagesList) {
+        for (carriage <- carriages_list) {
           carriage match {
             case PassengerCarriage() => carriage.embark(town)
             case _ => ;
@@ -29,7 +33,7 @@ abstract case class Train(town : Town) extends Vehicle(town) {
   def landing () = {
     location match {
       case Some(town) => {
-        for (carriage <- carriagesList) {
+        for (carriage <- carriages_list) {
           carriage match {
             case PassengerCarriage() => carriage.debark(town)
             case _ => ;

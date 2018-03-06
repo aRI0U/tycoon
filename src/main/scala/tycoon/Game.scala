@@ -305,7 +305,8 @@ class Game(map_width : Int, map_height : Int)
     // TODO: actualize data in the graph
   }
   def createTrain (town: Town) : Boolean = {
-    var train = new BasicTrain(town)
+    var train = new BasicTrain(town, 3)
+    
 
     // check if there is an other train ??
     var valid = true
@@ -322,11 +323,20 @@ class Game(map_width : Int, map_height : Int)
       town.addTrain(train)
       trains += train
       entities += train
+
+      // paying
+      playerMoney.set(playerMoney.get() - train.cost)
+      for (carriage <- train.carriages_list) playerMoney.set(playerMoney.get() - carriage.cost)
     }
     valid
   }
 
   def createRoute (departure: Structure, arrival: Structure, train: Train) {
+    train.boarding()
+    for (carriage <- train.carriages_list) {
+      playerMoney.set(playerMoney.get() + carriage.passengers * carriage.ticket_price)
+      println(carriage.passengers)
+    }
     val route = new Route(game_graph.shortestRoute(departure, arrival), train)
     println (game_graph.shortestRoute(departure, arrival))
     routes += route

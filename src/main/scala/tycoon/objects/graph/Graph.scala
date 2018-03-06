@@ -154,7 +154,7 @@ class Graph {
           final_path += p._2
           last_step = p._1
         }
-        case _ => throw new IllegalStateException("no path")
+        case None => throw new IllegalStateException("no path")
       }
     }
     final_path
