@@ -36,11 +36,70 @@ class GameScreen(var game : Game) extends BorderPane
   def setOnRailClick(r : Runnable) = {
     onRailClick = r
   }
-  private var onMineClick = new Runnable { def run() {} }
-  def setOnMineClick(r : Runnable) = {
-    onMineClick = r
-  }
   // private val tiledPane = new DraggableTiledPane(game.tilemap, game.padding)
+
+  private var buyingMinesMode : Boolean = false
+  private var nb_mines = IntegerProperty(0)
+  private var _cost: IntegerProperty = IntegerProperty(0)
+  private var initial_money = game.playerMoney.get()
+
+  private var cost_str = new StringProperty
+  private var nb_mines_str = new StringProperty
+  nb_mines_str <== nb_mines.asString
+  cost_str <== cost.asString
+
+  def cost : IntegerProperty = _cost
+  def cost_= (new_cost: Int) = _cost.set(new_cost)
+
+  private def init_buyingMines () {
+    buyingMinesMode = true
+    nb_mines.set(0)
+    _cost.set(0)
+    initial_money = game.playerMoney.get()
+
+    menuPane.center = new VBox {
+
+      children = Seq(
+        new Text {
+          text <== StringProperty("Cost: $").concat(cost.asString)
+          fill <== when (_cost < initial_money) choose Green otherwise Red
+          margin = Insets(10)
+        },
+
+        new Text {
+          text = "explaining rules of  mine construction.."
+          margin = Insets(10)
+        },
+
+        new Button {
+          text = "Remove"
+          margin = Insets(10)
+          onMouseClicked = (e: MouseEvent) => {
+            if (nb_mines.get()>0) {
+              nb_mines.set(nb_mines.get()-1)
+              game.removeAllMines()
+              game.playerMoney.set(game.playerMoney.get()+game.mine_price)
+              cost_= (_cost.get() - game.mine_price)
+            }
+          }
+        },
+        new Button {
+          text = "Exit construction"
+          margin = Insets(10)
+          onMouseClicked = (e: MouseEvent) => {
+            buyingMinesMode = false
+            menuPane.center = new VBox()
+          }
+        },
+        new Separator {
+          orientation = Orientation.Horizontal
+          style = """-fx-border-style: solid;
+                     -fx-background-color: black;
+                     -fx-border-color: black;"""
+        }
+      )
+    }
+  }
 
 
   game.entities.onChange((_, changes) => { // also used for game creation
@@ -130,10 +189,21 @@ class GameScreen(var game : Game) extends BorderPane
 
     onMouseReleased = (e: MouseEvent) => {
       if (e.x == mouse_anchor_x && e.y == mouse_anchor_y) {
-        // Select entity and then shows information on side bar
+
         val pos : GridLocation = game.tiledPane.screenPxToGridLoc(e.x, e.y)
 
-        maybeClickEntityAt(pos)
+        if (buyingMinesMode) {
+          if (game.mine_price <= game.playerMoney.get() ){ //creation of a new mine
+            if (game.createMine(pos)) {
+              nb_mines.set(nb_mines.get() + 1)
+              cost_= (_cost.get() + game.mine_price)
+              game.playerMoney.set(game.playerMoney.get()-game.mine_price)
+            }
+          }
+        }
+        else {
+          maybeClickEntityAt(pos)
+        }
       }
     }
   }
@@ -183,7 +253,7 @@ class GameScreen(var game : Game) extends BorderPane
           margin = Insets(10)
 
           onMouseClicked = (e: MouseEvent) => {
-            onMineClick.run()
+            init_buyingMines()
             //Open new game mode about mine construction
           }
         },

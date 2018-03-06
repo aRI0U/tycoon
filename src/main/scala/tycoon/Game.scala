@@ -32,7 +32,7 @@ class Game(map_width : Int, map_height : Int)
       //if (elapsedTime > 0.01)
       //    elapsedTime = 0.01
 
-      println(1.0 / elapsedTime + " FPS")
+      //println(1.0 / elapsedTime + " FPS")
 
       update(elapsedTime)
     }
@@ -71,7 +71,7 @@ class Game(map_width : Int, map_height : Int)
   def start () : Unit = {
     tiledPane.moveToCenter()
     player.money = 1000
-    loop.start()
+  //  loop.start()
   }
   def pause () : Unit = {}
   def stop () : Unit = {}
@@ -84,9 +84,9 @@ class Game(map_width : Int, map_height : Int)
     }
     for (town <- towns)
     {
-      town.update(dt)
+      //town.update(dt)
     }
-    tiledPane.layoutEntities
+    //tiledPane.layoutEntities
 
   }
 
