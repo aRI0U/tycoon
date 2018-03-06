@@ -32,7 +32,7 @@ class Game(map_width : Int, map_height : Int)
       //if (elapsedTime > 0.01)
       //    elapsedTime = 0.01
 
-      println(1.0 / elapsedTime + " FPS")
+      //println(1.0 / elapsedTime + " FPS")
 
       update(elapsedTime)
     }
@@ -52,6 +52,7 @@ class Game(map_width : Int, map_height : Int)
   var mines = new ListBuffer[Mine]()
   var towns = new ListBuffer[Town]()
   var trains = new ListBuffer[BasicTrain]()
+  var routes = new ListBuffer[Route]()
 
   private val loop = new GameLoop()
 
@@ -77,10 +78,10 @@ class Game(map_width : Int, map_height : Int)
   def stop () : Unit = {}
 
   private def update(dt : Double) : Unit = {
-    //update trains posiition here ?
-    for (train <- trains)
+    //update trains position here ?
+    for (route <- routes)
     {
-      train.update(dt)
+      route.update(dt)
     }
     for (town <- towns)
     {
@@ -280,8 +281,8 @@ class Game(map_width : Int, map_height : Int)
     entities.remove(entities.size-1)
     // TODO: actualize data in the graph
   }
-  def createTrain (rail: BasicRail) : Boolean = {
-    var train = new BasicTrain(rail.road)
+  def createTrain (town: Town) : Boolean = {
+    var train = new BasicTrain(town)
     // check if there is an other train ??
     var valid = true
     /*if (tilemap.gridRect.contains(mine.gridRect))
@@ -298,6 +299,11 @@ class Game(map_width : Int, map_height : Int)
         entities += train
       }
       valid
-    }
+  }
+
+  def createRoute (departure: Structure, arrival: Structure, train: Train) {
+    val route = new Route(game_graph.shortestRoute(departure, arrival), train)
+    routes += route
+  }
 
 }

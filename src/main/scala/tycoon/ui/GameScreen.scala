@@ -2,7 +2,8 @@ package tycoon.ui
 
 import tycoon.{Game, GridLocation}
 import tycoon.Player
-import tycoon.objects.railway.BasicRail
+import tycoon.objects.railway._
+import tycoon.objects.structure._
 
 import scalafx.Includes._
 import scalafx.scene.Scene
@@ -73,7 +74,7 @@ class GameScreen(var game : Game) extends BorderPane
     for (ent <- game.entities) {
       if (ent.gridContains(pos)) {
           ent match {
-            case rail : BasicRail => {
+            case rail : BasicRail => {/*
               if (buy_train.get()){
                 println("you just clicked on a rail")
                 if (buy_train.get()){
@@ -84,6 +85,12 @@ class GameScreen(var game : Game) extends BorderPane
                   //train création
                   }
                 }
+              }*/
+            }
+            case town : Town => {
+              if (buy_train.get()) {
+                println("new train in that town")
+                if (game.createTrain(town)) return
               }
             }
             case _ => {
