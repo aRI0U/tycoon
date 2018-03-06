@@ -13,10 +13,6 @@ object Main extends JFXApp {
   val game = new Game(100, 100)
 
   val startScreen = new StartScreen()
-  val creditsScreen = new CreditsScreen()
-  val gameCreationScreen = new GameCreationScreen(game)
-  val gameScreen = new GameScreen(game)
-  val railCreation = new RailCreation(game)
 
   val content = new StackPane()
   content.getChildren().add(startScreen)
@@ -37,6 +33,20 @@ object Main extends JFXApp {
 
   startScreen.setOnStart(new Runnable {
     def run() {
+      val gameCreationScreen = new GameCreationScreen(game)
+
+      gameCreationScreen.setOnValidate(new Runnable {
+        def run() {
+
+          val gameScreen = new GameScreen(game)
+
+          content.getChildren().clear()
+          content.getChildren().add(gameScreen)
+          gameScreen.init()
+          game.start()
+        }
+      })
+
       content.getChildren().clear()
       content.getChildren().add(gameCreationScreen)
       gameCreationScreen.init()
@@ -45,6 +55,18 @@ object Main extends JFXApp {
 
   startScreen.setOnOpenCredits(new Runnable {
     def run() {
+      val creditsScreen = new CreditsScreen()
+
+      creditsScreen.setOnExit(new Runnable {
+        def run() {
+          content.getChildren().clear()
+          content.getChildren().add(startScreen)
+          startScreen.init()
+          //appScene.camera = new Camera
+          appStage.resizable = true
+        }
+      })
+
       content.getChildren().clear()
       content.getChildren().add(creditsScreen)
       appScene.camera = new PerspectiveCamera
@@ -53,40 +75,6 @@ object Main extends JFXApp {
     }
   })
 
-  creditsScreen.setOnExit(new Runnable {
-    def run() {
-      content.getChildren().clear()
-      content.getChildren().add(startScreen)
-      startScreen.init()
-      //appScene.camera = new Camera
-      appStage.resizable = true
-    }
-  })
-
-  gameCreationScreen.setOnValidate(new Runnable {
-    def run() {
-      content.getChildren().clear()
-      content.getChildren().add(gameScreen)
-      gameScreen.init()
-      game.start()
-    }
-  })
-
-  gameScreen.setOnRailClick(new Runnable {
-    def run() {
-      content.getChildren().clear()
-      content.getChildren().add(railCreation)
-      railCreation.init()
-    }
-  })
 
 
-
-  railCreation.setOnFinished(new Runnable {
-    def run() {
-      content.getChildren().clear()
-      content.getChildren().add(gameScreen)
-      gameScreen.init()
-    }
-  })
 }

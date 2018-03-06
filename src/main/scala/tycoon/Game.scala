@@ -66,6 +66,20 @@ class Game(map_width : Int, map_height : Int)
   tilemap.fillBorder(Sprite.tiles_grass(1), 50, 3)
   val tiledPane = new DraggableTiledPane(tilemap, padding)
 
+
+
+  entities.onChange((_, changes) => {
+    for (change <- changes)
+      change match {
+        case Add(_, added) =>
+          added.foreach(ent => tiledPane.addEntity(ent))
+        case Remove(_, removed) =>
+          removed.foreach(ent => tiledPane.removeEntity(ent))
+        case Reorder(from, to, permutation) => ()
+        case Update(pos, updated)           => ()
+      }
+  })
+
   private val player = new Player
 
 

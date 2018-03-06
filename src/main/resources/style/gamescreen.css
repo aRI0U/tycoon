@@ -1,0 +1,15 @@
+.sep {
+  -fx-border-style: solid;
+   -fx-background-color: black;
+   -fx-border-color: black;
+}
+
+#menu {
+  -fx-border-color: transparent black transparent transparent;
+   -fx-border-width: 1;
+   -fx-background-color: #DDD;
+}
+
+#body {
+  -fx-background-color: lightgreen
+}

@@ -31,89 +31,99 @@ import scalafx.beans.property.{StringProperty, IntegerProperty}
 import scalafx.beans.binding.Bindings
 import scala.collection.mutable.ListBuffer
 
+
+
+
+
 class GameScreen(var game : Game) extends BorderPane
 {
-  private var onRailClick = new Runnable { def run() {} }
-  def setOnRailClick(r : Runnable) = {
-    onRailClick = r
-  }
-  // private val tiledPane = new DraggableTiledPane(game.tilemap, game.padding)
+  stylesheets += "style/gamescreen.css"
+  id = "body"
+
+  private var buyingRailsMode : Boolean = false
+  private var nb_rails = IntegerProperty(0)
+  private var total_cost_rails = IntegerProperty(0)
 
   private var buyingMinesMode : Boolean = false
   private var nb_mines = IntegerProperty(0)
-  private var _cost: IntegerProperty = IntegerProperty(0)
-  private var initial_money = game.playerMoney.get()
-
-  private var cost_str = new StringProperty
-  private var nb_mines_str = new StringProperty
-  nb_mines_str <== nb_mines.asString
-  cost_str <== cost.asString
-
-  def cost : IntegerProperty = _cost
-  def cost_= (new_cost: Int) = _cost.set(new_cost)
+  private var total_cost_mines = IntegerProperty(0)
 
   private def init_buyingMines () {
     buyingMinesMode = true
+    buyingRailsMode = false
     nb_mines.set(0)
-    _cost.set(0)
-    initial_money = game.playerMoney.get()
+    total_cost_mines.set(0)
 
     menuPane.center = new VBox {
 
       children = Seq(
         new Text {
-          text <== StringProperty("Cost: $").concat(cost.asString)
-          fill <== when (_cost < initial_money) choose Green otherwise Red
+          text <== StringProperty("Cost: $").concat(total_cost_mines.asString)
+          fill <== when (total_cost_mines < game.playerMoney) choose Green otherwise Red
           margin = Insets(10)
         },
-
-        new Text {
-          text = "explaining rules of  mine construction.."
-          margin = Insets(10)
-        },
-
         new Button {
           text = "Remove"
           margin = Insets(10)
-          onMouseClicked = (e: MouseEvent) => {
-            if (nb_mines.get()>0) {
+          onMouseClicked = _ => {
+            if (nb_mines.get() > 0) {
               nb_mines.set(nb_mines.get()-1)
               game.removeAllMines()
-              game.playerMoney.set(game.playerMoney.get()+game.mine_price)
-              cost_= (_cost.get() - game.mine_price)
+              game.playerMoney.set(game.playerMoney.get() + game.mine_price)
+              total_cost_mines.set(total_cost_mines.get() - game.mine_price)
             }
           }
         },
         new Button {
-          text = "Exit construction"
-          margin = Insets(10)
+          text = "Exit mine construction" ; margin = Insets(10)
           onMouseClicked = (e: MouseEvent) => {
             buyingMinesMode = false
-            menuPane.center = new VBox()
+            menuPane.center = actionsPane
           }
         },
-        new Separator {
-          orientation = Orientation.Horizontal
-          style = """-fx-border-style: solid;
-                     -fx-background-color: black;
-                     -fx-border-color: black;"""
-        }
+        new Separator { orientation = Orientation.Horizontal ; styleClass += "sep" }
+      )
+    }
+  }
+  private def init_buyingRails () {
+    buyingRailsMode = true
+    buyingMinesMode = false
+    nb_rails.set(0)
+    total_cost_rails.set(0)
+
+    menuPane.center = new VBox {
+
+      children = Seq(
+        new Text {
+          text <== StringProperty("Cost: $").concat(total_cost_rails.asString)
+          fill <== when (total_cost_rails < game.playerMoney) choose Green otherwise Red
+          margin = Insets(10)
+        },
+        new Button {
+          text = "Remove"
+          margin = Insets(10)
+          onMouseClicked = _ => {
+            if (nb_rails.get() > 0) {
+              nb_rails.set(nb_rails.get()-1)
+              game.removeAllRails()
+              game.playerMoney.set(game.playerMoney.get() + game.rail_price)
+              total_cost_rails.set(total_cost_rails.get() - game.rail_price)
+            }
+          }
+        },
+        new Button {
+          text = "Exit rail construction" ; margin = Insets(10)
+          onMouseClicked = (e: MouseEvent) => {
+            buyingRailsMode = false
+            menuPane.center = actionsPane
+          }
+        },
+        new Separator { orientation = Orientation.Horizontal ; styleClass += "sep" }
       )
     }
   }
 
 
-  game.entities.onChange((_, changes) => { // also used for game creation
-    for (change <- changes)
-      change match {
-        case Add(_, added) =>
-          added.foreach(town => game.tiledPane.addEntity(town))
-        case Remove(_, removed) =>
-          removed.foreach(town => game.tiledPane.removeEntity(town))
-        case Reorder(from, to, permutation) => ()
-        case Update(pos, updated)           => ()
-      }
-  })
 
   private var mouse_anchor_x : Double = 0
   private var mouse_anchor_y : Double = 0
@@ -125,47 +135,29 @@ class GameScreen(var game : Game) extends BorderPane
     gamePane.center = game.tiledPane // update
   }
 
-
-  private val txt_tmp : String = "salut"
   private var buy_train = BooleanProperty(false)
 
   def maybeClickEntityAt(pos: GridLocation) {
     for (ent <- game.entities) {
       if (ent.gridContains(pos)) {
-          ent match {
-            case rail : BasicRail => {/*
-              if (buy_train.get()){
-                println("you just clicked on a rail")
-                if (buy_train.get()){
-                  if (game.createTrain(rail)) {
-                    //money changes
-                  return
-
-                  //train création
-                  }
-                }
-              }*/
+        ent match {
+          case town : Town => {
+            if (buy_train.get()) {
+              println("new train in that town")
+              if (game.createTrain(town)) return
             }
-            case town : Town => {
-              if (buy_train.get()) {
-                println("new train in that town")
-                if (game.createTrain(town)) return
-              }
-            }
-            case _ => {
-              println("b")
-              bindPrintData(ent.printData)
-              println("c")
-              return
-            }
+          }
+          case _ => {
+            println("b")
+            bindPrintData(ent.printData)
+            println("c")
+            return
+          }
         }
-        // else {
-        //   bindPrintData(ent.printData)
-        //   return
-        // }
       }
     }
   }
+
   def bindPrintData(data: ListBuffer[(String, StringProperty)]) {
     menuPane.center = new VBox {
       for (elt <- data) {
@@ -179,13 +171,37 @@ class GameScreen(var game : Game) extends BorderPane
         println ("a")
       }
     }
-
   }
+
+  private val actionsPane = new VBox {
+    children = Seq(
+      new Button {
+        text = "Rail construction" ; margin = Insets(10)
+        onMouseClicked = _ => init_buyingRails()
+      },
+      new Button {
+        text = "Mine Construction" ; margin = Insets(10)
+        onMouseClicked = _ => init_buyingMines()
+      },
+      new Button {
+        text = "Buy a train" ; margin = Insets(10)
+
+        onMouseClicked = (e: MouseEvent) => {
+          //Open new game mode about train construction
+          if (buy_train.get()) {
+            buy_train.set(false)
+          }
+          else buy_train.set(true)
+        }
+      },
+      new Separator { orientation = Orientation.Horizontal ; styleClass += "sep" }
+    )
+  }
+
 
 
   private val gamePane = new BorderPane {
 
-    style = "-fx-background-color: lightgreen"
 
     onMousePressed = (e: MouseEvent) => {
       requestFocus()
@@ -203,8 +219,17 @@ class GameScreen(var game : Game) extends BorderPane
           if (game.mine_price <= game.playerMoney.get() ){ //creation of a new mine
             if (game.createMine(pos)) {
               nb_mines.set(nb_mines.get() + 1)
-              cost_= (_cost.get() + game.mine_price)
+              total_cost_mines.set((total_cost_mines.get() + game.mine_price))
               game.playerMoney.set(game.playerMoney.get()-game.mine_price)
+            }
+          }
+        }
+        else if (buyingRailsMode) {
+          if (game.rail_price <= game.playerMoney.get() ){ //creation of a new mine
+            if (game.createRail(pos)) {
+              nb_rails.set(nb_rails.get() + 1)
+              total_cost_rails.set((total_cost_rails.get() + game.rail_price))
+              game.playerMoney.set(game.playerMoney.get() - game.rail_price)
             }
           }
         }
@@ -214,19 +239,16 @@ class GameScreen(var game : Game) extends BorderPane
       }
     }
   }
-  //should have entyties transmission ... Like the Class Player should be created in Game creation screen and transmited.
-  //same question for the cities ect..
-
-  //val city_number =  nb_towns.get()
 
   private val menuPane = new BorderPane {
-    //style = """-fx-background-color: linear-gradient(burlywood, burlywood, brown);
-    style = """-fx-border-color: transparent black transparent transparent;
-               -fx-border-width: 1;
-               -fx-background-color: #DDD;"""
+    id = "menu"
 
     top = new VBox {
       children = Seq(
+        new Text {
+          text = "Time: TODO"
+          margin = Insets(5)
+        },
         new Text {
           text <== StringProperty("Player: ").concat(game.playerName)
           margin = Insets(5)
@@ -236,110 +258,15 @@ class GameScreen(var game : Game) extends BorderPane
           fill <== when (game.playerMoney > 0) choose Green otherwise Red
           margin = Insets(5)
         },
-        new Separator {
-          orientation = Orientation.Horizontal
-          style = """-fx-border-style: solid;
-                     -fx-background-color: black;
-                     -fx-border-color: black;"""
-        },
-        new Text {
-          text = "Actions : TODO"
-          margin = Insets(10)
-        },
-        new Button {
-          text = "Rail construction"
-          margin = Insets(10)
-
-          onMouseClicked = (e: MouseEvent) => {
-            onRailClick.run()
-              //Open new game mode about mine construction
-          }
-        },
-        new Button {
-          text = "Mine Construction"
-          margin = Insets(10)
-
-          onMouseClicked = (e: MouseEvent) => {
-            init_buyingMines()
-            //Open new game mode about mine construction
-          }
-        },
-        new Button {
-          text = "Buy a train"
-          margin = Insets(10)
-
-          onMouseClicked = (e: MouseEvent) => {
-            //Open new game mode about train construction
-            if (buy_train.get()) {
-              buy_train.set(false)
-            }
-            else buy_train.set(true)
-          }
-        },
-        new Text {
-          text <== when (buy_train) choose ("Now select a rail") otherwise ("")
-          margin = Insets(5)
-        },
-        new Separator {
-          orientation = Orientation.Horizontal
-          style = """-fx-border-style: solid;
-                     -fx-background-color: black;
-                     -fx-border-color: black;"""
-        }
+        new Separator { orientation = Orientation.Horizontal ; styleClass += "sep" }
       )
     }
 
-    bottom = new VBox {
-      alignment = Pos.BottomCenter
 
-      children = new HBox {
-        children = Seq(
-          new Button {
-            text = "Help"
-            margin = Insets(10)
+    center = actionsPane
 
-            val label = new Label("TODO detailed list of implemented features")
+    bottom = new HelpAndQuitButtons
 
-            val expContent = new GridPane {
-              maxWidth = Double.MaxValue
-              add(label, 0, 0)
-              // texte avec du gras et tout :
-              // https://docs.oracle.com/javase/8/javafx/api/javafx/scene/text/TextFlow.html
-            }
-
-            onMouseClicked = (e: MouseEvent) => {
-              new Alert(Alert.AlertType.Information) {
-                title = "Help"
-                headerText = "The Tycoon Game - V 1.0.0 Beta"
-                contentText = "See below for details."
-                buttonTypes = Seq(new ButtonType("Got it!"))
-                dialogPane().expandableContent = expContent
-              }.showAndWait()
-            }
-          },
-          new Button {
-            text = "Quit Game"
-            margin = Insets(10)
-
-            onMouseClicked = (e: MouseEvent) => {
-              val alert = new Alert(Alert.AlertType.Warning) {
-                title = "Careful!"
-                headerText = "If you leave now, your progress will not be saved."
-                contentText = "Are you sure you want to leave?"
-                buttonTypes = Seq(ButtonType.Cancel, ButtonType.Yes)
-              }
-
-              val result = alert.showAndWait()
-              result match {
-                case Some(ButtonType.Yes) => Platform.exit()
-                case _                   => ()
-              }
-            }
-          }
-        )
-      }
-    }
-
-    //onMouseClicked = (e: MouseEvent) => { requestFocus() }
+    onMouseClicked = (e: MouseEvent) => { requestFocus() }
   }
 }
