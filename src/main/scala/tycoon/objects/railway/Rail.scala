@@ -11,7 +11,7 @@ abstract class Rail(pos: GridLocation, tile_type: Int) extends Renderable {
   val cost : Int
   val max_speed : Int
   val max_weight : Int
-  // val road_head : Boolean
+  var road_head : Boolean
 
   var road = new Road(pos)
   road.length+=1
@@ -25,4 +25,3 @@ abstract class Rail(pos: GridLocation, tile_type: Int) extends Renderable {
   def position : GridLocation = pos
   def get_tile_type : Int = tile_type
 }
-
