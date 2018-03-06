@@ -10,14 +10,23 @@ import tycoon.Game
 
 class Route(itinerary : ListBuffer[Road], train : Train,game : Game) {
 
+  var on_the_road = true
+
   var current_road : Option[Road]= None
   println (itinerary)
 
   def departure () = {
+    println("departure")
     train.location = None
     train.visible = true
-    current_road = Some(itinerary(0))
-    itinerary.remove(0)
+    current_road = Some(itinerary(itinerary.size - 1))
+    itinerary.remove(itinerary.size - 1)
+    for (rail <- (current_road.get).rails) {
+      if (rail.previous == rail) {
+       train.current_rail = Some(rail)
+      }
+    }
+    train.gridLoc = (train.current_rail.get).position
     //train.current_rail = current_road.rails
   }
 
@@ -25,13 +34,16 @@ class Route(itinerary : ListBuffer[Road], train : Train,game : Game) {
     train.location = road.end_town
     train.visible = false
     train.current_rail = None
+    train.gridLoc = (train.location.get).position
+    if (itinerary.size == 0) {
+      on_the_road = false
+    }
   }
 
-  println(itinerary(0).rails(0))
-  train.current_rail = Some(itinerary(0).rails(0))
-  train.gridLoc = train.current_rail.get.position
+  //train.current_rail = Some(itinerary(itinerary.size-1).rails(0))
+  //train.gridLoc = train.current_rail.get.position
   //in order  to update the graphic
-  game.tiledPane.layoutEntities
+  //game.tiledPane.layoutEntities
 
   // looking for the first rail of the trail
 /*  for (rail <- road.rails) {
@@ -39,23 +51,19 @@ class Route(itinerary : ListBuffer[Road], train : Train,game : Game) {
       current_rail = rail
     }
   }*/
-  private var counter = 0
   protected var intern_time : Double = 0
-
-  def update_box (dt: Double, road:Road) = {
+  def update_box (dt: Double, road : Road) = {
     train.current_rail match {
       case Some(rail) => {
         intern_time += dt
         if (intern_time > 1) {
           if (rail == rail.next) arrival(road)
           else {
-            println(counter)
-            counter+=1
             train.current_rail = Some(rail.next)
             train.gridLoc = rail.next.position
             intern_time -=1
             //in order  to update the graphic
-            game.tiledPane.layoutEntities
+            //game.tiledPane.layoutEntities
           }
         }
       }
@@ -70,13 +78,11 @@ class Route(itinerary : ListBuffer[Road], train : Train,game : Game) {
 
 
   def update (dt : Double) {
-    //update_box(dt)
-    //for (road <- itinerary)
-
+    if (on_the_road) {
       train.location match {
         case Some(town) => departure()
         case None => update_box(dt, current_road.get)
       }
-    //}
+    }
   }
 }

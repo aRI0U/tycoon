@@ -41,6 +41,7 @@ class Game(map_width : Int, map_height : Int)
 
 
       update(elapsedTime)
+      tiledPane.layoutEntities
     }
   }
 
