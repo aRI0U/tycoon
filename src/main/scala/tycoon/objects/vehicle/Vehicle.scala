@@ -7,4 +7,5 @@ import tycoon.objects.structure._
 
 abstract class Vehicle(town:Town) extends Renderable {
   val weight : Int
+  val cost : Int
 }

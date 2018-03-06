@@ -19,7 +19,7 @@ class Route(itinerary : ListBuffer[Road], train : Train) {
     train.visible = false
   }
 
-  var current_rail = itinerary(0).rails(0)
+  train.current_rail = Some(itinerary(0).rails(0))
 
   // looking for the first rail of the trail
 /*  for (rail <- road.rails) {
@@ -31,18 +31,23 @@ class Route(itinerary : ListBuffer[Road], train : Train) {
   protected var intern_time : Double = 0
 
   def update_box (dt: Double, road:Road) = {
-    intern_time += dt
-    if (intern_time > 1) {
-      if (current_rail == current_rail.next) arrival(road)
-      else {
-        current_rail = current_rail.next
-        train.gridLoc = current_rail.position
-        intern_time = 0
+    train.current_rail match {
+      case Some(rail) => {
+        intern_time += dt
+        if (intern_time > 1) {
+          if (rail == rail.next) arrival(road)
+          else {
+            train.current_rail = Some(rail.next)
+            train.gridLoc = rail.next.position
+            intern_time = 0
+          }
+        }
+      }
+      case None => ;
 
         //need to orientate the locooo
        // if (current_rail.get_tile_type == 1) {
          // train.tile.getView.rotate = 90
-      }
     }
   }
 
