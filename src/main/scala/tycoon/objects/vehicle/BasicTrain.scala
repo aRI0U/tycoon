@@ -65,9 +65,17 @@ class BasicTrain(town : Town) extends Train(town) {
   var destination_x = 0
   var destination_y = 0
   val weight = 50
+  val cost = 200
+  var current_rail : Option[Rail] = None
   //var trail = road.rails
   val tile = new Tile(Sprite.tile_locomotive)
   var carriagesList = new ListBuffer[Carriage]()
-  //var pos : GridLocation = location.position
-  //gridLoc = pos
+  var pos : GridLocation = location match {
+    case Some(structure) => structure.position
+    case None => current_rail match {
+      case Some(rail) => rail.position
+      case None => new GridLocation(0,0) // not supposed to happen
+    }
+  }
+  gridLoc = pos
 }

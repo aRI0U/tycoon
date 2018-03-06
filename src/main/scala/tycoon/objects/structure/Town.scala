@@ -9,7 +9,7 @@ import tycoon.Game
 import scalafx.beans.property.{IntegerProperty, StringProperty}
 
 
-abstract class Town(pos: GridLocation, id: Int) extends Structure(pos, id) {
+abstract case class Town(pos: GridLocation, id: Int) extends Structure(pos, id) {
 
   protected val r = scala.util.Random
 

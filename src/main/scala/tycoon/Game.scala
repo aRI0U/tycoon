@@ -97,28 +97,38 @@ class Game(map_width : Int, map_height : Int)
   def playerMoney : IntegerProperty = player.money
   def playerMoney_= (new_money: Int) = player.money = new_money
 
-
-  def createTown (pos: GridLocation) : Boolean = {
-    val town = new BasicTown(pos, nb_structures)
+  def createStructure (kind: Int, pos: GridLocation) : Boolean = {
+    var structure : Structure = new BasicTown(pos, nb_structures)
+      kind match {
+      case 0 => ;
+      case _ => structure = new Mine(pos, nb_structures)
+    }
     // check whether town is within the map boundaries
-    if (tilemap.gridRect.contains(town.gridRect))
+    if (tilemap.gridRect.contains(structure.gridRect))
     {
       // if so, check whether it intersects with an other town
       var valid = true
-      for (other <- towns) {
-        if (other.gridIntersects(town))
+      for (other <- entities) {
+        if (other.gridIntersects(structure))
           valid = false
       }
       if (valid) {
-        towns += town
-        entities += town
+        structure match {
+          case t : Town => towns += t
+          case m : Mine => mines += m
+        }
+        entities += structure
         nb_structures += 1
-        game_graph.newStructure(town)
-
+        game_graph.newStructure(structure)
       }
       valid
     }
     else false
+  }
+
+
+  def createTown (pos: GridLocation) : Boolean = {
+    createStructure(0, pos)
   }
 
   def removeAllTowns() : Unit = {
@@ -128,25 +138,7 @@ class Game(map_width : Int, map_height : Int)
   }
 
   def createMine (pos: GridLocation) : Boolean = {
-    val mine = new Mine(pos, nb_structures)
-    // check whether mine is within the map boundaries
-    if (tilemap.gridRect.contains(mine.gridRect))
-    {
-      // if so, check whether it intersects with an other entity
-      var valid = true
-      for (other <- entities) {
-        if (other.gridIntersects(mine))
-          valid = false
-      }
-      if (valid) {
-        mines += mine
-        entities += mine
-        nb_structures += 1
-        game_graph.newStructure(mine)
-      }
-      valid
-    }
-    else false
+    createStructure(1, pos)
   }
   def removeAllMines() : Unit = {
     mines.remove(mines.size-1)
@@ -305,5 +297,4 @@ class Game(map_width : Int, map_height : Int)
     val route = new Route(game_graph.shortestRoute(departure, arrival), train)
     routes += route
   }
-
 }

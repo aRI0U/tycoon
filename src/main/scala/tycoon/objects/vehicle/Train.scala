@@ -10,6 +10,7 @@ abstract case class Train(town : Town) extends Vehicle(town) {
   var carriagesList : ListBuffer[Carriage]
   var location : Option[Town] = Some(town)
   var visible : Boolean
+  var current_rail : Option[Rail]
 
   def boarding () = {
     location match {
