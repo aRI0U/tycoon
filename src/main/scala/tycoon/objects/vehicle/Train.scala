@@ -12,30 +12,32 @@ abstract class Train(town : Town, nb_carriages : Int) extends Vehicle(town) {
   var visible : Boolean
   var current_rail : Option[Rail]
 
-  def add_carriage (carriage:Carriage) {
-    for (i <- 1 to nb_carriages) carriages_list += carriage
+  def add_carriage () {
+    for (i <- 1 to nb_carriages) carriages_list += new BasicPassengerCarriage
   }
 
   def boarding () = {
     location match {
-      case Some(town) => {
+      case Some(t) => {
+        println("ah")
         for (carriage <- carriages_list) {
+          println("oh")
           carriage match {
-            case PassengerCarriage() => carriage.embark(town)
-            case _ => ;
+            case PassengerCarriage() => carriage.embark(t)
+            case _ => println("no passenger")
           }
         }
       }
-      case None => ;
+      case None => println("notown")
     }
   }
 
   def landing () = {
     location match {
-      case Some(town) => {
+      case Some(t) => {
         for (carriage <- carriages_list) {
           carriage match {
-            case PassengerCarriage() => carriage.debark(town)
+            case PassengerCarriage() => carriage.debark(t)
             case _ => ;
           }
         }

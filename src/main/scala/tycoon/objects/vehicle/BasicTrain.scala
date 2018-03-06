@@ -28,7 +28,7 @@ class BasicTrain(town : Town, nb_carriages : Int) extends Train(town, nb_carriag
   val tile = new Tile(Sprite.tile_locomotive)
 
   var carriages_list = new ListBuffer[Carriage]()
-  add_carriage(new BasicPassengerCarriage)
+  add_carriage()
 
   var pos : GridLocation = location match {
     case Some(structure : Town) => {

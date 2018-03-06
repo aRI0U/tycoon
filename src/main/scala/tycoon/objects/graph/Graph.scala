@@ -120,7 +120,7 @@ class Graph {
     println(not_visited)
     var previous : Array[Option[(Int, Road)]] = new Array[Option[(Int, Road)]](l)
     for (i <- 0 to l-1) previous(i) = None
-    
+
     while (!(not_visited.isEmpty)) {
       // find closest structure
       var mini : Option[Int] = None

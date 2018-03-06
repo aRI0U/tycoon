@@ -41,6 +41,7 @@ class Game(map_width : Int, map_height : Int)
 
 
       update(elapsedTime)
+      tiledPane.layoutEntities
     }
   }
 
@@ -332,13 +333,14 @@ class Game(map_width : Int, map_height : Int)
   }
 
   def createRoute (departure: Structure, arrival: Structure, train: Train) {
-    train.boarding()
+   train.boarding()
     for (carriage <- train.carriages_list) {
       playerMoney.set(playerMoney.get() + carriage.passengers * carriage.ticket_price)
       println(carriage.passengers)
     }
-    val route = new Route(game_graph.shortestRoute(departure, arrival), train)
+    val route = new Route(game_graph.shortestRoute(departure, arrival), train, this)
     println (game_graph.shortestRoute(departure, arrival))
     routes += route
+    println (route.current_road)
   }
 }

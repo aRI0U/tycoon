@@ -6,20 +6,57 @@ import tycoon.objects.carriage._
 import tycoon.objects.railway._
 import tycoon.objects.structure._
 import tycoon.objects.vehicle._
+import tycoon.Game
 
-class Route(itinerary : ListBuffer[Road], train : Train) {
+class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
 
-  def departure (road: Road) = {
+  var on_the_road = true
+
+  var current_road : Option[Road]= None
+  println (itinerary)
+
+  def departure () = {
+    train.boarding()
+    for (carriage <- train.carriages_list) {
+      game.playerMoney.set(game.playerMoney.get() + carriage.passengers * carriage.ticket_price)
+      println(carriage.passengers)
+    }
+    val start = train.location.get
+    println("departure")
     train.location = None
+    start.list_trains -= train
     train.visible = true
+    current_road = Some(itinerary(itinerary.size - 1))
+    itinerary.remove(itinerary.size - 1)
+    for (rail <- (current_road.get).rails) {
+      if (rail.previous == rail) {
+       train.current_rail = Some(rail)
+      }
+    }
+    train.gridLoc = (train.current_rail.get).position
+    //train.current_rail = current_road.rails
   }
 
   def arrival (road: Road) = {
-    train.location = road.end_town
+    val end = road.end_town
+    train.location = end
+    end match {
+      case Some(s) => s.list_trains += train
+      case None => ()
+    }
+    train.landing()
     train.visible = false
+    train.current_rail = None
+    train.gridLoc = (train.location.get).position
+    if (itinerary.size == 0) {
+      on_the_road = false
+    }
   }
 
-  train.current_rail = Some(itinerary(0).rails(0))
+  //train.current_rail = Some(itinerary(itinerary.size-1).rails(0))
+  //train.gridLoc = train.current_rail.get.position
+  //in order  to update the graphic
+  //game.tiledPane.layoutEntities
 
   // looking for the first rail of the trail
 /*  for (rail <- road.rails) {
@@ -27,10 +64,8 @@ class Route(itinerary : ListBuffer[Road], train : Train) {
       current_rail = rail
     }
   }*/
-  // private var counter = 0
   protected var intern_time : Double = 0
-
-  def update_box (dt: Double, road:Road) = {
+  def update_box (dt: Double, road : Road) = {
     train.current_rail match {
       case Some(rail) => {
         intern_time += dt
@@ -39,11 +74,14 @@ class Route(itinerary : ListBuffer[Road], train : Train) {
           else {
             train.current_rail = Some(rail.next)
             train.gridLoc = rail.next.position
-            intern_time = 0
+            intern_time -=1
+            //in order  to update the graphic
+            //game.tiledPane.layoutEntities
           }
         }
       }
-      case None => ;
+      case None => {
+      }
 
         //need to orientate the locooo
        // if (current_rail.get_tile_type == 1) {
@@ -51,12 +89,12 @@ class Route(itinerary : ListBuffer[Road], train : Train) {
     }
   }
 
+
   def update (dt : Double) {
-    //update_box(dt)
-    for (road <- itinerary) {
+    if (on_the_road) {
       train.location match {
-        case Some(town) => departure(road)
-        case None => update_box(dt, road)
+        case Some(town) => departure()
+        case None => update_box(dt, current_road.get)
       }
     }
   }
