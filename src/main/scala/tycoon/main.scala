@@ -32,18 +32,18 @@ object Main extends JFXApp {
   stage = appStage
 
   startScreen.setOnStart(new Runnable {
-    def run() {
+    def run() = {
       val gameCreationScreen = new GameCreationScreen(game)
 
       gameCreationScreen.setOnValidate(new Runnable {
-        def run() {
-
+        def run() = {
           val gameScreen = new GameScreen(game)
 
           content.getChildren().clear()
           content.getChildren().add(gameScreen)
           gameScreen.init()
           game.start()
+          println("hi")
         }
       })
 
@@ -54,11 +54,11 @@ object Main extends JFXApp {
   })
 
   startScreen.setOnOpenCredits(new Runnable {
-    def run() {
+    def run() = {
       val creditsScreen = new CreditsScreen()
 
       creditsScreen.setOnExit(new Runnable {
-        def run() {
+        def run() = {
           content.getChildren().clear()
           content.getChildren().add(startScreen)
           startScreen.init()

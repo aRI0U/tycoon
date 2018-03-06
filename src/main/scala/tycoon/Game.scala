@@ -21,6 +21,9 @@ import scalafx.beans.binding.Bindings
 
 class Game(map_width : Int, map_height : Int)
 {
+  var time = IntegerProperty(0)
+  var time_s : Double = 0
+
   private class GameLoop extends AnimationTimer
   {
     var startNanoTime : Long = System.nanoTime()
@@ -34,9 +37,13 @@ class Game(map_width : Int, map_height : Int)
 
       //println(1.0 / elapsedTime + " FPS")
 
+
+
+
       update(elapsedTime)
     }
   }
+
 
   var entities = new ObservableBuffer[Renderable]()
 
@@ -86,7 +93,10 @@ class Game(map_width : Int, map_height : Int)
   def start () : Unit = {
     tiledPane.moveToCenter()
     player.money = 1000
-  //  loop.start()
+
+    time.set(0)
+    time_s = 0
+    loop.start()
   }
   def pause () : Unit = {}
   def stop () : Unit = {}
@@ -99,10 +109,15 @@ class Game(map_width : Int, map_height : Int)
     }
     for (town <- towns)
     {
-      //town.update(dt)
+      town.update(dt)
     }
     //tiledPane.layoutEntities
 
+    time_s += dt
+    if (time_s > 1) {
+      time_s -= 1
+      time.set(time.get() + 1)
+    }
   }
 
   def playerName : StringProperty = player.name

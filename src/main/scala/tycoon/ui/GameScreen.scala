@@ -226,13 +226,10 @@ class GameScreen(var game : Game) extends BorderPane
               }
             }
           }
-          case _ => {
-            println("b")
-            bindPrintData(ent.printData)
-            println("c")
-            return
-          }
+          case _ => {}
         }
+        bindPrintData(ent.printData)
+        return
       }
     }
   }
@@ -242,12 +239,9 @@ class GameScreen(var game : Game) extends BorderPane
       for (elt <- data) {
         val item = new Text {
           text <== StringProperty(elt._1 + ": ").concat(elt._2)
-          println ("a")
           margin = Insets(5)
         }
-
         children.add(item)
-        println ("a")
       }
     }
   }
@@ -268,7 +262,6 @@ class GameScreen(var game : Game) extends BorderPane
       },
       new Button {
         text = "Create a train trip" ; margin = Insets(10)
-
         onMouseClicked = _ => init_tripCreation()
       },
       new Separator { orientation = Orientation.Horizontal ; styleClass += "sep" }
@@ -324,7 +317,7 @@ class GameScreen(var game : Game) extends BorderPane
       children = Seq(
         new Separator { orientation = Orientation.Horizontal ; styleClass += "sep" },
         new Text {
-          text = "Time: TODO"
+          text <== StringProperty("Time: ").concat(game.time.asString)
           margin = Insets(5)
         },
         new Text {
@@ -341,10 +334,7 @@ class GameScreen(var game : Game) extends BorderPane
       )
     }
 
-
     top = actionsPane
-
-    bottom = new HelpAndQuitButtons
 
     onMouseClicked = (e: MouseEvent) => { requestFocus() }
   }
