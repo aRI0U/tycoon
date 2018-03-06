@@ -52,14 +52,17 @@ class GameScreen(var game : Game) extends BorderPane
   private var first_town_selected = BooleanProperty(false)
   private var first_town : Town = _
 
+  private var buyingTrainMode : Boolean = false
+
   private def init_buyingMines () {
     buyingMinesMode = true
     buyingRailsMode = false
     tripCreationMode = false
+    buyingTrainMode = false
     nb_mines.set(0)
     total_cost_mines.set(0)
 
-    menuPane.center = new VBox {
+    menuPane.top = new VBox {
 
       children = Seq(
         new Text {
@@ -83,7 +86,7 @@ class GameScreen(var game : Game) extends BorderPane
           text = "Exit mine construction" ; margin = Insets(10)
           onMouseClicked = (e: MouseEvent) => {
             buyingMinesMode = false
-            menuPane.center = actionsPane
+            menuPane.top = actionsPane
           }
         },
         new Separator { orientation = Orientation.Horizontal ; styleClass += "sep" }
@@ -94,10 +97,11 @@ class GameScreen(var game : Game) extends BorderPane
     buyingRailsMode = true
     buyingMinesMode = false
     tripCreationMode = false
+    buyingTrainMode = false
     nb_rails.set(0)
     total_cost_rails.set(0)
 
-    menuPane.center = new VBox {
+    menuPane.top = new VBox {
 
       children = Seq(
         new Text {
@@ -121,7 +125,32 @@ class GameScreen(var game : Game) extends BorderPane
           text = "Exit rail construction" ; margin = Insets(10)
           onMouseClicked = (e: MouseEvent) => {
             buyingRailsMode = false
-            menuPane.center = actionsPane
+            menuPane.top = actionsPane
+          }
+        },
+        new Separator { orientation = Orientation.Horizontal ; styleClass += "sep" }
+      )
+    }
+  }
+
+  private def init_buyingTrains () {
+    buyingRailsMode = false
+    buyingMinesMode = false
+    tripCreationMode = false
+    buyingTrainMode = true
+
+    menuPane.top = new VBox {
+
+      children = Seq(
+        new Text {
+          text = "cliquez sur une ville pour acheter un train"
+          margin = Insets(10)
+        },
+        new Button {
+          text = "Exit train buying" ; margin = Insets(10)
+          onMouseClicked = (e: MouseEvent) => {
+            buyingTrainMode = false
+            menuPane.top = actionsPane
           }
         },
         new Separator { orientation = Orientation.Horizontal ; styleClass += "sep" }
@@ -134,10 +163,11 @@ class GameScreen(var game : Game) extends BorderPane
     tripCreationMode = true
     buyingRailsMode = false
     buyingMinesMode = false
+    buyingTrainMode = false
 
     first_town_selected.set(false)
 
-    menuPane.center = new VBox {
+    menuPane.top = new VBox {
 
       children = Seq(
         new Text {
@@ -148,7 +178,7 @@ class GameScreen(var game : Game) extends BorderPane
           text = "Exit trip creation" ; margin = Insets(10)
           onMouseClicked = (e: MouseEvent) => {
             tripCreationMode = false
-            menuPane.center = actionsPane
+            menuPane.top = actionsPane
           }
         },
         new Separator { orientation = Orientation.Horizontal ; styleClass += "sep" }
@@ -168,15 +198,13 @@ class GameScreen(var game : Game) extends BorderPane
     gamePane.center = game.tiledPane // update
   }
 
-  private var buy_train = BooleanProperty(false)
-
   def maybeClickEntityAt(pos: GridLocation) {
     for (ent <- game.entities) {
       if (ent.gridContains(pos)) {
         ent match {
           case town : Town => {
-            if (buy_train.get()) {
-              println("new train in that town")
+            if (buyingTrainMode) {
+              println("new train in " + town.name + " town")
               if (game.createTrain(town)) return
             }
             if (tripCreationMode) {
@@ -190,7 +218,7 @@ class GameScreen(var game : Game) extends BorderPane
                     case None => println("no train no gain")
                   }
                   tripCreationMode = false
-                  menuPane.center = actionsPane
+                  menuPane.top = actionsPane
                 }
               } else {
                 first_town_selected.set(true)
@@ -236,14 +264,7 @@ class GameScreen(var game : Game) extends BorderPane
       },
       new Button {
         text = "Buy a train" ; margin = Insets(10)
-
-        onMouseClicked = _ => {
-          //Open new game mode about train construction
-          if (buy_train.get()) {
-            buy_train.set(false)
-          }
-          else buy_train.set(true)
-        }
+        onMouseClicked = _ => init_buyingTrains()
       },
       new Button {
         text = "Create a train trip" ; margin = Insets(10)
