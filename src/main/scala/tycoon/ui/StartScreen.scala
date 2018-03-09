@@ -9,7 +9,6 @@ import scalafx.scene.layout.{BorderPane, HBox, VBox}
 import scalafx.scene.text.Text
 import scalafx.scene.media.AudioClip
 
-// MUSICS: http://freemusicarchive.org/genre/Chiptune/?sort=track_interest
 
 class StartScreen extends BorderPane
 {

@@ -26,9 +26,9 @@ class Graph {
     if (road.finished) {
       print_graph()
       road.start_town match {
-        case None => println("unfinished road?")
+        case None => ()
         case Some(s_town) => road.end_town match {
-          case None => println("unfinished road?")
+          case None => ()
           case Some(e_town) => {
             val s_id = s_town.structure_id
             val e_id = e_town.structure_id

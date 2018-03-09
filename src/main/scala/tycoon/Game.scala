@@ -224,9 +224,12 @@ class Game(map_width : Int, map_height : Int)
           if (!(rail.road.end_town == rail.road.start_town)) {
             rail.road.end_town = Some(t)
             rail.road.finished = true
+
             for (rail_member <- rail.road.rails) {
               rail_member.road = rail.road
-            }
+
+              rail_member.printData += Pair("Between", StringProperty(rail.road.start_town.get.name))
+              rail_member.printData += Pair("and", StringProperty(rail.road.end_town.get.name))}
           }
           if (rail.road.finished) {
             false
@@ -254,6 +257,9 @@ class Game(map_width : Int, map_height : Int)
                   game_graph.newRoad(rail.road)
                   for (rail_member <- rail.road.rails) {
                     rail_member.road = rail.road
+                    
+                    rail_member.printData += Pair("Between", StringProperty(rail.road.start_town.get.name))
+                    rail_member.printData += Pair("and", StringProperty(rail.road.end_town.get.name))
                   }
                 }
               }

@@ -5,10 +5,8 @@ import scalafx.scene.image.{Image, ImageView}
 import javafx.scene.transform
 import javafx.scene._
 
-//http://designwoop.com/2012/03/20-free-subtle-textures-for-backgrounds/
-
 object Sprite {
-  private val tileset = new Image("file:src/main/resources/Sprite4.png")
+  private val tileset = new Image("file:src/main/resources/tileset.png")
 
   val tile_width = 32
   val tile_height = 32

@@ -14,7 +14,6 @@ abstract case class PassengerCarriage() extends Carriage {
   }
 
   override def debark(town: Town) : Unit = {
-    println("debark")
     town.population += passengers
     passengers = 0
   }
