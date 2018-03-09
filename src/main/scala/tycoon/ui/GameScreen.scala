@@ -15,7 +15,7 @@ import scalafx.scene.layout.{BorderPane, VBox, StackPane, Pane}
 import scalafx.scene.text.Text
 import scalafx.geometry.{Pos, HPos, VPos, Insets, Rectangle2D, Orientation}
 import scalafx.geometry.Orientation._
-import scalafx.scene.control.{Button, Separator, ButtonType, Alert, TextArea, Label}
+import scalafx.scene.control.{Button, Separator, ButtonType, Alert, TextArea, Label, Slider}
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.input.{MouseEvent, KeyEvent}
 
@@ -143,9 +143,13 @@ class GameScreen(var game : Game) extends BorderPane
 
       children = Seq(
         new Text {
-          text = "select a town to add a train in it"
+          text = "Select a town to add a train in it (costs 260)"
           margin = Insets(10)
         },
+        /*new Text {
+          text = "Number of passenger carriages (costs 20 per carriage):"
+          margin = Insets(5)
+        },*/
         new Button {
           text = "Exit train buying" ; margin = Insets(10)
           onMouseClicked = (e: MouseEvent) => {

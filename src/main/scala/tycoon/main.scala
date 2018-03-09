@@ -1,3 +1,18 @@
+
+/*
+
+c'est la AudioClip qui consomme tout le CPU
+
+changer scaleX et scaleY du DraggableTiledPane < GridPane pour un zoom facile
+
+
+
+
+
+*/
+
+
+
 package tycoon
 
 import tycoon.ui._

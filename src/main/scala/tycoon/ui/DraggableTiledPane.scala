@@ -115,6 +115,14 @@ extends BorderPane {
     mouse_anchor_x = e.getSceneX()
     mouse_anchor_y = e.getSceneY()
 
+    //println(delta_x, delta_y)
+
+    //translateX = translateX.get() + delta_x
+    //translateY = translateY.get() + delta_y
+
+    //scaleX = 0.5
+    //scaleY = 0.5
+
     // ensure the offsets do not go over the limits
     if (x_offset.get() <= min_offset_x) x_offset.set(min_offset_x)
     else if (x_offset.get() >= max_offset_x) x_offset.set(max_offset_x)
