@@ -4,7 +4,6 @@ import scala.util.Random
 import tycoon.GridLocation
 import tycoon.Game
 import tycoon.objects.structure._
-import tycoon.ui.Sprite
 import tycoon.ui.Tile
 import scala.collection.mutable.{HashMap, ListBuffer}
 

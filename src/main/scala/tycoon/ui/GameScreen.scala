@@ -292,7 +292,7 @@ class GameScreen(var game : Game) extends BorderPane
     onMouseReleased = (e: MouseEvent) => {
       if (e.x == mouse_anchor_x && e.y == mouse_anchor_y) {
 
-        val pos : GridLocation = game.tiledPane.screenPxToGridLoc(e.x, e.y)
+        val pos = new GridLocation( game.tiledPane.screenPxToGridLoc(e.x, e.y)._1, game.tiledPane.screenPxToGridLoc(e.x, e.y)._2) // TMP
 
         if (buyingMinesMode) {
           if (game.mine_price <= game.playerMoney.get() ){ //creation of a new mine

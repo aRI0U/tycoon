@@ -4,7 +4,7 @@ import tycoon.objects.structure._
 import tycoon.objects.railway._
 import tycoon.objects.vehicle._
 import tycoon.objects.graph._
-import tycoon.ui.Sprite
+import tycoon.ui.Tile
 import tycoon.ui.{Tile, Renderable, DraggableTiledPane}
 
 import javafx.animation.AnimationTimer
@@ -65,14 +65,12 @@ class Game(map_width : Int, map_height : Int)
   private val loop = new GameLoop()
 
   // INIT
-  val tilemap = new TileMap
-  val padding = 4
-  tilemap.setSize(map_width, map_height)
-  tilemap.fill(Sprite.tiles_grass)
-  tilemap.fillBorder(Sprite.tile_tree, 1) // TMP
-  tilemap.fillBorder(Sprite.tile_rock, 2, 1)
-  tilemap.fillBorder(Sprite.tiles_grass(1), 50, 3)
-  val tiledPane = new DraggableTiledPane(tilemap, padding)
+  val tilemap = new TileMap(map_width, map_height)
+  tilemap.fill(Tile.grass)
+  tilemap.tiles_width = Tile.square_width
+  tilemap.tiles_height = Tile.square_height
+  val tiledPane = new DraggableTiledPane(tilemap)
+  tiledPane.requestFocus
 
 
 
@@ -134,7 +132,7 @@ class Game(map_width : Int, map_height : Int)
       case _ => structure = new Mine(pos, nb_structures)
     }
     // check whether town is within the map boundaries
-    if (tilemap.gridRect.contains(structure.gridRect))
+    if (tilemap.gridContains(structure.gridRect))
     {
       // if so, check whether it intersects with an other town
       var valid = true
@@ -182,7 +180,7 @@ class Game(map_width : Int, map_height : Int)
     val rail = new BasicRail(pos, 0)
 
     // check whether rail is within the map boundaries
-    if (tilemap.gridRect.contains(rail.gridRect))
+    if (tilemap.gridContains(rail.gridRect))
     {
       // if so, check whether it intersects with an other entity
       var valid = true
@@ -228,8 +226,8 @@ class Game(map_width : Int, map_height : Int)
             for (rail_member <- rail.road.rails) {
               rail_member.road = rail.road
 
-              rail_member.printData += Pair("Between", StringProperty(rail.road.start_town.get.name))
-              rail_member.printData += Pair("and", StringProperty(rail.road.end_town.get.name))}
+              rail_member.printData += Tuple2("Between", StringProperty(rail.road.start_town.get.name))
+              rail_member.printData += Tuple2("and", StringProperty(rail.road.end_town.get.name))}
           }
           if (rail.road.finished) {
             false
@@ -257,9 +255,9 @@ class Game(map_width : Int, map_height : Int)
                   game_graph.newRoad(rail.road)
                   for (rail_member <- rail.road.rails) {
                     rail_member.road = rail.road
-                    
-                    rail_member.printData += Pair("Between", StringProperty(rail.road.start_town.get.name))
-                    rail_member.printData += Pair("and", StringProperty(rail.road.end_town.get.name))
+
+                    rail_member.printData += Tuple2("Between", StringProperty(rail.road.start_town.get.name))
+                    rail_member.printData += Tuple2("and", StringProperty(rail.road.end_town.get.name))
                   }
                 }
               }

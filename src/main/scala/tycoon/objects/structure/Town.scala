@@ -20,15 +20,15 @@ abstract case class Town(pos: GridLocation, id: Int) extends Structure(pos, id) 
   protected var _population = IntegerProperty(0)
   protected var _waiting_passengers = IntegerProperty(0)
 
-  printData += Pair("Name", _name)
+  printData += new Tuple2("Name", _name)
 
   private val populationStr = new StringProperty
   populationStr <== _population.asString
-  printData += Pair("Population", populationStr)
+  printData += new Tuple2("Population", populationStr)
 
   private val waitingPassengersStr = new StringProperty
   waitingPassengersStr <== _waiting_passengers.asString
-  printData += Pair("Waiting passengers", waitingPassengersStr)
+  printData += new Tuple2("Waiting passengers", waitingPassengersStr)
 
 
   private var intern_time : Double = 0

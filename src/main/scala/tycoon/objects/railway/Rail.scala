@@ -3,7 +3,6 @@ package tycoon.objects.railway
 import scala.util.Random
 import tycoon.GridLocation
 import tycoon.Game
-import tycoon.ui.Sprite
 import tycoon.ui.Tile
 import tycoon.ui.Renderable
 import scalafx.beans.property.{IntegerProperty, StringProperty}
@@ -14,7 +13,7 @@ abstract class Rail(pos: GridLocation, tile_type: Int) extends Renderable {
   val max_weight : Int
   var road_head : Boolean
 
-  
+
   var road = new Road(pos)
   road.length+=1
   road.rails += this

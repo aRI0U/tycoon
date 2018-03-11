@@ -1,12 +1,7 @@
 
 /*
 
-c'est la AudioClip qui consomme tout le CPU
-
-changer scaleX et scaleY du DraggableTiledPane < GridPane pour un zoom facile
-
-
-
+c'est le AudioClip qui consomme tout le CPU
 
 
 */
@@ -25,7 +20,7 @@ import scalafx.scene.layout.StackPane
 
 
 object Main extends JFXApp {
-  val game = new Game(100, 100)
+  val game = new Game(1000, 1000)
 
   val startScreen = new StartScreen()
 
@@ -45,6 +40,7 @@ object Main extends JFXApp {
   }
 
   stage = appStage
+
 
   startScreen.setOnStart(new Runnable {
     def run() = {

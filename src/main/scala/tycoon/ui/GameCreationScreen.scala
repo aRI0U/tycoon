@@ -61,7 +61,7 @@ class GameCreationScreen(var game : Game) extends BorderPane
     style = "-fx-background-color: lightgreen"
 
     onMousePressed = (e: MouseEvent) => {
-      requestFocus()
+      requestFocus
 
       mouse_anchor_x = e.x
       mouse_anchor_y = e.y
@@ -71,9 +71,9 @@ class GameCreationScreen(var game : Game) extends BorderPane
       if (e.x == mouse_anchor_x && e.y == mouse_anchor_y) {
         // creation of a city
         if (nb_towns.get() < max_towns) {
-          val pos : GridLocation = game.tiledPane.screenPxToGridLoc(e.x, e.y)
+          val pos = game.tiledPane.screenPxToGridLoc(e.x, e.y)
 
-          if(game.createTown(pos)) {
+          if(game.createTown(new GridLocation(pos._1, pos._2))) { // temp
             nb_towns.set(nb_towns.get() + 1)
           }
         }

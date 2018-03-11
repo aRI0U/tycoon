@@ -30,7 +30,7 @@ trait Renderable extends Printable {
   def gridLoc_= (new_loc: GridLocation) = {
     _gridLoc = new_loc
     // can cause problem if gridLoc_= is called before tile is defined
-    _gridRect = new Rectangle2D(new_loc.column, new_loc.row, tile.width / Sprite.tile_width - 1, tile.height / Sprite.tile_height - 1)
+    _gridRect = new Rectangle2D(new_loc.column, new_loc.row, tile.width / Tile.square_width - 1, tile.height / Tile.square_height - 1)
   }
 
   def gridRect: Rectangle2D = _gridRect
