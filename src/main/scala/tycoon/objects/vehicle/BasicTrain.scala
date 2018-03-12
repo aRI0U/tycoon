@@ -27,6 +27,7 @@ class BasicTrain(town : Town, nb_carriages : Int) extends Train(town, nb_carriag
   //var trail = road.rails
   val tile = new Tile(Sprite.tile_locomotive)
 
+
   var carriages_list = new ListBuffer[Carriage]()
   add_carriage()
 

@@ -6,7 +6,7 @@ import tycoon.Game
 import tycoon.ui.Sprite
 import tycoon.ui.Tile
 
-case class BasicRail(pos: GridLocation, tile_type : Int) extends Rail(pos, tile_type) {
+case class BasicRail(pos: GridLocation, val tile_type : Int) extends Rail(pos, tile_type) {
   val cost = 10
   val max_speed = 50
   val max_weight = 1000

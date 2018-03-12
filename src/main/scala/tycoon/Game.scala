@@ -303,7 +303,7 @@ class Game(map_width : Int, map_height : Int)
 
   def createTrain (town: Town) : Boolean = {
     var train = new BasicTrain(town, 3)
-    
+
 
     // check if there is an other train ??
     town.addTrain(train)
