@@ -188,6 +188,7 @@ class Game(map_width : Int, map_height : Int)
         if (other.gridIntersects(rail))
           valid = false
       }
+      var rail_met : Int = 0
       //looking for a trail_head around there
       //list of surounding entities (Renderable)
       var env = new ListBuffer[Any]
@@ -213,6 +214,13 @@ class Game(map_width : Int, map_height : Int)
         if ((o == 1 && d == 0) ||(d == 3 && o == 2) )
           previous_rail_update.tile.getView.rotate = 270
       }
+      def track_mergence (track : ListBuffer[Rail]) : Unit = {
+        for (r <- track) {
+          var temp =  r.next
+          r.next = r.previous
+          r.previous = temp
+        }
+      }
       def checkType(pair : Any) = pair match {
         case (t: Town,i : Int) => {
           if (rail.road.start_town == None) {
@@ -237,13 +245,24 @@ class Game(map_width : Int, map_height : Int)
         //transmission of road properties from the previous rail to the next one
         case (previous_rail: BasicRail,i : Int)=> {
           if ((previous_rail.road_head == true) && (previous_rail.road.finished == false)) {
+            if (rail_met < 3) {
+              rail_met+=1
+            }
               rail.road.rails ++= previous_rail.road.rails
               rail.road.length += previous_rail.road.length
               println (rail.road.rails)
 
-              rail.previous = previous_rail
-              previous_rail.next = rail
-
+              if (rail_met == 1) {
+                rail.previous = previous_rail
+                previous_rail.next = rail
+              }
+              else {
+                // In case of rails track mergence, it's get unified
+                track_mergence(previous_rail.road.rails)
+                rail.next = previous_rail
+                previous_rail.previous = rail
+                track_mergence(rail.road.rails)
+              }
               if (rail.road.start_town == None) {
                 rail.road.start_town = previous_rail.road.start_town
               }
@@ -278,6 +297,7 @@ class Game(map_width : Int, map_height : Int)
                 rail.tile.getView.rotate = 90
               }
               true
+
           }
           else false
         }

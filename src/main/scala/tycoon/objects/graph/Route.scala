@@ -66,6 +66,7 @@ class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
   }
 
   protected var intern_time : Double = 0
+  //train mouvment
   def update_box (dt: Double, road : Road) = {
     train.current_rail match {
       case Some(rail) => {
