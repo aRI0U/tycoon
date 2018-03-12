@@ -1,59 +1,38 @@
 package tycoon
 
-
 import tycoon.ui.Tile
-
-import scala.collection.mutable.HashMap
-
-import scalafx.scene.image.Image
-import scalafx.geometry.Rectangle2D
 import scala.util.Random
+import scalafx.geometry.Rectangle2D
 
-class TileMap {
-  val map = HashMap.empty[GridLocation, Tile]
 
-  private var _col_min : Int = 0
-  private var _col_max : Int = 0
-  private var _row_min : Int = 0
-  private var _row_max : Int = 0
+class TileMap (_width: Int, _height: Int) {
+  private val _map = Array.ofDim[Tile](width, height)
 
-  private var _tile_width : Int = 0
-  private var _tile_height : Int = 0
+  private var _tiles_width: Double = 0
+  private var _tiles_height: Double = 0
 
-  def col_min : Int = _col_min
-  def col_max : Int = _col_max
-  def row_min : Int = _row_min
-  def row_max : Int = _row_max
+  def map: Array[Array[Tile]] = _map
 
-  def tile_width : Int = _tile_width
-  def tile_height : Int = _tile_height
+  def tiles_width: Double = _tiles_width
+  def tiles_height: Double = _tiles_height
+  def tiles_width_= (new_tiles_width: Double) = _tiles_width = new_tiles_width
+  def tiles_height_= (new_tiles_height: Double) = _tiles_height = new_tiles_height
 
-  def gridRect : Rectangle2D = new Rectangle2D(col_min , row_min , col_max - col_min, row_max - row_min) // + 1, row_max - row_min + 1)
+  def width: Int = _width
+  def height: Int = _height
 
-  def setSize(width: Int, height: Int) : Unit = {
-    _col_min = - width / 2
-    _col_max  = _col_min + width - 1
-    _row_min  = - height / 2
-    _row_max = _row_min + height - 1
+  def gridContains(rect: Rectangle2D) = {
+    true // todo rect avec les pixels sptet mieuh
   }
 
-  def fill(tile_array : Array[Tile]) : Unit = {
-    map.clear()
-    _tile_width = tile_array(0).width
-    _tile_height = tile_array(0).height
-    val r = scala.util.Random
-    for {
-      col <- col_min to col_max
-      row <- row_min to row_max
-    } map += (new GridLocation(col, row) -> new Tile(tile_array(r.nextInt(6))))
-
-}
-  def fillBorder(tile: Tile, borderSize: Int, shift: Int = 0) : Unit = {
-    for {
-      col <- (col_min - borderSize - shift) to (col_max + borderSize + shift)
-      row <- (row_min - borderSize - shift) to (row_max + borderSize + shift)
-      if (col < col_min - shift || col > col_max + shift
-        || row < row_min - shift || row > row_max + shift)
-    } map += (new GridLocation(col, row) -> new Tile(tile))
+  /* fill map randomly using tiles */
+  def fill(tiles: Array[Tile]) : Unit = {
+    if (tiles.length >= 1) {
+      val r = scala.util.Random
+      for {
+        row <- 0 to height - 1
+        col <- 0 to width - 1
+      } _map(row)(col) = new Tile(tiles(r.nextInt(tiles.length)))
+    }
   }
 }

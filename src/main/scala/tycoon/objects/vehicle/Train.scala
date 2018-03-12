@@ -5,6 +5,7 @@ import scala.collection.mutable.ListBuffer
 import tycoon.objects.carriage._
 import tycoon.objects.railway._
 import tycoon.objects.structure._
+import scalafx.beans.property.{IntegerProperty, StringProperty}
 
 abstract class Train(town : Town, nb_carriages : Int) extends Vehicle(town) {
   var carriages_list : ListBuffer[Carriage]

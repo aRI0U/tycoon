@@ -38,20 +38,7 @@ class GameCreationScreen(var game : Game) extends BorderPane
     onValidate = r
   }
 
-  //private val tiledPane = new DraggableTiledPane(game.tilemap, game.padding)
-
-  /*game.entities.onChange((_, changes) => {
-    for (change <- changes)
-      change match {
-        case Add(_, added) => println("hi1")
-          added.foreach(town => tiledPane.addEntity(town))
-        case Remove(_, removed) =>
-          removed.foreach(town => tiledPane.removeEntity(town))
-        case _ => ()
-      }
-  })
-*/
-  private val min_towns : Int = 0 // tmp
+  private val min_towns : Int = 10
   private val max_towns : Int = 15
 
   private var nb_towns = IntegerProperty(0)
@@ -74,7 +61,7 @@ class GameCreationScreen(var game : Game) extends BorderPane
     style = "-fx-background-color: lightgreen"
 
     onMousePressed = (e: MouseEvent) => {
-      requestFocus()
+      requestFocus
 
       mouse_anchor_x = e.x
       mouse_anchor_y = e.y
@@ -84,9 +71,9 @@ class GameCreationScreen(var game : Game) extends BorderPane
       if (e.x == mouse_anchor_x && e.y == mouse_anchor_y) {
         // creation of a city
         if (nb_towns.get() < max_towns) {
-          val pos : GridLocation = game.tiledPane.screenPxToGridLoc(e.x, e.y)
+          val pos = game.tiledPane.screenPxToGridLoc(e.x, e.y)
 
-          if(game.createTown(pos)) {
+          if(game.createTown(new GridLocation(pos._1, pos._2))) { // temp
             nb_towns.set(nb_towns.get() + 1)
           }
         }
@@ -130,7 +117,7 @@ class GameCreationScreen(var game : Game) extends BorderPane
         margin = Insets(10)
 
         onMouseClicked = (e: MouseEvent) => {
-          if (nb_towns.get() >= min_towns) { // TMP && name_field.text.get().length() > 0) {
+          if (nb_towns.get() >= min_towns) {
             game.playerName = name_field.text.get()
             onValidate.run()
           }

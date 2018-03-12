@@ -35,29 +35,7 @@ class HelpAndQuitButtons extends VBox
 
   children = new HBox {
     children = Seq(
-      new Button {
-        text = "Help"
-        margin = Insets(10)
-
-        val label = new Label("TODO detailed list of implemented features")
-
-        val expContent = new GridPane {
-          maxWidth = Double.MaxValue
-          add(label, 0, 0)
-          // texte avec du gras et tout :
-          // https://docs.oracle.com/javase/8/javafx/api/javafx/scene/text/TextFlow.html
-        }
-
-        onMouseClicked = (e: MouseEvent) => {
-          new Alert(Alert.AlertType.Information) {
-            title = "Help"
-            headerText = "The Tycoon Game - V 1.0.0 Beta"
-            contentText = "See below for details."
-            buttonTypes = Seq(new ButtonType("Got it!"))
-            dialogPane().expandableContent = expContent
-          }.showAndWait()
-        }
-      },
+     
       new Button {
         text = "Quit Game"
         margin = Insets(10)

@@ -1,3 +1,13 @@
+
+/*
+
+c'est le AudioClip qui consomme tout le CPU
+
+
+*/
+
+
+
 package tycoon
 
 import tycoon.ui._
@@ -10,7 +20,7 @@ import scalafx.scene.layout.StackPane
 
 
 object Main extends JFXApp {
-  val game = new Game(100, 100)
+  val game = new Game(1000, 1000)
 
   val startScreen = new StartScreen()
 
@@ -30,6 +40,7 @@ object Main extends JFXApp {
   }
 
   stage = appStage
+
 
   startScreen.setOnStart(new Runnable {
     def run() = {

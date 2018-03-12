@@ -5,7 +5,6 @@ import scala.collection.mutable.ListBuffer
 import scalafx.scene.image.Image
 
 import tycoon.ui.Tile
-import tycoon.ui.Sprite
 import tycoon.GridLocation
 import tycoon.Game
 import tycoon.ui.DraggableTiledPane
@@ -25,7 +24,7 @@ class BasicTrain(town : Town, nb_carriages : Int) extends Train(town, nb_carriag
 
   var current_rail : Option[Rail] = None
   //var trail = road.rails
-  val tile = new Tile(Sprite.tile_locomotive)
+  val tile = new Tile(Tile.locomotive)
 
 
   var carriages_list = new ListBuffer[Carriage]()
