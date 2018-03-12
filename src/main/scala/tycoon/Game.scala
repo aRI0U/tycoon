@@ -206,13 +206,13 @@ class Game(map_width : Int, map_height : Int)
           }
         }
       }
-      def turning(o : Int, d : Int,previous_rail_update : BasicRail) : Unit = {
+      def turning(o : Int, d : Int, rail_to_update : BasicRail) : Unit = {
         if ((o == 3 && d == 0) ||(d == 1 && o == 2) )
-          previous_rail_update.tile.getView.rotate = 180
+          rail_to_update.tile.getView.rotate = 180
         if ((o == 0 && d == 1) ||(d == 2 && o == 3) )
-          previous_rail_update.tile.getView.rotate = 90
+          rail_to_update.tile.getView.rotate = 90
         if ((o == 1 && d == 0) ||(d == 3 && o == 2) )
-          previous_rail_update.tile.getView.rotate = 270
+          rail_to_update.tile.getView.rotate = 270
       }
       def track_mergence (track : ListBuffer[Rail]) : Unit = {
         for (r <- track) {
@@ -223,13 +223,18 @@ class Game(map_width : Int, map_height : Int)
       }
       def checkType(pair : Any) = pair match {
         case (t: Town,i : Int) => {
+          rail.orientation = i
           if (rail.road.start_town == None) {
             rail.road.start_town = Some(t)
+            if (rail_met == 0) {
+              rail.origin = i
+            }
           }
           rail.road.end_town = Some(t)
           if (!(rail.road.end_town == rail.road.start_town)) {
             rail.road.end_town = Some(t)
             rail.road.finished = true
+            rail.orientation = i
 
             for (rail_member <- rail.road.rails) {
               rail_member.road = rail.road
@@ -257,7 +262,7 @@ class Game(map_width : Int, map_height : Int)
                 previous_rail.next = rail
               }
               else {
-                // In case of rails track mergence, it's get unified
+                // In case of rails track mergence, it's get unified (rail_met > 1)
                 track_mergence(previous_rail.road.rails)
                 rail.next = previous_rail
                 previous_rail.previous = rail
@@ -267,10 +272,12 @@ class Game(map_width : Int, map_height : Int)
                 rail.road.start_town = previous_rail.road.start_town
               }
               else {
+                // In this case, the road is finished
                 if (!(rail.road.start_town == previous_rail.road.start_town)) {
                   rail.road.end_town = rail.road.start_town
                   rail.road.start_town = previous_rail.road.start_town
                   rail.road.finished = true
+
                   game_graph.newRoad(rail.road)
                   for (rail_member <- rail.road.rails) {
                     rail_member.road = rail.road
@@ -284,6 +291,7 @@ class Game(map_width : Int, map_height : Int)
 
               rail.origin = i
               previous_rail.orientation = i
+              // Choos a new tile for previous rail if turning
               if ((previous_rail.origin +  previous_rail.orientation) % 2 ==1) {
                 entities-= previous_rail
                 rails-=previous_rail
@@ -293,6 +301,7 @@ class Game(map_width : Int, map_height : Int)
                 turning(previous_rail.origin,previous_rail.orientation,previous_rail_update)
                 previous_rail_update.road_head = false
               }
+              // If needed, turn the straight rile tile
               if (rail.origin == 1 || rail.origin == 3) {
                 rail.tile.getView.rotate = 90
               }
@@ -307,6 +316,9 @@ class Game(map_width : Int, map_height : Int)
       for (pair <- env) {
         if (checkType(pair))
           valid_bis = true
+      }
+      if ((rail.origin == 1 || rail.origin == 3) && rail.road.length == 1 ) {
+        rail.tile.getView.rotate = 90
       }
       if (valid &&  valid_bis) {
         rails += rail
