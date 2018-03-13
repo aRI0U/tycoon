@@ -2,6 +2,7 @@ package tycoon.objects.vehicle
 
 import scala.collection.mutable.ListBuffer
 
+import tycoon.Game
 import tycoon.objects.carriage._
 import tycoon.objects.railway._
 import tycoon.objects.structure._
@@ -12,6 +13,14 @@ abstract class Train(town : Town, nb_carriages : Int) extends Vehicle(town) {
   var location : Option[Town] = Some(town)
   var visible : Boolean
   var current_rail : Option[Rail]
+
+  // def rotation (angle : Int) {
+  //   tile.getView.rotate = angle
+  // }
+  def rotation(angle : Int) = {
+    tile.getView.rotate = (angle)
+  }
+
 
   def add_carriage () {
     for (i <- 1 to nb_carriages) carriages_list += new BasicPassengerCarriage

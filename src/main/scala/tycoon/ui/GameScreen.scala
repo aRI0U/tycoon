@@ -235,7 +235,8 @@ class GameScreen(var game : Game) extends BorderPane
               }
             }
           }
-          case _ => { }
+          case r : Rail => { }
+          case _ => {  }
         }
         bindPrintData(ent.printData)
         return

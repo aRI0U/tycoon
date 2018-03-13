@@ -207,12 +207,18 @@ class Game(map_width : Int, map_height : Int)
         }
       }
       def turning(o : Int, d : Int, rail_to_update : BasicRail) : Unit = {
-        if ((o == 3 && d == 0) ||(d == 1 && o == 2) )
+        if ((o == 3 && d == 0) ||(d == 1 && o == 2) ) {
           rail_to_update.tile.getView.rotate = 180
-        if ((o == 0 && d == 1) ||(d == 2 && o == 3) )
+          rail_to_update.nb_rotation = 0
+        }
+        if ((o == 0 && d == 1) ||(d == 2 && o == 3) ) {
           rail_to_update.tile.getView.rotate = 90
-        if ((o == 1 && d == 0) ||(d == 3 && o == 2) )
+          rail_to_update.nb_rotation = 3
+        }
+        if ((o == 1 && d == 0) ||(d == 3 && o == 2) ){
           rail_to_update.tile.getView.rotate = 270
+          rail_to_update.nb_rotation = 0
+        }
       }
       def track_mergence (track : ListBuffer[Rail]) : Unit = {
         for (r <- track) {
@@ -292,10 +298,17 @@ class Game(map_width : Int, map_height : Int)
               rail.origin = i
               previous_rail.orientation = i
               // Choos a new tile for previous rail if turning
+              //actualy the update rail is not the  one used most part of the time... the one below stays..
               if ((previous_rail.origin +  previous_rail.orientation) % 2 ==1) {
                 entities-= previous_rail
                 rails-=previous_rail
-                val previous_rail_update = new BasicRail(previous_rail.pos, 1)
+                val previous_rail_update = previous_rail.copy(tile_type = 1)
+                // previous_rail.next.previous = previous_rail_update
+                // previous_rail.previous.next = previous_rail_update
+                // val previous_rail_update = previous_rail.copy(previous_rail.pos, 1)
+                previous_rail_update.previous = previous_rail.previous
+                previous_rail_update.next = previous_rail.next
+                previous_rail_update.road = previous_rail.road
                 entities+= previous_rail_update
                 rails+= previous_rail_update
                 turning(previous_rail.origin,previous_rail.orientation,previous_rail_update)

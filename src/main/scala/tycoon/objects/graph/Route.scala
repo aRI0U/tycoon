@@ -78,6 +78,32 @@ class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
           }
           else {
             train.current_rail = Some(rail.direction(dir_indicator))
+            // We are not just looking for current_rail because the conncted rail is the old straight one..
+            for (r <- game.rails) {
+              if (r.position == train.current_rail.get.position && r.get_tile_type == 1) {
+                var x1 = r.next.position.get_x - r.previous.position.get_x
+                var y1 = r.next.position.get_y - r.previous.position.get_y
+                var x = r.position.get_x
+                var y = r.position.get_y
+                //include direction........
+                if (((x1,y1) == (1,1) && y > r.previous.position.get_y) || ( (x1,y1) == (1,-1) && y < r.previous.position.get_y)  ) {
+                  train.rotation(-90)
+                }
+                if  ( (x1,y1) == (1,-1) && y < r.previous.position.get_y) {
+                  train.rotation(-90)
+                }
+                if ((x1,y1) == (-1,-1)) {
+                  train.rotation(0)
+                }
+                if ((x1,y1) == (-1,1)) {
+                  train.rotation(0)
+                }
+                if ((x1,y1) == (1,-1)) {
+                  train.rotation(0)
+                }
+                // train.rotation((r.get_rotation + 2*dir_indicator)*90)
+              }
+            }
             train.gridLoc = rail.direction(dir_indicator).position
             intern_time -=1
           }
