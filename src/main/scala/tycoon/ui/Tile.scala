@@ -58,16 +58,13 @@ object Tile {
   val town = new Tile(tileset, get_tile_rect(4, 1, width = 2))
   val mine = new Tile(tileset, get_tile_rect(4, 3))
   val locomotive = new Tile(tileset, get_tile_rect(3, 2))
+  val passenger_wagon = new Tile(tileset, get_tile_rect(3, 1))
 
   // straight rails
   val straight_rail1 = new Tile(tileset, get_tile_rect(1, 1))
-  val straight_rail2 = new Tile(tileset, get_tile_rect(1, 1), 90)
 
   // turning rails
   val turning_rail = new Tile(tileset, get_tile_rect(1, 2))
-  val turning_rail2 = new Tile(tileset, get_tile_rect(1, 2), 90) // ??
-  val turning_rail3 = new Tile(tileset, get_tile_rect(1, 2), 90) // ??
-  val turning_rail4 = new Tile(tileset, get_tile_rect(1, 2), 90) // ??
 
   // all the grass tiles, randomly spread on the map
   val grass = Array(

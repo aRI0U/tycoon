@@ -2,6 +2,7 @@ package tycoon.ui
 
 import tycoon.{Game, GridLocation}
 import tycoon.Player
+import tycoon.objects.vehicle._
 import tycoon.objects.railway._
 import tycoon.objects.structure._
 
@@ -206,6 +207,9 @@ class GameScreen(var game : Game) extends BorderPane
     for (ent <- game.entities) {
       if (ent.gridContains(pos)) {
         ent match {
+          case train : Train => {
+            println(train.carriages_list)
+          }
           case town : Town => {
             if (buyingTrainMode) {
               println("new train in " + town.name + " town")

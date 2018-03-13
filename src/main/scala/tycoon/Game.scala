@@ -4,6 +4,7 @@ import tycoon.objects.structure._
 import tycoon.objects.railway._
 import tycoon.objects.vehicle._
 import tycoon.objects.graph._
+import tycoon.objects.carriage._
 import tycoon.ui.Tile
 import tycoon.ui.{Tile, Renderable, DraggableTiledPane}
 
@@ -61,6 +62,7 @@ class Game(map_width : Int, map_height : Int)
   var towns = new ListBuffer[Town]()
   var trains = new ListBuffer[BasicTrain]()
   var routes = new ListBuffer[Route]()
+  var carriages = new ListBuffer[Carriage]()
 
   private val loop = new GameLoop()
 
@@ -351,6 +353,7 @@ class Game(map_width : Int, map_height : Int)
   }
 
   def createTrain (town: Town) : Boolean = {
+    // Carriage number set at 3 by default
     var train = new BasicTrain(town, 3)
 
 
@@ -361,7 +364,11 @@ class Game(map_width : Int, map_height : Int)
 
     // paying
     playerMoney.set(playerMoney.get() - train.cost)
-    for (carriage <- train.carriages_list) playerMoney.set(playerMoney.get() - carriage.cost)
+    for (carriage <- train.carriages_list) {
+      playerMoney.set(playerMoney.get() - carriage.cost)
+      entities+=carriage
+      carriages+=carriage
+    }
     true
   }
 

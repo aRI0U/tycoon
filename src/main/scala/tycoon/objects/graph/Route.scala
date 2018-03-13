@@ -42,7 +42,7 @@ class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
        train.current_rail = Some(rail)
       }
     }
-    train_rotation
+    train_rotation(train)
     train.gridLoc = (train.current_rail.get).position
     //train.current_rail = current_road.rails
   }
@@ -64,11 +64,15 @@ class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
     if (itinerary.size == 0) {
       on_the_road = false
     }
+    for (car <- train.carriages_list) {
+      car.gridLoc = new GridLocation(-1,-1)
+      car.current_rail = None
+    }
   }
 
 // give the tile the orientation fitting with the rail
-  def train_rotation () = {
-    var r = train.current_rail.get
+  def train_rotation (thing : Train) = {
+    var r = thing.current_rail.get
     //choosing rail with witch we compare the direction tookeen by the train
     var comp_rail = r.direction((dir_indicator - 1) %2)
     var plus = 1
@@ -79,16 +83,41 @@ class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
     var x = r.position.get_x - comp_rail.position.get_x
     var y = r.position.get_y - comp_rail.position.get_y
     if (x == 1) {
-      train.rotation(90 + plus*180)
+      thing.rotation(90 + plus*180)
     }
     if (x == -1) {
-      train.rotation(-90+ plus*180)
+      thing.rotation(-90+ plus*180)
     }
     if (y == 1) {
-      train.rotation(180+ plus*180)
+      thing.rotation(180+ plus*180)
     }
     if (y == -1) {
-      train.rotation(0+ plus*180)
+      thing.rotation(0+ plus*180)
+    }
+  }
+
+  def wagon_rotation (thing : Carriage) = {
+    var r = thing.current_rail.get
+    //choosing rail with witch we compare the direction tookeen by the train
+    var comp_rail = r.direction((dir_indicator - 1) %2)
+    var plus = 1
+    if (!(r == r.direction(dir_indicator))) {
+      comp_rail = r.direction(dir_indicator)
+      plus = 0
+    }
+    var x = r.position.get_x - comp_rail.position.get_x
+    var y = r.position.get_y - comp_rail.position.get_y
+    if (x == 1) {
+      thing.rotation(90 + plus*180)
+    }
+    if (x == -1) {
+      thing.rotation(-90+ plus*180)
+    }
+    if (y == 1) {
+      thing.rotation(180+ plus*180)
+    }
+    if (y == -1) {
+      thing.rotation(0+ plus*180)
     }
   }
   protected var intern_time : Double = 0
@@ -104,9 +133,26 @@ class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
           }
           else {
             train.current_rail = Some(rail.direction(dir_indicator))
-            train_rotation()
+            train_rotation(train)
             train.gridLoc = rail.direction(dir_indicator).position
             intern_time -=1
+            //carriages update mouvment
+            if (!train.carriages_list.isEmpty) {
+              var rail_chain1 : Option[Rail] = Some(rail)
+              var rail_chain2 : Option[Rail] = Some(rail)
+              for (car <- train.carriages_list) {
+                rail_chain2 = car.current_rail
+                car.current_rail = rail_chain1
+                rail_chain1 match {
+                  case Some(r) => {
+                    car.gridLoc = r.position
+                    wagon_rotation(car)
+                  }
+                  case None => {}
+                }
+                rail_chain1 = rail_chain2
+              }
+            }
           }
         }
       }

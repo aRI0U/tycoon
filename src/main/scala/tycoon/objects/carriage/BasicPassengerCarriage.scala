@@ -1,6 +1,8 @@
 package tycoon.objects.carriage
 
+import tycoon.GridLocation
 import tycoon.ui.Tile
+import tycoon.objects.railway._
 
 class BasicPassengerCarriage extends PassengerCarriage {
   val cost = 20
@@ -8,5 +10,7 @@ class BasicPassengerCarriage extends PassengerCarriage {
   val weight = 100
   val max_passengers = 10
   var passengers = 0
-  val tile = new Tile(Tile.locomotive)
+  val tile = new Tile(Tile.passenger_wagon)
+  var current_rail : Option[Rail] = None
+  gridLoc = new GridLocation(-1,-1)
 }
