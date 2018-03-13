@@ -24,6 +24,7 @@ abstract class Train(town : Town, nb_carriages : Int) extends Vehicle(town) {
 
   def add_carriage () {
     for (i <- 1 to nb_carriages) carriages_list += new BasicPassengerCarriage
+    carriages_list += new GoodsCarriage
   }
 
   def boarding () = {

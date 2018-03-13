@@ -354,6 +354,7 @@ class Game(map_width : Int, map_height : Int)
 
   def createTrain (town: Town) : Boolean = {
     // Carriage number set at 3 by default
+    // + one good carriage now :)
     var train = new BasicTrain(town, 3)
 
 
