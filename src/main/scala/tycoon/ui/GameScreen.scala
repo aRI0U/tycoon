@@ -271,6 +271,14 @@ class GameScreen(var game : Game) extends BorderPane
         onMouseClicked = _ => init_buyingMines()
       },
       new Button {
+        text = "Farm Construction" ; margin = Insets(10)
+        onMouseClicked = _ => {}//init_buyingFarmes()
+      },
+      new Button {
+        text = "Factory Construction" ; margin = Insets(10)
+        onMouseClicked = _ => {}//init_buyingFactories()
+      },
+      new Button {
         text = "Buy a train" ; margin = Insets(10)
         onMouseClicked = _ => init_buyingTrains()
       },
