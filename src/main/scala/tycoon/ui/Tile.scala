@@ -57,13 +57,13 @@ object Tile {
   val rock = new Tile(tileset, get_tile_rect(4, 4))
 
   //vehicle stuff
-  val locomotive = new Tile(tileset, get_tile_rect(5, 4))
+  val locomotive = new Tile(tileset, get_tile_rect(3, 2))
   val passenger_wagon = new Tile(tileset, get_tile_rect(3, 1))
   val goods_wagon = new Tile(tileset, get_tile_rect(3, 3))
   val liquid_wagon = new Tile(tileset, get_tile_rect(6, 1))
 
   //structure tiles
-  val town = new Tile(tileset, get_tile_rect(5, 2, width = 2))
+  val town = new Tile(tileset, get_tile_rect(4, 1, width = 2))
   val mine = new Tile(tileset, get_tile_rect(4, 3))
   val factory_tile = new Tile(tileset, get_tile_rect(5, 1))
   val farm_tile = new Tile(tileset, get_tile_rect(5, 2, width = 2))
