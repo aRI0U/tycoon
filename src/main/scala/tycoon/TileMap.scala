@@ -21,9 +21,8 @@ class TileMap (_width: Int, _height: Int) {
   def width: Int = _width
   def height: Int = _height
 
-  def gridContains(rect: Rectangle2D) = {
-    true // todo rect avec les pixels sptet mieuh
-  }
+  def gridContains(rect: GridRectangle) =
+    (rect.left >= 0 && rect.top >= 0 && rect.right <= width - 1 && rect.bottom <= height - 1)
 
   /* fill map randomly using tiles */
   def fill(tiles: Array[Tile]) : Unit = {

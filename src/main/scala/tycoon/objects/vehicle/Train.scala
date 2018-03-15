@@ -11,7 +11,6 @@ import scalafx.beans.property.{IntegerProperty, StringProperty}
 abstract class Train(town : Town, nb_carriages : Int) extends Vehicle(town) {
   var carriages_list : ListBuffer[Carriage]
   var location : Option[Town] = Some(town)
-  var visible : Boolean
   var current_rail : Option[Rail]
 
   // def rotation (angle : Int) {

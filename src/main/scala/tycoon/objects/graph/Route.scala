@@ -43,7 +43,7 @@ class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
       }
     }
     train_rotation(train)
-    train.gridLoc = (train.current_rail.get).position
+    train.setPos((train.current_rail.get).position)
     //train.current_rail = current_road.rails
   }
 
@@ -60,12 +60,12 @@ class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
     train.visible = false
     train.current_rail = None
     //intern_time -=1(train.location.get).position
-    train.gridLoc = new GridLocation(train.location.get.position.get_x +1,train.location.get.position.get_y)
+    train.setPos(new GridLocation(train.location.get.position.col +1,train.location.get.position.row))
     if (itinerary.size == 0) {
       on_the_road = false
     }
     for (car <- train.carriages_list) {
-      car.gridLoc = new GridLocation(-1,-1)
+      car.setPos(new GridLocation(-1,-1))
       car.current_rail = None
     }
   }
@@ -80,8 +80,8 @@ class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
       comp_rail = r.direction(dir_indicator)
       plus = 0
     }
-    var x = r.position.get_x - comp_rail.position.get_x
-    var y = r.position.get_y - comp_rail.position.get_y
+    var x = r.position.col - comp_rail.position.col
+    var y = r.position.row - comp_rail.position.row
     if (x == 1) {
       thing.rotation(90 + plus*180)
     }
@@ -105,8 +105,8 @@ class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
       comp_rail = r.direction(dir_indicator)
       plus = 0
     }
-    var x = r.position.get_x - comp_rail.position.get_x
-    var y = r.position.get_y - comp_rail.position.get_y
+    var x = r.position.col - comp_rail.position.col
+    var y = r.position.row - comp_rail.position.row
     if (x == 1) {
       thing.rotation(90 + plus*180)
     }
@@ -134,7 +134,7 @@ class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
           else {
             train.current_rail = Some(rail.direction(dir_indicator))
             train_rotation(train)
-            train.gridLoc = rail.direction(dir_indicator).position
+            train.setPos(rail.direction(dir_indicator).position)
             intern_time -=1
             //carriages update mouvment
             if (!train.carriages_list.isEmpty) {
@@ -145,7 +145,7 @@ class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
                 car.current_rail = rail_chain1
                 rail_chain1 match {
                   case Some(r) => {
-                    car.gridLoc = r.position
+                    car.setPos(r.position)
                     wagon_rotation(car)
                   }
                   case None => {}

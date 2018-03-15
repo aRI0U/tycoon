@@ -130,20 +130,20 @@ Evading the dreaded Imperial ENS leaders, a group of freedom fighters led by Nat
 
     val timeline = new Timeline {
       keyFrames = Seq(
-        at (0 s) { ctxt1.translateY -> height.value },
-        at (14 s) { ctxt1.translateY -> -height.value },
-        at (6 s) { ctxt2.translateY -> height.value },
-        at (20 s) { ctxt2.translateY -> -height.value },
-        at (10 s) { ctxt3.translateY -> height.value },
-        at (24 s) { ctxt3.translateY -> -height.value },
-        at (14 s) { ctxt4.translateY -> height.value },
-        at (28 s) { ctxt4.translateY -> -height.value },
-        at (20 s) { ctxt5.translateY -> height.value },
-        at (36 s) { ctxt5.translateY -> -height.value },
-        at (25 s) { ctxt6.translateY -> height.value },
-        at (42 s) { ctxt6.translateY -> -height.value },
-        at (28 s) { ctxt7.translateY -> 2 * height.value },
-        at (51 s) { ctxt7.translateY -> (-height.value / 2 - ctxt7.height.value - 100) }
+        at (0.s) { ctxt1.translateY -> height.value },
+        at (14.s) { ctxt1.translateY -> -height.value },
+        at (6.s) { ctxt2.translateY -> height.value },
+        at (20.s) { ctxt2.translateY -> -height.value },
+        at (10.s) { ctxt3.translateY -> height.value },
+        at (24.s) { ctxt3.translateY -> -height.value },
+        at (14.s) { ctxt4.translateY -> height.value },
+        at (28.s) { ctxt4.translateY -> -height.value },
+        at (20.s) { ctxt5.translateY -> height.value },
+        at (36.s) { ctxt5.translateY -> -height.value },
+        at (25.s) { ctxt6.translateY -> height.value },
+        at (42.s) { ctxt6.translateY -> -height.value },
+        at (28.s) { ctxt7.translateY -> 2 * height.value },
+        at (51.s) { ctxt7.translateY -> (-height.value / 2 - ctxt7.height.value - 100) }
       )
     }
     timeline.play()

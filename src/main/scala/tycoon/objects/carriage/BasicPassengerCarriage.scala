@@ -10,7 +10,7 @@ class BasicPassengerCarriage extends PassengerCarriage {
   val weight = 100
   val max_passengers = 10
   var passengers = 0
-  val tile = new Tile(Tile.passenger_wagon)
+  tile = new Tile(Tile.passenger_wagon)
   var current_rail : Option[Rail] = None
-  gridLoc = new GridLocation(-1,-1)
+  setPos(new GridLocation(-1,-1))
 }

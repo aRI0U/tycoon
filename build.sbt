@@ -7,3 +7,5 @@ name := "Tycoon", libraryDependencies += swing
 )
 
 fork in run := true
+
+scalacOptions ++= Seq("-unchecked", "-deprecation","-feature")

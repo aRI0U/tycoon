@@ -3,11 +3,11 @@ package tycoon.objects.structure
 import scala.collection.mutable.ListBuffer
 
 import tycoon.objects.vehicle._
-import tycoon.ui.{Renderable, Printable}
+import tycoon.ui.Entity
 import tycoon.GridLocation
 
 
-abstract class Structure(pos: GridLocation, id: Int) extends Renderable {
+abstract class Structure(pos: GridLocation, id: Int) extends Entity {
   val structure_id = id
   var list_trains = new ListBuffer[Train]()
   def addTrain(train:Train) {
