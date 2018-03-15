@@ -23,6 +23,8 @@ TownManager qui comprend la fonction de création de town etc
 
 package tycoon
 
+import tycoon.game.Game
+
 import tycoon.ui._
 
 import scalafx.Includes._

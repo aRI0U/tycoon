@@ -1,7 +1,6 @@
 package tycoon.ui
 
-import tycoon.{Game, GridLocation}
-import tycoon.Player
+import tycoon.game._
 import tycoon.objects.vehicle._
 import tycoon.objects.railway._
 import tycoon.objects.structure._

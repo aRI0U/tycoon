@@ -5,8 +5,8 @@ import scala.collection.mutable.ListBuffer
 import scalafx.scene.image.Image
 
 import tycoon.ui.Tile
-import tycoon.GridLocation
-import tycoon.Game
+import tycoon.game.GridLocation
+import tycoon.game.Game
 import tycoon.ui.DraggableTiledPane
 
 import tycoon.objects.carriage._

@@ -1,7 +1,7 @@
 package tycoon.ui
 
-import tycoon.GridLocation
-import tycoon.GridRectangle
+import tycoon.game.GridLocation
+import tycoon.game.GridRectangle
 
 import scalafx.geometry.Rectangle2D
 import scalafx.scene.image.ImageView

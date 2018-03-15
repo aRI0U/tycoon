@@ -6,8 +6,8 @@ import tycoon.objects.carriage._
 import tycoon.objects.railway._
 import tycoon.objects.structure._
 import tycoon.objects.vehicle._
-import tycoon.Game
-import tycoon.GridLocation
+import tycoon.game.Game
+import tycoon.game.GridLocation
 
 class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
 

@@ -1,4 +1,4 @@
-package tycoon
+package tycoon.game
 
 import tycoon.objects.structure._
 import tycoon.objects.railway._

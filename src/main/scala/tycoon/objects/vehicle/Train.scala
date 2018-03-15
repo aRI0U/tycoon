@@ -2,7 +2,7 @@ package tycoon.objects.vehicle
 
 import scala.collection.mutable.ListBuffer
 
-import tycoon.Game
+import tycoon.game.Game
 import tycoon.objects.carriage._
 import tycoon.objects.railway._
 import tycoon.objects.structure._

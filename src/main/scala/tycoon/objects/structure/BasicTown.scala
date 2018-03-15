@@ -2,7 +2,7 @@ package tycoon.objects.structure
 
 import scala.util.Random
 
-import tycoon.GridLocation
+import tycoon.game.GridLocation
 import tycoon.ui.Tile
 
 import scalafx.beans.property.IntegerProperty

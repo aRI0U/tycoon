@@ -5,7 +5,7 @@ import scala.Array._
 
 import tycoon.objects.structure._
 import tycoon.objects.railway._
-import tycoon.Game
+import tycoon.game.Game
 
 class Vertex(s: Structure) {
   val origin : Int = s.structure_id

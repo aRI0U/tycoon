@@ -1,8 +1,8 @@
 package tycoon.ui
 
 
-import tycoon.GridLocation
-import tycoon.TileMap
+import tycoon.game.GridLocation
+import tycoon.game.TileMap
 
 import scalafx.Includes._
 import scalafx.scene.Scene

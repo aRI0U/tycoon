@@ -4,7 +4,7 @@ import scala.collection.mutable.ListBuffer
 
 import tycoon.objects.vehicle._
 import tycoon.ui.Entity
-import tycoon.GridLocation
+import tycoon.game.GridLocation
 
 
 abstract class Structure(pos: GridLocation, id: Int) extends Entity {

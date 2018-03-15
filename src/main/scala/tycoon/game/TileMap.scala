@@ -1,4 +1,4 @@
-package tycoon
+package tycoon.game
 
 import tycoon.ui.Tile
 import scala.util.Random

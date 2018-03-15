@@ -1,6 +1,6 @@
 package tycoon.objects.carriage
 
-import tycoon.GridLocation
+import tycoon.game.GridLocation
 import tycoon.ui.Tile
 import tycoon.objects.railway._
 

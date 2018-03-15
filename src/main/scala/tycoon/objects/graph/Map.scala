@@ -1,6 +1,6 @@
 package tycoon.objects.graph
 
-import tycoon.GridLocation
+import tycoon.game.GridLocation
 
 import Array._
 
