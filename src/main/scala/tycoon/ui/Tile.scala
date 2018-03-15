@@ -1,30 +1,30 @@
 package tycoon.ui
 
-import tycoon.GridLocation
+import tycoon.game.GridLocation
 
 import scalafx.geometry.Rectangle2D
 import scalafx.scene.image.{Image,ImageView}
 
 
-class Tile(tileset: Image, viewport: Rectangle2D, rotation: Double) {
+class Tile(tileset: Image, viewport: Rectangle2D, rotation: Double = 0) {
 
   private var _sprite : ImageView = new ImageView(tileset)
   _sprite.viewport = viewport
   _sprite.rotate = rotation
 
-  def this(tile: Tile) {
-    this(new Image(tile.sprite.image.get()), new Rectangle2D(tile.sprite.viewport.get()), tile.sprite.rotate.get())
-  }
-  def this(tileset: Image, viewport: Rectangle2D) {
-    this(tileset, viewport, 0)
-  }
+  visible = false // tiles are not visible by default
 
-  private var _displayed : Boolean = false
+  def this(tile: Tile) {
+    this(new Image(tile.getView.image.get()), new Rectangle2D(tile.getView.viewport.get()), tile.getView.rotate.get())
+  }
+  /*def this(tileset: Image, viewport: Rectangle2D) {
+    this(tileset, viewport, 0)
+  }*/
 
   // set position in the scene
   def setLayout(x: Double, y: Double) = {
-    sprite.layoutX = x
-    sprite.layoutY = y
+    _sprite.layoutX = x
+    _sprite.layoutY = y
   }
 
   // def move(dx, dy) dans Movable qui change aussi le screenPos
@@ -32,15 +32,10 @@ class Tile(tileset: Image, viewport: Rectangle2D, rotation: Double) {
   def width : Int = viewport.width.toInt
   def height : Int = viewport.height.toInt
 
-  def getView : ImageView = sprite
+  def getView: ImageView = _sprite
 
-  def displayed : Boolean = _displayed
-  def displayed_= (new_displayed: Boolean) = _displayed = new_displayed
-
-  def sprite : ImageView = _sprite
-  def sprite_= (new_sprite: ImageView) = _sprite = new_sprite
-
-
+  def visible : Boolean = _sprite.visible.get()
+  def visible_= (new_visible: Boolean) = _sprite.visible = new_visible
 }
 
 object Tile {
@@ -52,6 +47,8 @@ object Tile {
   private def get_tile_rect(row: Int, col: Int, width: Int = 1, height: Int = 1) = {
     new Rectangle2D((col - 1) * square_width, (row - 1) * square_height, width * square_width, height * square_height)
   }
+
+  val default = new Tile(tileset, get_tile_rect(0, 0))
 
   val tree = new Tile(tileset, get_tile_rect(4, 3))
   val rock = new Tile(tileset, get_tile_rect(4, 4))

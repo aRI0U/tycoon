@@ -1,8 +1,8 @@
 package tycoon.objects.railway
 
 import scala.util.Random
-import tycoon.GridLocation
-import tycoon.Game
+import tycoon.game.GridLocation
+import tycoon.game.Game
 import tycoon.ui.Tile
 
 case class BasicRail(pos: GridLocation, val tile_type : Int) extends Rail(pos, tile_type) {
@@ -23,6 +23,6 @@ case class BasicRail(pos: GridLocation, val tile_type : Int) extends Rail(pos, t
   }
 
   var nb_rotation = 2
-  val tile = gives_tile(tile_type)
-  gridLoc = pos
+  tile = gives_tile(tile_type)
+  setPos(pos)
 }

@@ -1,14 +1,29 @@
 
-/*
+/* TODO
 
-c'est le AudioClip qui consomme tout le CPU
+rename Renderable into Entity and merge it with Printable
 
+Printable -> print data of every entity clicked on even if several are overlaping
+
+abstract class EntityManager
+--tableau d'entités, possibilité de supprimer le dernier elt ajouté ou tous...
+--function pour le linké au tableau observable entities pr que les 2 restent pareils si on supprime ds 1 ca supp ds l'autre
+
+et en faire hériter RailManager qui va gérer toutes les rotations des rails etc
+
+TownManager qui comprend la fonction de création de town etc
 
 */
+
+// c'est le AudioClip qui consomme tout le CPU
+
+
 
 
 
 package tycoon
+
+import tycoon.game.Game
 
 import tycoon.ui._
 
@@ -20,7 +35,7 @@ import scalafx.scene.layout.StackPane
 
 
 object Main extends JFXApp {
-  val game = new Game(1000, 1000)
+  val game = new Game(100, 100)
 
   val startScreen = new StartScreen()
 

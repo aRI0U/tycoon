@@ -1,6 +1,6 @@
 package tycoon.objects.carriage
 
-import tycoon.GridLocation
+import tycoon.game.GridLocation
 import tycoon.ui.Tile
 import tycoon.objects.railway._
 
@@ -10,7 +10,7 @@ class GoodsCarriage extends Carriage {
   val weight = 100
   val max_passengers = 10
   var passengers = 0
-  val tile = new Tile(Tile.goods_wagon)
+  tile = new Tile(Tile.goods_wagon)
   var current_rail : Option[Rail] = None
-  gridLoc = new GridLocation(-1,-1)
+  setPos(new GridLocation(-1,-1))
 }

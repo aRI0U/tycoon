@@ -1,10 +1,10 @@
 package tycoon.objects.carriage
 
-import tycoon.ui.Renderable
+import tycoon.ui.Entity
 import tycoon.objects.structure._
 import tycoon.objects.railway._
 
-abstract class Carriage extends Renderable {
+abstract class Carriage extends Entity {
   val cost : Int
   val ticket_price : Int
   val weight : Int

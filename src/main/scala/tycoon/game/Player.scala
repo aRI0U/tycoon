@@ -1,4 +1,4 @@
-package tycoon
+package tycoon.game
 
 
 import scalafx.Includes._

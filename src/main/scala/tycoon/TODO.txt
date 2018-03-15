@@ -1,0 +1,43 @@
+
+
+DraggableTiledPane:
+
+re-compute offset correctly when zooming/unzooming so that the center of the current screen doesnt move
+start with an offset at the center of the map (not top-left corner)
+small optimizations (commented around the loops)
+
+
+
+
+Game:
+
+separate code into other classes (one to handle trains, one for towns, one for rails)
+TownManager, TrainManager.. inheriting from BasicManager (bc createTrain and createTown are the same)
+move all the code about the rails in a RailManager
+As there will be an unknown number of vehicles etc, maybe abstract classes VehicleManager, StructureManager..
+
+
+
+objects:
+
+create basic classes for each thing to be implemented (with lots of inheritance)
+generalize the classes created so far (in Route, Road.. : Train -> Vehicle, Town -> Structure)
+
+
+
+ui:
+
+split the left-pane into two: the current only displays information & few static buttonns
++ a new one at the bottom for all the actions because there will be a lot (including a display of every vehicle)
+
+
+locations:
+
+implement pixel-to-pixel location with built-in move function and test it with trains
+
+
+General:
+
+fix the music
+remove useless imports
+more organized println (displayed where it is printing from), delete the useless ones

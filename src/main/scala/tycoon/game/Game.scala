@@ -1,4 +1,4 @@
-package tycoon
+package tycoon.game
 
 import tycoon.objects.structure._
 import tycoon.objects.railway._
@@ -6,7 +6,7 @@ import tycoon.objects.vehicle._
 import tycoon.objects.graph._
 import tycoon.objects.carriage._
 import tycoon.ui.Tile
-import tycoon.ui.{Tile, Renderable, DraggableTiledPane}
+import tycoon.ui.{Tile, Entity, DraggableTiledPane}
 
 import javafx.animation.AnimationTimer
 import scalafx.collections.ObservableBuffer
@@ -47,7 +47,7 @@ class Game(map_width : Int, map_height : Int)
   }
 
 
-  var entities = new ObservableBuffer[Renderable]()
+  var entities = new ObservableBuffer[Entity]()
 
   var game_map = new Map(map_width, map_height)
   var game_graph = new Graph
@@ -195,10 +195,10 @@ class Game(map_width : Int, map_height : Int)
       //list of surounding entities (Renderable)
       var env = new ListBuffer[Any]
       //left is probably actualy below ect...
-      var boxleft = new GridLocation(pos.column, pos.row + 1)
-      var boxright = new GridLocation(pos.column, pos.row-1)
-      var boxup  = new GridLocation(pos.column+1, pos.row)
-      var boxbelow  = new GridLocation(pos.column-1, pos.row)
+      var boxleft = new GridLocation(pos.col, pos.row + 1)
+      var boxright = new GridLocation(pos.col, pos.row-1)
+      var boxup  = new GridLocation(pos.col+1, pos.row)
+      var boxbelow  = new GridLocation(pos.col-1, pos.row)
       val boxes = Array(boxleft,boxup,boxright,boxbelow)
       for (other <- entities) {
         for (i : Int <- 0 to 3) {

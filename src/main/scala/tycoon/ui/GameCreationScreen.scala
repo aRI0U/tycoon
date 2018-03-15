@@ -1,6 +1,6 @@
 package tycoon.ui
 
-import tycoon.{Game, GridLocation}
+import tycoon.game._
 import tycoon.objects.structure.Town
 
 

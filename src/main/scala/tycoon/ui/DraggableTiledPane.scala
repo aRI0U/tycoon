@@ -1,8 +1,8 @@
 package tycoon.ui
 
 
-import tycoon.GridLocation
-import tycoon.TileMap
+import tycoon.game.GridLocation
+import tycoon.game.TileMap
 
 import scalafx.Includes._
 import scalafx.scene.Scene
@@ -142,7 +142,7 @@ class DraggableTiledPane(val tm: TileMap) extends BorderPane {
                         compute_offset_y_limits()
                         layoutTilemap()
                         layoutEntities()
-                        
+
       // ZQSD => <20% CPU (mouse dragging is causing the overheating)
       case "z" | "Z" => y_offset.set(y_offset.get() - 100)
       case "q" | "Q" => x_offset.set(x_offset.get() - 100)
@@ -177,17 +177,17 @@ class DraggableTiledPane(val tm: TileMap) extends BorderPane {
   // tiles other than the tilemap (entities)
   // these may be placed everywhere and have different sizes
   // also their position may change without any drag but that can be handled in Tile or via a Movable trait
-  private var entities = new ListBuffer[Renderable]()
+  private var entities = new ListBuffer[Entity]()
 
 
-  def addEntity(e: Renderable) = {
+  def addEntity(e: Entity) = {
     entities += e
     layoutEntities()
   }
-  def removeEntity(e: Renderable) = {
+  def removeEntity(e: Entity) = {
     entities -= e
-    if (e.displayed) {
-      e.displayed = false
+    if (e.visible) {
+      e.visible = false
       children.remove(e.getView)
     }
     layoutEntities()
@@ -245,13 +245,13 @@ class DraggableTiledPane(val tm: TileMap) extends BorderPane {
         tile.getView.setFitWidth(scaled_tiles_width.get())
         tile.getView.setFitHeight(scaled_tiles_height.get())
 
-        if (!tile.displayed) {
+        if (!tile.visible) {
           // if tile was not displayed yet, add it to the scene
-          tile.displayed = true
+          tile.visible = true
           children.add(tile.getView)
         }
-      } else if (tile.displayed) { // ELSE SHOULD SUFFICE ; if tile is not in screen range anymore
-        tile.displayed = false
+      } else if (tile.visible) { // ELSE SHOULD SUFFICE ; if tile is not in screen range anymore
+        tile.visible = false
         children.remove(tile.getView)
       }
     }
@@ -265,8 +265,8 @@ class DraggableTiledPane(val tm: TileMap) extends BorderPane {
   def layoutEntities() = {
     // move the entities according to the offset
     for (e <- entities) {
-      val layout_x : Double = scaled_tiles_width.get() * (e.gridLoc.column - tile_x_offset.get()) - (x_offset.get() % scaled_tiles_width.get())
-      val layout_y : Double = scaled_tiles_height.get() * (e.gridLoc.row - tile_y_offset.get()) - (y_offset.get() % scaled_tiles_height.get())
+      val layout_x : Double = scaled_tiles_width.get() * (e.getPos.col - tile_x_offset.get()) - (x_offset.get() % scaled_tiles_width.get())
+      val layout_y : Double = scaled_tiles_height.get() * (e.getPos.row - tile_y_offset.get()) - (y_offset.get() % scaled_tiles_height.get())
 
       if ((layout_x + e.width > 0 && layout_x < this.width.value)
         && (layout_y + e.height > 0 && layout_y < this.height.value))
@@ -277,9 +277,9 @@ class DraggableTiledPane(val tm: TileMap) extends BorderPane {
         e.getView.setFitWidth(e.width * scale_x.get())
         e.getView.setFitHeight(e.height * scale_y.get())
 
-        if (!e.displayed) {
+        if (!e.visible) {
           // if entity was not displayed yet, add it to the scene
-          e.displayed = true
+          e.visible = true
 
           children.add(e.getView)
         }
@@ -287,9 +287,9 @@ class DraggableTiledPane(val tm: TileMap) extends BorderPane {
           children.remove(e.getView)
           children.add(e.getView)
         }
-      } else if (e.displayed) {
+      } else if (e.visible) {
         // if entity was displayed but is not in range anymore, remove it from the scene
-        e.displayed = false
+        e.visible = false
         children.remove(e.getView)
       }
     }

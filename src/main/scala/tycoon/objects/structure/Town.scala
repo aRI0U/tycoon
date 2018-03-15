@@ -3,8 +3,8 @@ package tycoon.objects.structure
 import scala.collection.mutable.ListBuffer
 import scala.Array
 
-import tycoon.GridLocation
-import tycoon.Game
+import tycoon.game.GridLocation
+import tycoon.game.Game
 
 import scalafx.beans.property.{IntegerProperty, StringProperty}
 
