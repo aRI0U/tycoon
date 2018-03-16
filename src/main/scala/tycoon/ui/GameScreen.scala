@@ -115,7 +115,7 @@ class GameScreen(var game : Game) extends BorderPane
           onMouseClicked = _ => {
             if (nb_rails.get() > 0) {
               nb_rails.set(nb_rails.get()-1)
-              game.removeAllRails()
+              game.removeLastRails()
               game.playerMoney.set(game.playerMoney.get() + game.rail_price)
               total_cost_rails.set(total_cost_rails.get() - game.rail_price)
             }

@@ -57,7 +57,7 @@ class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
     }
     train.landing()
 
-    train.visible = false
+    train.visible = true
     train.current_rail = None
     //intern_time -=1(train.location.get).position
     train.setPos(new GridLocation(train.location.get.position.col +1,train.location.get.position.row))
