@@ -117,7 +117,7 @@ class GameCreationScreen(var game : Game) extends BorderPane
         margin = Insets(10)
 
         onMouseClicked = (e: MouseEvent) => {
-          if (nb_towns.get() >= min_towns) {
+          if (nb_towns.get() >= 0){//min_towns) { TMP
             game.playerName = name_field.text.get()
             onValidate.run()
           }

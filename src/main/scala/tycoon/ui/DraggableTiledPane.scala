@@ -21,14 +21,6 @@ import scalafx.animation.{Timeline, Interpolator}
 import scala.collection.mutable.{HashMap, ListBuffer}
 
 
-/*TODO
-
-re-compute offset correctly when zooming/unzooming so that the center of the current screen doesnt move
-
-start with an offset at the center of the map (not top-left corner)
-
-*/
-
 
 class DraggableTiledPane(val tm: TileMap) extends BorderPane {
 
@@ -245,13 +237,13 @@ class DraggableTiledPane(val tm: TileMap) extends BorderPane {
         tile.getView.setFitWidth(scaled_tiles_width.get())
         tile.getView.setFitHeight(scaled_tiles_height.get())
 
-        if (!tile.visible) {
+        if (!tile.inScene) {
           // if tile was not displayed yet, add it to the scene
-          tile.visible = true
+          tile.inScene = true
           children.add(tile.getView)
         }
-      } else if (tile.visible) { // ELSE SHOULD SUFFICE ; if tile is not in screen range anymore
-        tile.visible = false
+      } else if (tile.inScene) { // ELSE SHOULD SUFFICE ; if tile is not in screen range anymore
+        tile.inScene = false
         children.remove(tile.getView)
       }
     }
@@ -277,20 +269,28 @@ class DraggableTiledPane(val tm: TileMap) extends BorderPane {
         e.getView.setFitWidth(e.width * scale_x.get())
         e.getView.setFitHeight(e.height * scale_y.get())
 
-        if (!e.visible) {
-          // if entity was not displayed yet, add it to the scene
-          e.visible = true
-
-          children.add(e.getView)
+        if (e.visible) {
+          if (!e.inScene) {
+            // if entity was not displayed yet but should be, add it to the scene
+            children.add(e.getView)
+            e.inScene = true
+          }
+          else { // opti -> pop entity at the top
+            children.remove(e.getView)
+            children.add(e.getView)
+          }
         }
-        else { // opti
-          children.remove(e.getView)
-          children.add(e.getView)
+        else {
+          if (e.inScene) {
+            children.remove(e.getView)
+            e.inScene = false
+          }
         }
-      } else if (e.visible) {
+      }
+      else if (e.inScene) {
         // if entity was displayed but is not in range anymore, remove it from the scene
-        e.visible = false
         children.remove(e.getView)
+        e.inScene = false
       }
     }
   }

@@ -43,6 +43,9 @@ trait Entity {
   def visible: Boolean = tile.visible
   def visible_= (new_visible: Boolean) = tile.visible = new_visible
   def toggleVisible: Unit = visible = !visible
+
+  def inScene: Boolean = tile.inScene
+  def inScene_= (new_inScene: Boolean) = tile.inScene = new_inScene
 }
 
 
