@@ -36,7 +36,7 @@ class BasicTrain(town : Town, nb_carriages : Int) extends Train(town, nb_carriag
     case Some(structure ) => structure.position
     case None => current_rail match {
       case Some(rail) => rail.position
-      case None => new GridLocation(0,0) // not supposed to happen
+      case None => new GridLocation(0,0) // throw exn
     }
   }
   setPos(pos)

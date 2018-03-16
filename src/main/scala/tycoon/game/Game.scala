@@ -108,7 +108,7 @@ class Game(map_width : Int, map_height : Int)
     {
       route.update(dt)
     }
-    for (town <- towns)
+    for (town <- towns) // towns.foreach(update...)
     {
       town.update(dt)
     }
