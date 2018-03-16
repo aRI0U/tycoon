@@ -12,7 +12,7 @@ class Tile(tileset: Image, viewport: Rectangle2D, rotation: Double = 0) {
   _sprite.viewport = viewport
   _sprite.rotate = rotation
 
-  visible = false // tiles are not visible by default
+  visible = true // tiles are all visible by default
 
   def this(tile: Tile) {
     this(new Image(tile.getView.image.get()), new Rectangle2D(tile.getView.viewport.get()), tile.getView.rotate.get())
@@ -36,6 +36,11 @@ class Tile(tileset: Image, viewport: Rectangle2D, rotation: Double = 0) {
 
   def visible : Boolean = _sprite.visible.get()
   def visible_= (new_visible: Boolean) = _sprite.visible = new_visible
+
+  // used in complement of visible to check if entity is in the scene whether it's displayed or not
+  private var _inScene: Boolean = false
+  def inScene: Boolean = _inScene
+  def inScene_= (new_inScene: Boolean) = _inScene = new_inScene
 }
 
 object Tile {
