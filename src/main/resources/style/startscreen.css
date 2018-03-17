@@ -1,4 +1,21 @@
-.bevel-grey {
+#startScreenBody {
+  -fx-background-image: url("../ios-linen.jpg");
+  -fx-background-repeat: repeat;
+}
+
+#startScreenBody #gameName {
+  -fx-font-size: 48pt;
+  -fx-font-family: times;
+  -fx-fill: #EEEEEE;
+  -fx-line-height: 44px;
+  -fx-letter-spacing: -2px;
+  -fx-font-weight: bold;
+  -fx-stroke: #111111;
+  -fx-stroke-type: outside;
+  -fx-stroke-width: 2;
+}
+
+#startScreenBody .button {
     -fx-background-color:
         linear-gradient(#f2f2f2, #d6d6d6),
         linear-gradient(#fcfcfc 0%, #d9d9d9 20%, #d6d6d6 100%),
@@ -10,25 +27,9 @@
     -fx-padding: 10;
     -fx-font-family: courier;
 }
-.bevel-grey:hover {
+
+#startScreenBody .button:hover {
     -fx-background-radius: 10;
     -fx-background-insets: 0,1,1;
     -fx-effect: dropshadow( three-pass-box , rgba(100,100,100,0.6) , 3, 0.0 , 0 , 1 );
-}
-
-#body {
-  -fx-background-image: url("../ios-linen.jpg");
-  -fx-background-repeat: repeat;
-}
-
-#game_title {
-  -fx-font-size: 48pt;
-  -fx-font-family: times;
-  -fx-fill: #EEEEEE;
-  -fx-line-height: 44px;
-  -fx-letter-spacing: -2px;
-  -fx-font-weight: bold;
-  -fx-stroke: #111111;
-  -fx-stroke-type: outside;
-  -fx-stroke-width: 2;
 }

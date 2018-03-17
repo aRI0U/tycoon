@@ -1,48 +1,23 @@
-
-/* TODO
-
-rename Renderable into Entity and merge it with Printable
-
-Printable -> print data of every entity clicked on even if several are overlaping
-
-abstract class EntityManager
---tableau d'entités, possibilité de supprimer le dernier elt ajouté ou tous...
---function pour le linké au tableau observable entities pr que les 2 restent pareils si on supprime ds 1 ca supp ds l'autre
-
-et en faire hériter RailManager qui va gérer toutes les rotations des rails etc
-
-TownManager qui comprend la fonction de création de town etc
-
-*/
-
-// c'est le AudioClip qui consomme tout le CPU
-
-
-
-
-
 package tycoon
 
 import tycoon.game.Game
+import tycoon.ui.{CreditsScreen, GameCreationScreen, GameScreen, StartScreen}
 
-import tycoon.ui._
-
-import scalafx.Includes._
 import scalafx.application.JFXApp
 import scalafx.application.JFXApp.PrimaryStage
-import scalafx.scene.{Scene, PerspectiveCamera, Camera}
-import scalafx.scene.layout.StackPane
+import scalafx.scene.{PerspectiveCamera, Scene}
+import scalafx.scene.layout.{Pane, StackPane}
 
 
 object Main extends JFXApp {
-  val game = new Game(100, 100)
+  val game = new Game(400, 400)
 
   val startScreen = new StartScreen()
+  val gameCreationScreen = new GameCreationScreen(game)
+  val gameScreen = new GameScreen(game)
+  val creditsScreen = new CreditsScreen()
 
   val content = new StackPane()
-  content.getChildren().add(startScreen)
-  startScreen.init()
-
   val appScene = new Scene(new StackPane(content))
 
   val appStage = new PrimaryStage {
@@ -53,54 +28,43 @@ object Main extends JFXApp {
     minHeight = 500
     scene = appScene
   }
-
   stage = appStage
 
+  // initial screen
+  content.getChildren().add(startScreen)
 
-  startScreen.setOnStart(new Runnable {
+  def switchScreen(newScreen: Pane) = {
+    content.getChildren.clear()
+    content.getChildren.add(newScreen)
+  }
+
+  startScreen.setOnStartGame(new Runnable {
     def run() = {
-      val gameCreationScreen = new GameCreationScreen(game)
-
-      gameCreationScreen.setOnValidate(new Runnable {
-        def run() = {
-          val gameScreen = new GameScreen(game)
-
-          content.getChildren().clear()
-          content.getChildren().add(gameScreen)
-          gameScreen.init()
-          game.start()
-          println("hi")
-        }
-      })
-
-      content.getChildren().clear()
-      content.getChildren().add(gameCreationScreen)
+      switchScreen(gameCreationScreen)
       gameCreationScreen.init()
     }
   })
 
   startScreen.setOnOpenCredits(new Runnable {
     def run() = {
-      val creditsScreen = new CreditsScreen()
-
-      creditsScreen.setOnExit(new Runnable {
-        def run() = {
-          content.getChildren().clear()
-          content.getChildren().add(startScreen)
-          startScreen.init()
-          //appScene.camera = new Camera
-          appStage.resizable = true
-        }
-      })
-
-      content.getChildren().clear()
-      content.getChildren().add(creditsScreen)
+      switchScreen(creditsScreen)
       appScene.camera = new PerspectiveCamera
-      //creditsScreen.init()
       appStage.resizable = false
     }
   })
 
+  gameCreationScreen.setOnValidate(new Runnable {
+    def run() = {
+      switchScreen(gameScreen)
+      gameScreen.init()
+      game.start()
+    }
+  })
 
-
+  creditsScreen.setOnExit(new Runnable {
+    def run() = {
+      switchScreen(startScreen)
+      appStage.resizable = true
+    }
+  })
 }

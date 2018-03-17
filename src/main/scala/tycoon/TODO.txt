@@ -29,6 +29,7 @@ ui:
 
 split the left-pane into two: the current only displays information & few static buttonns
 + a new one at the bottom for all the actions because there will be a lot (including a display of every vehicle)
+with other windows etc to display info more easily
 
 
 locations:
@@ -41,3 +42,13 @@ General:
 fix the music
 remove useless imports
 more organized println (displayed where it is printing from), delete the useless ones
+put things at the right place (prices should not be i gamescreen)
+
+Printable -> print data of every entity clicked on even if several are overlaping
+
+
+
+
+Bugs:
+
+trains can be bought without money restriction

@@ -23,93 +23,92 @@ import scala.collection.mutable.{HashMap, ListBuffer}
 
 
 class DraggableTiledPane(val tm: TileMap) extends BorderPane {
+  private val scaleMin = 0.4
+  private val scaleMax = 1.4
+  private val tilesScaleX = DoubleProperty(1.0)
+  private val tilesScaleY = DoubleProperty(1.0)
+  private val scaledTilesHeight = DoubleProperty(0)
+  private val scaledTilesWidth = DoubleProperty(0)
 
-  private val scale_min = 0.4
-  private val scale_max = 1.4
-  private val scale_x = DoubleProperty(1.0)
-  private val scale_y = DoubleProperty(1.0)
-  private val scaled_tiles_height = DoubleProperty(0)
-  private val scaled_tiles_width = DoubleProperty(0)
-
-  scaled_tiles_height <== scale_y * tm.tiles_height
-  scaled_tiles_width <== scale_x * tm.tiles_width
+  scaledTilesHeight <== tilesScaleY * tm.tilesHeight
+  scaledTilesWidth <== tilesScaleX * tm.tilesWidth
 
 
   // amount scrolled left and up, in pixels
-  private var x_offset = DoubleProperty(0)
-  private var y_offset = DoubleProperty(0)
+  private var xOffset = DoubleProperty(0)
+  private var yOffset = DoubleProperty(0)
 
   // number of whole tiles shifted left and up
-  private var tile_x_offset = new ReadOnlyIntegerWrapper()
-  private var tile_y_offset = new ReadOnlyIntegerWrapper()
-  tile_x_offset <== x_offset / scaled_tiles_width
-  tile_y_offset <== y_offset / scaled_tiles_height
+  private var tileXOffset = new ReadOnlyIntegerWrapper()
+  private var tileYOffset = new ReadOnlyIntegerWrapper()
+  tileXOffset <== xOffset / scaledTilesWidth
+  tileYOffset <== yOffset / scaledTilesHeight
 
   // limits for the offsets according to the size of the tilemap and the padding_arounds
   // min/max are there to ensure that the pane cannot be dragged if the map is smaller than the window
-  private var min_offset_x : Double = 0
-  private var min_offset_y : Double = 0
-  private var max_offset_x : Double = 0
-  private var max_offset_y : Double = 0
+  private var minOffsetX: Double = 0
+  private var minOffsetY: Double = 0
+  private var maxOffsetX: Double = 0
+  private var maxOffsetY: Double = 0
 
-  compute_offset_x_limits()
-  compute_offset_y_limits()
+  computeOffsetXLimits()
+  computeOffsetYLimits()
 
-  private def compute_offset_x_limits() : Unit = {
-    min_offset_x = 0
-    max_offset_x = math.max(tm.width * scaled_tiles_width.get() - this.width.get(), 0)
+  private def computeOffsetXLimits(): Unit = {
+    minOffsetX = 0
+    maxOffsetX = math.max(tm.width * scaledTilesWidth.get() - this.width.get(), 0)
   }
-  private def compute_offset_y_limits() : Unit = {
-    min_offset_y = 0
-    max_offset_y = math.max(tm.height * scaled_tiles_height.get() - this.height.get(), 0)
+  private def computeOffsetYLimits(): Unit = {
+    minOffsetY = 0
+    maxOffsetY = math.max(tm.height * scaledTilesHeight.get() - this.height.get(), 0)
   }
 
   // for enabling dragging
-  private var mouse_anchor_x : Double = 0
-  private var mouse_anchor_y : Double = 0
+  private var mouseAnchorX: Double = 0
+  private var mouseAnchorY: Double = 0
 
   // camera sliding when mouse is released for fluid dragging
   private var cameraSliding = new Timeline
-  private var delta_x : Double = 0
-  private var delta_y : Double = 0
+  private var deltaX: Double = 0
+  private var deltaY: Double = 0
 
-  onMousePressed = (e : MouseEvent) => {
+  onMousePressed = (e: MouseEvent) => {
     // for enabling dragging
-    mouse_anchor_x = e.getSceneX()
-    mouse_anchor_y = e.getSceneY()
+    mouseAnchorX = e.getSceneX()
+    mouseAnchorY = e.getSceneY()
 
     // for enabling camera sliding
-    delta_x = 0
-    delta_y = 0
+    deltaX = 0
+    deltaY = 0
     cameraSliding.stop()
   }
 
   // update offsets when dragging
-  onMouseDragged = (e : MouseEvent) => {
-    delta_x = mouse_anchor_x -  e.getSceneX()
-    delta_y = mouse_anchor_y - e.getSceneY()
+  onMouseDragged = (e: MouseEvent) => {
+    deltaX = mouseAnchorX -  e.getSceneX()
+    deltaY = mouseAnchorY - e.getSceneY()
 
-    x_offset.set(x_offset.get() + delta_x)
-    y_offset.set(y_offset.get() + delta_y)
+    xOffset.set(xOffset.get() + deltaX)
+    yOffset.set(yOffset.get() + deltaY)
 
-    mouse_anchor_x = e.getSceneX()
-    mouse_anchor_y = e.getSceneY()
+    mouseAnchorX = e.getSceneX()
+    mouseAnchorY = e.getSceneY()
   }
 
   // enable soft sliding
   onMouseReleased = _ => {
     val coef : Double = 8
-    val x_begin : Double = x_offset.get()
-    val x_end : Double = math.max(math.min(x_offset.get() + delta_x * coef, max_offset_x), min_offset_x)
-    val y_begin : Double = y_offset.get()
-    val y_end : Double = math.max(math.min(y_offset.get() + delta_y * coef, max_offset_y), min_offset_y)
+    val xBegin : Double = xOffset.get()
+    val xEnd : Double = math.max(math.min(xOffset.get() + deltaX * coef, maxOffsetX), minOffsetX)
+    val yBegin : Double = yOffset.get()
+    val yEnd : Double = math.max(math.min(yOffset.get() + deltaY * coef, maxOffsetY), minOffsetY)
 
     cameraSliding = new Timeline {
       keyFrames = Seq(
-        at (0.s) { x_offset -> x_begin},
-        at (0.5.s) { x_offset -> x_end tween Interpolator.EaseOut},
-        at (0.s) { y_offset -> y_begin },
-        at (0.5.s) { y_offset -> y_end tween Interpolator.EaseOut}
+        at (0.s) { xOffset -> xBegin},
+        at (0.5.s) { xOffset -> xEnd tween Interpolator.EaseOut},
+        at (0.s) { yOffset -> yBegin },
+        at (0.5.s) { yOffset -> yEnd tween Interpolator.EaseOut}
       )
     }
     cameraSliding.play()
@@ -120,47 +119,47 @@ class DraggableTiledPane(val tm: TileMap) extends BorderPane {
   onKeyPressed = (e: KeyEvent) => {
     e.text match {
       case "a" | "A" => cameraSliding.stop()
-                        scale_x.set(math.max(scale_x.get() - 0.1, scale_min))
-                        scale_y.set(math.max(scale_y.get() - 0.1, scale_min))
-                        compute_offset_x_limits()
-                        compute_offset_y_limits()
+                        tilesScaleX.set(math.max(tilesScaleX.get() - 0.1, scaleMin))
+                        tilesScaleY.set(math.max(tilesScaleY.get() - 0.1, scaleMin))
+                        computeOffsetXLimits()
+                        computeOffsetYLimits()
                         layoutTilemap()
                         layoutEntities()
 
       case "e" | "E" => cameraSliding.stop()
-                        scale_x.set(math.min(scale_x.get() + 0.1, scale_max))
-                        scale_y.set(math.min(scale_y.get() + 0.1, scale_max))
-                        compute_offset_x_limits()
-                        compute_offset_y_limits()
+                        tilesScaleX.set(math.min(tilesScaleX.get() + 0.1, scaleMax))
+                        tilesScaleY.set(math.min(tilesScaleY.get() + 0.1, scaleMax))
+                        computeOffsetXLimits()
+                        computeOffsetYLimits()
                         layoutTilemap()
                         layoutEntities()
 
       // ZQSD => <20% CPU (mouse dragging is causing the overheating)
-      case "z" | "Z" => y_offset.set(y_offset.get() - 100)
-      case "q" | "Q" => x_offset.set(x_offset.get() - 100)
-      case "s" | "S" => y_offset.set(y_offset.get() + 100)
-      case "d" | "D" => x_offset.set(x_offset.get() + 100)
+      case "z" | "Z" => yOffset.set(yOffset.get() - 100)
+      case "q" | "Q" => xOffset.set(xOffset.get() - 100)
+      case "s" | "S" => yOffset.set(yOffset.get() + 100)
+      case "d" | "D" => xOffset.set(xOffset.get() + 100)
       case _ => ()
     }
   }
 
-  x_offset.onChange {
+  xOffset.onChange {
     layoutTilemap()
     layoutEntities()
   }
-  y_offset.onChange {
+  yOffset.onChange {
     layoutTilemap()
     layoutEntities()
   }
 
   // recompute layout and offsets limits when window is resized
   this.width.onChange {
-    compute_offset_x_limits()
+    computeOffsetXLimits()
     layoutTilemap()
     //layoutEntities()
   }
   this.height.onChange {
-    compute_offset_y_limits()
+    computeOffsetYLimits()
     layoutTilemap()
     //layoutEntities()
   }
@@ -185,89 +184,118 @@ class DraggableTiledPane(val tm: TileMap) extends BorderPane {
     layoutEntities()
   }
 
-  private var prev_min_row : Int = Math.floor(y_offset.get() / tm.tiles_height).toInt // its tile_y_offset
-  private var prev_min_col : Int = Math.floor(x_offset.get() / tm.tiles_width).toInt
-  private var prev_max_col : Int = Math.ceil((x_offset.get() + this.width.value) / tm.tiles_width).toInt
-  private var prev_max_row : Int = Math.ceil((y_offset.get() + this.height.value) / tm.tiles_height).toInt
+  private var prevMinRow: Int = 0
+  private var prevMinCol: Int = 0
+  private var prevMaxCol: Int = 0
+  private var prevMaxRow: Int = 0
 
   def layoutTilemap() = {
     // ensure the offsets do not go over the limits
-    if (x_offset.get() <= min_offset_x) x_offset.set(min_offset_x)
-    else if (x_offset.get() >= max_offset_x) x_offset.set(max_offset_x)
-    if (y_offset.get() <= min_offset_y) y_offset.set(min_offset_y)
-    else if (y_offset.get() >= max_offset_y) y_offset.set(max_offset_y)
+    if (xOffset.get() <= minOffsetX) xOffset.set(minOffsetX)
+    else if (xOffset.get() >= maxOffsetX) xOffset.set(maxOffsetX)
+    if (yOffset.get() <= minOffsetY) yOffset.set(minOffsetY)
+    else if (yOffset.get() >= maxOffsetY) yOffset.set(maxOffsetY)
 
     // maximal rectangle of the tilemap that can be displayed
-    val min_row : Int = Math.floor(y_offset.get() / scaled_tiles_height.get()).toInt - 1
-    val min_col : Int = Math.floor(x_offset.get() / scaled_tiles_width.get()).toInt - 1
-    val max_row : Int = Math.ceil((y_offset.get() + this.height.value) / scaled_tiles_height.get()).toInt
-    val max_col : Int = Math.ceil((x_offset.get() + this.width.value) / scaled_tiles_width.get()).toInt
+    val minRow: Int = Math.floor(yOffset.get() / scaledTilesHeight.get()).toInt //- 1
+    val minCol: Int = Math.floor(xOffset.get() / scaledTilesWidth.get()).toInt //- 1
+    val maxRow: Int = Math.ceil((yOffset.get() + this.height.value) / scaledTilesHeight.get()).toInt
+    val maxCol: Int = Math.ceil((xOffset.get() + this.width.value) / scaledTilesWidth.get()).toInt
 
-    /* to optimize:
-      x_offset.get() % scaled_tiles_width.get() moves outta the loop
-      avoid the if in the for and the inside if by performing more loops but accurate ones
-      and mb just increment layout given delta_offset to avoid calculations
+    // pre-compute some values
+    val scaledTilesWidthValue = scaledTilesWidth.get()
+    val scaledTilesHeightValue = scaledTilesHeight.get()
+    val tileXOffsetValue = tileXOffset.get()
+    val tileYOffsetValue = tileYOffset.get()
+    val layoutShiftX = - scaledTilesWidthValue * tileXOffsetValue - (xOffset.get() % scaledTilesWidth.get())
+    val layoutShiftY = - scaledTilesHeightValue * tileYOffsetValue - (yOffset.get() % scaledTilesHeight.get())
+
+    /*
+    iterate through tiles that were displayed just before but are not anymore
     */
 
-    // move the tilemap according to the offset
-    for {
-      row <- math.min(min_row, prev_min_row) to math.max(max_row, prev_max_row)
-      col <- math.min(min_col, prev_min_col) to math.max(max_col, prev_max_col)
-      if (row < tm.height && col < tm.width && row >= 0 && col >= 0)
-    } {
-      val tile = tm.map(row)(col)
-
-      if (row >= min_row && row <= max_row && col >= min_col && col <= max_col) // tile shall be displayed
-      {
-
-        // offset due to scale
-        // 0.5 (16) -> -8
-        // 1.5 (48) -> +8
-        // zoom in 16 steps -> 1/16 = 0.0625
-
-        // if tile can be displayed, compute its position
-        val layout_x : Double = scaled_tiles_width.get() * (col - tile_x_offset.get()) - (x_offset.get() % scaled_tiles_width.get())
-        val layout_y : Double = scaled_tiles_height.get() * (row - tile_y_offset.get()) - (y_offset.get() % scaled_tiles_height.get())
-
-        tile.setLayout(layout_x, layout_y)
-
-        //tile.getView.scaleX.set(scale_x.get())
-        //tile.getView.scaleY.set(scale_y.get())
-
-        tile.getView.setFitWidth(scaled_tiles_width.get())
-        tile.getView.setFitHeight(scaled_tiles_height.get())
-
-        if (!tile.inScene) {
-          // if tile was not displayed yet, add it to the scene
-          tile.inScene = true
-          children.add(tile.getView)
-        }
-      } else if (tile.inScene) { // ELSE SHOULD SUFFICE ; if tile is not in screen range anymore
-        tile.inScene = false
-        children.remove(tile.getView)
+    if (minCol > prevMinCol) {
+      for {
+        row <- prevMinRow to prevMaxRow
+        col <- prevMinCol to minCol - 1
+      } {
+        tm.map(row)(col).inScene = false
+        children.remove(tm.map(row)(col).getView)
+      }
+    }
+    if (maxCol < prevMaxCol) {
+      for {
+        row <- prevMinRow to prevMaxRow
+        col <- maxCol + 1 to prevMaxCol
+      } {
+        tm.map(row)(col).inScene = false
+        children.remove(tm.map(row)(col).getView)
+      }
+    }
+    if (minRow > prevMinRow) {
+      for {
+        row <- prevMinRow to minRow - 1
+        col <- prevMinCol to prevMaxCol
+      } {
+        tm.map(row)(col).inScene = false
+        children.remove(tm.map(row)(col).getView)
+      }
+    }
+    if (maxRow < prevMaxRow){
+      for {
+        row <- maxRow + 1 to prevMaxRow
+        col <- prevMinCol to prevMaxCol
+      } {
+        tm.map(row)(col).inScene = false
+        children.remove(tm.map(row)(col).getView)
       }
     }
 
-    prev_min_row = min_row
-    prev_min_col = min_col
-    prev_max_row = max_row
-    prev_max_col = max_col
+    /*
+    iterate through the tiles that are displayed right now
+    */
+
+    for {
+      row <- minRow to maxRow
+      col <- minCol to maxCol
+    } {
+      val tile = tm.map(row)(col)
+
+      val layoutX : Double = scaledTilesWidthValue * col + layoutShiftX
+      val layoutY : Double = scaledTilesHeightValue * row + layoutShiftY
+
+      tile.setLayout(layoutX, layoutY)
+
+      tile.getView.setFitWidth(scaledTilesWidthValue)
+      tile.getView.setFitHeight(scaledTilesHeightValue)
+
+      if (!tile.inScene) {
+        // if tile was not displayed yet, add it to the scene
+        tile.inScene = true
+        children.add(tile.getView)
+      }
+    }
+
+    prevMinRow = minRow
+    prevMinCol = minCol
+    prevMaxRow = maxRow
+    prevMaxCol = maxCol
   }
 
   def layoutEntities() = {
     // move the entities according to the offset
     for (e <- entities) {
-      val layout_x : Double = scaled_tiles_width.get() * (e.getPos.col - tile_x_offset.get()) - (x_offset.get() % scaled_tiles_width.get())
-      val layout_y : Double = scaled_tiles_height.get() * (e.getPos.row - tile_y_offset.get()) - (y_offset.get() % scaled_tiles_height.get())
+      val layoutX : Double = scaledTilesWidth.get() * (e.getPos.col - tileXOffset.get()) - (xOffset.get() % scaledTilesWidth.get())
+      val layoutY : Double = scaledTilesHeight.get() * (e.getPos.row - tileYOffset.get()) - (yOffset.get() % scaledTilesHeight.get())
 
-      if ((layout_x + e.width > 0 && layout_x < this.width.value)
-        && (layout_y + e.height > 0 && layout_y < this.height.value))
+      if ((layoutX + e.width > 0 && layoutX < this.width.value)
+        && (layoutY + e.height > 0 && layoutY < this.height.value))
       {
         // if entity is within scene, display it
-        e.setLayout(layout_x, layout_y)
+        e.setLayout(layoutX, layoutY)
 
-        e.getView.setFitWidth(e.width * scale_x.get())
-        e.getView.setFitHeight(e.height * scale_y.get())
+        e.getView.setFitWidth(e.width * tilesScaleX.get())
+        e.getView.setFitHeight(e.height * tilesScaleY.get())
 
         if (e.visible) {
           if (!e.inScene) {
@@ -297,14 +325,14 @@ class DraggableTiledPane(val tm: TileMap) extends BorderPane {
 
   // given a position on the screen (in pixels), return the GridLocation in which it is, depending on the offset
   def screenPxToGridLoc(x : Double, y : Double) : (Int, Int) = {
-    val col : Int = Math.floor((x + x_offset.get()) / scaled_tiles_width.get()).toInt
-    val row : Int = Math.floor((y + y_offset.get()) / scaled_tiles_height.get()).toInt
+    val col : Int = Math.floor((x + xOffset.get()) / scaledTilesWidth.get()).toInt
+    val row : Int = Math.floor((y + yOffset.get()) / scaledTilesHeight.get()).toInt
     println(col, row)
     (col, row)
   }
 
   def moveToCenter() : Unit = {
-    x_offset.set(0)
-    y_offset.set(0)
+    xOffset.set(0)
+    yOffset.set(0)
   }
 }
