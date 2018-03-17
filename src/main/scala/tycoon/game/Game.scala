@@ -46,6 +46,29 @@ class Game(map_width : Int, map_height : Int)
     }
   }
 
+/* new game loop pattern:
+  double t = 0.0;
+  double dt = 1 / 60.0;
+
+  double currentTime = hires_time_in_seconds();
+
+  while ( !quit )
+  {
+      double newTime = hires_time_in_seconds();
+      double frameTime = newTime - currentTime;
+      currentTime = newTime;
+
+      while ( frameTime > 0.0 )
+      {
+          float deltaTime = min( frameTime, dt );
+          integrate( state, t, deltaTime );
+          frameTime -= deltaTime;
+          t += deltaTime;
+      }
+
+      render( state );
+  }
+*/
 
   var entities = new ObservableBuffer[Entity]()
 
@@ -69,10 +92,10 @@ class Game(map_width : Int, map_height : Int)
   // INIT
   val tilemap = new TileMap(map_width, map_height)
   tilemap.fill(Tile.grass)
-  tilemap.tiles_width = Tile.square_width
-  tilemap.tiles_height = Tile.square_height
+  tilemap.tilesWidth = Tile.square_width
+  tilemap.tilesHeight = Tile.square_height
   val tiledPane = new DraggableTiledPane(tilemap)
-  tiledPane.requestFocus
+  tiledPane.requestFocus()
 
 
 

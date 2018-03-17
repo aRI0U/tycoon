@@ -10,7 +10,7 @@ import scalafx.scene.layout.{Pane, StackPane}
 
 
 object Main extends JFXApp {
-  val game = new Game(100, 100)
+  val game = new Game(400, 400)
 
   val startScreen = new StartScreen()
   val gameCreationScreen = new GameCreationScreen(game)
@@ -23,7 +23,7 @@ object Main extends JFXApp {
   val appStage = new PrimaryStage {
     title = "Tycoon Game"
     resizable = true
-    maximized = true
+    //maximized = true
     minWidth = 700
     minHeight = 500
     scene = appScene

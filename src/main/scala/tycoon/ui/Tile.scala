@@ -3,6 +3,7 @@ package tycoon.ui
 import tycoon.game.GridLocation
 
 import scalafx.geometry.Rectangle2D
+import scalafx.scene.CacheHint
 import scalafx.scene.image.{Image,ImageView}
 
 
@@ -11,6 +12,8 @@ class Tile(tileset: Image, viewport: Rectangle2D, rotation: Double = 0) {
   private var _sprite : ImageView = new ImageView(tileset)
   _sprite.viewport = viewport
   _sprite.rotate = rotation
+  // _sprite.cache = true
+  // _sprite.cacheHint = CacheHint.Speed
 
   visible = true // tiles are all visible by default
 

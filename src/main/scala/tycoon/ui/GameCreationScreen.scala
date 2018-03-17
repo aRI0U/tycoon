@@ -38,7 +38,7 @@ class GameCreationScreen(var game : Game) extends BorderPane
     onValidate = r
   }
 
-  private val min_towns : Int = 10
+  private val min_towns : Int = 0
   private val max_towns : Int = 15
 
   private var nb_towns = IntegerProperty(0)
@@ -117,7 +117,7 @@ class GameCreationScreen(var game : Game) extends BorderPane
         margin = Insets(10)
 
         onMouseClicked = (e: MouseEvent) => {
-          if (nb_towns.get() >= 0){//min_towns) { TMP
+          if (nb_towns.get() >= min_towns) {
             game.playerName = name_field.text.get()
             onValidate.run()
           }
