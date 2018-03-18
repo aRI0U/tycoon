@@ -13,6 +13,7 @@ import scalafx.beans.property.StringProperty
 
 class RailCreationManager() {
 
+
   // Function to call in order to know if the rail is able to be seted.
   // Handle the tiles as well
   def IsSetable (rail : Rail, entities : ObservableBuffer[Entity], rails : ListBuffer[Rail], gameGraph : Graph) : Boolean = {
@@ -41,104 +42,107 @@ class RailCreationManager() {
         }
     }
     //According to the surrounding entities, will create roads, change tiles
-    def LookAround(pair : Any) = pair match {
-        case (t: Town,i : Int) => {
+    def LookAround(pair : Any) : Boolean =  {pair match {
+      case (s: Structure, i : Int) => {
+        s match {
+          case town : Town => {
+            println ("*LookAround in RailCreationManager* town case")
+          }
+          case other => {
+            println ("*LookAround in RailCreationManager* other case")
+          }
+        }
           rail.orientation = i
-          if (rail.road.start_town == None) {
-            rail.road.start_town = Some(t)
+          if (rail.road.startStructure == None) {
+            rail.road.startStructure = Some(s)
             if (rail_met == 0) {
               rail.origin = i
             }
           }
-          rail.road.end_town = Some(t)
-          if (!(rail.road.end_town == rail.road.start_town)) {
-            rail.road.end_town = Some(t)
+          rail.road.endStructure = Some(s)
+          if (!(rail.road.endStructure == rail.road.startStructure)) {
+            rail.road.endStructure = Some(s)
             rail.road.finished = true
             rail.orientation = i
-
-            for (rail_member <- rail.road.rails) {
+              for (rail_member <- rail.road.rails) {
               rail_member.road = rail.road
-
-              rail_member.printData += Tuple2("Between", StringProperty(rail.road.start_town.get.name))
-              rail_member.printData += Tuple2("and", StringProperty(rail.road.end_town.get.name))}
+                rail_member.printData += Tuple2("Between", StringProperty(rail.road.startStructure.get.name))
+              rail_member.printData += Tuple2("and", StringProperty(rail.road.endStructure.get.name))
+            }
           }
           if (rail.road.finished) {
             false
           }
           else true
-        }
-        //transmission of road properties from the previous rail to the next one
-        case (previous_rail: BasicRail,i : Int)=> {
-          if ((previous_rail.road_head == true) && (previous_rail.road.finished == false)) {
-            if (rail_met < 3) {
-              rail_met+=1
-            }
-              rail.road.rails ++= previous_rail.road.rails
-              rail.road.length += previous_rail.road.length
-              println (rail.road.rails)
 
+      }
+      //transmission of road properties from the previous rail to the next one
+      case (previous_rail: BasicRail,i : Int)=> {
+        if ((previous_rail.road_head == true) && (previous_rail.road.finished == false)) {
+          if (rail_met < 3) {
+            rail_met+=1
+          }
+            rail.road.rails ++= previous_rail.road.rails
+            rail.road.length += previous_rail.road.length
+            println (rail.road.rails)
               if (rail_met == 1) {
-                rail.previous = previous_rail
-                previous_rail.next = rail
-              }
-              else {
-                // In case of rails track mergence, it's get unified (rail_met > 1)
-                track_mergence(previous_rail.road.rails)
-                rail.next = previous_rail
-                previous_rail.previous = rail
-                track_mergence(rail.road.rails)
-              }
-              if (rail.road.start_town == None) {
-                rail.road.start_town = previous_rail.road.start_town
-              }
-              else {
-                // In this case, the road is finished
-                if (!(rail.road.start_town == previous_rail.road.start_town)) {
-                  rail.road.end_town = rail.road.start_town
-                  rail.road.start_town = previous_rail.road.start_town
-                  rail.road.finished = true
-
+              rail.previous = previous_rail
+              previous_rail.next = rail
+            }
+            else {
+              // In case of rails track mergence, it's get unified (rail_met > 1)
+              track_mergence(previous_rail.road.rails)
+              rail.next = previous_rail
+              previous_rail.previous = rail
+              track_mergence(rail.road.rails)
+            }
+            if (rail.road.startStructure == None) {
+              rail.road.startStructure = previous_rail.road.startStructure
+            }
+            else {
+              // In this case, the road is finished
+              if (!(rail.road.startStructure == previous_rail.road.startStructure)) {
+                rail.road.endStructure = rail.road.startStructure
+                rail.road.startStructure = previous_rail.road.startStructure
+                rail.road.finished = true
                   gameGraph.newRoad(rail.road)
-                  for (rail_member <- rail.road.rails) {
-                    rail_member.road = rail.road
-
-                    rail_member.printData += Tuple2("Between", StringProperty(rail.road.start_town.get.name))
-                    rail_member.printData += Tuple2("and", StringProperty(rail.road.end_town.get.name))
-                  }
+                for (rail_member <- rail.road.rails) {
+                  rail_member.road = rail.road
+                    rail_member.printData += Tuple2("Between", StringProperty(rail.road.startStructure.get.name))
+                  rail_member.printData += Tuple2("and", StringProperty(rail.road.endStructure.get.name))
                 }
               }
-              previous_rail.road_head = false
-
+            }
+            previous_rail.road_head = false
               rail.origin = i
-              previous_rail.orientation = i
-              // Choos a new tile for previous rail if turning
-              //actualy the update rail is not the  one used most part of the time... the one below stays..
-              if ((previous_rail.origin +  previous_rail.orientation) % 2 ==1) {
-                entities-= previous_rail
-                rails-=previous_rail
-                val previous_rail_update = previous_rail.copy(tile_type = 1)
-                // previous_rail.next.previous = previous_rail_update
-                // previous_rail.previous.next = previous_rail_update
-                // val previous_rail_update = previous_rail.copy(previous_rail.pos, 1)
-                previous_rail_update.previous = previous_rail.previous
-                previous_rail_update.next = previous_rail.next
-                previous_rail_update.road = previous_rail.road
-                entities+= previous_rail_update
-                rails+= previous_rail_update
-                turning(previous_rail.origin,previous_rail.orientation,previous_rail_update)
-                previous_rail_update.road_head = false
-              }
-              // If needed, turn the straight rile tile
-              if (rail.origin == 1 || rail.origin == 3) {
-                rail.tile.getView.rotate = 90
-              }
-              true
-
+            previous_rail.orientation = i
+            // Choos a new tile for previous rail if turning
+            //actualy the update rail is not the  one used most part of the time... the one below stays..
+            if ((previous_rail.origin +  previous_rail.orientation) % 2 ==1) {
+              entities-= previous_rail
+              rails-=previous_rail
+              val previous_rail_update = previous_rail.copy(tile_type = 1)
+              // previous_rail.next.previous = previous_rail_update
+              // previous_rail.previous.next = previous_rail_update
+              // val previous_rail_update = previous_rail.copy(previous_rail.pos, 1)
+              previous_rail_update.previous = previous_rail.previous
+              previous_rail_update.next = previous_rail.next
+              previous_rail_update.road = previous_rail.road
+              entities+= previous_rail_update
+              rails+= previous_rail_update
+              turning(previous_rail.origin,previous_rail.orientation,previous_rail_update)
+              previous_rail_update.road_head = false
+            }
+            // If needed, turn the straight rile tile
+            if (rail.origin == 1 || rail.origin == 3) {
+              rail.tile.getView.rotate = 90
+            }
+            true
           }
-          else false
-        }
-        case _ => false
-    }
+        else false
+      }
+      case _ => false
+    }}
     //looking for a trail_head around there
     //list of surounding entities (Renderable)
     var env = new ListBuffer[Any]

@@ -49,8 +49,8 @@ class GameScreen(var game : Game) extends BorderPane
   private var total_cost_mines = IntegerProperty(0)
 
   private var tripCreationMode : Boolean = false
-  private var first_town_selected = BooleanProperty(false)
-  private var first_town : Town = _
+  private var firstStructureSelected = BooleanProperty(false)
+  private var firstStructure : Structure = _
 
   private var buyingTrainMode : Boolean = false
 
@@ -169,13 +169,13 @@ class GameScreen(var game : Game) extends BorderPane
     buyingMinesMode = false
     buyingTrainMode = false
 
-    first_town_selected.set(false)
+    firstStructureSelected.set(false)
 
     menuPane.top = new VBox {
 
       children = Seq(
         new Text {
-          text <== when (first_town_selected) choose "Select destination town" otherwise "Select depart town"
+          text <== when (firstStructureSelected) choose "Select destination town" otherwise "Select depart town"
           margin = Insets(10)
         },
         new Button {
@@ -209,19 +209,21 @@ class GameScreen(var game : Game) extends BorderPane
           case train : Train => {
             println(train.carriages_list)
           }
-          case town : Town => {
-            if (buyingTrainMode) {
-              println("new train in " + town.name + " town")
-              if (game.createTrain(town)) return
-            }
+          case structure : Structure => {
+            structure match {case town : Town => {
+              if (buyingTrainMode) {
+                println("new train in " + town.name + " town")
+                if (game.createTrain(town)) return
+              }
+            }}
             if (tripCreationMode) {
-              if (first_town_selected.get()) {
-                if (first_town != town) {
-                  first_town.getTrain() match {
+              if (firstStructureSelected.get()) {
+                if (firstStructure != structure) {
+                  firstStructure.getTrain() match {
                     case Some(train) => {
                       try {
-                        game.createRoute(first_town, town, train)
-                        println("create trip from " + first_town.name + " to " + town.name)
+                        game.createRoute(firstStructure, structure, train)
+                        println("create trip from " + firstStructure.name + " to " + structure.name)
                       }
                       catch {
                         case e: IllegalStateException => println("trains cannot fly!")
@@ -233,8 +235,8 @@ class GameScreen(var game : Game) extends BorderPane
                   menuPane.top = actionsPane
                 }
               } else {
-                first_town_selected.set(true)
-                first_town = town
+                firstStructureSelected.set(true)
+                firstStructure = structure
               }
             }
           }

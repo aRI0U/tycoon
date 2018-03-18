@@ -12,5 +12,6 @@ class GoodsCarriage extends Carriage {
   var passengers = 0
   tile = new Tile(Tile.goods_wagon)
   var current_rail : Option[Rail] = None
+  var currentLoc = new GridLocation(-1,-1)
   setPos(new GridLocation(-1,-1))
 }
