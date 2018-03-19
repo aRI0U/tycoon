@@ -25,9 +25,9 @@ class Graph {
   def newRoad(road:Road) : Unit = {
     if (road.finished) {
       print_graph()
-      road.start_town match {
+      road.startStructure match {
         case None => ()
-        case Some(s_town) => road.end_town match {
+        case Some(s_town) => road.endStructure match {
           case None => ()
           case Some(e_town) => {
             val s_id = s_town.structure_id

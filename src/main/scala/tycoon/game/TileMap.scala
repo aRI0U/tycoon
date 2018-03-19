@@ -8,15 +8,15 @@ import scalafx.geometry.Rectangle2D
 class TileMap (_width: Int, _height: Int) {
   private val _map = Array.ofDim[Tile](width, height)
 
-  private var _tiles_width: Double = 0
-  private var _tiles_height: Double = 0
+  private var _tilesWidth: Double = 0
+  private var _tilesHeight: Double = 0
 
   def map: Array[Array[Tile]] = _map
 
-  def tiles_width: Double = _tiles_width
-  def tiles_height: Double = _tiles_height
-  def tiles_width_= (new_tiles_width: Double) = _tiles_width = new_tiles_width
-  def tiles_height_= (new_tiles_height: Double) = _tiles_height = new_tiles_height
+  def tilesWidth: Double = _tilesWidth
+  def tilesHeight: Double = _tilesHeight
+  def tilesWidth_= (newTilesWidth: Double) = _tilesWidth = newTilesWidth
+  def tilesHeight_= (newTilesHeight: Double) = _tilesHeight = newTilesHeight
 
   def width: Int = _width
   def height: Int = _height

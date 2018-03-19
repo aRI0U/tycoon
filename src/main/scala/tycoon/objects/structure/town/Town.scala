@@ -14,9 +14,9 @@ abstract case class Town(pos: GridLocation, id: Int) extends Structure(pos, id) 
   protected val r = scala.util.Random
 
   var city_names : ListBuffer[String] = new ListBuffer
-  city_names += ("Paris", "Lyon", "Toulouse", "Saclay", "Nice", "Strasbourg", "Mulhouse", "Aulnay-sous-Bois", "Cachan", "Hamburg", "Berlin", "Brno", "Stuttgart", "Wien", "Köln")
+  city_names += ("Paris", "Lyon", "Toulouse", "Saclay", "Nice", "Strasbourg", "Mulhouse", "Aulnay-sous-Bois", "Cachan", "Hamburg", "Berlin", "Brno", "Caderousse","Stuttgart", "Wien", "Köln")
 
-  protected val _name = StringProperty(city_names(id))
+   // _name = StringProperty(city_names(id))
   protected var _population = IntegerProperty(0)
   protected var _waiting_passengers = IntegerProperty(0)
 
@@ -53,8 +53,8 @@ abstract case class Town(pos: GridLocation, id: Int) extends Structure(pos, id) 
     }
   }
 
-  def position : GridLocation = pos
-  def name : String = _name.get()
+  // def position : GridLocation = pos
+  // def name : String = _name.get()
   def name_= (new_name: String) = _name.set(new_name)
   def population : Int = _population.get()
   def population_= (new_pop: Int) = _population.set(new_pop)

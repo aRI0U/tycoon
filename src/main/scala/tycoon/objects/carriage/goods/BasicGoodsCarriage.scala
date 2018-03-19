@@ -13,5 +13,6 @@ class BasicGoodsCarriage extends GoodsCarriage {
   var transport = new ListBuffer[Good]
   tile = new Tile(Tile.goods_wagon)
   var current_rail : Option[Rail] = None
+  var currentLoc = new GridLocation(-1,-1)
   setPos(new GridLocation(-1,-1))
 }
