@@ -1,28 +1,34 @@
 package tycoon.objects.structure
 
+import scala.collection.mutable.ListBuffer
+
 import tycoon.objects.good._
 import tycoon.game.GridLocation
 
+import scalafx.beans.property.{IntegerProperty, StringProperty}
 
 abstract class Facility(pos: GridLocation, id: Int) extends Structure(pos, id) {
-  val production_time : Double = 1
+  var products = new ListBuffer[Good]
   var intern_time : Double = 0
-  var stock : Int = 0
 
-  var product : Good = new Iron
-  var production_per_period : Int = 1
-  var production_price : Int = 1
+  for (i <- products) {
 
-
-  def update_production() {
-    stock += production_per_period
   }
 
-  def update(dt: Double) = {
-    intern_time += dt
-    if (intern_time > production_time) {
-      update_production()
-      intern_time -= production_time
-    }
-  }
+  // val product : Good
+  // var production_per_period : Int
+  // var production_price : Int
+
+
+  // def update_production(good: Good) = {
+  //   stock += production_per_period
+  // }
+  //
+  // def update(dt: Double) = {
+  //   intern_time += dt
+  //   if (intern_time > production_time) {
+  //     update_production()
+  //     intern_time -= production_time
+  //   }
+  // }
 }

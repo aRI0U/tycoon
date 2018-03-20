@@ -26,15 +26,17 @@ abstract class Train(town : Town, nb_carriages : Int) extends Vehicle(town) {
 
   def boarding () = {
     location match {
-      case (Some(struc)) => { struc match {
-        case (town : Town) => {
-          for (carriage <- carriages_list) {
-            carriage match {
-              case PassengerCarriage() => carriage.embark(town)
-              case _ => println("no passenger")
+      case (Some(struc)) => {
+        struc match {
+          case (town : Town) => {
+            for (carriage <- carriages_list) {
+              carriage match {
+                case p:PassengerCarriage =>
+                p.embark(town)
+                case _ => ()
+              }
             }
           }
-        }
         case other => {println("*boarding in train* case of location is not a town ")}
       }}
       case None => println("no town")

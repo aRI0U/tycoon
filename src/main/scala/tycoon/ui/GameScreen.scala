@@ -210,12 +210,15 @@ class GameScreen(var game : Game) extends BorderPane
             println(train.carriages_list)
           }
           case structure : Structure => {
-            structure match {case town : Town => {
-              if (buyingTrainMode) {
-                println("new train in " + town.name + " town")
-                if (game.createTrain(town)) return
+            structure match {
+              case town : Town => {
+                if (buyingTrainMode) {
+                  println("new train in " + town.name)
+                  if (game.createTrain(town)) return
+                }
               }
-            }}
+              case _ => ()
+            }
             if (tripCreationMode) {
               if (firstStructureSelected.get()) {
                 if (firstStructure != structure) {
