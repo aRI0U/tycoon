@@ -16,6 +16,5 @@ class Map(width: Int, height: Int) {
   def findPaths(departure: GridLocation, length: Int) : Unit = {
     val d_i = departure.row + height/2
     val d_j = departure.col + width/2
-
   }
 }

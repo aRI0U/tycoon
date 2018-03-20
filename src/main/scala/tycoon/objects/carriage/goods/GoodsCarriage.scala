@@ -10,10 +10,10 @@ import tycoon.ui.Tile
 
 abstract case class GoodsCarriage() extends Carriage {
   val max_transport : Int
-  var transport : ListBuffer[Good]
+  var transport : ListBuffer[Merchandise]
 
   // override def embark(facility: Facility) : Unit = {
-  // }h
+  // }
   //
   // override def debark(facility: Facility) = {
   // }

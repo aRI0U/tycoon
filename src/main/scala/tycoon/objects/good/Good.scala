@@ -2,6 +2,6 @@ package tycoon.objects.good
 
 // very provisoire !!!
 
-class Good {
-  val product : Int = 0
+abstract class Good {
+  val weight : Int
 }

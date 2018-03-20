@@ -29,4 +29,5 @@ abstract class Structure(pos: GridLocation, id: Int) extends Entity {
     if (list_trains.isEmpty) None
     else Some(list_trains.last)
   }
+  setPos(pos)
 }
