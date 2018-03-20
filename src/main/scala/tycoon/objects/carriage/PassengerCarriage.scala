@@ -8,7 +8,7 @@ abstract case class PassengerCarriage() extends Carriage {
 
   override def embark(town: Town) : Unit = {
     passengers = max_passengers.min(town.waiting_passengers)
-    println(passengers, town.waiting_passengers)
+    println("tycoon > objects > carriage > PassengerCarriage.scala > embark: ", passengers, town.waiting_passengers)
     town.waiting_passengers -= passengers
     town.population -= passengers
   }

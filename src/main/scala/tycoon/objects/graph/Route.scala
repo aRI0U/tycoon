@@ -16,13 +16,11 @@ class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
 
 
   var current_road : Option[Road]= None
-  println (itinerary)
 
   def departure () = {
     train.boarding()
     for (carriage <- train.carriages_list) {
       game.playerMoney.set(game.playerMoney.get() + carriage.passengers * carriage.ticket_price)
-      println(carriage.passengers)
     }
     val start = train.location.get
     carriageMouvment(start.getPos,None, train.carriages_list)
@@ -30,7 +28,6 @@ class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
     if (train.location.get == itinerary(itinerary.size - 1).startStructure.get) dir_indicator = 0
     else dir_indicator = 1
 
-    println("departure")
     train.location = None
     start.list_trains -= train
     train.visible = true
@@ -50,7 +47,7 @@ class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
   def arrival (road: Road) = {
     if (dir_indicator == 1) {train.location = road.startStructure}
     else {train.location = road.endStructure}
-    // println(train.location.get.population)
+    // println("tycoon > objects > graph > Route.scala > arrival: " + train.location.get.population)
     train.location match {
       case Some(s) => s.list_trains += train
       case None => ()

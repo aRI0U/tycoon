@@ -3,7 +3,6 @@ package tycoon.game
 import tycoon.objects.graph._
 import tycoon.objects.structure._
 import tycoon.objects.railway._
-import tycoon.objects.graph.Graph
 import tycoon.ui.Entity
 
 import scalafx.collections.ObservableBuffer._
@@ -11,12 +10,12 @@ import scalafx.collections.ObservableBuffer
 import scala.collection.mutable.{HashMap, ListBuffer}
 import scalafx.beans.property.StringProperty
 
-class RailCreationManager() {
+class RailManager {
 
 
   // Function to call in order to know if the rail is able to be seted.
   // Handle the tiles as well
-  def IsSetable (rail : Rail, entities : ObservableBuffer[Entity], rails : ListBuffer[Rail], gameGraph : Graph) : Boolean = {
+  def IsSetable (rail : Rail, map: Map, rails : ListBuffer[Rail], gameGraph : Graph) : Boolean = {
     var rail_met : Int = 0
     val pos = rail.position
 
@@ -46,10 +45,10 @@ class RailCreationManager() {
       case (s: Structure, i : Int) => {
         s match {
           case town : Town => {
-            println ("*LookAround in RailCreationManager* town case")
+            println ("tycoon > game > RailCreationMananager.scala > LookAround: *LookAround in RailCreationManager* town case")
           }
           case other => {
-            println ("*LookAround in RailCreationManager* other case")
+            println ("tycoon > game > RailCreationMananager.scala > LookAround: *LookAround in RailCreationManager* other case")
           }
         }
           rail.orientation = i
@@ -84,7 +83,7 @@ class RailCreationManager() {
           }
             rail.road.rails ++= previous_rail.road.rails
             rail.road.length += previous_rail.road.length
-            println (rail.road.rails)
+            println ("tycoon > game > RailCreationMananager.scala > LookAround: " + rail.road.rails)
               if (rail_met == 1) {
               rail.previous = previous_rail
               previous_rail.next = rail
@@ -119,7 +118,7 @@ class RailCreationManager() {
             // Choos a new tile for previous rail if turning
             //actualy the update rail is not the  one used most part of the time... the one below stays..
             if ((previous_rail.origin +  previous_rail.orientation) % 2 ==1) {
-              entities-= previous_rail
+              // entities-= previous_rail    TODO change la rotation du tile au lieu de supprimer / rajouter
               rails-=previous_rail
               val previous_rail_update = previous_rail.copy(tile_type = 1)
               // previous_rail.next.previous = previous_rail_update
@@ -128,7 +127,7 @@ class RailCreationManager() {
               previous_rail_update.previous = previous_rail.previous
               previous_rail_update.next = previous_rail.next
               previous_rail_update.road = previous_rail.road
-              entities+= previous_rail_update
+              // entities+= previous_rail_update   TODO
               rails+= previous_rail_update
               turning(previous_rail.origin,previous_rail.orientation,previous_rail_update)
               previous_rail_update.road_head = false
@@ -152,14 +151,21 @@ class RailCreationManager() {
     var boxup  = new GridLocation(pos.col+1, pos.row)
     var boxbelow  = new GridLocation(pos.col-1, pos.row)
     val boxes = Array(boxleft,boxup,boxright,boxbelow)
-    for (other <- entities) {
+    /*for (other <- entities) {
       for (i : Int <- 0 to 3) {
         if (other.gridContains(boxes(i)) ) {
           val pair = (other,i)
           env += pair
         }
       }
+    }*/
+    for (i <- 0 to 3) {
+      map.getContentAt(boxes(i)) match {
+        case Some(e) => env += (e, i)
+        case None => ()
+      }
     }
+    
     var valid_bis : Boolean = false
     for (pair <- env) {
       if (LookAround(pair))

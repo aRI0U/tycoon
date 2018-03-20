@@ -1,21 +1,39 @@
 package tycoon.objects.graph
 
-import tycoon.game.GridLocation
-
+import tycoon.game.{GridLocation, GridRectangle}
+import tycoon.ui.Entity
 import Array._
 
 class Map(width: Int, height: Int) {
-  // content(i)(j) iff there is a rail on its tile
-  var content = ofDim[Boolean](height, width)
-  def addToMap(pos: GridLocation, kind: Boolean) : Unit = {
-    val i = pos.row + height/2
-    val j = pos.col + width/2
-    content(i)(j) = kind
-    println("just added a rail on " + i + ", " + j)
-  }
-  def findPaths(departure: GridLocation, length: Int) : Unit = {
-    val d_i = departure.row + height/2
-    val d_j = departure.col + width/2
 
+  private var content = Array.fill[Option[Entity]](width, height)(None)
+
+  def add(rect: GridRectangle, e: Entity) = {
+    for ((col, row) <- rect.iterate) {
+      content(col)(row) = Some(e)
+      println("tycoon > objects > graph > Map.scala > addToMap: added element at pos (" + col + ", " + row + ")")
+    }
   }
+
+  def remove(rect: GridRectangle) = {
+    for ((col, row) <- rect.iterate) {
+      content(col)(row) = None
+      println("tycoon > objects > graph > Map.scala > addToMap: added element at pos (" + col + ", " + row + ")")
+    }
+  }
+
+  def isUnused(pos: GridLocation): Boolean =
+    content(pos.col)(pos.row) == None
+
+  def isUnused(rect: GridRectangle): Boolean = {
+    var bool = true
+    for ((col, row) <- rect.iterate) {
+      if (content(col)(row) != None)
+        bool = false
+    }
+    bool
+  }
+
+  def getContentAt(pos: GridLocation): Option[Entity] = content(pos.col)(pos.row)
+
 }

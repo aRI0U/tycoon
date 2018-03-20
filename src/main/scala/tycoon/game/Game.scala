@@ -37,7 +37,7 @@ class Game(map_width : Int, map_height : Int)
       //if (elapsedTime > 0.01)
       //    elapsedTime = 0.01
 
-      //println(1.0 / elapsedTime + " FPS")
+      //println("tycoon > game > Game.scala > GameLoop: 1.0 / elapsedTime + " FPS")
 
 
 
@@ -48,7 +48,7 @@ class Game(map_width : Int, map_height : Int)
   }
 
   //Managers of game entities.
-  var railManager = new RailCreationManager()
+  var railManager = new RailManager
 
 /* new game loop pattern:
   double t = 0.0;
@@ -75,9 +75,9 @@ class Game(map_width : Int, map_height : Int)
 */
 
 
-  var entities = new ObservableBuffer[Entity]()
+  //var entities = new ObservableBuffer[Entity]()
 
-  var game_map = new Map(map_width, map_height)
+  var map = new Map(map_width, map_height)
   var game_graph = new Graph
 
   var nb_structures = 0
@@ -103,7 +103,7 @@ class Game(map_width : Int, map_height : Int)
   tiledPane.requestFocus()
 
 
-
+/*
   entities.onChange((_, changes) => {
     for (change <- changes)
       change match {
@@ -114,7 +114,7 @@ class Game(map_width : Int, map_height : Int)
         case Reorder(from, to, permutation) => ()
         case Update(pos, updated)           => ()
       }
-  })
+  })*/
 
   private val player = new Player
 
@@ -132,14 +132,8 @@ class Game(map_width : Int, map_height : Int)
 
   private def update(dt : Double) : Unit = {
     //update trains position here ?
-    for (route <- routes)
-    {
-      route.update(dt)
-    }
-    for (town <- towns) // towns.foreach(update...)
-    {
-      town.update(dt)
-    }
+    routes.foreach(_.update(dt))
+    towns.foreach(_.update(dt))
     //tiledPane.layoutEntities
 
     time_s += dt
@@ -157,31 +151,25 @@ class Game(map_width : Int, map_height : Int)
 
   def createStructure (kind: Int, pos: GridLocation) : Boolean = {
     var structure : Structure = new BasicTown(pos, nb_structures)
-      kind match {
+    kind match {
       case 0 => ;
       case _ => structure = new Mine(pos, nb_structures)
     }
-    // check whether town is within the map boundaries
-    if (tilemap.gridContains(structure.gridRect))
+
+    if (tilemap.gridContains(structure.gridRect) && map.isUnused(structure.gridRect))
     {
-      // if so, check whether it intersects with an other town
-      var valid = true
-      for (other <- entities) {
-        if (other.gridIntersects(structure))
-          valid = false
+      structure match {
+        case t : Town => towns += t
+        case m : Mine => mines += m
       }
-      if (valid) {
-        structure match {
-          case t : Town => towns += t
-          case m : Mine => mines += m
-        }
-        entities += structure
-        nb_structures += 1
-        game_graph.newStructure(structure)
-      }
-      valid
+      tiledPane.addEntity(structure)
+      map.add(structure.gridRect, structure)
+      nb_structures += 1
+      game_graph.newStructure(structure)
+      true
     }
-    else false
+    else
+      false
   }
 
 
@@ -191,7 +179,7 @@ class Game(map_width : Int, map_height : Int)
 
   def removeAllTowns() : Unit = {
     towns.clear()
-    entities.clear()
+    // entities.clear()    TODO
     nb_structures = 0
   }
 
@@ -200,9 +188,18 @@ class Game(map_width : Int, map_height : Int)
   }
   def removeAllMines() : Unit = {
     mines.remove(mines.size-1)
-    entities.remove(entities.size-1)
+   //  entities.remove(entities.size-1)    TODO
     nb_structures -= 1
   }
+
+/* do not erase
+  // try to create rail at pos and return true in case of success
+  def createRail(pos: GridLocation): Boolean = {
+    if (railManager.create(pos)) {
+      entities +=
+    }
+  }
+*/
 
 // Ability to set a rail if next to a stucture or  a road_head
   def createRail (pos: GridLocation) : Boolean = {
@@ -213,19 +210,15 @@ class Game(map_width : Int, map_height : Int)
     {
       //Rail initialised with a staight sprite.
       val rail = new BasicRail(pos, 0)
-      var valid = true
       //Watch for location conflict.
-      for (other <- entities) {
-        if (other.gridIntersects(rail))
-          valid = false
-      }
+      var valid = map.isUnused(rail.gridRect)
       // Call of IsSetable
-      valid = valid & railManager.IsSetable(rail,entities,rails,game_graph)
+      valid = valid & railManager.IsSetable(rail,map,rails,game_graph)  
       // In case of no problem:
       if (valid) {
         rails += rail
-        entities += rail
-        game_map.addToMap(pos, true)
+        tiledPane.addEntity(rail)
+        map.add(rail.gridRect, rail)
       }
       valid
     }
@@ -240,7 +233,7 @@ class Game(map_width : Int, map_height : Int)
       routes.remove(routes.size -1)
     }
     rails.remove(rails.size-1)
-    entities.remove(entities.size-1)
+    // entities.remove(entities.size-1)   // TODO
     rails(rails.size-1).road_head = true
   }
 
@@ -253,13 +246,13 @@ class Game(map_width : Int, map_height : Int)
     // check if there is an other train ??
     town.addTrain(train)
     trains += train
-    entities += train
+    tiledPane.addEntity(train)
 
     // paying
     playerMoney.set(playerMoney.get() - train.cost)
     for (carriage <- train.carriages_list) {
       playerMoney.set(playerMoney.get() - carriage.cost)
-      entities+=carriage
+      tiledPane.addEntity(carriage)
       carriages+=carriage
     }
     true
@@ -269,11 +262,11 @@ class Game(map_width : Int, map_height : Int)
    train.boarding()
     for (carriage <- train.carriages_list) {
       playerMoney.set(playerMoney.get() + carriage.passengers * carriage.ticket_price)
-      println(carriage.passengers)
+      println("tycoon > game > Game.scala > createRoute: " + carriage.passengers)
     }
     val route = new Route(game_graph.shortestRoute(departure, arrival), train, this)
-    println (game_graph.shortestRoute(departure, arrival))
+    println ("tycoon > game > Game.scala > createRoute: " + game_graph.shortestRoute(departure, arrival))
     routes += route
-    println (route.current_road)
+    println ("tycoon > game > Game.scala > createRoute: " + route.current_road)
   }
 }

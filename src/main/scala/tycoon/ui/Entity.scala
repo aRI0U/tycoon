@@ -29,6 +29,9 @@ trait Entity {
   def width: Int = tile.width
   def height: Int = tile.height
 
+  def gridWidth: Int = tile.width / Tile.square_width
+  def gridHeight: Int = tile.height / Tile.square_height
+
   def getPos: GridLocation = gridRect.pos
 
   // set pos on grid (in cases)

@@ -31,13 +31,13 @@ abstract class Train(town : Town, nb_carriages : Int) extends Vehicle(town) {
           for (carriage <- carriages_list) {
             carriage match {
               case PassengerCarriage() => carriage.embark(town)
-              case _ => println("no passenger")
+              case _ => println("tycoon > objects > vehicle > Train.scala > boarding: no passenger")
             }
           }
         }
-        case other => {println("*boarding in train* case of location is not a town ")}
+        case other => {println("tycoon > objects > vehicle > Train.scala > boarding: *boarding in train* case of location is not a town ")}
       }}
-      case None => println("no town")
+      case None => println("tycoon > objects > vehicle > Train.scala > boarding: no town")
     }
   }
 
@@ -52,7 +52,7 @@ abstract class Train(town : Town, nb_carriages : Int) extends Vehicle(town) {
             }
           }
         }
-        case other => {println("*landing in train* case of location is not a town ")}
+        case other => {println("tycoon > objects > vehicle > Train.scala > landing: *landing in train* case of location is not a town ")}
       }}
       case None => ;
     }

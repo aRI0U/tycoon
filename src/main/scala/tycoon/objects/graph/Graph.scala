@@ -19,7 +19,7 @@ class Graph {
 
   def newStructure(s:Structure) : Unit = {
     content += new Vertex(s)
-    println("added structure n° " + s.structure_id)
+    println("tycoon > objects > graph > Graph.scala > newStructure: added structure n° " + s.structure_id)
   }
 
   def newRoad(road:Road) : Unit = {
@@ -36,7 +36,7 @@ class Graph {
               if (vertex.origin == s_id) vertex.links += ((e_id, road))
               else {if (vertex.origin == e_id) vertex.links += ((s_id, road))}
             }
-            println("added road from " + s_id + " to " + e_id)
+            println("tycoon > objects > graph > Graph.scala > newRoad: added road from " + s_id + " to " + e_id)
           }
         }
       }
@@ -58,9 +58,9 @@ class Graph {
 
   def print_graph() {
     for (vertex <- content) {
-      println (vertex.origin + ":")
+      println ("tycoon > objects > graph > Graph.scala > print_graph: " + vertex.origin + ":")
       for (link <- vertex.links) {
-        println(link._1)
+        println("tycoon > objects > graph > Graph.scala > print_graph: " + link._1)
       }
     }
   }
@@ -91,13 +91,13 @@ class Graph {
     // initialization
     print_graph()
     val l = content.length
-    println(l)
+    println("tycoon > objects > graph > Graph.scala > shortestRoute: " + l)
     var d : Array[Option[Int]] = new Array[Option[Int]](l)
     for (i <- 0 to l-1) d(i) = None
     d(departure.structure_id) = Some(0)
 
     var not_visited : ListBuffer[Vertex] = content.clone
-    println(not_visited)
+    println("tycoon > objects > graph > Graph.scala > shortestRoute: " + not_visited)
     var previous : Array[Option[(Int, Road)]] = new Array[Option[(Int, Road)]](l)
     for (i <- 0 to l-1) previous(i) = None
 

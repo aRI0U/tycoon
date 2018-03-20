@@ -35,7 +35,7 @@ import scala.collection.mutable.ListBuffer
 
 
 
-class GameScreen(var game : Game) extends BorderPane
+class GameScreen(val game : Game) extends BorderPane
 {
   stylesheets += "style/gamescreen.css"
   id = "body"
@@ -202,17 +202,17 @@ class GameScreen(var game : Game) extends BorderPane
     gamePane.center = game.tiledPane // update
   }
 
-  def maybeClickEntityAt(pos: GridLocation) {
-    for (ent <- game.entities) {
-      if (ent.gridContains(pos)) {
-        ent match {
+  def maybeClickEntityAt(pos: GridLocation): Unit = {
+    game.map.getContentAt(pos) match {
+      case Some(entity) => {
+        entity match {
           case train : Train => {
-            println(train.carriages_list)
+            println("tycoon > ui > GameScreen.scala > maybeClickEntityAt: " + train.carriages_list)
           }
           case structure : Structure => {
             structure match {case town : Town => {
               if (buyingTrainMode) {
-                println("new train in " + town.name + " town")
+                println("tycoon > ui > GameScreen.scala > maybeClickEntityAt: new train in " + town.name + " town")
                 if (game.createTrain(town)) return
               }
             }}
@@ -223,13 +223,13 @@ class GameScreen(var game : Game) extends BorderPane
                     case Some(train) => {
                       try {
                         game.createRoute(firstStructure, structure, train)
-                        println("create trip from " + firstStructure.name + " to " + structure.name)
+                        println("tycoon > ui > GameScreen.scala > maybeClickEntityAt: create trip from " + firstStructure.name + " to " + structure.name)
                       }
                       catch {
-                        case e: IllegalStateException => println("trains cannot fly!")
+                        case e: IllegalStateException => println("tycoon > ui > GameScreen.scala > maybeClickEntityAt: trains cannot fly!")
                       }
                     }
-                    case None => println("no train no gain")
+                    case None => println("tycoon > ui > GameScreen.scala > maybeClickEntityAt: no train no gain")
                   }
                   tripCreationMode = false
                   menuPane.top = actionsPane
@@ -243,9 +243,9 @@ class GameScreen(var game : Game) extends BorderPane
           case r : Rail => { }
           case _ => {  }
         }
-        bindPrintData(ent.printData)
-        return
+        bindPrintData(entity.printData)
       }
+      case None => println("tycoon > ui > GameScreen.scala > maybeClickEntityAt: nothing in map at this position")
     }
   }
 

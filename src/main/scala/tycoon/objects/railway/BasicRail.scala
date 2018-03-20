@@ -17,8 +17,7 @@ case class BasicRail(pos: GridLocation, val tile_type : Int) extends Rail(pos, t
   }
 
   def get_tile_type : Int = {
-    println ("get type:")
-    println (tile_type)
+    println ("tycoon > objects > railway > BasicRail.scala > get_tile_type: get type:" + tile_type)
     tile_type
   }
 

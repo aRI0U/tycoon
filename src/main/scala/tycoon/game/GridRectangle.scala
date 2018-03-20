@@ -18,4 +18,11 @@ class GridRectangle(topLeftCorner: GridLocation, _cols: Int, _rows: Int) {
 
   def intersects(other: GridRectangle): Boolean =
     (left <= other.right && right >= other.left && top <= other.bottom && bottom >= other.top)
+
+  def iterate = {
+    for {
+      col <- left to right
+      row <- top to bottom
+    } yield (col, row)
+  }
 }

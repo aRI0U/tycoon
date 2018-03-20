@@ -199,8 +199,8 @@ class DraggableTiledPane(val tm: TileMap) extends BorderPane {
     // maximal rectangle of the tilemap that can be displayed
     val minRow: Int = Math.floor(yOffset.get() / scaledTilesHeight.get()).toInt //- 1
     val minCol: Int = Math.floor(xOffset.get() / scaledTilesWidth.get()).toInt //- 1
-    val maxRow: Int = Math.ceil((yOffset.get() + this.height.value) / scaledTilesHeight.get()).toInt
-    val maxCol: Int = Math.ceil((xOffset.get() + this.width.value) / scaledTilesWidth.get()).toInt
+    val maxRow: Int = Math.min(Math.ceil((yOffset.get() + this.height.value) / scaledTilesHeight.get()).toInt, tm.height - 1)
+    val maxCol: Int = Math.min(Math.ceil((xOffset.get() + this.width.value) / scaledTilesWidth.get()).toInt, tm.width - 1)
 
     // pre-compute some values
     val scaledTilesWidthValue = scaledTilesWidth.get()
@@ -327,7 +327,6 @@ class DraggableTiledPane(val tm: TileMap) extends BorderPane {
   def screenPxToGridLoc(x : Double, y : Double) : (Int, Int) = {
     val col : Int = Math.floor((x + xOffset.get()) / scaledTilesWidth.get()).toInt
     val row : Int = Math.floor((y + yOffset.get()) / scaledTilesHeight.get()).toInt
-    println(col, row)
     (col, row)
   }
 
