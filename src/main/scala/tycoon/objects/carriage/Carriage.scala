@@ -7,9 +7,7 @@ import tycoon.game.GridLocation
 
 abstract class Carriage extends Entity {
   val cost : Int
-  val ticket_price : Int
   val weight : Int
-  var passengers : Int
   var current_rail : Option[Rail]
   var currentLoc : GridLocation
 
@@ -17,7 +15,7 @@ abstract class Carriage extends Entity {
     tile.getView.rotate = (angle)
   }
 
-  def embark(town: Town) = { }
+  def embark(structure: Structure) = { }
+  def debark(structure: Structure) = { }
 
-  def debark(town: Town) = { }
 }

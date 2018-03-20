@@ -268,8 +268,10 @@ class Game(map_width : Int, map_height : Int)
   def createRoute (departure: Structure, arrival: Structure, train: Train) {
    train.boarding()
     for (carriage <- train.carriages_list) {
-      playerMoney.set(playerMoney.get() + carriage.passengers * carriage.ticket_price)
-      println(carriage.passengers)
+      carriage match {
+        case p:PassengerCarriage => playerMoney.set(playerMoney.get() + p.passengers * p.ticket_price)
+        case _ => ()
+      }
     }
     val route = new Route(game_graph.shortestRoute(departure, arrival), train, this)
     println (game_graph.shortestRoute(departure, arrival))
