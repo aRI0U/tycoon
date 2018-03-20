@@ -16,15 +16,6 @@ import scalafx.beans.property.{IntegerProperty, StringProperty}
 case class Mine(pos: GridLocation, id: Int) extends Facility(pos, id) {
   protected val r = scala.util.Random
 
-  protected var _diggers = IntegerProperty(0)
-
-  private val diggersStr = new StringProperty
-  diggersStr <== _diggers.asString
-  printData += new Tuple2("Diggers", diggersStr)
-
-  def diggers : Int = _diggers.get()
-  def diggers_= (new_dig: Int) = _diggers.set(new_dig)
-
   val production_time = 10
 
   products += new Good("Iron")

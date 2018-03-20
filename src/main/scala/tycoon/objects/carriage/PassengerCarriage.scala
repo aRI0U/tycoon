@@ -22,8 +22,8 @@ abstract case class PassengerCarriage() extends Carriage {
       case t:Town => {
         t.population = t.population + passengers
         passengers = 0}
-      case m:Mine => {
-        m.diggers += passengers
+      case f:Facility => {
+        f.workers += passengers
         passengers = 0}
       case _ => ()
     }
