@@ -13,6 +13,8 @@ abstract case class Town(pos: GridLocation, id: Int) extends Structure(pos, id) 
 
   protected val r = scala.util.Random
 
+  val max_population : Int
+
   var city_names : ListBuffer[String] = new ListBuffer
   city_names += ("Paris", "Lyon", "Toulouse", "Saclay", "Nice", "Strasbourg", "Mulhouse", "Aulnay-sous-Bois", "Cachan", "Hamburg", "Berlin", "Brno", "Caderousse","Stuttgart", "Wien", "Köln")
 
@@ -33,8 +35,11 @@ abstract case class Town(pos: GridLocation, id: Int) extends Structure(pos, id) 
 
   private var intern_time : Double = 0
   def update_population () = {
-    val i = r.nextInt(population)
-    population += i/50
+    if (population < max_population) {
+      val i = r.nextInt(population)
+      population += i/50
+    }
+
   }
 
   // to ameliorate to manage where people want to go

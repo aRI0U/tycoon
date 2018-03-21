@@ -213,7 +213,7 @@ class Game(map_width : Int, map_height : Int)
       //Watch for location conflict.
       var valid = map.isUnused(rail.gridRect)
       // Call of IsSetable
-      valid = valid & railManager.IsSetable(rail,map,rails,game_graph)  
+      valid = valid & railManager.IsSetable(rail,map,rails,game_graph)
       // In case of no problem:
       if (valid) {
         rails += rail
@@ -261,8 +261,10 @@ class Game(map_width : Int, map_height : Int)
   def createRoute (departure: Structure, arrival: Structure, train: Train) {
    train.boarding()
     for (carriage <- train.carriages_list) {
-      playerMoney.set(playerMoney.get() + carriage.passengers * carriage.ticket_price)
-      println("tycoon > game > Game.scala > createRoute: " + carriage.passengers)
+      carriage match {
+        case p:PassengerCarriage => playerMoney.set(playerMoney.get() + p.passengers * p.ticket_price)
+        case _ => ()
+      }
     }
     val route = new Route(game_graph.shortestRoute(departure, arrival), train, this)
     println ("tycoon > game > Game.scala > createRoute: " + game_graph.shortestRoute(departure, arrival))
