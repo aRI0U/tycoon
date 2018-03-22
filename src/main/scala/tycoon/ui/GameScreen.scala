@@ -210,12 +210,14 @@ class GameScreen(val game : Game) extends BorderPane
             println("tycoon > ui > GameScreen.scala > maybeClickEntityAt: " + train.carriages_list)
           }
           case structure : Structure => {
-            structure match {case town : Town => {
+            structure match {
+              case town : Town => {
               if (buyingTrainMode) {
                 println("tycoon > ui > GameScreen.scala > maybeClickEntityAt: new train in " + town.name + " town")
                 if (game.createTrain(town)) return
-              }
-            }}
+              }}
+              case _ => ()
+            }
             if (tripCreationMode) {
               if (firstStructureSelected.get()) {
                 if (firstStructure != structure) {

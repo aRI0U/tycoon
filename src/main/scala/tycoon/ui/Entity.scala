@@ -21,7 +21,10 @@ trait Entity {
   def gridContains(pos: GridLocation): Boolean = gridRect.contains(pos)
 
   def tile: Tile = _tile
-  def tile_=(new_tile: Tile) = _tile = new_tile
+  def tile_= (new_tile: Tile) = {
+    _tile = new_tile
+    _gridRect = new GridRectangle(new GridLocation(0, 0), tile.width / Tile.square_width, tile.height / Tile.square_height)
+  }
 
   def gridRect: GridRectangle = _gridRect
 

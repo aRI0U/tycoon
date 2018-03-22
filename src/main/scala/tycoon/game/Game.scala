@@ -259,16 +259,14 @@ class Game(map_width : Int, map_height : Int)
   }
 
   def createRoute (departure: Structure, arrival: Structure, train: Train) {
-   train.boarding()
     for (carriage <- train.carriages_list) {
       carriage match {
-        case p:PassengerCarriage => playerMoney.set(playerMoney.get() + p.passengers * p.ticket_price)
+        case p:PassengerCarriage =>
+         playerMoney.set(playerMoney.get() + p.passengers * p.ticket_price)
         case _ => ()
       }
     }
     val route = new Route(game_graph.shortestRoute(departure, arrival), train, this)
-    println ("tycoon > game > Game.scala > createRoute: " + game_graph.shortestRoute(departure, arrival))
     routes += route
-    println ("tycoon > game > Game.scala > createRoute: " + route.current_road)
   }
 }

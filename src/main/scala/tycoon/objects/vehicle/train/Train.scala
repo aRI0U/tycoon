@@ -26,15 +26,17 @@ abstract class Train(town : Town, nb_carriages : Int) extends Vehicle(town) {
 
   def boarding () = {
     location match {
-      case (Some(struc)) => { struc match {
-        case (town : Town) => {
-          for (carriage <- carriages_list) {
-            carriage match {
-              case PassengerCarriage() => carriage.embark(town)
-              case _ => println("tycoon > objects > vehicle > Train.scala > boarding: no passenger")
+      case (Some(struc)) => {
+        struc match {
+          case (town : Town) => {
+            for (carriage <- carriages_list) {
+              carriage match {
+                case p:PassengerCarriage =>
+                p.embark(town)
+                case _ => ()
+              }
             }
           }
-        }
         case other => {println("tycoon > objects > vehicle > Train.scala > boarding: *boarding in train* case of location is not a town ")}
       }}
       case None => println("tycoon > objects > vehicle > Train.scala > boarding: no town")
@@ -43,18 +45,10 @@ abstract class Train(town : Town, nb_carriages : Int) extends Vehicle(town) {
 
   def landing () = {
     location match {
-      case (Some(struc)) => { struc match {
-        case (town : Town) => {
-          for (carriage <- carriages_list) {
-            carriage match {
-              case PassengerCarriage() => carriage.debark(town)
-              case _ => ;
-            }
-          }
-        }
-        case other => {println("tycoon > objects > vehicle > Train.scala > landing: *landing in train* case of location is not a town ")}
-      }}
-      case None => ;
+      case (Some(s)) => {
+        for (carriage <- carriages_list) carriage.debark(s)
+      }
+      case None => ()
     }
   }
 }
