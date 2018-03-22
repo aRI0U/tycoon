@@ -86,6 +86,7 @@ class Game(map_width : Int, map_height : Int)
   val rail_price = 10
 
   var rails = new ListBuffer[Rail]()
+  var structures = new ListBuffer[Structure]()
   var mines = new ListBuffer[Mine]()
   var towns = new ListBuffer[Town]()
   var trains = new ListBuffer[BasicTrain]()
@@ -136,9 +137,9 @@ class Game(map_width : Int, map_height : Int)
     {
       route.update(dt)
     }
-    for (town <- towns) // towns.foreach(update...)
+    for (structure <- structures) // towns.foreach(update...)
     {
-      town.update(dt)
+      structure.update(dt)
     }
     //tiledPane.layoutEntities
 
@@ -171,6 +172,7 @@ class Game(map_width : Int, map_height : Int)
           valid = false
       }
       if (valid) {
+        structures += structure
         structure match {
           case t : Town => towns += t
           case m : Mine => mines += m

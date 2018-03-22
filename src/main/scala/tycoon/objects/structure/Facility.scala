@@ -9,6 +9,7 @@ import scalafx.beans.property.{IntegerProperty, StringProperty}
 
 abstract class Facility(pos: GridLocation, id: Int) extends Structure(pos, id) {
 
+  // workers
   protected var _workers = IntegerProperty(0)
 
   private val workersStr = new StringProperty
@@ -18,11 +19,20 @@ abstract class Facility(pos: GridLocation, id: Int) extends Structure(pos, id) {
   def workers : Int = _workers.get()
   def workers_= (new_workers: Int) = _workers.set(new_workers)
 
-  var products = new ListBuffer[Good]
-  var intern_time : Double = 0
 
-  for (i <- products) {
-    // TODO : afficher les quantités des ressources extraites pour chaque resource
+  var products : ListBuffer[Good]
+  var stocks = new ListBuffer[IntegerProperty]
+  var stocksStr = new ListBuffer[StringProperty]
+
+  def displayProducts() {
+    println(products)
+    for (p <- products) {
+      stocks += IntegerProperty(0)
+      stocksStr += new StringProperty
+      stocksStr.last <== stocks.last.asString
+      printData += new Tuple2(p.label, stocksStr.last)
+    }
+    println(products)
   }
 
   // val product : Good

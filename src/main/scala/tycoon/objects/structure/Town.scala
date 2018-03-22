@@ -33,7 +33,6 @@ abstract case class Town(pos: GridLocation, id: Int) extends Structure(pos, id) 
   printData += new Tuple2("Waiting passengers", waitingPassengersStr)
 
 
-  private var intern_time : Double = 0
   def update_population () = {
     if (population < max_population) {
       val i = r.nextInt(population)
@@ -49,7 +48,7 @@ abstract case class Town(pos: GridLocation, id: Int) extends Structure(pos, id) 
     if (waiting_passengers > population/3) waiting_passengers = population/3
   }
 
-  def update(dt: Double) = {
+  override def update(dt: Double) = {
     intern_time += dt
     if (intern_time > 1) {
       update_population()
