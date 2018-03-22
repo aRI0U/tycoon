@@ -43,7 +43,6 @@ class Game(map_width : Int, map_height : Int)
 
 
       update(elapsedTime)
-      tiledPane.layoutEntities
     }
   }
 
@@ -86,6 +85,7 @@ class Game(map_width : Int, map_height : Int)
   val rail_price = 10
 
   var rails = new ListBuffer[Rail]()
+  var structures = new ListBuffer[Structure]()
   var mines = new ListBuffer[Mine]()
   var towns = new ListBuffer[Town]()
   var trains = new ListBuffer[BasicTrain]()
@@ -133,8 +133,8 @@ class Game(map_width : Int, map_height : Int)
   private def update(dt : Double) : Unit = {
     //update trains position here ?
     routes.foreach(_.update(dt))
-    towns.foreach(_.update(dt))
-    //tiledPane.layoutEntities
+    structures.foreach(_.update(dt))
+    tiledPane.render()
 
     time_s += dt
     if (time_s > 1) {

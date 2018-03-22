@@ -23,7 +23,7 @@ trait Entity {
   def tile: Tile = _tile
   def tile_= (new_tile: Tile) = {
     _tile = new_tile
-    _gridRect = new GridRectangle(new GridLocation(0, 0), tile.width / Tile.square_width, tile.height / Tile.square_height)
+    _gridRect = new GridRectangle(_gridRect.pos, tile.width / Tile.square_width, tile.height / Tile.square_height)
   }
 
   def gridRect: GridRectangle = _gridRect

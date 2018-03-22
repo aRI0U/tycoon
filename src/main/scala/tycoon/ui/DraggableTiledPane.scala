@@ -25,7 +25,18 @@ import scalafx.scene.paint.{Color}
 
 
 class DraggableTiledPane(val tm: TileMap) extends BorderPane {
-  private val scaleMin = 0.4
+  val canvas = new Canvas
+  canvas.width <== this.width
+  canvas.height <== this.height
+  children.add(canvas)
+
+  val gc = canvas.graphicsContext2D
+  gc.fill = Color.LightGreen
+  gc.fillRect(0, 0, canvas.width.value, canvas.height.value)
+
+  val tileset = new Image("file:src/main/resources/tileset.png") // tmprily here
+
+  private val scaleMin = 0.1
   private val scaleMax = 1.4
   private val tilesScaleX = DoubleProperty(1.0)
   private val tilesScaleY = DoubleProperty(1.0)
@@ -125,16 +136,16 @@ class DraggableTiledPane(val tm: TileMap) extends BorderPane {
                         tilesScaleY.set(math.max(tilesScaleY.get() - 0.1, scaleMin))
                         computeOffsetXLimits()
                         computeOffsetYLimits()
-                        layoutTilemap()
-                        layoutEntities()
+                        //layoutTilemap()
+                        //layoutEntities()
 
       case "e" | "E" => cameraSliding.stop()
                         tilesScaleX.set(math.min(tilesScaleX.get() + 0.1, scaleMax))
                         tilesScaleY.set(math.min(tilesScaleY.get() + 0.1, scaleMax))
                         computeOffsetXLimits()
                         computeOffsetYLimits()
-                        layoutTilemap()
-                        layoutEntities()
+                        //layoutTilemap()
+                        //layoutEntities()
 
       // ZQSD => <20% CPU (mouse dragging is causing the overheating)
       case "z" | "Z" => yOffset.set(yOffset.get() - 100)
@@ -145,7 +156,7 @@ class DraggableTiledPane(val tm: TileMap) extends BorderPane {
     }
   }
 
-  xOffset.onChange {
+/*  xOffset.onChange {
     layoutTilemap()
     layoutEntities()
   }
@@ -153,16 +164,16 @@ class DraggableTiledPane(val tm: TileMap) extends BorderPane {
     layoutTilemap()
     layoutEntities()
   }
-
+*/
   // recompute layout and offsets limits when window is resized
   this.width.onChange {
     computeOffsetXLimits()
-    layoutTilemap()
+    render()
     //layoutEntities()
   }
   this.height.onChange {
     computeOffsetYLimits()
-    layoutTilemap()
+    render()
     //layoutEntities()
   }
 
@@ -175,7 +186,7 @@ class DraggableTiledPane(val tm: TileMap) extends BorderPane {
 
   def addEntity(e: Entity) = {
     entities += e
-    layoutEntities()
+    //layoutEntities()
   }
   def removeEntity(e: Entity) = {
     entities -= e
@@ -183,7 +194,7 @@ class DraggableTiledPane(val tm: TileMap) extends BorderPane {
       e.visible = false
       children.remove(e.getView)
     }
-    layoutEntities()
+    //layoutEntities()
   }
 
   private var prevMinRow: Int = 0
@@ -191,7 +202,7 @@ class DraggableTiledPane(val tm: TileMap) extends BorderPane {
   private var prevMaxCol: Int = 0
   private var prevMaxRow: Int = 0
 
-  def layoutTilemap() = {
+  def render() = {
     // ensure the offsets do not go over the limits
     if (xOffset.get() <= minOffsetX) xOffset.set(minOffsetX)
     else if (xOffset.get() >= maxOffsetX) xOffset.set(maxOffsetX)
@@ -201,61 +212,17 @@ class DraggableTiledPane(val tm: TileMap) extends BorderPane {
     // maximal rectangle of the tilemap that can be displayed
     val minRow: Int = Math.floor(yOffset.get() / scaledTilesHeight.get()).toInt //- 1
     val minCol: Int = Math.floor(xOffset.get() / scaledTilesWidth.get()).toInt //- 1
-    val maxRow: Int = Math.min(Math.ceil((yOffset.get() + this.height.value) / scaledTilesHeight.get()).toInt, tm.height - 1)
-    val maxCol: Int = Math.min(Math.ceil((xOffset.get() + this.width.value) / scaledTilesWidth.get()).toInt, tm.width - 1)
+    val maxRow: Int = Math.min(Math.ceil((yOffset.get() + canvas.height.value) / scaledTilesHeight.get()).toInt, tm.height - 1)
+    val maxCol: Int = Math.min(Math.ceil((xOffset.get() + canvas.width.value) / scaledTilesWidth.get()).toInt, tm.width - 1)
 
     // pre-compute some values
-    val scaledTilesWidthValue = scaledTilesWidth.get()
-    val scaledTilesHeightValue = scaledTilesHeight.get()
-    val tileXOffsetValue = tileXOffset.get()
-    val tileYOffsetValue = tileYOffset.get()
-    val layoutShiftX = - scaledTilesWidthValue * tileXOffsetValue - (xOffset.get() % scaledTilesWidth.get())
-    val layoutShiftY = - scaledTilesHeightValue * tileYOffsetValue - (yOffset.get() % scaledTilesHeight.get())
-
-    /*
-    iterate through tiles that were displayed just before but are not anymore
-    */
-
-    if (minCol > prevMinCol) {
-      for {
-        row <- prevMinRow to prevMaxRow
-        col <- prevMinCol to minCol - 1
-      } {
-        tm.map(row)(col).inScene = false
-        children.remove(tm.map(row)(col).getView)
-      }
-    }
-    if (maxCol < prevMaxCol) {
-      for {
-        row <- prevMinRow to prevMaxRow
-        col <- maxCol + 1 to prevMaxCol
-      } {
-        tm.map(row)(col).inScene = false
-        children.remove(tm.map(row)(col).getView)
-      }
-    }
-    if (minRow > prevMinRow) {
-      for {
-        row <- prevMinRow to minRow - 1
-        col <- prevMinCol to prevMaxCol
-      } {
-        tm.map(row)(col).inScene = false
-        children.remove(tm.map(row)(col).getView)
-      }
-    }
-    if (maxRow < prevMaxRow){
-      for {
-        row <- maxRow + 1 to prevMaxRow
-        col <- prevMinCol to prevMaxCol
-      } {
-        tm.map(row)(col).inScene = false
-        children.remove(tm.map(row)(col).getView)
-      }
-    }
+    val layoutShiftX = - scaledTilesWidth.value * tileXOffset.value - (xOffset.value % scaledTilesWidth.value)
+    val layoutShiftY = - scaledTilesHeight.value * tileYOffset.value - (yOffset.value % scaledTilesHeight.value)
 
     /*
     iterate through the tiles that are displayed right now
     */
+    gc.fillRect(0, 0, canvas.width.value, canvas.height.value)
 
     for {
       row <- minRow to maxRow
@@ -263,28 +230,25 @@ class DraggableTiledPane(val tm: TileMap) extends BorderPane {
     } {
       val tile = tm.map(row)(col)
 
-      val layoutX : Double = scaledTilesWidthValue * col + layoutShiftX
-      val layoutY : Double = scaledTilesHeightValue * row + layoutShiftY
+      val layoutX : Double = scaledTilesWidth.value * col + layoutShiftX
+      val layoutY : Double = scaledTilesHeight.value * row + layoutShiftY
 
-      tile.setLayout(layoutX, layoutY)
+      gc.drawImage(tile.tileset, tile.getView.viewport.value.minX, tile.getView.viewport.value.minY, tile.width, tile.height, layoutX, layoutY, scaledTilesWidth.value, scaledTilesHeight.value)
 
-      tile.getView.setFitWidth(scaledTilesWidthValue)
-      tile.getView.setFitHeight(scaledTilesHeightValue)
 
-      if (!tile.inScene) {
+      /*if (!tile.inScene) {
         // if tile was not displayed yet, add it to the scene
         tile.inScene = true
         children.add(tile.getView)
-      }
+      } */
     }
 
     prevMinRow = minRow
     prevMinCol = minCol
     prevMaxRow = maxRow
     prevMaxCol = maxCol
-  }
 
-  def layoutEntities() = {
+
     // move the entities according to the offset
     for (e <- entities) {
       val layoutX : Double = scaledTilesWidth.get() * (e.getPos.col - tileXOffset.get()) - (xOffset.get() % scaledTilesWidth.get())

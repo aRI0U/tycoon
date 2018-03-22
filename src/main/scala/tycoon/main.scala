@@ -42,6 +42,7 @@ object Main extends JFXApp {
     def run() = {
       switchScreen(gameCreationScreen)
       gameCreationScreen.init()
+      game.start()
     }
   })
 
@@ -57,7 +58,6 @@ object Main extends JFXApp {
     def run() = {
       switchScreen(gameScreen)
       gameScreen.init()
-      game.start()
     }
   })
 

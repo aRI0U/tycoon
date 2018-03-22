@@ -13,5 +13,4 @@ class BasicTown(pos: GridLocation, id: Int) extends Town(pos: GridLocation, id: 
   waiting_passengers = 0
 
   tile = new Tile(Tile.town)
-  setPos(pos) // LET
 }

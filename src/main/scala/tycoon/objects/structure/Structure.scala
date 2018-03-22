@@ -18,6 +18,11 @@ abstract class Structure(pos: GridLocation, id: Int) extends Entity {
   def name : String = _name.get()
   def position : GridLocation = pos
 
+  // intern_time
+  var intern_time : Double = 0
+
+  def update(dt: Double) = { }
+
   //Train manipulation
   def addTrain(train:Train) {
     list_trains += train

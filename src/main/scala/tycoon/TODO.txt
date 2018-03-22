@@ -1,54 +1,31 @@
 
 
-DraggableTiledPane:
-
-re-compute offset correctly when zooming/unzooming so that the center of the current screen doesnt move
-start with an offset at the center of the map (not top-left corner)
-small optimizations (commented around the loops)
-
-
-
-
-Game:
-
-separate code into other classes (one to handle trains, one for towns, one for rails)
-TownManager, TrainManager.. inheriting from BasicManager (bc createTrain and createTown are the same)
-move all the code about the rails in a RailManager
-As there will be an unknown number of vehicles etc, maybe abstract classes VehicleManager, StructureManager..
-
-
-
-objects:
-
-create basic classes for each thing to be implemented (with lots of inheritance)
-generalize the classes created so far (in Route, Road.. : Train -> Vehicle, Town -> Structure)
-
-
-
-ui:
-
-split the left-pane into two: the current only displays information & few static buttonns
-+ a new one at the bottom for all the actions because there will be a lot (including a display of every vehicle)
-with other windows etc to display info more easily
-
-
-locations:
-
-implement pixel-to-pixel location with built-in move function and test it with trains
-
 
 General:
 
 fix the music
-remove useless imports
-more organized println (displayed where it is printing from), delete the useless ones
-put things at the right place (prices should not be i gamescreen)
-
 Printable -> print data of every entity clicked on even if several are overlaping
+implement pixel-to-pixel location with built-in move function and test it with trains
+ui: implement canvas
+ui: split left pane into two
+graph: tile by tile
+remove rotate in Tile & add rotated tiles to tileset (also remove inScene, visible's enough, and remove setLayout etc)
+simplify tiles just for bg tiles and add sprite which inherits from Tile and includes animation
 
+
+
+
+Beautify:
+
+remove useless imports
+delete useless printlns and clarify the others
+put things at the right place (prices should not be in gamescreen)
+_s => caps
 
 
 
 Bugs:
 
 trains can be bought without money restriction
+rails
+Exit button closes bad thread and throws exn

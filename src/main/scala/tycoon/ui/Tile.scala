@@ -7,7 +7,7 @@ import scalafx.scene.CacheHint
 import scalafx.scene.image.{Image,ImageView}
 
 
-class Tile(tileset: Image, viewport: Rectangle2D, rotation: Double = 0) {
+class Tile(val tileset: Image, viewport: Rectangle2D, rotation: Double = 0) {
 
   private var _sprite : ImageView = new ImageView(tileset)
   _sprite.viewport = viewport
@@ -23,6 +23,7 @@ class Tile(tileset: Image, viewport: Rectangle2D, rotation: Double = 0) {
   /*def this(tileset: Image, viewport: Rectangle2D) {
     this(tileset, viewport, 0)
   }*/
+
 
   // set position in the scene
   def setLayout(x: Double, y: Double) = {
@@ -70,8 +71,8 @@ object Tile {
   //structure tiles
   val town = new Tile(tileset, get_tile_rect(4, 1, width = 2))
   val mine = new Tile(tileset, get_tile_rect(4, 3))
-  val factory_tile = new Tile(tileset, get_tile_rect(5, 1))
-  val farm_tile = new Tile(tileset, get_tile_rect(5, 2, width = 2))
+  val factory = new Tile(tileset, get_tile_rect(5, 1))
+  val farm = new Tile(tileset, get_tile_rect(5, 2, width = 2))
 
   // straight rails
   val straight_rail1 = new Tile(tileset, get_tile_rect(1, 1))
