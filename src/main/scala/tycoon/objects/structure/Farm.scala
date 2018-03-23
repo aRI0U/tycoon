@@ -6,6 +6,6 @@ import tycoon.game.Game
 import tycoon.ui.Tile
 
 case class Farm(pos: GridLocation, id: Int) extends Structure(pos, id) {
-  tile = new Tile(Tile.farm)
+  tile = Tile.farm
   //val price = game.mine_price //To choose
 }

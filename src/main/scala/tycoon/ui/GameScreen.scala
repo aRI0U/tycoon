@@ -74,11 +74,11 @@ class GameScreen(val game : Game) extends BorderPane
           text = "Remove"
           margin = Insets(10)
           onMouseClicked = _ => {
-            if (nb_mines.get() > 0) {
-              nb_mines.set(nb_mines.get()-1)
+            if (nb_mines.value > 0) {
+              nb_mines.set(nb_mines.value-1)
               game.removeAllMines()
-              game.playerMoney.set(game.playerMoney.get() + game.mine_price)
-              total_cost_mines.set(total_cost_mines.get() - game.mine_price)
+              game.playerMoney.set(game.playerMoney.value + game.mine_price)
+              total_cost_mines.set(total_cost_mines.value - game.mine_price)
             }
           }
         },
@@ -113,11 +113,11 @@ class GameScreen(val game : Game) extends BorderPane
           text = "Remove"
           margin = Insets(10)
           onMouseClicked = _ => {
-            if (nb_rails.get() > 0) {
-              nb_rails.set(nb_rails.get()-1)
+            if (nb_rails.value > 0) {
+              nb_rails.set(nb_rails.value-1)
               game.removeLastRails()
-              game.playerMoney.set(game.playerMoney.get() + game.rail_price)
-              total_cost_rails.set(total_cost_rails.get() - game.rail_price)
+              game.playerMoney.set(game.playerMoney.value + game.rail_price)
+              total_cost_rails.set(total_cost_rails.value - game.rail_price)
             }
           }
         },
@@ -202,36 +202,36 @@ class GameScreen(val game : Game) extends BorderPane
     gamePane.center = game.tiledPane // update
   }
 
-  def maybeClickEntityAt(pos: GridLocation): Unit = {
+  def maybeClickRenderableAt(pos: GridLocation): Unit = {
     game.map.getContentAt(pos) match {
       case Some(entity) => {
         entity match {
           case train : Train => {
-            println("tycoon > ui > GameScreen.scala > maybeClickEntityAt: " + train.carriages_list)
+            println("tycoon > ui > GameScreen.scala > maybeClickRenderableAt: " + train.carriages_list)
           }
           case structure : Structure => {
             structure match {
               case town : Town => {
               if (buyingTrainMode) {
-                println("tycoon > ui > GameScreen.scala > maybeClickEntityAt: new train in " + town.name + " town")
+                println("tycoon > ui > GameScreen.scala > maybeClickRenderableAt: new train in " + town.name + " town")
                 if (game.createTrain(town)) return
               }}
               case _ => ()
             }
             if (tripCreationMode) {
-              if (firstStructureSelected.get()) {
+              if (firstStructureSelected.value) {
                 if (firstStructure != structure) {
                   firstStructure.getTrain() match {
                     case Some(train) => {
                       try {
                         game.createRoute(firstStructure, structure, train)
-                        println("tycoon > ui > GameScreen.scala > maybeClickEntityAt: create trip from " + firstStructure.name + " to " + structure.name)
+                        println("tycoon > ui > GameScreen.scala > maybeClickRenderableAt: create trip from " + firstStructure.name + " to " + structure.name)
                       }
                       catch {
-                        case e: IllegalStateException => println("tycoon > ui > GameScreen.scala > maybeClickEntityAt: trains cannot fly!")
+                        case e: IllegalStateException => println("tycoon > ui > GameScreen.scala > maybeClickRenderableAt: trains cannot fly!")
                       }
                     }
-                    case None => println("tycoon > ui > GameScreen.scala > maybeClickEntityAt: no train no gain")
+                    case None => println("tycoon > ui > GameScreen.scala > maybeClickRenderableAt: no train no gain")
                   }
                   tripCreationMode = false
                   menuPane.top = actionsPane
@@ -247,7 +247,7 @@ class GameScreen(val game : Game) extends BorderPane
         }
         bindPrintData(entity.printData)
       }
-      case None => println("tycoon > ui > GameScreen.scala > maybeClickEntityAt: nothing in map at this position")
+      case None => println("tycoon > ui > GameScreen.scala > maybeClickRenderableAt: nothing in map at this position")
     }
   }
 
@@ -311,25 +311,25 @@ class GameScreen(val game : Game) extends BorderPane
         val pos = new GridLocation( game.tiledPane.screenPxToGridLoc(e.x, e.y)._1, game.tiledPane.screenPxToGridLoc(e.x, e.y)._2) // TMP
 
         if (buyingMinesMode) {
-          if (game.mine_price <= game.playerMoney.get() ){ //creation of a new mine
+          if (game.mine_price <= game.playerMoney.value ){ //creation of a new mine
             if (game.createMine(pos)) {
-              nb_mines.set(nb_mines.get() + 1)
-              total_cost_mines.set((total_cost_mines.get() + game.mine_price))
-              game.playerMoney.set(game.playerMoney.get() - game.mine_price)
+              nb_mines.set(nb_mines.value + 1)
+              total_cost_mines.set((total_cost_mines.value + game.mine_price))
+              game.playerMoney.set(game.playerMoney.value - game.mine_price)
             }
           }
         }
         else if (buyingRailsMode) {
-          if (game.rail_price <= game.playerMoney.get() ){ //creation of a new mine
+          if (game.rail_price <= game.playerMoney.value ){ //creation of a new mine
             if (game.createRail(pos)) {
-              nb_rails.set(nb_rails.get() + 1)
-              total_cost_rails.set((total_cost_rails.get() + game.rail_price))
-              game.playerMoney.set(game.playerMoney.get() - game.rail_price)
+              nb_rails.set(nb_rails.value + 1)
+              total_cost_rails.set((total_cost_rails.value + game.rail_price))
+              game.playerMoney.set(game.playerMoney.value - game.rail_price)
             }
           }
         }
         else {
-          maybeClickEntityAt(pos)
+          maybeClickRenderableAt(pos)
         }
       }
     }

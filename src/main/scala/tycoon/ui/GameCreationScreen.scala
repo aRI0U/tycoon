@@ -70,11 +70,11 @@ class GameCreationScreen(var game : Game) extends BorderPane
     onMouseReleased = (e: MouseEvent) => {
       if (e.x == mouse_anchor_x && e.y == mouse_anchor_y) {
         // creation of a city
-        if (nb_towns.get() < max_towns) {
+        if (nb_towns.value < max_towns) {
           val pos = game.tiledPane.screenPxToGridLoc(e.x, e.y)
 
           if(game.createTown(new GridLocation(pos._1, pos._2))) { // temp
-            nb_towns.set(nb_towns.get() + 1)
+            nb_towns.set(nb_towns.value + 1)
           }
         }
       }
@@ -117,8 +117,8 @@ class GameCreationScreen(var game : Game) extends BorderPane
         margin = Insets(10)
 
         onMouseClicked = (e: MouseEvent) => {
-          if (nb_towns.get() >= min_towns) {
-            game.playerName = name_field.text.get()
+          if (nb_towns.value >= min_towns) {
+            game.playerName = name_field.text.value
             onValidate.run()
           }
         }

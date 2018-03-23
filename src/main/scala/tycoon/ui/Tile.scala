@@ -6,7 +6,7 @@ import scalafx.geometry.Rectangle2D
 import scalafx.scene.CacheHint
 import scalafx.scene.image.{Image,ImageView}
 
-
+/*
 class Tile(val tileset: Image, viewport: Rectangle2D, rotation: Double = 0) {
 
   private var _sprite : ImageView = new ImageView(tileset)
@@ -18,12 +18,8 @@ class Tile(val tileset: Image, viewport: Rectangle2D, rotation: Double = 0) {
   visible = true // tiles are all visible by default
 
   def this(tile: Tile) {
-    this(new Image(tile.getView.image.get()), new Rectangle2D(tile.getView.viewport.get()), tile.getView.rotate.get())
+    this(new Image(tile.getView.image.value), new Rectangle2D(tile.getView.viewport.value), tile.getView.rotate.value)
   }
-  /*def this(tileset: Image, viewport: Rectangle2D) {
-    this(tileset, viewport, 0)
-  }*/
-
 
   // set position in the scene
   def setLayout(x: Double, y: Double) = {
@@ -38,55 +34,55 @@ class Tile(val tileset: Image, viewport: Rectangle2D, rotation: Double = 0) {
 
   def getView: ImageView = _sprite
 
-  def visible : Boolean = _sprite.visible.get()
+  def visible : Boolean = _sprite.visible.value
   def visible_= (new_visible: Boolean) = _sprite.visible = new_visible
 
-  // used in complement of visible to check if entity is in the scene whether it's displayed or not
+  // used in complement of visible to check if Renderable is in the scene whether it's displayed or not
   private var _inScene: Boolean = false
   def inScene: Boolean = _inScene
   def inScene_= (new_inScene: Boolean) = _inScene = new_inScene
+}*/
+
+class Tile(row: Int, col: Int, val width: Int = 1, val height: Int = 1) {
+  // source rectangle's coordinates and size in Tile.tileset
+  val sx = (col - 1) * Tile.SquareWidth
+  val sy = (row - 1) * Tile.SquareHeight
+  val sw = width * Tile.SquareWidth
+  val sh = height * Tile.SquareHeight
 }
 
 object Tile {
-  private val tileset = new Image("file:src/main/resources/tileset.png")
+  val tileset = new Image("file:src/main/resources/tileset.png")
 
-  val square_width = 32
-  val square_height = 32
+  val SquareWidth = 32
+  val SquareHeight = 32
 
-  private def get_tile_rect(row: Int, col: Int, width: Int = 1, height: Int = 1) = {
-    new Rectangle2D((col - 1) * square_width, (row - 1) * square_height, width * square_width, height * square_height)
-  }
-
-  val default = new Tile(tileset, get_tile_rect(0, 0))
-
-  val tree = new Tile(tileset, get_tile_rect(4, 3))
-  val rock = new Tile(tileset, get_tile_rect(4, 4))
+  val default = new Tile(0, 0)
+  val tree = new Tile(4, 3)
+  val rock = new Tile(4, 4)
 
   //vehicle stuff
-  val locomotive = new Tile(tileset, get_tile_rect(3, 2))
-  val passenger_wagon = new Tile(tileset, get_tile_rect(3, 1))
-  val goods_wagon = new Tile(tileset, get_tile_rect(3, 3))
-  val liquid_wagon = new Tile(tileset, get_tile_rect(6, 1))
+  val locomotive = new Tile(3, 2)
+  val passenger_wagon = new Tile(3, 1)
+  val goods_wagon = new Tile(3, 3)
+  val liquid_wagon = new Tile(6, 1)
 
   //structure tiles
-  val town = new Tile(tileset, get_tile_rect(4, 1, width = 2))
-  val mine = new Tile(tileset, get_tile_rect(4, 3))
-  val factory = new Tile(tileset, get_tile_rect(5, 1))
-  val farm = new Tile(tileset, get_tile_rect(5, 2, width = 2))
+  val town = new Tile(4, 1, width = 2)
+  val mine = new Tile(4, 3)
+  val factory = new Tile(5, 1)
+  val farm = new Tile(5, 2, width = 2)
 
-  // straight rails
-  val straight_rail1 = new Tile(tileset, get_tile_rect(1, 1))
+  val straight_rail1 = new Tile(1, 1)
+  val turning_rail = new Tile(1, 2)
 
-  // turning rails
-  val turning_rail = new Tile(tileset, get_tile_rect(1, 2))
 
-  // all the grass tiles, randomly spread on the map
   val grass = Array(
-    new Tile(tileset, get_tile_rect(1, 3)),
-    new Tile(tileset, get_tile_rect(1, 4)),
-    new Tile(tileset, get_tile_rect(2, 1)),
-    new Tile(tileset, get_tile_rect(2, 2)),
-    new Tile(tileset, get_tile_rect(2, 3)),
-    new Tile(tileset, get_tile_rect(2, 4))
+    new Tile(1, 3),
+    new Tile(1, 4),
+    new Tile(2, 1),
+    new Tile(2, 2),
+    new Tile(2, 3),
+    new Tile(2, 4)
   )
 }

@@ -16,7 +16,7 @@ abstract class Train(town : Town, nb_carriages : Int) extends Vehicle(town) {
 
   //Methods
   def rotation(angle : Int) = {
-    tile.getView.rotate = (angle)
+    //tile.getView.rotate = (angle)
   }
 
   def add_carriage () {

@@ -7,7 +7,7 @@ import tycoon.objects.graph._
 import tycoon.objects.carriage._
 import tycoon.game._
 import tycoon.ui.Tile
-import tycoon.ui.{Tile, Entity, DraggableTiledPane}
+import tycoon.ui.{Tile, Renderable, DraggableTiledPane}
 
 import javafx.animation.AnimationTimer
 import scalafx.collections.ObservableBuffer
@@ -74,7 +74,7 @@ class Game(map_width : Int, map_height : Int)
 */
 
 
-  //var entities = new ObservableBuffer[Entity]()
+  //var entities = new ObservableBuffer[Renderable]()
 
   var map = new Map(map_width, map_height)
   var game_graph = new Graph
@@ -96,9 +96,8 @@ class Game(map_width : Int, map_height : Int)
 
   // INIT
   val tilemap = new TileMap(map_width, map_height)
-  tilemap.fill(Tile.grass)
-  tilemap.tilesWidth = Tile.square_width
-  tilemap.tilesHeight = Tile.square_height
+  tilemap.fillBackground(Tile.grass)
+
   val tiledPane = new DraggableTiledPane(tilemap)
   tiledPane.requestFocus()
 
@@ -108,9 +107,9 @@ class Game(map_width : Int, map_height : Int)
     for (change <- changes)
       change match {
         case Add(_, added) =>
-          added.foreach(ent => tiledPane.addEntity(ent))
+          added.foreach(ent => tiledPane.addRenderable(ent))
         case Remove(_, removed) =>
-          removed.foreach(ent => tiledPane.removeEntity(ent))
+          removed.foreach(ent => tiledPane.removeRenderable(ent))
         case Reorder(from, to, permutation) => ()
         case Update(pos, updated)           => ()
       }
@@ -120,7 +119,6 @@ class Game(map_width : Int, map_height : Int)
 
 
   def start () : Unit = {
-    tiledPane.moveToCenter()
     player.money = 1000
 
     time.set(0)
@@ -139,7 +137,7 @@ class Game(map_width : Int, map_height : Int)
     time_s += dt
     if (time_s > 1) {
       time_s -= 1
-      time.set(time.get() + 1)
+      time.set(time.value + 1)
     }
   }
 
@@ -162,7 +160,8 @@ class Game(map_width : Int, map_height : Int)
         case t : Town => towns += t
         case m : Mine => mines += m
       }
-      tiledPane.addEntity(structure)
+      //tiledPane.addRenderable(structure)
+      tilemap.addTile(1, pos.col, pos.row, Tile.town)
       map.add(structure.gridRect, structure)
       nb_structures += 1
       game_graph.newStructure(structure)
@@ -217,7 +216,7 @@ class Game(map_width : Int, map_height : Int)
       // In case of no problem:
       if (valid) {
         rails += rail
-        tiledPane.addEntity(rail)
+        //tiledPane.addRenderable(rail)
         map.add(rail.gridRect, rail)
       }
       valid
@@ -246,13 +245,13 @@ class Game(map_width : Int, map_height : Int)
     // check if there is an other train ??
     town.addTrain(train)
     trains += train
-    tiledPane.addEntity(train)
+    //tiledPane.addRenderable(train)
 
     // paying
-    playerMoney.set(playerMoney.get() - train.cost)
+    playerMoney.set(playerMoney.value - train.cost)
     for (carriage <- train.carriages_list) {
-      playerMoney.set(playerMoney.get() - carriage.cost)
-      tiledPane.addEntity(carriage)
+      playerMoney.set(playerMoney.value - carriage.cost)
+      //tiledPane.addRenderable(carriage)
       carriages+=carriage
     }
     true
@@ -262,7 +261,7 @@ class Game(map_width : Int, map_height : Int)
     for (carriage <- train.carriages_list) {
       carriage match {
         case p:PassengerCarriage =>
-         playerMoney.set(playerMoney.get() + p.passengers * p.ticket_price)
+         playerMoney.set(playerMoney.value + p.passengers * p.ticket_price)
         case _ => ()
       }
     }

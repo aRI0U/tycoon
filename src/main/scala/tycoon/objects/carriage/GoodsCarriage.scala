@@ -5,7 +5,7 @@ import scala.collection.mutable.ListBuffer
 import tycoon.objects.carriage._
 import tycoon.objects.structure._
 import tycoon.objects.good._
-import tycoon.ui.Entity
+import tycoon.ui.Renderable
 import tycoon.ui.Tile
 
 abstract case class GoodsCarriage() extends Carriage {

@@ -14,6 +14,7 @@ import tycoon.objects.railway._
 import tycoon.objects.structure._
 
 class BasicTrain(town : Town, nb_carriages : Int) extends Train(town, nb_carriages) {
+  tile = Tile.locomotive
 
   var speed = 10
   var destination_x = 0
@@ -23,13 +24,12 @@ class BasicTrain(town : Town, nb_carriages : Int) extends Train(town, nb_carriag
 
   var current_rail : Option[Rail] = None
   //var trail = road.rails
-  tile = new Tile(Tile.locomotive)
 
 
   var carriages_list = new ListBuffer[Carriage]()
   add_carriage()
 
-  var pos : GridLocation = location match {
+  gridPos = location match {
     case Some(structure : Town) => {
       new GridLocation(structure.position.col +1,structure.position.row)
     }
@@ -39,5 +39,4 @@ class BasicTrain(town : Town, nb_carriages : Int) extends Train(town, nb_carriag
       case None => new GridLocation(0,0) // throw exn
     }
   }
-  setPos(pos)
 }

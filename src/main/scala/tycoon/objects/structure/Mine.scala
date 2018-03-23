@@ -14,6 +14,8 @@ import scalafx.beans.property.{IntegerProperty, StringProperty}
 
 
 case class Mine(pos: GridLocation, id: Int) extends Facility(pos, id) {
+  tile = Tile.mine
+
   protected val r = scala.util.Random
 
   val production_time = 100
@@ -26,7 +28,7 @@ case class Mine(pos: GridLocation, id: Int) extends Facility(pos, id) {
   var production_per_period = new ListBuffer[Int]
   var extractable_amount = new ListBuffer[Int]
 
-  def extract(id: Int) : Int = stocks(id).get()
+  def extract(id: Int) : Int = stocks(id).value
   def extract_= (id: Int, new_stock: Int) = stocks(id).set(new_stock)
 
   // here are added new products
@@ -66,7 +68,5 @@ case class Mine(pos: GridLocation, id: Int) extends Facility(pos, id) {
 
 
 
-
-  tile = new Tile(Tile.mine)
   //val price = game.mine_price //To choose
 }

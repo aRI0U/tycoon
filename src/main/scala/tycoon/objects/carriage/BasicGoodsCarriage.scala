@@ -7,12 +7,12 @@ import tycoon.ui.Tile
 import tycoon.objects.railway._
 
 class BasicGoodsCarriage extends GoodsCarriage {
+  tile = Tile.goods_wagon
+
   val cost = 10
   val weight = 100
   val max_transport = 100
   var transport = new ListBuffer[Merchandise]
-  tile = new Tile(Tile.goods_wagon)
   var current_rail : Option[Rail] = None
   var currentLoc = new GridLocation(-1,-1)
-  setPos(new GridLocation(-1,-1))
 }

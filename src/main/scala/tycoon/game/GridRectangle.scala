@@ -2,19 +2,23 @@ package tycoon.game
 
 
 
-class GridRectangle(topLeftCorner: GridLocation, _cols: Int, _rows: Int) {
-  def left = topLeftCorner.col
-  def top = topLeftCorner.row
-  def right = topLeftCorner.col + _cols - 1
-  def bottom = topLeftCorner.row + _rows - 1
+class GridRectangle(private var _pos: GridLocation, private var _cols: Int, private var _rows: Int) {
+  def left = _pos.col
+  def top = _pos.row
+  def right = _pos.col + _cols - 1
+  def bottom = _pos.row + _rows - 1
 
   def cols = _cols
   def rows = _rows
 
-  def pos: GridLocation = new GridLocation(left, top)
+  def cols_= (newCols: Int) = _cols = newCols // vérifier que ca change bien right bottom et tout ; ou mettre properties
+  def rows_= (newRows: Int) = _rows = newRows
 
-  def contains(pos: GridLocation): Boolean =
-    (pos.col >= left && pos.col <= left + cols - 1 && pos.row >= top && pos.row <= top + rows - 1)
+  def pos: GridLocation = new GridLocation(left, top)
+  def pos_= (newPos: GridLocation) = _pos = newPos
+
+  def contains(other: GridLocation): Boolean =
+    (other.col >= left && other.col <= left + cols - 1 && other.row >= top && other.row <= top + rows - 1)
 
   def intersects(other: GridRectangle): Boolean =
     (left <= other.right && right >= other.left && top <= other.bottom && bottom >= other.top)

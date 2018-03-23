@@ -3,7 +3,7 @@ package tycoon.game
 import tycoon.objects.graph._
 import tycoon.objects.structure._
 import tycoon.objects.railway._
-import tycoon.ui.Entity
+import tycoon.ui.Renderable
 
 import scalafx.collections.ObservableBuffer._
 import scalafx.collections.ObservableBuffer
@@ -21,15 +21,15 @@ class RailManager {
 
     def turning(o : Int, d : Int, rail_to_update : BasicRail) : Unit = {
         if ((o == 3 && d == 0) ||(d == 1 && o == 2) ) {
-          rail_to_update.tile.getView.rotate = 180
+          //rail_to_update.tile.getView.rotate = 180
           rail_to_update.nb_rotation = 0
         }
         if ((o == 0 && d == 1) ||(d == 2 && o == 3) ) {
-          rail_to_update.tile.getView.rotate = 90
+          //rail_to_update.tile.getView.rotate = 90
           rail_to_update.nb_rotation = 3
         }
         if ((o == 1 && d == 0) ||(d == 3 && o == 2) ){
-          rail_to_update.tile.getView.rotate = 270
+          //rail_to_update.tile.getView.rotate = 270
           rail_to_update.nb_rotation = 0
         }
     }
@@ -134,7 +134,7 @@ class RailManager {
             }
             // If needed, turn the straight rile tile
             if (rail.origin == 1 || rail.origin == 3) {
-              rail.tile.getView.rotate = 90
+              //rail.tile.getView.rotate = 90
             }
             true
           }
@@ -165,14 +165,14 @@ class RailManager {
         case None => ()
       }
     }
-    
+
     var valid_bis : Boolean = false
     for (pair <- env) {
       if (LookAround(pair))
         valid_bis = true
     }
     if ((rail.origin == 1 || rail.origin == 3) && rail.road.length == 1 ) {
-      rail.tile.getView.rotate = 90
+      //rail.tile.getView.rotate = 90
     }
     return valid_bis
   }

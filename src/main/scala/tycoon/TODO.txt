@@ -4,7 +4,7 @@
 General:
 
 fix the music
-Printable -> print data of every entity clicked on even if several are overlaping
+Printable -> print data of every Renderable clicked on even if several are overlaping
 implement pixel-to-pixel location with built-in move function and test it with trains
 ui: implement canvas
 ui: split left pane into two

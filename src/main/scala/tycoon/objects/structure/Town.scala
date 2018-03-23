@@ -58,11 +58,11 @@ abstract case class Town(pos: GridLocation, id: Int) extends Structure(pos, id) 
   }
 
   // def position : GridLocation = pos
-  // def name : String = _name.get()
+  // def name : String = _name.value
   def name_= (new_name: String) = _name.set(new_name)
-  def population : Int = _population.get()
+  def population : Int = _population.value
   def population_= (new_pop: Int) = _population.set(new_pop)
-  def waiting_passengers : Int = _waiting_passengers.get()
+  def waiting_passengers : Int = _waiting_passengers.value
   def waiting_passengers_= (new_wait_pass: Int) = _waiting_passengers.set(new_wait_pass)
 
 

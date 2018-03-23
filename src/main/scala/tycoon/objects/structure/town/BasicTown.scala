@@ -7,10 +7,10 @@ import tycoon.ui.Tile
 
 import scalafx.beans.property.IntegerProperty
 
-class BasicTown(pos: GridLocation, id: Int) extends Town(pos: GridLocation, id: Int) {
+class BasicTown(pos: GridLocation, id: Int) extends Town(pos, id) {
+  tile = Tile.town
+
   val max_population = 1000
   population = 50 + r.nextInt(50)
   waiting_passengers = 0
-
-  tile = new Tile(Tile.town)
 }

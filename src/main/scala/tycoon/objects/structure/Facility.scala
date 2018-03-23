@@ -16,7 +16,7 @@ abstract class Facility(pos: GridLocation, id: Int) extends Structure(pos, id) {
   workersStr <== _workers.asString
   printData += new Tuple2("Prolos de merde", workersStr)
 
-  def workers : Int = _workers.get()
+  def workers : Int = _workers.value
   def workers_= (new_workers: Int) = _workers.set(new_workers)
 
 

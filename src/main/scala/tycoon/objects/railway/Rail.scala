@@ -4,10 +4,10 @@ import scala.util.Random
 import tycoon.game.GridLocation
 import tycoon.game.Game
 import tycoon.ui.Tile
-import tycoon.ui.Entity
+import tycoon.ui.Renderable
 import scalafx.beans.property.{IntegerProperty, StringProperty}
 
-abstract class Rail(pos: GridLocation, tile_type: Int) extends Entity {
+abstract class Rail(pos: GridLocation, tile_type: Int) extends Renderable(pos) {
   val cost : Int
   val max_speed : Int
   val max_weight : Int

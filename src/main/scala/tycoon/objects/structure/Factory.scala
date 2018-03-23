@@ -6,5 +6,5 @@ import tycoon.game.Game
 import tycoon.ui.Tile
 
 case class Factory(pos: GridLocation, id: Int) extends Structure(pos, id) {
-  tile = new Tile(Tile.factory)
+  tile = Tile.factory
 }

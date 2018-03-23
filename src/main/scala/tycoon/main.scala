@@ -9,8 +9,15 @@ import scalafx.scene.{PerspectiveCamera, Scene}
 import scalafx.scene.layout.{Pane, StackPane}
 
 
+object Settings { // to be moved
+  val gameWidth = 1000
+  val gameHeight = 1000
+}
+
+
+
 object Main extends JFXApp {
-  val game = new Game(400, 400)
+  val game = new Game(Settings.gameWidth, Settings.gameHeight)
 
   val startScreen = new StartScreen()
   val gameCreationScreen = new GameCreationScreen(game)

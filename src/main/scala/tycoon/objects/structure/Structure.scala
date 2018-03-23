@@ -3,19 +3,19 @@ package tycoon.objects.structure
 import scala.collection.mutable.ListBuffer
 
 import tycoon.objects.vehicle._
-import tycoon.ui.Entity
+import tycoon.ui.Renderable
 import tycoon.game.GridLocation
 
 import scalafx.beans.property.{IntegerProperty, StringProperty}
 
 
-abstract class Structure(pos: GridLocation, id: Int) extends Entity {
+abstract class Structure(pos: GridLocation, id: Int) extends Renderable(pos) {
   val structure_id = id
   var list_trains = new ListBuffer[Train]()
 
   //Methods
   protected val _name = StringProperty("structure name")
-  def name : String = _name.get()
+  def name : String = _name.value
   def position : GridLocation = pos
 
   // intern_time
@@ -34,5 +34,4 @@ abstract class Structure(pos: GridLocation, id: Int) extends Entity {
     if (list_trains.isEmpty) None
     else Some(list_trains.last)
   }
-  setPos(pos)
 }

@@ -20,11 +20,11 @@ class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
   def departure () = {
     train.boarding()
     // for (carriage <- train.carriages_list) {
-    //   game.playerMoney.set(game.playerMoney.get() + carriage.passengers * carriage.ticket_price)
+    //   game.playerMoney.set(game.playerMoney.value + carriage.passengers * carriage.ticket_price)
     //   println(carriage.passengers)
     // }
     val start = train.location.get
-    carriageMouvment(start.getPos,None, train.carriages_list)
+    carriageMouvment(start.gridPos ,None, train.carriages_list)
     //to select the right direction according to the construction sens
     if (train.location.get == itinerary(itinerary.size - 1).startStructure.get) dir_indicator = 0
     else dir_indicator = 1
@@ -40,8 +40,8 @@ class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
       }
     }
     train_rotation(train)
-    train.setPos((train.current_rail.get).position)
-    //carriageMouvment(train.current_rail.get.getPos, train.carriages_list)
+    train.gridPos = (train.current_rail.get).position
+    //carriageMouvment(train.current_rail.get.gridPos, train.carriages_list)
     //train.current_rail = current_road.rails
   }
 
@@ -55,15 +55,15 @@ class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
     }
     train.landing()
 
-    train.setPos(new GridLocation(train.location.get.position.col +1,train.location.get.position.row))
+    train.gridPos = (new GridLocation(train.location.get.position.col +1,train.location.get.position.row))
     if (itinerary.size == 0) {
       on_the_road = false
       for (car <- train.carriages_list) {
-        car.setPos(new GridLocation(-1,-1))
+        car.gridPos = (new GridLocation(-1,-1))
         car.current_rail = None
       }
     }
-    else carriageMouvment(train.current_rail.get.getPos, train.current_rail, train.carriages_list)
+    else carriageMouvment(train.current_rail.get.gridPos, train.current_rail, train.carriages_list)
     train.current_rail = None
     train.visible = true
   }
@@ -129,9 +129,9 @@ def carriageMouvment(fisrstPosition : GridLocation,optionRail : Option[Rail], ca
     var optionRail1 = optionRail
     var optionRail2 = optionRail
     for (car <- carriages) {
-      pos2 = car.getPos
+      pos2 = car.gridPos
       optionRail2 = car.current_rail
-      car.setPos(pos1)
+      car.gridPos = (pos1)
       car.current_rail = optionRail1
       optionRail1 match {
         case Some(r) => wagon_rotation(car)
@@ -139,7 +139,7 @@ def carriageMouvment(fisrstPosition : GridLocation,optionRail : Option[Rail], ca
       }
       // (pos2 == pos1) match {
       //   case true => {
-      //     car.setPos(pos1)
+      //     car.gridPos = (pos1)
       //     car.current_rail = optionRail1
       //     wagon_rotation(car)
       //   }
@@ -161,7 +161,7 @@ def carriageMouvment(fisrstPosition : GridLocation,optionRail : Option[Rail], ca
           else {
             train.current_rail = Some(rail.direction(dir_indicator))
             train_rotation(train)
-            train.setPos(rail.direction(dir_indicator).position)
+            train.gridPos = (rail.direction(dir_indicator).position)
             //carriages update mouvment
             carriageMouvment(rail.position, Some(rail), train.carriages_list)
             // if (!train.carriages_list.isEmpty) {
@@ -172,7 +172,7 @@ def carriageMouvment(fisrstPosition : GridLocation,optionRail : Option[Rail], ca
             //     car.current_rail = rail_chain1
             //     rail_chain1 match {
             //       case Some(r) => {
-            //         car.setPos(r.position)
+            //         car.gridPos = (r.position)
             //         wagon_rotation(car)
             //       }
             //       case None => {}
