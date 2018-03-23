@@ -76,6 +76,13 @@ object Tile {
   val straight_rail1 = new Tile(1, 1)
   val turning_rail = new Tile(1, 2)
 
+  val straightRailBT = new Tile(1, 1)
+  val straightRailLR = new Tile(3, 4)
+  val turningRailBR = new Tile(1, 2)
+  val turningRailBL = new Tile(4, 4)
+  val turningRailTR = new Tile(5, 1)
+  val turningRailTL = new Tile(5, 4)
+
 
   val grass = Array(
     new Tile(1, 3),

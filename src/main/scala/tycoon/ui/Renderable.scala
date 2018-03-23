@@ -19,7 +19,7 @@ abstract class Renderable(private var pos: GridLocation) {
   def gridPos: GridLocation = _gridRect.pos
   def printData = _printData
 
-  protected def tile_= (newTile: Tile) = {
+  def tile_= (newTile: Tile) = {
     _tile = newTile
     _gridRect.cols = tile.width
     _gridRect.rows = tile.height

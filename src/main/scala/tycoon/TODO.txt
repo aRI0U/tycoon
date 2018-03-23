@@ -12,6 +12,7 @@ graph: tile by tile
 remove rotate in Tile & add rotated tiles to tileset (also remove inScene, visible's enough, and remove setLayout etc)
 simplify tiles just for bg tiles and add sprite which inherits from Tile and includes animation
 merge Map & TileMap (& Graph?)
+add entity layers so that trains dont appear underneath rails ; and condition when tile is drawn with position & a lil offset
 
 
 Beautify:

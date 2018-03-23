@@ -253,11 +253,10 @@ class DraggableTiledPane(val tm: TileMap) extends BorderPane {
     clearCanvas()
 
     for {
-      layer <- 0 until tm.layers
       row <- minRow to maxRow
       col <- minCol to maxCol
     } {
-      tm.getTile(layer, col, row) match {
+      tm.getBackgroundTile(col, row) match {
         case Some(tile) => {
           val layoutX = scaledTilesWidth.value * col + layoutShiftX
           val layoutY = scaledTilesHeight.value * row + layoutShiftY
@@ -269,6 +268,18 @@ class DraggableTiledPane(val tm: TileMap) extends BorderPane {
         }
         case _ => ()
       }
+    }
+
+    for {
+      e <- tm.getEntities
+    } {
+      val layoutX = scaledTilesWidth.value * e.gridRect.left + layoutShiftX
+      val layoutY = scaledTilesHeight.value * e.gridRect.top + layoutShiftY
+
+      val width = e.tile.width * scaledTilesWidth.value + 1 // extra pixel for smoother overlap
+      val height = e.tile.height * scaledTilesHeight.value + 1
+
+      gc.drawImage(Tile.tileset, e.tile.sx, e.tile.sy, e.tile.sw, e.tile.sh, layoutX, layoutY, width, height)
     }
   }
 

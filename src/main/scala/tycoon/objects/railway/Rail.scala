@@ -26,7 +26,6 @@ case class Rail(pos: GridLocation) extends Renderable(pos) {//, tile_type: Int) 
   def position : GridLocation = pos
   def get_rotation : Int = nb_rotation
 
-
   tile = Tile.straight_rail1 // sgives_tile(tile_type)
 
   val cost = 10

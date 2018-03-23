@@ -39,8 +39,10 @@ class RailManager(map: Map, tilemap: TileMap, gameGraph: Graph) {
 
       if (created) {
         rails += rail
-        tilemap.addTile(1, pos.col, pos.row, Tile.straight_rail1)
+        tilemap.addEntity(rail)
         map.add(rail.gridRect, rail)
+
+        
       }
     }
     created
@@ -62,6 +64,7 @@ class RailManager(map: Map, tilemap: TileMap, gameGraph: Graph) {
           }
           rail.road.endStructure = Some(s)
           rail.road.finished = true
+          rail.tile = Tile.turningRailBR
           gameGraph.newRoad(rail.road)
           println("tycoon > game > RailManager.scala > lookAround > new road of " + rail.road.length + " tracks")
           true
