@@ -294,6 +294,9 @@ class GameScreen(val game : Game) extends BorderPane
   }
 
 
+  var buyingRailsHolding: Boolean = false
+
+
 
   private val gamePane = new BorderPane {
 
@@ -301,11 +304,33 @@ class GameScreen(val game : Game) extends BorderPane
     onMousePressed = (e: MouseEvent) => {
       requestFocus()
 
+      if (e.clickCount >= 2) {
+        buyingRailsHolding = true
+        game.tiledPane.isDraggable = false
+      }
+
       mouse_anchor_x = e.x
       mouse_anchor_y = e.y
     }
 
+    onMouseDragged = (e: MouseEvent) => {
+      if (buyingRailsMode && buyingRailsHolding) {
+        val pos = new GridLocation( game.tiledPane.screenPxToGridLoc(e.x, e.y)._1, game.tiledPane.screenPxToGridLoc(e.x, e.y)._2) // TMP
+
+        if (game.rail_price <= game.playerMoney.value ){ //creation of a new rail
+          if (game.createRail(pos)) {
+            nb_rails.set(nb_rails.value + 1)
+            total_cost_rails.set((total_cost_rails.value + game.rail_price))
+            game.playerMoney.set(game.playerMoney.value - game.rail_price)
+          }
+        }
+      }
+    }
+
     onMouseReleased = (e: MouseEvent) => {
+      buyingRailsHolding = false
+      game.tiledPane.isDraggable = true
+
       if (e.x == mouse_anchor_x && e.y == mouse_anchor_y) {
 
         val pos = new GridLocation( game.tiledPane.screenPxToGridLoc(e.x, e.y)._1, game.tiledPane.screenPxToGridLoc(e.x, e.y)._2) // TMP
@@ -320,7 +345,7 @@ class GameScreen(val game : Game) extends BorderPane
           }
         }
         else if (buyingRailsMode) {
-          if (game.rail_price <= game.playerMoney.value ){ //creation of a new mine
+          if (game.rail_price <= game.playerMoney.value ){ //creation of a new rail
             if (game.createRail(pos)) {
               nb_rails.set(nb_rails.value + 1)
               total_cost_rails.set((total_cost_rails.value + game.rail_price))

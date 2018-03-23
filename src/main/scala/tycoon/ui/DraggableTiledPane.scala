@@ -39,6 +39,9 @@ class DraggableTiledPane(val tm: TileMap) extends BorderPane {
   }
   clearCanvas()
 
+  // allows to disable dragging when needed
+  var isDraggable: Boolean = true
+
   // bounds for zooming
   private val scaleMin = 0.1
   private val scaleMax = 1.4
@@ -105,14 +108,16 @@ class DraggableTiledPane(val tm: TileMap) extends BorderPane {
   }
 
   onMouseDragged = (e: MouseEvent) => {
-    deltaX = mouseAnchorX -  e.getSceneX()
-    deltaY = mouseAnchorY - e.getSceneY()
+    if (isDraggable) {
+      deltaX = mouseAnchorX -  e.getSceneX()
+      deltaY = mouseAnchorY - e.getSceneY()
 
-    xOffset.set(xOffset.value + deltaX)
-    yOffset.set(yOffset.value + deltaY)
+      xOffset.set(xOffset.value + deltaX)
+      yOffset.set(yOffset.value + deltaY)
 
-    mouseAnchorX = e.getSceneX()
-    mouseAnchorY = e.getSceneY()
+      mouseAnchorX = e.getSceneX()
+      mouseAnchorY = e.getSceneY()
+    }
   }
 
   onMouseReleased = _ => {
