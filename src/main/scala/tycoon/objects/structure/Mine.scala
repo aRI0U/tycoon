@@ -49,7 +49,7 @@ case class Mine(pos: GridLocation, id: Int) extends Facility(pos, id) {
   // update production
 
   def update_production(i: Int) = {
-    stocks(i).set(extract(i) + production_per_period(i))
+    if (stocks(i).get() < extractable_amount(i))    stocks(i).set(extract(i) + production_per_period(i))
   }
 
   override def update(dt: Double) = {

@@ -22,7 +22,6 @@ class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
     for (carriage <- train.carriages_list) {
       carriage match {
         case p:PassengerCarriage =>
-        println(p.passengers)
          game.playerMoney.set(game.playerMoney.value + p.passengers * p.ticket_price)
         case _ => ()
       }
