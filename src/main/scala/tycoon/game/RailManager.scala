@@ -47,7 +47,7 @@ class RailManager(map: Map, tilemap: TileMap, gameGraph: Graph) {
 
       if (created) {
         rails += rail
-        tilemap.addEntity(rail)
+        tilemap.addEntity(rail, 0)
         map.add(rail.gridRect, rail)
 
 
