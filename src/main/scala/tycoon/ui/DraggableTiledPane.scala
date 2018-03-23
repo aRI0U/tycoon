@@ -86,9 +86,11 @@ class DraggableTiledPane(val tm: TileMap) extends BorderPane {
   private var mouseAnchorY: Double = 0
 
   // for enabling camera sliding when mouse is released (smoother dragging)
-  private var cameraSliding = new Timeline
+  private var cameraSlidingX = new Timeline
+  private var cameraSlidingY = new Timeline
   private val slidingCoef: Double = 8 // coef which determines amount of pixels to be shifted when releasing mouse
   private val slidingTime: Double = 0.5 // time during which the sliding continues after mouse is released (in seconds)
+  private val slidingShift: Double = 250 // speed of sliding with ZQSD (amount shifted every slidingTime seconds)
   private var deltaX: Double = 0
   private var deltaY: Double = 0
 
@@ -98,7 +100,8 @@ class DraggableTiledPane(val tm: TileMap) extends BorderPane {
 
     deltaX = 0
     deltaY = 0
-    cameraSliding.stop()
+    cameraSlidingX.stop()
+    cameraSlidingY.stop()
   }
 
   onMouseDragged = (e: MouseEvent) => {
@@ -118,49 +121,99 @@ class DraggableTiledPane(val tm: TileMap) extends BorderPane {
     val yBegin : Double = yOffset.value
     val yEnd : Double = math.max(math.min(yOffset.value + deltaY * slidingCoef, maxOffsetY), minOffsetY)
 
-    cameraSliding = new Timeline {
+    cameraSlidingX = new Timeline {
       keyFrames = Seq(
         at (0.s) { xOffset -> xBegin},
-        at (slidingTime.s) { xOffset -> xEnd tween Interpolator.EaseOut},
+        at (slidingTime.s) { xOffset -> xEnd tween Interpolator.EaseOut}
+      )
+    }
+    cameraSlidingY = new Timeline {
+      keyFrames = Seq(
         at (0.s) { yOffset -> yBegin },
         at (slidingTime.s) { yOffset -> yEnd tween Interpolator.EaseOut}
       )
     }
-    cameraSliding.play()
+    cameraSlidingX.play()
+    cameraSlidingY.play()
 
     requestFocus // enable KeyEvents to be caught (in onKeyPressed)
   }
 
   onKeyPressed = (e: KeyEvent) => {
     e.text match {
-      case "a" | "A" => cameraSliding.stop()
+      case "a" | "A" => cameraSlidingX.stop()
+                        cameraSlidingY.stop()
                         tilesScaleX.set(math.max(tilesScaleX.value - 0.1, scaleMin))
                         tilesScaleY.set(math.max(tilesScaleY.value - 0.1, scaleMin))
                         computeOffsetXLimits()
                         computeOffsetYLimits()
 
-      case "e" | "E" => cameraSliding.stop()
+      case "e" | "E" => cameraSlidingX.stop()
+                        cameraSlidingY.stop()
                         tilesScaleX.set(math.min(tilesScaleX.value + 0.1, scaleMax))
                         tilesScaleY.set(math.min(tilesScaleY.value + 0.1, scaleMax))
                         computeOffsetXLimits()
                         computeOffsetYLimits()
 
-      case "z" | "Z" => yOffset.set(yOffset.value - 100)
-      case "q" | "Q" => xOffset.set(xOffset.value - 100)
-      case "s" | "S" => yOffset.set(yOffset.value + 100)
-      case "d" | "D" => xOffset.set(xOffset.value + 100)
+      case "z" | "Z" => {
+        cameraSlidingY.stop()
+        cameraSlidingY = new Timeline {
+          keyFrames = Seq(
+            at (0.s) { yOffset -> yOffset.value },
+            at (slidingTime.s) { yOffset -> (yOffset.value - slidingShift)}
+          )
+        }
+        cameraSlidingY.play()
+      }
+      case "q" | "Q" => {
+        cameraSlidingX.stop()
+        cameraSlidingX = new Timeline {
+          keyFrames = Seq(
+            at (0.s) { xOffset -> xOffset.value },
+            at (slidingTime.s) { xOffset -> (xOffset.value - slidingShift)}
+          )
+        }
+        cameraSlidingX.play()
+      }
+      case "s" | "S" => {
+        cameraSlidingY.stop()
+        cameraSlidingY = new Timeline {
+          keyFrames = Seq(
+            at (0.s) { yOffset -> yOffset.value },
+            at (slidingTime.s) { yOffset -> (yOffset.value + slidingShift)}
+          )
+        }
+        cameraSlidingY.play()
+      }
+      case "d" | "D" => {
+        cameraSlidingX.stop()
+        cameraSlidingX = new Timeline {
+          keyFrames = Seq(
+            at (0.s) { xOffset -> xOffset.value },
+            at (slidingTime.s) { xOffset -> (xOffset.value + slidingShift)}
+          )
+        }
+        cameraSlidingX.play()
+      }
       case _ => ()
     }
+  }
+
+  onKeyReleased = _ => {
+    cameraSlidingX.stop()
+    cameraSlidingY.stop()
   }
 
   // when window is resized
   this.width.onChange {
     computeOffsetXLimits()
     render()
+    requestFocus
   }
   this.height.onChange {
     computeOffsetYLimits()
     render()
+    requestFocus
   }
 
   def render() = {
