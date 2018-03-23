@@ -99,6 +99,7 @@ class Game(map_width : Int, map_height : Int)
   tilemap.fillBackground(Tile.grass)
 
   val tiledPane = new DraggableTiledPane(tilemap)
+  tiledPane.moveToCenter()
   tiledPane.requestFocus()
 
 

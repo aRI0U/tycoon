@@ -141,19 +141,31 @@ class DraggableTiledPane(val tm: TileMap) extends BorderPane {
 
   onKeyPressed = (e: KeyEvent) => {
     e.text match {
-      case "a" | "A" => cameraSlidingX.stop()
-                        cameraSlidingY.stop()
-                        tilesScaleX.set(math.max(tilesScaleX.value - 0.1, scaleMin))
-                        tilesScaleY.set(math.max(tilesScaleY.value - 0.1, scaleMin))
-                        computeOffsetXLimits()
-                        computeOffsetYLimits()
+      case "a" | "A" => {
+        cameraSlidingX.stop()
+        cameraSlidingY.stop()
+        val newTileScaleX: Double = math.max(tilesScaleX.value - 0.1, scaleMin)
+        val newTileScaleY: Double = math.max(tilesScaleY.value - 0.1, scaleMin)
+        xOffset.set(newTileScaleX * (xOffset.value + (this.width.value / 2)) / tilesScaleX.value - (this.width.value / 2))
+        yOffset.set(newTileScaleY * (yOffset.value + (this.height.value / 2)) / tilesScaleY.value - (this.height.value / 2))
+        tilesScaleX.set(newTileScaleX)
+        tilesScaleY.set(newTileScaleY)
+        computeOffsetXLimits()
+        computeOffsetYLimits()
+      }
 
-      case "e" | "E" => cameraSlidingX.stop()
-                        cameraSlidingY.stop()
-                        tilesScaleX.set(math.min(tilesScaleX.value + 0.1, scaleMax))
-                        tilesScaleY.set(math.min(tilesScaleY.value + 0.1, scaleMax))
-                        computeOffsetXLimits()
-                        computeOffsetYLimits()
+      case "e" | "E" => {
+        cameraSlidingX.stop()
+        cameraSlidingY.stop()
+        val newTileScaleX: Double = math.min(tilesScaleX.value + 0.1, scaleMax)
+        val newTileScaleY: Double = math.min(tilesScaleY.value + 0.1, scaleMax)
+        xOffset.set(newTileScaleX * (xOffset.value + (this.width.value / 2)) / tilesScaleX.value - (this.width.value / 2))
+        yOffset.set(newTileScaleY * (yOffset.value + (this.height.value / 2)) / tilesScaleY.value - (this.height.value / 2))
+        tilesScaleX.set(newTileScaleX)
+        tilesScaleY.set(newTileScaleY)
+        computeOffsetXLimits()
+        computeOffsetYLimits()
+      }
 
       case "z" | "Z" => {
         cameraSlidingY.stop()
@@ -260,5 +272,10 @@ class DraggableTiledPane(val tm: TileMap) extends BorderPane {
     val col : Int = Math.floor((x + xOffset.value) / scaledTilesWidth.value).toInt
     val row : Int = Math.floor((y + yOffset.value) / scaledTilesHeight.value).toInt
     (col, row)
+  }
+
+  def moveToCenter() = {
+    xOffset.set((tm.width * scaledTilesWidth.value - this.width.value) / 2)
+    yOffset.set((tm.height * scaledTilesHeight.value - this.height.value) / 2)
   }
 }
