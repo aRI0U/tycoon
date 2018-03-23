@@ -2,6 +2,8 @@ package tycoon.objects.graph
 
 import scala.collection.mutable.ListBuffer
 
+import tycoon.ui.Renderable
+import tycoon.ui.Tile
 import tycoon.objects.carriage._
 import tycoon.objects.railway._
 import tycoon.objects.structure._
@@ -16,6 +18,18 @@ class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
 
 
   var current_road : Option[Road]= None
+
+  def TailManager(entitie : Renderable, direction : Int) = {
+    val tileList = new ListBuffer[Tile]()
+    tileList+=(Tile.passengerWagonB,Tile.passengerWagonR,Tile.passengerWagonT,Tile.passengerWagonL,Tile.goodsWagonB,Tile.goodsWagonR,Tile.goodsWagonT,Tile.goodsWagonL,Tile.locomotiveB,Tile.locomotiveR,Tile.locomotiveT,Tile.locomotiveL)
+    var entitieType = 1
+    entitie match {
+      case train : Train => entitieType = 2
+      case p : PassengerCarriage => entitieType = 0
+      case _ => ;
+    }
+    entitie.tile = tileList(direction + 4*entitieType)
+  }
 
   def departure () = {
     train.boarding()
@@ -42,7 +56,7 @@ class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
        train.current_rail = Some(rail)
       }
     }
-    train_rotation(train)
+    Vehiclerotation(train)
     train.gridPos = (train.current_rail.get).position
     //carriageMouvment(train.current_rail.get.gridPos, train.carriages_list)
     //train.current_rail = current_road.rails
@@ -74,8 +88,12 @@ class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
   /// TWO NEXT FUNCTION COULD BE MERGE
 
 // give the tile the orientation fitting with the rail
-  def train_rotation (thing : Train) = {
-    var r = thing.current_rail.get
+  def Vehiclerotation (thing : Renderable) = {
+    var r = new Rail(new GridLocation(-1,-1))
+    thing match {
+      case t : Train => r = t.current_rail.get
+      case c : Carriage => r = c.current_rail.get
+    }
     //choosing rail with witch we compare the direction tookeen by the train
     var comp_rail = r.direction((dir_indicator - 1) %2)
     var plus = 1
@@ -83,20 +101,23 @@ class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
       comp_rail = r.direction(dir_indicator)
       plus = 0
     }
+    var id = 3
     var x = r.position.col - comp_rail.position.col
     var y = r.position.row - comp_rail.position.row
-    if (x == 1) {
-      thing.rotation(90 + plus*180)
-    }
     if (x == -1) {
-      thing.rotation(-90+ plus*180)
+      id = 1
     }
     if (y == 1) {
-      thing.rotation(180+ plus*180)
+      id = 2
+    }
+    if (x == 1) {
+      id = 3
     }
     if (y == -1) {
-      thing.rotation(0+ plus*180)
+      id = 0
     }
+    id = ((id + 2*plus) % 4)
+  TailManager(thing, id)
   }
 
   def wagon_rotation (thing : Carriage) = {
@@ -111,7 +132,7 @@ class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
     var x = r.position.col - comp_rail.position.col
     var y = r.position.row - comp_rail.position.row
     if (x == 1) {
-      thing.rotation(90 + plus*180)
+      thing.tile = Tile.passengerWagonT
     }
     if (x == -1) {
       thing.rotation(-90+ plus*180)
@@ -137,14 +158,14 @@ def carriageMouvment(fisrstPosition : GridLocation,optionRail : Option[Rail], ca
       car.gridPos = (pos1)
       car.current_rail = optionRail1
       optionRail1 match {
-        case Some(r) => wagon_rotation(car)
+        case Some(r) => Vehiclerotation(car)
         case _ => ;
       }
       // (pos2 == pos1) match {
       //   case true => {
       //     car.gridPos = (pos1)
       //     car.current_rail = optionRail1
-      //     wagon_rotation(car)
+      //     Vehiclerotation(car)
       //   }
       //   case false => {}
       // }
@@ -163,7 +184,7 @@ def carriageMouvment(fisrstPosition : GridLocation,optionRail : Option[Rail], ca
           }
           else {
             train.current_rail = Some(rail.direction(dir_indicator))
-            train_rotation(train)
+            Vehiclerotation(train)
             train.gridPos = (rail.direction(dir_indicator).position)
             //carriages update mouvment
             carriageMouvment(rail.position, Some(rail), train.carriages_list)
@@ -176,7 +197,7 @@ def carriageMouvment(fisrstPosition : GridLocation,optionRail : Option[Rail], ca
             //     rail_chain1 match {
             //       case Some(r) => {
             //         car.gridPos = (r.position)
-            //         wagon_rotation(car)
+            //         Vehiclerotation(car)
             //       }
             //       case None => {}
             //     }
