@@ -196,31 +196,23 @@ class Game(map_width : Int, map_height : Int)
     nb_structures -= 1
   }
 
-/* do not erase
-  // try to create rail at pos and return true in case of success
-  def createRail(pos: GridLocation): Boolean = {
-    if (railManager.create(pos)) {
-      entities +=
-    }
-  }
-*/
-
   // try to create rail at pos and return true in case of success
   def createRail(pos: GridLocation) : Boolean = {
     railManager.createRail(pos)
     // if returns true, remove money from player..
   }
 
-  def removeLastRails() : Unit = {
+  def removeLastRail() : Unit = { // TODO incomplet
     //add some temporary list if deletion has to be made
-    val removed_rail = rails(rails.size-1)
-    if (removed_rail.road.finished == true ) {
-      removed_rail.road.finished = false
-      routes.remove(routes.size -1)
+    val removedRail = rails(rails.size - 1)
+    if (removedRail.road.finished == true ) {
+      removedRail.road.finished = false
+      routes.remove(routes.size - 1)
     }
-    rails.remove(rails.size-1)
+    if (removedRail.previous != removedRail)
+      removedRail.previous.next = removedRail.previous
+    rails.remove(rails.size - 1)
     // entities.remove(entities.size-1)   // TODO
-    rails(rails.size-1).road_head = true
   }
 
   def createTrain (town: Town) : Boolean = {

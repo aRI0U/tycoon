@@ -49,7 +49,6 @@ class GameCreationScreen(var game : Game) extends BorderPane
   private var mouse_anchor_x : Double = 0
   private var mouse_anchor_y : Double = 0
 
-
   def init () : Unit = {
     center = gamePane
     top = menuPane
@@ -140,5 +139,4 @@ class GameCreationScreen(var game : Game) extends BorderPane
     )
     onMouseClicked = (e: MouseEvent) => { requestFocus() }
   }
-
 }

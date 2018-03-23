@@ -6,42 +6,6 @@ import scalafx.geometry.Rectangle2D
 import scalafx.scene.CacheHint
 import scalafx.scene.image.{Image,ImageView}
 
-/*
-class Tile(val tileset: Image, viewport: Rectangle2D, rotation: Double = 0) {
-
-  private var _sprite : ImageView = new ImageView(tileset)
-  _sprite.viewport = viewport
-  _sprite.rotate = rotation
-  // _sprite.cache = true
-  // _sprite.cacheHint = CacheHint.Speed
-
-  visible = true // tiles are all visible by default
-
-  def this(tile: Tile) {
-    this(new Image(tile.getView.image.value), new Rectangle2D(tile.getView.viewport.value), tile.getView.rotate.value)
-  }
-
-  // set position in the scene
-  def setLayout(x: Double, y: Double) = {
-    _sprite.layoutX = x
-    _sprite.layoutY = y
-  }
-
-  // def move(dx, dy) dans Movable qui change aussi le screenPos
-
-  def width : Int = viewport.width.toInt
-  def height : Int = viewport.height.toInt
-
-  def getView: ImageView = _sprite
-
-  def visible : Boolean = _sprite.visible.value
-  def visible_= (new_visible: Boolean) = _sprite.visible = new_visible
-
-  // used in complement of visible to check if Renderable is in the scene whether it's displayed or not
-  private var _inScene: Boolean = false
-  def inScene: Boolean = _inScene
-  def inScene_= (new_inScene: Boolean) = _inScene = new_inScene
-}*/
 
 class Tile(row: Int, col: Int, val width: Int = 1, val height: Int = 1) {
   // source rectangle's coordinates and size in Tile.tileset
@@ -56,6 +20,12 @@ object Tile {
 
   val SquareWidth = 32
   val SquareHeight = 32
+
+  def getImageView(t: Tile): ImageView = {
+    val img = new ImageView(tileset)
+    img.viewport = new Rectangle2D(t.sx, t.sy, t.sw, t.sh)
+    img
+  }
 
   val default = new Tile(0, 0)
   val tree = new Tile(4, 3)
@@ -74,11 +44,11 @@ object Tile {
   val farm = new Tile(5, 2, width = 2)
 
   val straightRailBT = new Tile(1, 1)
-  val straightRailLR = new Tile(3, 4)
+  val straightRailLR = new Tile(1, 1)
   val turningRailBR = new Tile(1, 2)
-  val turningRailBL = new Tile(4, 4)
-  val turningRailTR = new Tile(5, 1)
-  val turningRailTL = new Tile(5, 4)
+  val turningRailBL = new Tile(1, 2)
+  val turningRailTR = new Tile(1, 2)
+  val turningRailTL = new Tile(1, 2)
 
 
   val grass = Array(

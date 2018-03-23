@@ -15,7 +15,7 @@ import scalafx.scene.layout.{BorderPane, VBox, StackPane, Pane}
 import scalafx.scene.text.Text
 import scalafx.geometry.{Pos, HPos, VPos, Insets, Rectangle2D, Orientation}
 import scalafx.geometry.Orientation._
-import scalafx.scene.control.{Button, Separator, ButtonType, Alert, TextArea, Label, Slider}
+import scalafx.scene.control.{Button, Separator, ButtonType, Alert, TextArea, Label, Slider, Tab, TabPane}
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.input.{MouseEvent, KeyEvent}
 
@@ -39,6 +39,15 @@ class GameScreen(val game : Game) extends BorderPane
 {
   stylesheets += "style/gamescreen.css"
   id = "body"
+
+
+
+
+
+
+
+
+  /* to be beautified */
 
   private var buyingRailsMode : Boolean = false
   private var nb_rails = IntegerProperty(0)
@@ -115,7 +124,7 @@ class GameScreen(val game : Game) extends BorderPane
           onMouseClicked = _ => {
             if (nb_rails.value > 0) {
               nb_rails.set(nb_rails.value-1)
-              game.removeLastRails()
+              game.removeLastRail()
               game.playerMoney.set(game.playerMoney.value + game.rail_price)
               total_cost_rails.set(total_cost_rails.value - game.rail_price)
             }
@@ -195,11 +204,13 @@ class GameScreen(val game : Game) extends BorderPane
   private var mouse_anchor_x : Double = 0
   private var mouse_anchor_y : Double = 0
 
+  private val menu = new InteractionsMenu(game)
 
   def init () : Unit = {
     center = gamePane
     left = menuPane
     gamePane.center = game.tiledPane // update
+    bottom = menu
   }
 
   def maybeClickRenderableAt(pos: GridLocation): Unit = {

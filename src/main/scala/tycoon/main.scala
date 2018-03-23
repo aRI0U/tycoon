@@ -30,9 +30,9 @@ object Main extends JFXApp {
   val appStage = new PrimaryStage {
     title = "Tycoon Game"
     resizable = true
-    //maximized = true
-    minWidth = 700
-    minHeight = 500
+    maximized = true
+    minWidth = 800
+    minHeight = 600
     scene = appScene
   }
   stage = appStage
