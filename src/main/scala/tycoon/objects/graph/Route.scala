@@ -2,6 +2,8 @@ package tycoon.objects.graph
 
 import scala.collection.mutable.ListBuffer
 
+import tycoon.ui.Renderable
+import tycoon.ui.Tile
 import tycoon.objects.carriage._
 import tycoon.objects.railway._
 import tycoon.objects.structure._
@@ -16,6 +18,16 @@ class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
 
 
   var current_road : Option[Road]= None
+
+  def TailManager(entitie : Renderable, direction : Int) = {
+    val tileList = new ListBuffer[Tile]()
+    tileList+=(Tile.passengerWagonB,Tile.passengerWagonR,Tile.passengerWagonT,Tile.passengerWagonL,Tile.goodsWagonB,Tile.goodsWagonR,Tile.goodsWagonT,Tile.goodsWagonL,Tile.locomotiveB,Tile.locomotiveR,Tile.locomotiveT,Tile.locomotiveL)
+    var entitieType = 0
+    entitie match {
+      case train : Train => entitieType = 2
+      case p : PassengerCarriage => entitieType = 1
+    }
+  }
 
   def departure () = {
     train.boarding()
@@ -111,7 +123,7 @@ class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
     var x = r.position.col - comp_rail.position.col
     var y = r.position.row - comp_rail.position.row
     if (x == 1) {
-      thing.rotation(90 + plus*180)
+      thing.tile = Tile.passengerWagonT
     }
     if (x == -1) {
       thing.rotation(-90+ plus*180)

@@ -56,7 +56,7 @@ class Train(town : Town, nb_carriages : Int) extends Vehicle(town) {
     }
   }
 
-  tile = Tile.locomotive
+  tile = Tile.locomotiveT
 
   var speed = 10
   var destination_x = 0

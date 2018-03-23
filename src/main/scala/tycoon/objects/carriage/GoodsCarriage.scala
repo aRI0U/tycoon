@@ -20,7 +20,7 @@ case class GoodsCarriage() extends Carriage {
   // }
 
 
-  tile = Tile.goods_wagon
+  tile = Tile.goodsWagonR
 
   val cost = 10
   val weight = 100

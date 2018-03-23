@@ -30,7 +30,7 @@ case class PassengerCarriage() extends Carriage {
     }
   }
 
-  tile = Tile.passenger_wagon
+  tile = Tile.passengerWagonR
 
   val cost = 20
   val ticket_price = 3
