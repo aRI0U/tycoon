@@ -160,9 +160,9 @@ class Game(map_width : Int, map_height : Int)
     {
       structure match {
         case t : Town => towns += t
-        tilemap.addEntity(t)
+        tilemap.addEntity(t, 0)
         case m : Mine => mines += m
-        tilemap.addEntity(m)
+        tilemap.addEntity(m, 0)
         //tilemap.addTile(1, pos.col, pos.row, Tile.mine)
       }
       structures += structure
@@ -234,13 +234,13 @@ class Game(map_width : Int, map_height : Int)
     trains += train
     //tiledPane.addRenderable(train)
     //tilemap.addTile(1, pos.col, pos.row, Tile.locomotive)
-    tilemap.addEntity(train)
+    tilemap.addEntity(train, 1)
 
     // paying
     playerMoney.set(playerMoney.value - train.cost)
     for (carriage <- train.carriages_list) {
       playerMoney.set(playerMoney.value - carriage.cost)
-      tilemap.addEntity(carriage)
+      tilemap.addEntity(carriage, 1)
       //tiledPane.addRenderable(carriage)
       //tilemap.addTile(1, pos.col, pos.row, Tile.passenger_wagon)
       carriages+=carriage

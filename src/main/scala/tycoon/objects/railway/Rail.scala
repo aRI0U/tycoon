@@ -15,8 +15,10 @@ case class Rail(pos: GridLocation) extends Renderable(pos) {//, tile_type: Int) 
 
   var next : Rail = this
   var previous : Rail = this
-  var origin = 0
-  var orientation = 0
+
+  // -1: undefined ; 0: top ; 1: right ; 2: bottom ; 3: left
+  var previousDir: Int = -1
+  var nextDir: Int = -1
 
   def direction(i : Int) : Rail = {
     if (i == 0) return next
@@ -24,20 +26,11 @@ case class Rail(pos: GridLocation) extends Renderable(pos) {//, tile_type: Int) 
   }
 
   def position : GridLocation = pos
-  def get_rotation : Int = nb_rotation
 
-  tile = Tile.straight_rail1 // sgives_tile(tile_type)
+  tile = Tile.straightRailBT // sgives_tile(tile_type)
 
   val cost = 10
   val max_speed = 50
   val max_weight = 1000
   var road_head = true
-
-  def gives_tile (i : Int) : Tile = {
-    if (i==0) Tile.straight_rail1
-    else Tile.turning_rail
-  }
-
-
-  var nb_rotation = 2
 }

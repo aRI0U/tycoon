@@ -73,9 +73,6 @@ object Tile {
   val factory = new Tile(5, 1)
   val farm = new Tile(5, 2, width = 2)
 
-  val straight_rail1 = new Tile(1, 1)
-  val turning_rail = new Tile(1, 2)
-
   val straightRailBT = new Tile(1, 1)
   val straightRailLR = new Tile(3, 4)
   val turningRailBR = new Tile(1, 2)
