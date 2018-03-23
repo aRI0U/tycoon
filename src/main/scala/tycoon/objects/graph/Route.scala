@@ -19,10 +19,14 @@ class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
 
   def departure () = {
     train.boarding()
-    // for (carriage <- train.carriages_list) {
-    //   game.playerMoney.set(game.playerMoney.value + carriage.passengers * carriage.ticket_price)
-    //   println(carriage.passengers)
-    // }
+    for (carriage <- train.carriages_list) {
+      carriage match {
+        case p:PassengerCarriage =>
+        println(p.passengers)
+         game.playerMoney.set(game.playerMoney.value + p.passengers * p.ticket_price)
+        case _ => ()
+      }
+    }
     val start = train.location.get
     carriageMouvment(start.gridPos ,None, train.carriages_list)
     //to select the right direction according to the construction sens

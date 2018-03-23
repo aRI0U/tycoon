@@ -9,6 +9,7 @@ case class PassengerCarriage() extends Carriage {
   var passengers : Int = 0
 
   override def embark(structure: Structure) : Unit = {
+    println("embark")
     structure match {
       case t:Town => {
         passengers = max_passengers.min(t.waiting_passengers)

@@ -53,7 +53,7 @@ case class Mine(pos: GridLocation, id: Int) extends Facility(pos, id) {
   }
 
   override def update(dt: Double) = {
-    if (r.nextInt(500) == 0) workers = 0 // rockslide
+    if (r.nextInt(10000) == 0) workers = 0 // rockslide
     intern_time += dt*workers
     if(intern_time > production_time) {
       for (i <- 0 to products.length - 1) update_production(i)
