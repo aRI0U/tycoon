@@ -7,7 +7,7 @@ import tycoon.objects.structure._
 import tycoon.ui.Tile
 import scala.collection.mutable.{HashMap, ListBuffer}
 
-class Road(pos : GridLocation) {
+class Road {
   var finished : Boolean = false
   var startStructure : Option[Structure] = None
   var endStructure : Option[Structure] = None

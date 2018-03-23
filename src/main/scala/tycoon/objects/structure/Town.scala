@@ -6,14 +6,16 @@ import scala.Array
 import tycoon.game.GridLocation
 import tycoon.game.Game
 
+import tycoon.ui.Tile
+
 import scalafx.beans.property.{IntegerProperty, StringProperty}
 
 
-abstract case class Town(pos: GridLocation, id: Int) extends Structure(pos, id) {
+case class Town(pos: GridLocation, id: Int) extends Structure(pos, id) {
+  tile = Tile.town
 
   protected val r = scala.util.Random
 
-  val max_population : Int
 
   var city_names : ListBuffer[String] = new ListBuffer
   city_names += ("Paris", "Lyon", "Toulouse", "Saclay", "Nice", "Strasbourg", "Mulhouse", "Aulnay-sous-Bois", "Cachan", "Hamburg", "Berlin", "Brno", "Caderousse","Stuttgart", "Wien", "Köln")
@@ -64,6 +66,9 @@ abstract case class Town(pos: GridLocation, id: Int) extends Structure(pos, id) 
   def population_= (new_pop: Int) = _population.set(new_pop)
   def waiting_passengers : Int = _waiting_passengers.value
   def waiting_passengers_= (new_wait_pass: Int) = _waiting_passengers.set(new_wait_pass)
+  val max_population: Int = 1000
+  population = 50 + r.nextInt(50)
+  waiting_passengers = 0
 
 
 }

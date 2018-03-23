@@ -46,8 +46,6 @@ class Game(map_width : Int, map_height : Int)
     }
   }
 
-  //Managers of game entities.
-  var railManager = new RailManager
 
 /* new game loop pattern:
   double t = 0.0;
@@ -78,6 +76,11 @@ class Game(map_width : Int, map_height : Int)
 
   var map = new Map(map_width, map_height)
   var game_graph = new Graph
+  val tilemap = new TileMap(map_width, map_height)
+  tilemap.fillBackground(Tile.grass)
+
+  //Managers of game entities.
+  var railManager = new RailManager(map, tilemap, game_graph)
 
   var nb_structures = 0
 
@@ -88,15 +91,13 @@ class Game(map_width : Int, map_height : Int)
   var structures = new ListBuffer[Structure]()
   var mines = new ListBuffer[Mine]()
   var towns = new ListBuffer[Town]()
-  var trains = new ListBuffer[BasicTrain]()
+  var trains = new ListBuffer[Train]()
   var routes = new ListBuffer[Route]()
   var carriages = new ListBuffer[Carriage]()
 
   private val loop = new GameLoop()
 
   // INIT
-  val tilemap = new TileMap(map_width, map_height)
-  tilemap.fillBackground(Tile.grass)
 
   val tiledPane = new DraggableTiledPane(tilemap)
   tiledPane.moveToCenter()
@@ -149,7 +150,7 @@ class Game(map_width : Int, map_height : Int)
   def playerMoney_= (new_money: Int) = player.money = new_money
 
   def createStructure (kind: Int, pos: GridLocation) : Boolean = {
-    var structure : Structure = new BasicTown(pos, nb_structures)
+    var structure : Structure = new Town(pos, nb_structures)
     kind match {
       case 0 => ;
       case _ => structure = new Mine(pos, nb_structures)
@@ -159,10 +160,12 @@ class Game(map_width : Int, map_height : Int)
     {
       structure match {
         case t : Town => towns += t
+        tilemap.addTile(1, pos.col, pos.row, Tile.town)
         case m : Mine => mines += m
+        tilemap.addTile(1, pos.col, pos.row, Tile.mine)
       }
+      structures += structure
       //tiledPane.addRenderable(structure)
-      tilemap.addTile(1, pos.col, pos.row, Tile.town)
       map.add(structure.gridRect, structure)
       nb_structures += 1
       game_graph.newStructure(structure)
@@ -201,28 +204,10 @@ class Game(map_width : Int, map_height : Int)
   }
 */
 
-// Ability to set a rail if next to a stucture or  a road_head
-  def createRail (pos: GridLocation) : Boolean = {
-
-    new GridRectangle(new GridLocation(0, 0), 1, 1)
-    // check whether rail is within the map boundaries
-    if (tilemap.gridContains(new GridRectangle(pos, 1, 1)))
-    {
-      //Rail initialised with a staight sprite.
-      val rail = new BasicRail(pos, 0)
-      //Watch for location conflict.
-      var valid = map.isUnused(rail.gridRect)
-      // Call of IsSetable
-      valid = valid & railManager.IsSetable(rail,map,rails,game_graph)
-      // In case of no problem:
-      if (valid) {
-        rails += rail
-        //tiledPane.addRenderable(rail)
-        map.add(rail.gridRect, rail)
-      }
-      valid
-    }
-    else false
+  // try to create rail at pos and return true in case of success
+  def createRail(pos: GridLocation) : Boolean = {
+    railManager.createRail(pos)
+    // if returns true, remove money from player..
   }
 
   def removeLastRails() : Unit = {
@@ -240,19 +225,21 @@ class Game(map_width : Int, map_height : Int)
   def createTrain (town: Town) : Boolean = {
     // Carriage number set at 3 by default
     // + one good carriage now :)
-    var train = new BasicTrain(town, 3)
+    var train = new Train(town, 3)
 
 
     // check if there is an other train ??
     town.addTrain(train)
     trains += train
     //tiledPane.addRenderable(train)
+    //tilemap.addTile(1, pos.col, pos.row, Tile.locomotive)
 
     // paying
     playerMoney.set(playerMoney.value - train.cost)
     for (carriage <- train.carriages_list) {
       playerMoney.set(playerMoney.value - carriage.cost)
       //tiledPane.addRenderable(carriage)
+      //tilemap.addTile(1, pos.col, pos.row, Tile.passenger_wagon)
       carriages+=carriage
     }
     true

@@ -11,8 +11,7 @@ ui: split left pane into two
 graph: tile by tile
 remove rotate in Tile & add rotated tiles to tileset (also remove inScene, visible's enough, and remove setLayout etc)
 simplify tiles just for bg tiles and add sprite which inherits from Tile and includes animation
-
-
+merge Map & TileMap (& Graph?)
 
 
 Beautify:

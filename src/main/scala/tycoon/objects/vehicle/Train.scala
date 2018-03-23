@@ -7,11 +7,15 @@ import tycoon.objects.carriage._
 import tycoon.objects.railway._
 import tycoon.objects.structure._
 import scalafx.beans.property.{IntegerProperty, StringProperty}
+import tycoon.ui.Tile
+import tycoon.game.GridLocation
+import tycoon.game.Game
+import tycoon.ui.DraggableTiledPane
 
-abstract class Train(town : Town, nb_carriages : Int) extends Vehicle(town) {
-  var carriages_list : ListBuffer[Carriage]
+
+
+class Train(town : Town, nb_carriages : Int) extends Vehicle(town) {
   var location : Option[Structure] = Some(town)
-  var current_rail : Option[Rail]
 
 
   //Methods
@@ -20,8 +24,8 @@ abstract class Train(town : Town, nb_carriages : Int) extends Vehicle(town) {
   }
 
   def add_carriage () {
-    for (i <- 1 to nb_carriages) carriages_list += new BasicPassengerCarriage
-    carriages_list += new BasicGoodsCarriage
+    for (i <- 1 to nb_carriages) carriages_list += new PassengerCarriage
+    carriages_list += new GoodsCarriage
   }
 
   def boarding () = {
@@ -49,6 +53,32 @@ abstract class Train(town : Town, nb_carriages : Int) extends Vehicle(town) {
         for (carriage <- carriages_list) carriage.debark(s)
       }
       case None => ()
+    }
+  }
+
+  tile = Tile.locomotive
+
+  var speed = 10
+  var destination_x = 0
+  var destination_y = 0
+  val weight = 50
+  val cost = 200
+
+  var current_rail : Option[Rail] = None
+  //var trail = road.rails
+
+
+  var carriages_list = new ListBuffer[Carriage]()
+  add_carriage()
+
+  gridPos = location match {
+    case Some(structure : Town) => {
+      new GridLocation(structure.position.col +1,structure.position.row)
+    }
+    case Some(structure ) => structure.position
+    case None => current_rail match {
+      case Some(rail) => rail.position
+      case None => new GridLocation(0,0) // throw exn
     }
   }
 }

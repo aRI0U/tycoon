@@ -7,14 +7,25 @@ import tycoon.objects.structure._
 import tycoon.objects.good._
 import tycoon.ui.Renderable
 import tycoon.ui.Tile
+import tycoon.game.GridLocation
+import tycoon.objects.railway._
 
-abstract case class GoodsCarriage() extends Carriage {
-  val max_transport : Int
-  var transport : ListBuffer[Merchandise]
+
+case class GoodsCarriage() extends Carriage {
 
   // override def embark(facility: Facility) : Unit = {
   // }
   //
   // override def debark(facility: Facility) = {
   // }
+
+
+  tile = Tile.goods_wagon
+
+  val cost = 10
+  val weight = 100
+  val max_transport = 100
+  var transport = new ListBuffer[Merchandise]
+  var current_rail : Option[Rail] = None
+  var currentLoc = new GridLocation(-1,-1)
 }

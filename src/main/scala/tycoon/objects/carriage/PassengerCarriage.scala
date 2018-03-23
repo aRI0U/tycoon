@@ -1,10 +1,11 @@
 package tycoon.objects.carriage
 
 import tycoon.objects.structure._
+import tycoon.objects.railway.Rail
+import tycoon.game.GridLocation
+import tycoon.ui.Tile
 
-abstract case class PassengerCarriage() extends Carriage {
-  val ticket_price : Int
-  val max_passengers : Int
+case class PassengerCarriage() extends Carriage {
   var passengers : Int = 0
 
   override def embark(structure: Structure) : Unit = {
@@ -28,4 +29,13 @@ abstract case class PassengerCarriage() extends Carriage {
       case _ => ()
     }
   }
+
+  tile = Tile.passenger_wagon
+
+  val cost = 20
+  val ticket_price = 3
+  val weight = 100
+  val max_passengers = 10
+  var current_rail : Option[Rail] = None
+  var currentLoc = new GridLocation(-1,-1)
 }
