@@ -65,9 +65,17 @@ class RailManager(map: Map, tilemap: TileMap, gameGraph: Graph) {
           correctRotation(rail.previous)
         }
         else { // rail placed between two rails or structs or between a rail and a struct
-          // si il reste un pb c'est qu'il faut tester si firstDir et secondDir ne sont pas inversés
-          rail.previousDir = firstDir
-          rail.nextDir = secondDir
+          if ((firstDir == 0 && rail.previous.gridPos.col == rail.gridPos.col && rail.previous.gridPos.row == rail.gridPos.row - 1)
+          || (firstDir == 1 && rail.previous.gridPos.row == rail.gridPos.row && rail.previous.gridPos.col == rail.gridPos.col + 1)
+          || (firstDir == 2 && rail.previous.gridPos.col == rail.gridPos.col && rail.previous.gridPos.row == rail.gridPos.row + 1)
+          || (firstDir == 3 && rail.previous.gridPos.row == rail.gridPos.row && rail.previous.gridPos.col == rail.gridPos.col - 1)) {
+            rail.previousDir = firstDir
+            rail.nextDir = secondDir
+          }
+          else {
+            rail.previousDir = secondDir
+            rail.nextDir = firstDir
+          }
           if (rail.previous != rail) {
             rail.previous.nextDir = (rail.previousDir + 2) % 4
             correctRotation(rail.previous)
@@ -142,7 +150,7 @@ class RailManager(map: Map, tilemap: TileMap, gameGraph: Graph) {
           }
 
           // merge two sides of rails
-          else if (previousRail.road.startStructure != rail.road.startStructure) {
+          else if (nbNeighborRails == 2 && previousRail.road.startStructure != rail.road.startStructure) {
             for (r <- previousRail.road.rails) {
               val tmp = r.next
               r.next = r.previous
