@@ -22,6 +22,7 @@ class TownManager() {
     town.displayWaiters()
     for (t <- towns_list) {
       // add the new town to potential destinations
+      t.destinations += town
       t.waitersInt += IntegerProperty(0)
       t.waitersStr += new StringProperty
       t.waitersStr.last <== t.waitersInt.last.asString

@@ -16,7 +16,6 @@ class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
   var on_the_road = true
   var dir_indicator = 1
 
-
   var current_road : Option[Road]= None
 
   def TailManager(entitie : Renderable, direction : Int) = {
@@ -32,11 +31,11 @@ class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
   }
 
   def departure () = {
-    train.boarding()
+    train.boarding(itinerary)
     for (carriage <- train.carriages_list) {
       carriage match {
         case p:PassengerCarriage =>
-         game.playerMoney.set(game.playerMoney.value + p.passengers * p.ticket_price)
+         game.playerMoney.set(game.playerMoney.value + (p.max_passengers - p.remaining_places) * p.ticket_price)
         case _ => ()
       }
     }

@@ -28,7 +28,7 @@ class Train(town : Town, nb_carriages : Int) extends Vehicle(town) {
     carriages_list += new GoodsCarriage
   }
 
-  def boarding () = {
+  def boarding (itinerary: ListBuffer[Road]) = {
     location match {
       case (Some(struc)) => {
         struc match {
@@ -36,7 +36,7 @@ class Train(town : Town, nb_carriages : Int) extends Vehicle(town) {
             for (carriage <- carriages_list) {
               carriage match {
                 case p:PassengerCarriage =>
-                p.embark(town)
+                p.embark(town, itinerary)
                 case _ => ()
               }
             }

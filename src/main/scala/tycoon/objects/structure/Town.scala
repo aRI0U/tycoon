@@ -17,7 +17,7 @@ case class Town(pos: GridLocation, id: Int, townManager: TownManager) extends St
 
   protected val r = scala.util.Random
 
-
+  // choose town name
   def chooseName() {
     try {
       val i = r.nextInt(townManager.unchosen_names.length)
@@ -48,6 +48,7 @@ case class Town(pos: GridLocation, id: Int, townManager: TownManager) extends St
   // printData += new Tuple2("Waiting passengers", waitingPassengersStr)
 
   var total_waiters = 0
+  var destinations = new ListBuffer[Town]
   var waitersInt = new ListBuffer[IntegerProperty]
   var waitersStr = new ListBuffer[StringProperty]
 
@@ -55,6 +56,7 @@ case class Town(pos: GridLocation, id: Int, townManager: TownManager) extends St
     printData += new Tuple2("Waiting passengers", StringProperty(""))
     for (town <- townManager.towns_list) {
       if (town != this) {
+        destinations += town
         waitersInt += IntegerProperty(0)
         waitersStr += new StringProperty
         waitersStr.last <== waitersInt.last.asString
