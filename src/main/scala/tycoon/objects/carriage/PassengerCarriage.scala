@@ -9,7 +9,6 @@ case class PassengerCarriage() extends Carriage {
   var passengers : Int = 0
 
   override def embark(structure: Structure) : Unit = {
-    println("embark")
     structure match {
       case t:Town => {
         passengers = max_passengers.min(t.waiting_passengers)
@@ -31,7 +30,7 @@ case class PassengerCarriage() extends Carriage {
     }
   }
 
-  tile = Tile.passenger_wagon
+  tile = Tile.passengerWagonR
 
   val cost = 20
   val ticket_price = 3

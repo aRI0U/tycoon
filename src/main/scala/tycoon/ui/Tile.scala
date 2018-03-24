@@ -32,9 +32,19 @@ object Tile {
   val rock = new Tile(4, 4)
 
   //vehicle stuff
-  val locomotive = new Tile(3, 2)
-  val passenger_wagon = new Tile(3, 1)
-  val goods_wagon = new Tile(3, 3)
+  val locomotiveL = new Tile(3, 2)
+  val locomotiveB = new Tile(3, 2)
+  val locomotiveR = new Tile(3, 2)
+  val locomotiveT = new Tile(3, 2)
+  val passengerWagonT = new Tile(3, 1)
+  val passengerWagonB = new Tile(3, 1)
+  val passengerWagonL = new Tile(3, 1)
+  val passengerWagonR = new Tile(3, 1)
+  val goodsWagonR = new Tile(3, 3)
+  val goodsWagonB = new Tile(3, 3)
+  val goodsWagonL = new Tile(3, 3)
+  val goodsWagonT = new Tile(3, 3)
+
   val liquid_wagon = new Tile(6, 1)
 
   //structure tiles
@@ -42,13 +52,14 @@ object Tile {
   val mine = new Tile(4, 3)
   val factory = new Tile(5, 1)
   val farm = new Tile(5, 2, width = 2)
+  val airport = new Tile(6, 3)
 
   val straightRailBT = new Tile(1, 1)
-  val straightRailLR = new Tile(1, 1)
+  val straightRailLR = new Tile(2, 6)
   val turningRailBR = new Tile(1, 2)
-  val turningRailBL = new Tile(1, 2)
-  val turningRailTR = new Tile(1, 2)
-  val turningRailTL = new Tile(1, 2)
+  val turningRailBL = new Tile(1, 6)
+  val turningRailTR = new Tile(1, 5)
+  val turningRailTL = new Tile(2, 5)
 
 
   val grass = Array(

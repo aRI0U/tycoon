@@ -13,3 +13,19 @@
 #body {
   -fx-background-color: white;
 }
+
+#buyableitems {
+  -fx-padding: 10px;
+}
+
+#buyableitems:hover {
+  -fx-background-color: lightblue;
+  -fx-padding: 10px;
+  -fx-cursor: hand;
+}
+
+.separator *.line {
+    -fx-border-style: solid;
+    -fx-border-width: 0 0 1 0; /* its make really one-pixel-border */
+    -fx-border-color: red;
+}
