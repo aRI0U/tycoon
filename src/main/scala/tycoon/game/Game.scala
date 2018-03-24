@@ -82,6 +82,8 @@ class Game(map_width : Int, map_height : Int)
   //Managers of game entities.
   var railManager = new RailManager(map, tilemap, game_graph)
 
+  var townManager = new TownManager()
+
   var nb_structures = 0
 
   val mine_price = 200
@@ -150,16 +152,16 @@ class Game(map_width : Int, map_height : Int)
   def playerMoney_= (new_money: Int) = player.money = new_money
 
   def createStructure (kind: Int, pos: GridLocation) : Boolean = {
-    var structure : Structure = new Town(pos, nb_structures)
+    var structure : Structure = new Town(pos, nb_structures, townManager)
     kind match {
-      case 0 => ;
+      case 0 => ()
       case _ => structure = new Mine(pos, nb_structures)
     }
 
     if (tilemap.gridContains(structure.gridRect) && map.isUnused(structure.gridRect))
     {
       structure match {
-        case t : Town => towns += t
+        case t : Town => townManager.newTown(t)
         tilemap.addEntity(t, 0)
         case m : Mine => mines += m
         tilemap.addEntity(m, 0)
@@ -185,6 +187,8 @@ class Game(map_width : Int, map_height : Int)
     towns.clear()
     // entities.clear()    TODO
     nb_structures = 0
+    townManager.towns_list = new ListBuffer[Town]
+    townManager.last_town = 0
   }
 
   def createMine (pos: GridLocation) : Boolean = {

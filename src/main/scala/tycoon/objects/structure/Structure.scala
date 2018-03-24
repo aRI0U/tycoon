@@ -14,7 +14,7 @@ abstract class Structure(pos: GridLocation, id: Int) extends Renderable(pos) {
   var list_trains = new ListBuffer[Train]()
 
   //Methods
-  protected val _name = StringProperty("structure name")
+  protected val _name = StringProperty("")
   def name : String = _name.value
   def position : GridLocation = pos
 

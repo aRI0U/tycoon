@@ -4,21 +4,34 @@ import scala.collection.mutable.ListBuffer
 import scala.Array
 
 import tycoon.game.GridLocation
-import tycoon.game.Game
+import tycoon.game.{Game, TownManager}
+import tycoon.objects.structure._
 
 import tycoon.ui.Tile
 
 import scalafx.beans.property.{IntegerProperty, StringProperty}
 
 
-case class Town(pos: GridLocation, id: Int) extends Structure(pos, id) {
+case class Town(pos: GridLocation, id: Int, townManager: TownManager) extends Structure(pos, id) {
   tile = Tile.town
 
   protected val r = scala.util.Random
 
+  // choose town name
+  def chooseName() {
+    try {
+      val i = r.nextInt(townManager.unchosen_names.length)
+      _name.set(townManager.unchosen_names(i))
+      townManager.unchosen_names.remove(i)
+    }
+    catch {
+      case e: Exception => println("you've created too many towns")
+    }
 
-  var city_names : ListBuffer[String] = new ListBuffer
-  city_names += ("Paris", "Lyon", "Toulouse", "Saclay", "Nice", "Strasbourg", "Mulhouse", "Aulnay-sous-Bois", "Cachan", "Hamburg", "Berlin", "Brno", "Caderousse","Stuttgart", "Wien", "Köln")
+  }
+
+  chooseName()
+
 
    // _name = StringProperty(city_names(id))
   protected var _population = IntegerProperty(0)
@@ -30,24 +43,50 @@ case class Town(pos: GridLocation, id: Int) extends Structure(pos, id) {
   populationStr <== _population.asString
   printData += new Tuple2("Population", populationStr)
 
-  private val waitingPassengersStr = new StringProperty
-  waitingPassengersStr <== _waiting_passengers.asString
-  printData += new Tuple2("Waiting passengers", waitingPassengersStr)
+  // private val waitingPassengersStr = new StringProperty
+  // waitingPassengersStr <== _waiting_passengers.asString
+  // printData += new Tuple2("Waiting passengers", waitingPassengersStr)
 
+  var total_waiters = 0
+  var destinations = new ListBuffer[Town]
+  var waitersInt = new ListBuffer[IntegerProperty]
+  var waitersStr = new ListBuffer[StringProperty]
+
+  def displayWaiters() {
+    printData += new Tuple2("Waiting passengers", StringProperty(""))
+    for (town <- townManager.towns_list) {
+      if (town != this) {
+        destinations += town
+        waitersInt += IntegerProperty(0)
+        waitersStr += new StringProperty
+        waitersStr.last <== waitersInt.last.asString
+        printData += new Tuple2(town.name, waitersStr.last)
+      }
+    }
+  }
+
+  def waiters(i: Int) : Int = waitersInt(i).value
 
   def update_population () = {
     if (population < max_population) {
       val i = r.nextInt(population)
       population += i/50
     }
-
   }
 
   // to ameliorate to manage where people want to go
   def update_waiters () = {
-    val new_waiters = (r.nextInt(population))/30
-    waiting_passengers += new_waiters
-    if (waiting_passengers > population/3) waiting_passengers = population/3
+    try {
+      if (total_waiters < population/3) {
+        val new_waiters = (r.nextInt(population))/30
+        total_waiters += new_waiters
+        val destination = r.nextInt(waitersInt.length)
+        waitersInt(destination).set(waiters(destination) + new_waiters)
+      }
+    }
+    catch {
+      case e: Exception => ()
+    }
   }
 
   override def update(dt: Double) = {
@@ -69,6 +108,4 @@ case class Town(pos: GridLocation, id: Int) extends Structure(pos, id) {
   val max_population: Int = 1000
   population = 50 + r.nextInt(50)
   waiting_passengers = 0
-
-
 }

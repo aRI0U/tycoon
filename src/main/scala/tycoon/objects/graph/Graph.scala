@@ -97,7 +97,6 @@ class Graph {
     d(departure.structure_id) = Some(0)
 
     var not_visited : ListBuffer[Vertex] = content.clone
-    println("tycoon > objects > graph > Graph.scala > shortestRoute: " + not_visited)
     var previous : Array[Option[(Int, Road)]] = new Array[Option[(Int, Road)]](l)
     for (i <- 0 to l-1) previous(i) = None
 

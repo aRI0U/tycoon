@@ -32,18 +32,18 @@ object Tile {
   val rock = new Tile(4, 4)
 
   //vehicle stuff
-  val locomotiveL = new Tile(3, 2)
+  val locomotiveL = new Tile(3, 5)
   val locomotiveB = new Tile(3, 2)
-  val locomotiveR = new Tile(3, 2)
-  val locomotiveT = new Tile(3, 2)
-  val passengerWagonT = new Tile(3, 1)
+  val locomotiveR = new Tile(4, 5)
+  val locomotiveT = new Tile(3, 6)
+  val passengerWagonT = new Tile(4, 6)
   val passengerWagonB = new Tile(3, 1)
-  val passengerWagonL = new Tile(3, 1)
-  val passengerWagonR = new Tile(3, 1)
-  val goodsWagonR = new Tile(3, 3)
+  val passengerWagonL = new Tile(5, 6)
+  val passengerWagonR = new Tile(6, 6)
+  val goodsWagonR = new Tile(7, 5)
   val goodsWagonB = new Tile(3, 3)
-  val goodsWagonL = new Tile(3, 3)
-  val goodsWagonT = new Tile(3, 3)
+  val goodsWagonL = new Tile(7, 4)
+  val goodsWagonT = new Tile(7, 6)
 
   val liquid_wagon = new Tile(6, 1)
 
