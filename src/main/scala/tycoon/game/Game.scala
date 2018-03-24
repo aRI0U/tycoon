@@ -77,7 +77,7 @@ class Game(map_width : Int, map_height : Int)
   var map = new Map(map_width, map_height)
   var game_graph = new Graph
   val tilemap = new TileMap(map_width, map_height)
-  tilemap.fillBackground(Tile.grass)
+  tilemap.fillBackground(Tile.grassAndGround,map)
 
   //Managers of game entities.
   var railManager = new RailManager(map, tilemap, game_graph)

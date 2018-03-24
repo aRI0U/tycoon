@@ -2,6 +2,7 @@ package tycoon.ui
 
 import tycoon.game._
 import tycoon.objects.structure.Town
+// import tycoon..Gridlocation
 
 
 import scalafx.Includes._
@@ -72,7 +73,6 @@ class GameCreationScreen(var game : Game) extends BorderPane
         // creation of a city
         if (nb_towns.value < max_towns) {
           val pos = game.tiledPane.screenPxToGridLoc(e.x, e.y)
-
           if(game.createTown(new GridLocation(pos._1, pos._2))) { // temp
             nb_towns.set(nb_towns.value + 1)
           }
