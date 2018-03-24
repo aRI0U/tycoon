@@ -5,6 +5,7 @@ import tycoon.objects.railway._
 import tycoon.objects.vehicle._
 import tycoon.objects.graph._
 import tycoon.objects.carriage._
+import tycoon.objects.landscape._
 import tycoon.game._
 import tycoon.ui.Tile
 import tycoon.ui.{Tile, Renderable, DraggableTiledPane}
@@ -153,12 +154,19 @@ class Game(map_width : Int, map_height : Int)
 
   def createStructure (kind: Int, pos: GridLocation) : Boolean = {
     var structure : Structure = new Town(pos, nb_structures, townManager)
+    var additionalCondition = true
     kind match {
-      case 0 => ()
-      case _ => structure = new Mine(pos, nb_structures)
+      case 0 => additionalCondition = map.isUnused(structure.gridRect)
+      case _ => {
+        structure = new Mine(pos, nb_structures)
+        map.getContentAt(pos) match {
+          case Some(r : Rock) => ()
+          case _ => additionalCondition = false
+        }
+      }
     }
 
-    if (tilemap.gridContains(structure.gridRect) && map.isUnused(structure.gridRect))
+    if (tilemap.gridContains(structure.gridRect) && additionalCondition)
     {
       structure match {
         case t : Town => townManager.newTown(t)
