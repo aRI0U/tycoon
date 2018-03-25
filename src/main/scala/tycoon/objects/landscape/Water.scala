@@ -10,7 +10,6 @@ import tycoon.game.GridLocation
 import scalafx.beans.property.{IntegerProperty, StringProperty}
 
 
-class Rock(pos: GridLocation, id: Int) extends Renderable(pos) {
-  val rockNumber = id
-  tile = Tile.rock
+class Water(pos: GridLocation) extends Renderable(pos) {
+  tile = Tile.plainWater
 }
