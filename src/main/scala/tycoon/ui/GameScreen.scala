@@ -208,8 +208,8 @@ class GameScreen(val game : Game) extends BorderPane
 
   def init () : Unit = {
     center = gamePane
-    left = menuPane
     gamePane.center = game.tiledPane // update
+    left = menuPane
     bottom = menu
   }
 

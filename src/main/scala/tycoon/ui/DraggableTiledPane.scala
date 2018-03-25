@@ -29,6 +29,8 @@ class DraggableTiledPane(val tm: TileMap) extends BorderPane {
   private val canvas = new Canvas
   children.add(canvas)
 
+  minHeight = 0
+
   canvas.width <== this.width
   canvas.height <== this.height
 

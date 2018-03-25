@@ -28,7 +28,7 @@ object Tile {
   }
 
   val default = new Tile(0, 0)
-  val tree = new Tile(4, 3)
+  val tree = new Tile(3, 4)
   val rock = new Tile(4, 4)
 
   //vehicle stuff
@@ -62,12 +62,14 @@ object Tile {
   val turningRailTL = new Tile(2, 5)
 
 
-  val grass = Array(
+  val grassAndGround = Array(
     new Tile(1, 3),
     new Tile(1, 4),
     new Tile(2, 1),
     new Tile(2, 2),
     new Tile(2, 3),
-    new Tile(2, 4)
+    new Tile(2, 4),
+    new Tile(3, 4),
+    new Tile(4, 4)
   )
 }

@@ -13,8 +13,6 @@ class InteractionsMenu(val game: Game) extends TabPane
 {
   stylesheets += "style/gamescreen.css"
 
-  minHeight = 200
-
   tabClosingPolicy = TabPane.TabClosingPolicy.Unavailable
 
   private val buildTab = new Tab()
