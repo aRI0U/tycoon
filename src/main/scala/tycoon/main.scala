@@ -45,13 +45,22 @@ object Main extends JFXApp {
     content.getChildren.add(newScreen)
   }
 
-  startScreen.setOnStartGame(new Runnable {
+  startScreen.setOnStartGameCreation(new Runnable {
     def run() = {
       switchScreen(gameCreationScreen)
       gameCreationScreen.init()
       game.start()
     }
   })
+/*
+  startScreen.setOnStartGameCreation(new Runnable {
+    def run() = {
+      switchScreen(gameScreen)
+      gameScreen.init()
+      game.generateRandomMap()
+      game.start()
+    }
+  })*/
 
   startScreen.setOnOpenCredits(new Runnable {
     def run() = {

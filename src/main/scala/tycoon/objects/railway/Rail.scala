@@ -21,8 +21,8 @@ case class Rail(pos: GridLocation) extends Renderable(pos) {
   var nextDir: Int = -1
 
   def direction(i : Int) : Rail = {
-    if (i == 0) return next
-    else return previous
+    if (i == 0) next
+    else previous
   }
 
   def position : GridLocation = pos

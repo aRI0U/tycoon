@@ -6,12 +6,14 @@ import scalafx.Includes._
 import scalafx.geometry.Pos
 import scalafx.scene.control.{Label, Tab, TabPane}
 import scalafx.scene.input.MouseEvent
-import scalafx.scene.layout.{HBox, VBox}
+import scalafx.scene.layout.{HBox, VBox, Priority}
 
 
 class InteractionsMenu(val game: Game) extends TabPane
 {
   stylesheets += "style/gamescreen.css"
+
+  minHeight = 200
 
   tabClosingPolicy = TabPane.TabClosingPolicy.Unavailable
 

@@ -21,7 +21,7 @@ import scalafx.beans.property.{StringProperty, IntegerProperty}
 import scalafx.beans.binding.Bindings
 
 
-class Game(map_width : Int, map_height : Int)
+class Game(val map_width : Int, val map_height : Int)
 {
   var time = IntegerProperty(0)
   var time_s : Double = 0
@@ -39,45 +39,20 @@ class Game(map_width : Int, map_height : Int)
 
       //println("tycoon > game > Game.scala > GameLoop: 1.0 / elapsedTime + " FPS")
 
-
-
-
       update(elapsedTime)
     }
   }
 
-
-/* new game loop pattern:
-  double t = 0.0;
-  double dt = 1 / 60.0;
-
-  double currentTime = hires_time_in_seconds();
-
-  while ( !quit )
-  {
-      double newTime = hires_time_in_seconds();
-      double frameTime = newTime - currentTime;
-      currentTime = newTime;
-
-      while ( frameTime > 0.0 )
-      {
-          float deltaTime = min( frameTime, dt );
-          integrate( state, t, deltaTime );
-          frameTime -= deltaTime;
-          t += deltaTime;
-      }
-
-      render( state );
-  }
-*/
-
-
-  //var entities = new ObservableBuffer[Renderable]()
-
   var map = new Map(map_width, map_height)
+  var tilemap = new TileMap(map_width, map_height)
   var game_graph = new Graph
-  val tilemap = new TileMap(map_width, map_height)
+
   tilemap.fillBackground(Tile.grass)
+
+  def generateRandomMap() = {
+    val r = new MapGenerator
+    tilemap = r.generateRandomMap(this)
+  }
 
   //Managers of game entities.
   var railManager = new RailManager(map, tilemap, game_graph)
@@ -125,7 +100,7 @@ class Game(map_width : Int, map_height : Int)
   def start () : Unit = {
     player.money = 1000
 
-    time.set(0)
+    time set 0
     time_s = 0
     loop.start()
   }
@@ -134,8 +109,8 @@ class Game(map_width : Int, map_height : Int)
 
   private def update(dt : Double) : Unit = {
     //update trains position here ?
-    routes.foreach(_.update(dt))
-    structures.foreach(_.update(dt))
+    routes foreach { _.update(dt) }
+    structures foreach { _.update(dt) }
     tiledPane.render()
 
     time_s += dt
