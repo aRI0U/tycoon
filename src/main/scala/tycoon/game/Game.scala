@@ -131,17 +131,14 @@ class Game(val map_width : Int, val map_height : Int)
     var structure : Structure = new Town(pos, nb_structures, townManager)
     var additionalCondition = true
     kind match {
-      case 0 => additionalCondition = map.isUnused(structure.gridRect)
+      case 0 => additionalCondition = tilemap.checkGrass(pos) && tilemap.checkGrass(new GridLocation(pos.row, pos.col+1))
       case _ => {
         structure = new Mine(pos, nb_structures)
-        map.getContentAt(pos) match {
-          case Some(r : Rock) => ()
-          case _ => additionalCondition = false
-        }
+        additionalCondition = tilemap.checkTile(pos, Tile.rock)
       }
     }
 
-    if (tilemap.gridContains(structure.gridRect) && additionalCondition)
+    if (tilemap.gridContains(structure.gridRect) && map.isUnused(structure.gridRect) && additionalCondition)
     {
       structure match {
         case t : Town => townManager.newTown(t)
