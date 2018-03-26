@@ -11,7 +11,7 @@ import scalafx.scene.layout.{HBox, VBox, Priority}
 import tycoon.game.GridLocation
 
 
-class BuyableItem(val name: String, price: Int, val tile: Tile, val onClick: GridLocation => Boolean, val createByDragging: Boolean = false)
+class BuyableItem(val name: String, val price: Int, val tile: Tile, val onClick: GridLocation => Boolean, val createByDragging: Boolean = false)
 {
   def priceStr: String = "$" + price.toString
 }

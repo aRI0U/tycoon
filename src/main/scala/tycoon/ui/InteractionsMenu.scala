@@ -7,8 +7,8 @@ import scalafx.geometry.{Pos, Insets}
 import scalafx.scene.control.{Label, Tab, TabPane, Button}
 import scalafx.scene.input.MouseEvent
 import scalafx.scene.layout.{HBox, VBox, Priority}
-
-
+import scalafx.beans.property.{StringProperty, IntegerProperty, DoubleProperty, ReadOnlyDoubleWrapper}
+import scalafx.scene.text.Text
 
 
 class InteractionsMenu(val game: Game) extends TabPane
@@ -34,6 +34,8 @@ class InteractionsMenu(val game: Game) extends TabPane
   private var selectedItem: Option[BuyableItem] = None
   private var selectedItemTab: Option[Tab] = None
 
+  private val quantityBought = IntegerProperty(0)
+
   def addBuyableItem(item: BuyableItem) = {
     val itemBox = new VBox {
       styleClass += "buyableItem"
@@ -45,6 +47,7 @@ class InteractionsMenu(val game: Game) extends TabPane
       alignment = Pos.Center
       onMouseClicked = _ => {
         selectedItem = Some(item)
+        quantityBought.set(0)
         addItemTab(item)
       }
     }
@@ -65,11 +68,36 @@ class InteractionsMenu(val game: Game) extends TabPane
       maxHeight = Double.MaxValue
       onMouseClicked = _ => {
         selectFirstTab()
-        removeItemTab()
-        selectedItem = None
+        stopBuilding()
       }
     }
-    itemTab.setContent(closeTabBt)
+    val txtIndivPrice = new Text {
+      text = "Price: $" + item.price
+    }
+    val txtQuantity = new Text {
+      text <== StringProperty("Quantity: ").concat(quantityBought.asString)
+    }
+    val txtTotalPrice = new Text {
+      text <== StringProperty("Total price: $").concat((quantityBought * item.price).asString)
+    }
+
+    val imgContainer = new VBox {
+      children = Tile.getImageView(item.tile)
+      alignment = Pos.Center
+    }
+
+    val buyingDataContainer = new VBox
+    buyingDataContainer.alignment = Pos.CenterLeft
+    buyingDataContainer.children += txtIndivPrice
+    buyingDataContainer.children += txtQuantity
+    buyingDataContainer.children += txtTotalPrice
+
+    val container = new HBox(20.0)
+    container.children += closeTabBt
+    container.children += imgContainer
+    container.children += buyingDataContainer
+
+    itemTab.setContent(container)
   }
 
   private def removeItemTab() = {
@@ -82,12 +110,19 @@ class InteractionsMenu(val game: Game) extends TabPane
     selectedItemTab = None
   }
 
+  private def stopBuilding() = {
+    removeItemTab()
+    selectedItem = None
+  }
+
   private def selectFirstTab() = this.selectionModel.value.selectFirst()
 
   def mousePressed(pos: GridLocation, dragging: Boolean = false): Unit = {
     selectedItem match {
       case Some(item) =>
-        if(!dragging || item.createByDragging) item.onClick(pos)
+        if(!dragging || item.createByDragging)
+          if(item.onClick(pos))
+            quantityBought.set(quantityBought.value + 1)
       case None => ()
     }
   }
@@ -95,10 +130,8 @@ class InteractionsMenu(val game: Game) extends TabPane
   this.selectionModel.value.selectedItem.onChange {
     selectedItemTab match {
       case Some(tab) =>
-        if (!tab.selected.value) {
-          removeItemTab()
-          selectedItem = None
-        }
+        if (!tab.selected.value)
+          stopBuilding()
       case None => ()
     }
   }
