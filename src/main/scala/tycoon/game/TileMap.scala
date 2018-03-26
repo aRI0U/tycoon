@@ -80,6 +80,7 @@ class TileMap (val width: Int, val height: Int, nbEntityLayers: Int = 2) {
       }
     }
     var teselationPoints : Array[ListBuffer[GridLocation]] = new Array(lakeStarter.size)
+    // var lakeCenters = new ListBuffer[Int]
     for (i <- 0 to lakeStarter.size -1) {
       teselationPoints(i) = new ListBuffer[GridLocation]
     }
@@ -108,8 +109,25 @@ class TileMap (val width: Int, val height: Int, nbEntityLayers: Int = 2) {
         for (pos <- teselationPoints(i)) {
           backgroundLayer(pos.col)(pos.row) = Some(Tile.plainWater)
         }
+          // traiter les cas de bordure de lac pour rendre les bon tiles
+        for (pos <- teselationPoints(i)) {
+          if (pos.col > 0 && pos.row > 0 && pos.row< height -2 && pos.col < width -2) {
+            val neighbors = Array (
+              new GridLocation(pos.col, pos.row - 1),
+              new GridLocation(pos.col + 1, pos.row),
+              new GridLocation(pos.col, pos.row + 1),
+              new GridLocation(pos.col - 1, pos.row)
+            )
+            for (j <- 0 to 3) {
+              if (checkGrass(neighbors(j))) {
+                backgroundLayer(pos.col)(pos.row) = Some(Tile.plainSand)
+              }
+            }
+          }
+        }
       }
     }
+
 
     /*for (pos <- lakeStarter) {
 

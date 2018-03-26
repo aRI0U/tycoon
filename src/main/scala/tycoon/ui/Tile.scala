@@ -31,6 +31,7 @@ object Tile {
   val tree = new Tile(3, 4)
   val rock = new Tile(4, 4)
   val plainWater = new Tile(6, 5)
+  val plainSand = new Tile(4, 8)
 
   //vehicle stuff
   val locomotiveL = new Tile(3, 5)
@@ -52,7 +53,9 @@ object Tile {
   val town = new Tile(4, 1, width = 2)
   val mine = new Tile(4, 3)
   val factory = new Tile(5, 1)
-  val farm = new Tile(5, 2, width = 2)
+  val farm1 = new Tile(5, 3, width = 2)
+  val farm2 = new Tile(3, 8, width = 2)
+  val farm3 = new Tile(3, 8, width = 2) // change
   val airport = new Tile(6, 3)
 
   val straightRailBT = new Tile(1, 1)
@@ -63,6 +66,12 @@ object Tile {
   val turningRailTL = new Tile(2, 5)
 
 
+  val farm = Array(
+    farm1,
+    farm2,
+    farm3
+  )
+
   val grassAndGround = Array(
     new Tile(1, 3),
     new Tile(1, 4),
@@ -70,7 +79,5 @@ object Tile {
     new Tile(2, 2),
     new Tile(2, 3),
     new Tile(2, 4),
-    // new Tile(3, 4),
-    // new Tile(4, 4)
   )
 }

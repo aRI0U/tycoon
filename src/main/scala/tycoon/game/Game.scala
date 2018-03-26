@@ -47,7 +47,8 @@ class Game(val map_width : Int, val map_height : Int)
   var game_graph = new Graph
   val tilemap = new TileMap(map_width, map_height)
   tilemap.fillBackground(Tile.grassAndGround,map)
-  tilemap.placeLandscape(5,10000)
+  // 2 numbers for ratio of choosen point in order to become lakes and ratio of points in teselation
+  tilemap.placeLandscape(10,5000)
 
   //Managers of game entities.
   var railManager = new RailManager(map, tilemap, game_graph)
