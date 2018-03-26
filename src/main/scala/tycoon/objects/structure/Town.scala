@@ -36,6 +36,7 @@ case class Town(pos: GridLocation, id: Int, townManager: TownManager) extends St
    // _name = StringProperty(city_names(id))
   protected var _population = IntegerProperty(0)
   protected var _waiting_passengers = IntegerProperty(0)
+  protected var _jobSeekers = IntegerProperty(0)
 
   printData += new Tuple2("Name", _name)
 
@@ -43,12 +44,21 @@ case class Town(pos: GridLocation, id: Int, townManager: TownManager) extends St
   populationStr <== _population.asString
   printData += new Tuple2("Population", populationStr)
 
-  // private val waitingPassengersStr = new StringProperty
-  // waitingPassengersStr <== _waiting_passengers.asString
-  // printData += new Tuple2("Waiting passengers", waitingPassengersStr)
+  def population : Int = _population.value
+  def population_= (new_pop: Int) = _population.set(new_pop)
+
+
+  private val jobSeekersStr = new StringProperty
+  jobSeekersStr <== _jobSeekers.asString
+  printData += new Tuple2("Job seekers", jobSeekersStr)
+
+  def jobSeekers : Int = _jobSeekers.value
+  def jobSeekers_= (new_seekers: Int) = _jobSeekers.set(new_seekers)
+
+  // gestion of the waiting passengers
 
   var total_waiters = 0
-  var destinations = new ListBuffer[Town]
+  var destinations = new ListBuffer[Structure]
   var waitersInt = new ListBuffer[IntegerProperty]
   var waitersStr = new ListBuffer[StringProperty]
 
@@ -67,15 +77,23 @@ case class Town(pos: GridLocation, id: Int, townManager: TownManager) extends St
 
   def waiters(i: Int) : Int = waitersInt(i).value
 
-  def update_population () = {
+  // updates
+
+  def updatePopulation () = {
     if (population < max_population) {
       val i = r.nextInt(population)
       population += i/50
     }
   }
 
-  // to ameliorate to manage where people want to go
-  def update_waiters () = {
+  def updateJobSeekers () = {
+    if (jobSeekers < population/5) {
+      val i = r.nextInt(population)
+      jobSeekers += i/100
+    }
+  }
+
+  def updateWaiters () = {
     try {
       if (total_waiters < population/3) {
         val new_waiters = (r.nextInt(population))/30
@@ -92,8 +110,9 @@ case class Town(pos: GridLocation, id: Int, townManager: TownManager) extends St
   override def update(dt: Double) = {
     intern_time += dt
     if (intern_time > 1) {
-      update_population()
-      update_waiters()
+      updatePopulation()
+      updateJobSeekers()
+      updateWaiters()
       intern_time -= 1
     }
   }
@@ -101,8 +120,6 @@ case class Town(pos: GridLocation, id: Int, townManager: TownManager) extends St
   // def position : GridLocation = pos
   // def name : String = _name.value
   def name_= (new_name: String) = _name.set(new_name)
-  def population : Int = _population.value
-  def population_= (new_pop: Int) = _population.set(new_pop)
   def waiting_passengers : Int = _waiting_passengers.value
   def waiting_passengers_= (new_wait_pass: Int) = _waiting_passengers.set(new_wait_pass)
   val max_population: Int = 1000
