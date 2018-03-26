@@ -78,6 +78,6 @@ object Tile {
     new Tile(2, 1),
     new Tile(2, 2),
     new Tile(2, 3),
-    new Tile(2, 4),
+    new Tile(2, 4)
   )
 }

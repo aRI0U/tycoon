@@ -29,20 +29,20 @@ class TileMap (val width: Int, val height: Int, nbEntityLayers: Int = 2) {
   def checkTile (pos : GridLocation, tile : Tile) : Boolean = {
     backgroundLayer(pos.col)(pos.row) match {
       case Some(t) => {
-        if (t == tile) {return true}
-        else {return false }
+        if (t == tile) true
+        else false
       }
-      case None => {return false}
+      case None => false
     }
   }
 
   def checkGrass (pos : GridLocation) : Boolean = {
+    var ret = false
     for (t <- Tile.grassAndGround) {
-      if (checkTile(pos,t)){
-        return true
-      }
+      if (checkTile(pos,t))
+        ret = true
     }
-    return false
+    ret
   }
 
   /* randomly fill background layer of map using tiles
@@ -52,7 +52,7 @@ class TileMap (val width: Int, val height: Int, nbEntityLayers: Int = 2) {
       val rGrass = scala.util.Random
       val rTreeAndRock = scala.util.Random
       // var lakeStarter = new ListBuffer[Int,Int]
-      for {
+      for { // UTILISE Array.fill !!
         row <- 0 to height - 1
         col <- 0 to width - 1
       } {

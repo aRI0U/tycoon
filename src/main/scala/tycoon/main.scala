@@ -10,8 +10,8 @@ import scalafx.scene.layout.{Pane, StackPane}
 
 
 object Settings { // to be moved
-  val gameWidth = 500
-  val gameHeight = 500
+  val gameWidth = 400
+  val gameHeight = 400
 }
 
 
