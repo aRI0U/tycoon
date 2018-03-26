@@ -14,11 +14,11 @@
   -fx-background-color: white;
 }
 
-#buyableitems {
+.buyableItem {
   -fx-padding: 10px;
 }
 
-#buyableitems:hover {
+.buyableItem:hover {
   -fx-background-color: lightblue;
   -fx-padding: 10px;
   -fx-cursor: hand;

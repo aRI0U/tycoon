@@ -32,16 +32,61 @@ import scalafx.beans.binding.Bindings
 import scala.collection.mutable.ListBuffer
 
 
-
-
-
-class GameScreen(val game : Game) extends BorderPane
+class GameScreen(val game: Game) extends BorderPane
 {
   stylesheets += "style/gamescreen.css"
   id = "body"
 
+  private val interactionsMenu = new InteractionsMenu(game)
+
+  interactionsMenu.addBuyableItem(new BuyableItem("Rail", 10, Tile.straightRailBT, game.createRail, createByDragging = true))
+  interactionsMenu.addBuyableItem(new BuyableItem("Mine", 300, Tile.mine, game.createMine))
+  interactionsMenu.addBuyableItem(new BuyableItem("Town", 500000, Tile.town, game.createTown))
 
 
+
+  def init () : Unit = {
+      center = gamePane //
+      gamePane.center = game.tiledPane
+      left = menuPane // can be moved out
+      bottom = interactionsMenu // can be moved out
+  }
+
+
+  private val gamePane = new BorderPane {
+    private var mouseAnchorX: Double = 0
+    private var mouseAnchorY: Double = 0
+    private var specialDragging: Boolean = false
+
+    onMousePressed = (e: MouseEvent) => {
+      requestFocus()
+      mouseAnchorX = e.x
+      mouseAnchorY = e.y
+
+      if (e.clickCount == 2) {
+        game.tiledPane.isDraggable = false
+        specialDragging = true
+      }
+    }
+
+    onMouseDragged = (e: MouseEvent) => {
+      if (specialDragging) {
+        val pos: GridLocation = game.tiledPane.screenPxToGridLoc(e.x, e.y)
+        interactionsMenu.mousePressed(pos, dragging = true)
+      }
+    }
+
+    onMouseReleased = (e: MouseEvent) => {
+      game.tiledPane.isDraggable = true
+      specialDragging = false
+
+      if (Math.abs(e.x - mouseAnchorX) <= 5 && Math.abs(e.y - mouseAnchorY) <= 5) {
+
+        val pos = game.tiledPane.screenPxToGridLoc(e.x, e.y)
+        interactionsMenu.mousePressed(pos)
+      }
+    }
+  }
 
 
 
@@ -49,102 +94,13 @@ class GameScreen(val game : Game) extends BorderPane
 
   /* to be beautified */
 
-  private var buyingRailsMode : Boolean = false
-  private var nb_rails = IntegerProperty(0)
-  private var total_cost_rails = IntegerProperty(0)
-
-  private var buyingMinesMode : Boolean = false
-  private var nb_mines = IntegerProperty(0)
-  private var total_cost_mines = IntegerProperty(0)
-
   private var tripCreationMode : Boolean = false
   private var firstStructureSelected = BooleanProperty(false)
   private var firstStructure : Structure = _
 
   private var buyingTrainMode : Boolean = false
 
-  private def init_buyingMines () {
-    buyingMinesMode = true
-    buyingRailsMode = false
-    tripCreationMode = false
-    buyingTrainMode = false
-    nb_mines.set(0)
-    total_cost_mines.set(0)
-
-    menuPane.top = new VBox {
-
-      children = Seq(
-        new Text {
-          text <== StringProperty("Cost: $").concat(total_cost_mines.asString)
-          fill <== when (total_cost_mines < game.playerMoney) choose Green otherwise Red
-          margin = Insets(10)
-        },
-        new Button {
-          text = "Remove"
-          margin = Insets(10)
-          onMouseClicked = _ => {
-            if (nb_mines.value > 0) {
-              nb_mines.set(nb_mines.value-1)
-              game.removeAllMines()
-              game.playerMoney.set(game.playerMoney.value + game.mine_price)
-              total_cost_mines.set(total_cost_mines.value - game.mine_price)
-            }
-          }
-        },
-        new Button {
-          text = "Exit mine construction" ; margin = Insets(10)
-          onMouseClicked = (e: MouseEvent) => {
-            buyingMinesMode = false
-            menuPane.top = actionsPane
-          }
-        },
-        new Separator { orientation = Orientation.Horizontal ; styleClass += "sep" }
-      )
-    }
-  }
-  private def init_buyingRails () {
-    buyingRailsMode = true
-    buyingMinesMode = false
-    tripCreationMode = false
-    buyingTrainMode = false
-    nb_rails.set(0)
-    total_cost_rails.set(0)
-
-    menuPane.top = new VBox {
-
-      children = Seq(
-        new Text {
-          text <== StringProperty("Cost: $").concat(total_cost_rails.asString)
-          fill <== when (total_cost_rails < game.playerMoney) choose Green otherwise Red
-          margin = Insets(10)
-        },
-        new Button {
-          text = "Remove"
-          margin = Insets(10)
-          onMouseClicked = _ => {
-            if (nb_rails.value > 0) {
-              nb_rails.set(nb_rails.value-1)
-              game.removeLastRail()
-              game.playerMoney.set(game.playerMoney.value + game.rail_price)
-              total_cost_rails.set(total_cost_rails.value - game.rail_price)
-            }
-          }
-        },
-        new Button {
-          text = "Exit rail construction" ; margin = Insets(10)
-          onMouseClicked = (e: MouseEvent) => {
-            buyingRailsMode = false
-            menuPane.top = actionsPane
-          }
-        },
-        new Separator { orientation = Orientation.Horizontal ; styleClass += "sep" }
-      )
-    }
-  }
-
   private def init_buyingTrains () {
-    buyingRailsMode = false
-    buyingMinesMode = false
     tripCreationMode = false
     buyingTrainMode = true
 
@@ -174,8 +130,6 @@ class GameScreen(val game : Game) extends BorderPane
 
   private def init_tripCreation () {
     tripCreationMode = true
-    buyingRailsMode = false
-    buyingMinesMode = false
     buyingTrainMode = false
 
     firstStructureSelected.set(false)
@@ -201,17 +155,7 @@ class GameScreen(val game : Game) extends BorderPane
 
 
 
-  private var mouse_anchor_x : Double = 0
-  private var mouse_anchor_y : Double = 0
 
-  private val menu = new InteractionsMenu(game)
-
-  def init () : Unit = {
-    center = gamePane
-    gamePane.center = game.tiledPane // update
-    left = menuPane
-    bottom = menu
-  }
 
   def maybeClickRenderableAt(pos: GridLocation): Unit = {
     game.map.getContentAt(pos) match {
@@ -277,22 +221,6 @@ class GameScreen(val game : Game) extends BorderPane
   private val actionsPane = new VBox {
     children = Seq(
       new Button {
-        text = "Rail construction" ; margin = Insets(10)
-        onMouseClicked = _ => init_buyingRails()
-      },
-      new Button {
-        text = "Mine Construction" ; margin = Insets(10)
-        onMouseClicked = _ => init_buyingMines()
-      },
-      new Button {
-        text = "Farm Construction" ; margin = Insets(10)
-        onMouseClicked = _ => {}//init_buyingFarmes()
-      },
-      new Button {
-        text = "Factory Construction" ; margin = Insets(10)
-        onMouseClicked = _ => {}//init_buyingFactories()
-      },
-      new Button {
         text = "Buy a train" ; margin = Insets(10)
         onMouseClicked = _ => init_buyingTrains()
       },
@@ -304,72 +232,6 @@ class GameScreen(val game : Game) extends BorderPane
     )
   }
 
-
-  var buyingRailsHolding: Boolean = false
-
-
-
-  private val gamePane = new BorderPane {
-
-
-    onMousePressed = (e: MouseEvent) => {
-      requestFocus()
-
-      if (e.clickCount >= 2) {
-        buyingRailsHolding = true
-        game.tiledPane.isDraggable = false
-      }
-
-      mouse_anchor_x = e.x
-      mouse_anchor_y = e.y
-    }
-
-    onMouseDragged = (e: MouseEvent) => {
-      if (buyingRailsMode && buyingRailsHolding) {
-        val pos = new GridLocation( game.tiledPane.screenPxToGridLoc(e.x, e.y)._1, game.tiledPane.screenPxToGridLoc(e.x, e.y)._2) // TMP
-
-        if (game.rail_price <= game.playerMoney.value ){ //creation of a new rail
-          if (game.createRail(pos)) {
-            nb_rails.set(nb_rails.value + 1)
-            total_cost_rails.set((total_cost_rails.value + game.rail_price))
-            game.playerMoney.set(game.playerMoney.value - game.rail_price)
-          }
-        }
-      }
-    }
-
-    onMouseReleased = (e: MouseEvent) => {
-      buyingRailsHolding = false
-      game.tiledPane.isDraggable = true
-
-      if (e.x == mouse_anchor_x && e.y == mouse_anchor_y) {
-
-        val pos = new GridLocation( game.tiledPane.screenPxToGridLoc(e.x, e.y)._1, game.tiledPane.screenPxToGridLoc(e.x, e.y)._2) // TMP
-
-        if (buyingMinesMode) {
-          if (game.mine_price <= game.playerMoney.value ){ //creation of a new mine
-            if (game.createMine(pos)) {
-              nb_mines.set(nb_mines.value + 1)
-              total_cost_mines.set((total_cost_mines.value + game.mine_price))
-              game.playerMoney.set(game.playerMoney.value - game.mine_price)
-            }
-          }
-        }
-        else if (buyingRailsMode) {
-          if (game.rail_price <= game.playerMoney.value ){ //creation of a new rail
-            if (game.createRail(pos)) {
-              nb_rails.set(nb_rails.value + 1)
-              total_cost_rails.set((total_cost_rails.value + game.rail_price))
-              game.playerMoney.set(game.playerMoney.value - game.rail_price)
-            }
-          }
-        }
-        else {
-          maybeClickRenderableAt(pos)
-        }
-      }
-    }
-  }
 
   private val menuPane = new BorderPane {
     id = "menu"
@@ -391,7 +253,7 @@ class GameScreen(val game : Game) extends BorderPane
           margin = Insets(5)
         },
         new Separator { orientation = Orientation.Horizontal ; styleClass += "sep" },
-        new HelpAndQuitButtons
+        new QuitButtons
       )
     }
 
@@ -399,4 +261,6 @@ class GameScreen(val game : Game) extends BorderPane
 
     onMouseClicked = (e: MouseEvent) => { requestFocus() }
   }
+
+
 }

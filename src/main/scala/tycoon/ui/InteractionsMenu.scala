@@ -1,12 +1,14 @@
 package tycoon.ui
 
-import tycoon.game.Game
+import tycoon.game.{Game, GridLocation}
 
 import scalafx.Includes._
-import scalafx.geometry.Pos
-import scalafx.scene.control.{Label, Tab, TabPane}
+import scalafx.geometry.{Pos, Insets}
+import scalafx.scene.control.{Label, Tab, TabPane, Button}
 import scalafx.scene.input.MouseEvent
 import scalafx.scene.layout.{HBox, VBox, Priority}
+
+
 
 
 class InteractionsMenu(val game: Game) extends TabPane
@@ -15,42 +17,94 @@ class InteractionsMenu(val game: Game) extends TabPane
 
   tabClosingPolicy = TabPane.TabClosingPolicy.Unavailable
 
-  private val buildTab = new Tab()
+  private val buildingTab = new Tab()
   private val trainsTab = new Tab()
 
-  buildTab.text = "Build"
-  trainsTab.text = "Manage trains"
+  buildingTab.text = "Build Structures"
+  trainsTab.text = "Manage Trains"
 
-  this += buildTab
+  this += buildingTab
   this += trainsTab
 
-  /** BUILD "build" TAB */
+  /** "build" TAB */
 
-  private val buildTabContainer = new HBox()
-  buildTab.setContent(buildTabContainer)
+  private val buildingTabContainer = new HBox()
+  buildingTab.setContent(buildingTabContainer)
 
-  private def buildBuyableItem(name: String, tile: Tile, price: String, onClick: Runnable) = {
-    new VBox {
-      id = "buyableitems"
+  private var selectedItem: Option[BuyableItem] = None
+  private var selectedItemTab: Option[Tab] = None
+
+  def addBuyableItem(item: BuyableItem) = {
+    val itemBox = new VBox {
+      styleClass += "buyableItem"
       children = Seq(
-        new Label(name),
-        Tile.getImageView(tile),
-        new Label(price)
+        new Label(item.name),
+        Tile.getImageView(item.tile),
+        new Label(item.priceStr)
       )
       alignment = Pos.Center
-      onMouseClicked = _ => onClick.run()
+      onMouseClicked = _ => {
+        selectedItem = Some(item)
+        addItemTab(item)
+      }
+    }
+    buildingTabContainer.children += new VBox(itemBox)
+  }
+
+  private def addItemTab(item: BuyableItem) = {
+    val itemTab = new Tab()
+    itemTab.text = item.name + " building"
+    this += itemTab
+    this.selectionModel.value.selectLast()
+    selectedItemTab = Some(itemTab)
+
+    val closeTabBt = new Button {
+      text = "Exit Construction"
+      margin = Insets(10)
+      vgrow = Priority.Always
+      maxHeight = Double.MaxValue
+      onMouseClicked = _ => {
+        selectFirstTab()
+        removeItemTab()
+        selectedItem = None
+      }
+    }
+    itemTab.setContent(closeTabBt)
+  }
+
+  private def removeItemTab() = {
+    selectedItemTab match {
+      case Some(tab) =>
+        this.tabs -= tab
+        this.requestFocus
+      case None => ()
+    }
+    selectedItemTab = None
+  }
+
+  private def selectFirstTab() = this.selectionModel.value.selectFirst()
+
+  def mousePressed(pos: GridLocation, dragging: Boolean = false): Unit = {
+    selectedItem match {
+      case Some(item) =>
+        if(!dragging || item.createByDragging) item.onClick(pos)
+      case None => ()
     }
   }
-  private val towns = buildBuyableItem("Town", Tile.town, "$50,000", new Runnable { def run() {} })
-  private val mines = buildBuyableItem("Mine", Tile.mine, "$200", new Runnable { def run() {} })
-  private val rails = buildBuyableItem("Rail", Tile.straightRailBT, "$10", new Runnable { def run() {} })
-  private val factories = buildBuyableItem("Factory", Tile.factory, "$10,000", new Runnable { def run() {} })
-  private val farms = buildBuyableItem("Farm", Tile.farm, "$5,000", new Runnable { def run() {} })
-  private val airports = buildBuyableItem("Airport", Tile.airport, "$100,000", new Runnable { def run() {} })
 
-  buildTabContainer.children = Seq(towns, mines, rails, factories, farms, airports)
+  this.selectionModel.value.selectedItem.onChange {
+    selectedItemTab match {
+      case Some(tab) =>
+        if (!tab.selected.value) {
+          removeItemTab()
+          selectedItem = None
+        }
+      case None => ()
+    }
+  }
 
-  /** BUILD "trains" TAB */
+
+  /** "trains" TAB */
 
   private val trainsTabContainer = new HBox()
   trainsTab.setContent(trainsTabContainer)
