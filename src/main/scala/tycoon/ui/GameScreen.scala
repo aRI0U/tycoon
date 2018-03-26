@@ -39,9 +39,10 @@ class GameScreen(val game: Game) extends BorderPane
 
   private val interactionsMenu = new InteractionsMenu(game)
 
-  interactionsMenu.addBuyableItem(new BuyableItem("Rail", 10, Tile.straightRailBT, game.createRail, createByDragging = true))
-  interactionsMenu.addBuyableItem(new BuyableItem("Mine", 300, Tile.mine, game.createMine))
-  interactionsMenu.addBuyableItem(new BuyableItem("Town", 500000, Tile.town, game.createTown))
+// removes: TODO
+  interactionsMenu.addBuyableItem(new BuyableItem("Rail", 10, Tile.straightRailBT, game.createRail, () => game.removeLastRail(), createByDragging = true))
+  interactionsMenu.addBuyableItem(new BuyableItem("Mine", 300, Tile.mine, game.createMine, () => game.removeAllMines()))
+  interactionsMenu.addBuyableItem(new BuyableItem("Town", 500000, Tile.town, game.createTown, () => game.removeAllTowns()))
 
 
 

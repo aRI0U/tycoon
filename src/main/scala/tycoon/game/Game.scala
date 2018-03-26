@@ -162,21 +162,23 @@ class Game(val map_width : Int, val map_height : Int)
     createStructure(0, pos)
   }
 
-  def removeAllTowns() : Unit = {
+  def removeAllTowns() : Boolean = {
     towns.clear()
     // entities.clear()    TODO
     nb_structures = 0
     townManager.towns_list = new ListBuffer[Town]
     townManager.last_town = 0
+    true
   }
 
   def createMine (pos: GridLocation) : Boolean = {
     createStructure(1, pos)
   }
-  def removeAllMines() : Unit = {
+  def removeAllMines() : Boolean = {
     mines.remove(mines.size-1)
    //  entities.remove(entities.size-1)    TODO
     nb_structures -= 1
+    true
   }
 
   // try to create rail at pos and return true in case of success
@@ -185,7 +187,7 @@ class Game(val map_width : Int, val map_height : Int)
     // if returns true, remove money from player..
   }
 
-  def removeLastRail() : Unit = { // TODO incomplet
+  def removeLastRail() : Boolean = { // TODO incomplet
     //add some temporary list if deletion has to be made
     val removedRail = rails(rails.size - 1)
     if (removedRail.road.finished == true ) {
@@ -196,6 +198,7 @@ class Game(val map_width : Int, val map_height : Int)
       removedRail.previous.next = removedRail.previous
     rails.remove(rails.size - 1)
     // entities.remove(entities.size-1)   // TODO
+    true
   }
 
   def createTrain (town: Town) : Boolean = {

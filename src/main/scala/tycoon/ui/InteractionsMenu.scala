@@ -80,6 +80,18 @@ class InteractionsMenu(val game: Game) extends TabPane
     val txtTotalPrice = new Text {
       text <== StringProperty("Total price: $").concat((quantityBought * item.price).asString)
     }
+    val removeLastBt = new Button {
+      text = "Remove Last"
+      margin = Insets(10)
+      vgrow = Priority.Always
+      maxHeight = Double.MaxValue
+      visible <== quantityBought > 0
+      onMouseClicked = _ =>
+        if(item.removeLastItem()) {
+          quantityBought.set(quantityBought.value - 1)
+          tabPaneRequestFocus()
+        }
+    }
 
     val imgContainer = new VBox {
       children = Tile.getImageView(item.tile)
@@ -94,6 +106,7 @@ class InteractionsMenu(val game: Game) extends TabPane
 
     val container = new HBox(20.0)
     container.children += closeTabBt
+    container.children += removeLastBt
     container.children += imgContainer
     container.children += buyingDataContainer
 
@@ -104,7 +117,7 @@ class InteractionsMenu(val game: Game) extends TabPane
     selectedItemTab match {
       case Some(tab) =>
         this.tabs -= tab
-        this.requestFocus
+        tabPaneRequestFocus()
       case None => ()
     }
     selectedItemTab = None
@@ -116,12 +129,13 @@ class InteractionsMenu(val game: Game) extends TabPane
   }
 
   private def selectFirstTab() = this.selectionModel.value.selectFirst()
+  private def tabPaneRequestFocus() = this.requestFocus()
 
   def mousePressed(pos: GridLocation, dragging: Boolean = false): Unit = {
     selectedItem match {
       case Some(item) =>
         if(!dragging || item.createByDragging)
-          if(item.onClick(pos))
+          if(item.createItem(pos))
             quantityBought.set(quantityBought.value + 1)
       case None => ()
     }
