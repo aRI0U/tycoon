@@ -84,6 +84,8 @@ class GameScreen(val game: Game) extends BorderPane
 
         val pos = game.tiledPane.screenPxToGridLoc(e.x, e.y)
         interactionsMenu.mousePressed(pos)
+
+        maybeClickRenderableAt(pos)
       }
     }
   }
