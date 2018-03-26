@@ -50,7 +50,6 @@ class RailManager(map: Map, tilemap: TileMap, gameGraph: Graph) {
         tilemap.addEntity(rail, 0)
         map.add(rail.gridRect, rail)
 
-
         // apply correct rotation to rails
         if (rail.previous == rail && !rail.road.finished) { // first rail next to a struct
           if (firstDir == 0 || firstDir == 2) rail.tile = Tile.straightRailBT
@@ -136,7 +135,7 @@ class RailManager(map: Map, tilemap: TileMap, gameGraph: Graph) {
       }
 
       case (previousRail: Rail) => {
-        if (previousRail.road_head && !previousRail.road.finished) {
+        if (previousRail.next == previousRail && !previousRail.road.finished) {
           nbNeighborRails += 1
 
           if (nbNeighborRails == 1) {
@@ -145,8 +144,6 @@ class RailManager(map: Map, tilemap: TileMap, gameGraph: Graph) {
             rail.road.length += 1
             rail.previous = previousRail
             previousRail.next = rail
-            previousRail.road_head = false
-            rail.road_head = true
           }
 
           // merge two sides of rails

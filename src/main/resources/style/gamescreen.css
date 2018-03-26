@@ -11,5 +11,21 @@
 }
 
 #body {
-  -fx-background-color: lightgreen
+  -fx-background-color: white;
+}
+
+.buyableItem {
+  -fx-padding: 10px;
+}
+
+.buyableItem:hover {
+  -fx-background-color: lightblue;
+  -fx-padding: 10px;
+  -fx-cursor: hand;
+}
+
+.separator *.line {
+    -fx-border-style: solid;
+    -fx-border-width: 0 0 1 0; /* its make really one-pixel-border */
+    -fx-border-color: red;
 }

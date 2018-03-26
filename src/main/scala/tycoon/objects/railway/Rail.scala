@@ -7,7 +7,7 @@ import tycoon.ui.Tile
 import tycoon.ui.Renderable
 import scalafx.beans.property.{IntegerProperty, StringProperty}
 
-case class Rail(pos: GridLocation) extends Renderable(pos) {//, tile_type: Int) extends Renderable(pos) {
+case class Rail(pos: GridLocation) extends Renderable(pos) {
 
   var road = new Road
   road.length = 1
@@ -21,8 +21,8 @@ case class Rail(pos: GridLocation) extends Renderable(pos) {//, tile_type: Int) 
   var nextDir: Int = -1
 
   def direction(i : Int) : Rail = {
-    if (i == 0) return next
-    else return previous
+    if (i == 0) next
+    else previous
   }
 
   def position : GridLocation = pos
@@ -32,5 +32,4 @@ case class Rail(pos: GridLocation) extends Renderable(pos) {//, tile_type: Int) 
   val cost = 10
   val max_speed = 50
   val max_weight = 1000
-  var road_head = true
 }

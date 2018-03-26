@@ -60,7 +60,7 @@ class TileMap (val width: Int, val height: Int, nbEntityLayers: Int = 2) {
       }
     }
   }
-  def placeLandscape() :Unit = {
+  def placeLandscape(choosenPoint : Int, generatedPoints : Int) :Unit = {
     val rGrass = scala.util.Random
     val rTreeAndRock = scala.util.Random
     var lakeStarter = new ListBuffer[GridLocation]
@@ -74,12 +74,45 @@ class TileMap (val width: Int, val height: Int, nbEntityLayers: Int = 2) {
       if (rTreeAndRock.nextInt(40) == 2) {
         backgroundLayer(col)(row) = Some(Tile.tree)
       }
-      if (rTreeAndRock.nextInt(10000) == 3) {
-        backgroundLayer(col)(row) = Some(Tile.plainWater)
+      if (rTreeAndRock.nextInt(generatedPoints) == 3) {
+        // backgroundLayer(col)(row) = Some(Tile.plainWater)
         lakeStarter += new GridLocation(col,row)
       }
     }
-    for (pos <- lakeStarter) {
+    var teselationPoints : Array[ListBuffer[GridLocation]] = new Array(lakeStarter.size)
+    for (i <- 0 to lakeStarter.size -1) {
+      teselationPoints(i) = new ListBuffer[GridLocation]
+    }
+    for {
+        row <- 0 to height - 1
+        col <- 0 to width - 1
+    } {
+      var distance = height + width
+      var nearestPoint = 0
+      var counter = 0
+      for {pos <- lakeStarter} {
+        var x = Math.abs(pos.row - row)
+        var y = Math.abs(pos.col - col)
+        var r = Math.ceil(Math.sqrt(Math.pow(x,2) + Math.pow(y,2))).toInt
+        if (r<distance) {
+          distance = r
+          nearestPoint = counter
+        }
+        counter+=1
+      }
+      teselationPoints(nearestPoint) += new GridLocation(col, row)
+    }
+    for (i <- 0 to lakeStarter.size -1) {
+      var randomPoint = scala.util.Random
+      if (randomPoint.nextInt(choosenPoint) == 1) {
+        for (pos <- teselationPoints(i)) {
+          backgroundLayer(pos.col)(pos.row) = Some(Tile.plainWater)
+        }
+      }
+    }
+
+    /*for (pos <- lakeStarter) {
+
       for {
         row <- 0 to height - 1
         col <- 0 to width - 1
@@ -115,6 +148,6 @@ class TileMap (val width: Int, val height: Int, nbEntityLayers: Int = 2) {
           }
         }
       }
-    }
+    }*/
   }
 }

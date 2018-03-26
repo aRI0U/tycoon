@@ -5,7 +5,6 @@ import tycoon.objects.railway._
 import tycoon.objects.vehicle._
 import tycoon.objects.graph._
 import tycoon.objects.carriage._
-import tycoon.objects.landscape._
 import tycoon.game._
 import tycoon.ui.Tile
 import tycoon.ui.{Tile, Renderable, DraggableTiledPane}
@@ -22,7 +21,7 @@ import scalafx.beans.property.{StringProperty, IntegerProperty}
 import scalafx.beans.binding.Bindings
 
 
-class Game(map_width : Int, map_height : Int)
+class Game(val map_width : Int, val map_height : Int)
 {
   var time = IntegerProperty(0)
   var time_s : Double = 0
@@ -40,46 +39,15 @@ class Game(map_width : Int, map_height : Int)
 
       //println("tycoon > game > Game.scala > GameLoop: 1.0 / elapsedTime + " FPS")
 
-
-
-
       update(elapsedTime)
     }
   }
-
-
-/* new game loop pattern:
-  double t = 0.0;
-  double dt = 1 / 60.0;
-
-  double currentTime = hires_time_in_seconds();
-
-  while ( !quit )
-  {
-      double newTime = hires_time_in_seconds();
-      double frameTime = newTime - currentTime;
-      currentTime = newTime;
-
-      while ( frameTime > 0.0 )
-      {
-          float deltaTime = min( frameTime, dt );
-          integrate( state, t, deltaTime );
-          frameTime -= deltaTime;
-          t += deltaTime;
-      }
-
-      render( state );
-  }
-*/
-
-
-  //var entities = new ObservableBuffer[Renderable]()
 
   var map = new Map(map_width, map_height)
   var game_graph = new Graph
   val tilemap = new TileMap(map_width, map_height)
   tilemap.fillBackground(Tile.grassAndGround,map)
-  tilemap.placeLandscape()
+  tilemap.placeLandscape(5,10000)
 
   //Managers of game entities.
   var railManager = new RailManager(map, tilemap, game_graph)
@@ -127,7 +95,7 @@ class Game(map_width : Int, map_height : Int)
   def start () : Unit = {
     player.money = 1000
 
-    time.set(0)
+    time set 0
     time_s = 0
     loop.start()
   }
@@ -136,8 +104,8 @@ class Game(map_width : Int, map_height : Int)
 
   private def update(dt : Double) : Unit = {
     //update trains position here ?
-    routes.foreach(_.update(dt))
-    structures.foreach(_.update(dt))
+    routes foreach { _.update(dt) }
+    structures foreach { _.update(dt) }
     tiledPane.render()
 
     time_s += dt
@@ -169,8 +137,12 @@ class Game(map_width : Int, map_height : Int)
       structure match {
         case t : Town => townManager.newTown(t)
         tilemap.addEntity(t, 0)
-        case m : Mine => mines += m
-        tilemap.addEntity(m, 0)
+        case m : Mine => {
+          mines += m
+          townManager.newStructure(m)
+          tilemap.addEntity(m, 0)
+        }
+
         //tilemap.addTile(1, pos.col, pos.row, Tile.mine)
       }
       structures += structure
@@ -206,31 +178,23 @@ class Game(map_width : Int, map_height : Int)
     nb_structures -= 1
   }
 
-/* do not erase
-  // try to create rail at pos and return true in case of success
-  def createRail(pos: GridLocation): Boolean = {
-    if (railManager.create(pos)) {
-      entities +=
-    }
-  }
-*/
-
   // try to create rail at pos and return true in case of success
   def createRail(pos: GridLocation) : Boolean = {
     railManager.createRail(pos)
     // if returns true, remove money from player..
   }
 
-  def removeLastRails() : Unit = {
+  def removeLastRail() : Unit = { // TODO incomplet
     //add some temporary list if deletion has to be made
-    val removed_rail = rails(rails.size-1)
-    if (removed_rail.road.finished == true ) {
-      removed_rail.road.finished = false
-      routes.remove(routes.size -1)
+    val removedRail = rails(rails.size - 1)
+    if (removedRail.road.finished == true ) {
+      removedRail.road.finished = false
+      routes.remove(routes.size - 1)
     }
-    rails.remove(rails.size-1)
+    if (removedRail.previous != removedRail)
+      removedRail.previous.next = removedRail.previous
+    rails.remove(rails.size - 1)
     // entities.remove(entities.size-1)   // TODO
-    rails(rails.size-1).road_head = true
   }
 
   def createTrain (town: Town) : Boolean = {

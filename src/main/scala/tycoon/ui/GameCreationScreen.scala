@@ -50,7 +50,6 @@ class GameCreationScreen(var game : Game) extends BorderPane
   private var mouse_anchor_x : Double = 0
   private var mouse_anchor_y : Double = 0
 
-
   def init () : Unit = {
     center = gamePane
     top = menuPane
@@ -73,7 +72,7 @@ class GameCreationScreen(var game : Game) extends BorderPane
         // creation of a city
         if (nb_towns.value < max_towns) {
           val pos = game.tiledPane.screenPxToGridLoc(e.x, e.y)
-          if(game.createTown(new GridLocation(pos._1, pos._2))) { // temp
+          if(game.createTown(pos)) {
             nb_towns.set(nb_towns.value + 1)
           }
         }
@@ -140,5 +139,4 @@ class GameCreationScreen(var game : Game) extends BorderPane
     )
     onMouseClicked = (e: MouseEvent) => { requestFocus() }
   }
-
 }

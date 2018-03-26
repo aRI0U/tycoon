@@ -6,13 +6,11 @@ General:
 fix the music
 Printable -> print data of every Renderable clicked on even if several are overlaping
 implement pixel-to-pixel location with built-in move function and test it with trains
-ui: implement canvas
-ui: split left pane into two
-graph: tile by tile
-remove rotate in Tile & add rotated tiles to tileset (also remove inScene, visible's enough, and remove setLayout etc)
-simplify tiles just for bg tiles and add sprite which inherits from Tile and includes animation
+interatcions menu: continue with trains ; in building mode, display info about current building
+Game: in createTown, createRail.. handle player money (ie return false if not enough money, and reduce player's money when building, according to a price)
+graph: dijkstra tile by tile
 merge Map & TileMap (& Graph?)
-add entity layers so that trains dont appear underneath rails ; and condition when tile is drawn with position & a lil offset
+add condition when tile is drawn with position & a lil offset
 
 
 Beautify:

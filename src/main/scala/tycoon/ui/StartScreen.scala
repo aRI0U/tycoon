@@ -11,10 +11,10 @@ import scalafx.scene.text.Text
 
 class StartScreen extends BorderPane
 {
-  private var onStartGame = new Runnable { def run() {} }
+  private var onStartGameCreation = new Runnable { def run() {} }
   private var onOpenCredits = new Runnable { def run() {} }
 
-  def setOnStartGame(r: Runnable) = onStartGame = r
+  def setOnStartGameCreation(r: Runnable) = onStartGameCreation = r
   def setOnOpenCredits(r: Runnable) = onOpenCredits = r
 
   stylesheets += "style/startscreen.css"
@@ -28,7 +28,7 @@ class StartScreen extends BorderPane
 
   private val startGameButton = new Button {
     text = "New Game"
-    onMouseClicked = _ => onStartGame.run()
+    onMouseClicked = _ => onStartGameCreation.run()
     margin = Insets(20)
   }
   private val exitButton = new Button {

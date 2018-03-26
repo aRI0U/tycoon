@@ -21,12 +21,15 @@ import scalafx.animation.{Timeline, Interpolator}
 import scala.collection.mutable.{HashMap, ListBuffer}
 import scalafx.scene.canvas.Canvas
 import scalafx.scene.paint.{Color}
+import scalafx.scene.transform.Affine
 
 
 
 class DraggableTiledPane(val tm: TileMap) extends BorderPane {
   private val canvas = new Canvas
   children.add(canvas)
+
+  minHeight = 0
 
   canvas.width <== this.width
   canvas.height <== this.height
@@ -285,10 +288,10 @@ class DraggableTiledPane(val tm: TileMap) extends BorderPane {
   }
 
   /** given an absolute position on the screen (in pixels), return the GridLocation in which it is, depending on the offset */
-  def screenPxToGridLoc(x : Double, y : Double) : (Int, Int) = {
+  def screenPxToGridLoc(x : Double, y : Double): GridLocation = {
     val col : Int = Math.floor((x + xOffset.value) / scaledTilesWidth.value).toInt
     val row : Int = Math.floor((y + yOffset.value) / scaledTilesHeight.value).toInt
-    (col, row)
+    new GridLocation(col, row)
   }
 
   def moveToCenter() = {
