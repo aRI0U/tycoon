@@ -26,7 +26,10 @@ class InteractionsMenu(val game: Game) extends TabPane
   this += buildingTab
   this += trainsTab
 
-  /** "build" TAB */
+
+  /**
+    BUILDING TAB
+  */
 
   private val buildingTabContainer = new HBox()
   buildingTab.setContent(buildingTabContainer)
@@ -151,7 +154,9 @@ class InteractionsMenu(val game: Game) extends TabPane
   }
 
 
-  /** "trains" TAB */
+  /**
+    TRAINS TAB
+  */
 
   private val trainsTabContainer = new HBox()
   trainsTab.setContent(trainsTabContainer)

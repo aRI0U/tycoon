@@ -23,7 +23,7 @@ import scala.collection.mutable.{HashMap, HashSet}
 import scalafx.collections.ObservableBuffer
 import scalafx.collections.ObservableBuffer._ // Add, Remove, Reorder, Update
 
-import scalafx.scene.control.{TextField, Button}
+import scalafx.scene.control.{TextField, Button, ScrollPane}
 import scalafx.scene.input.MouseEvent
 import scalafx.scene.layout.{BorderPane, HBox, VBox, GridPane, Priority}
 
@@ -210,7 +210,7 @@ class GameScreen(val game: Game) extends BorderPane
   }
 
   def bindPrintData(data: ListBuffer[(String, StringProperty)]) {
-    menuPane.center = new VBox {
+    val printData = new VBox {
       for (elt <- data) {
         val item = new Text {
           text <== StringProperty(elt._1 + ": ").concat(elt._2)
@@ -218,6 +218,9 @@ class GameScreen(val game: Game) extends BorderPane
         }
         children.add(item)
       }
+    }
+    menuPane.center = new ScrollPane {
+      content = printData
     }
   }
 
