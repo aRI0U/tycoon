@@ -60,7 +60,7 @@ object Tile {
   val default = new Tile(0, 0)
   val tree = new Tile(3, 4)
   val rock = new Tile(4, 4)
-  val plainWater = new Tile(5, 5)
+  val plainWater = new Tile(6, 5)
 
   //vehicle stuff
   val locomotiveL = new Tile(3, 5)

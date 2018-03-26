@@ -79,6 +79,7 @@ class Game(map_width : Int, map_height : Int)
   var game_graph = new Graph
   val tilemap = new TileMap(map_width, map_height)
   tilemap.fillBackground(Tile.grassAndGround,map)
+  tilemap.placeLandscape()
 
   //Managers of game entities.
   var railManager = new RailManager(map, tilemap, game_graph)
