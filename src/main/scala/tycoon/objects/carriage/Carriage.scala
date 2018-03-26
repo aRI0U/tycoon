@@ -21,6 +21,8 @@ abstract class Carriage extends Renderable(new GridLocation(-1, -1)) {
   def embark(structure: Structure, itinerary: ListBuffer[Road]) = { }
   def debark(structure: Structure) = { }
 
+  // eventually we could determine stops in "Train" class
+
   def determineStops(itinerary: ListBuffer[Road]) : ListBuffer[Structure] = {
     var stops = new ListBuffer[Structure]
     for (road <- itinerary) {

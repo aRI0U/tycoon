@@ -18,15 +18,24 @@ case class PassengerCarriage() extends Carriage {
       case t:Town => {
         for (s <- stops) {
           if (remaining_places > 0) {
-            val i = t.destinations.indexOf(s)
-            println(stops)
-            println(t.destinations)
-            println(s)
-            println(i)
-            println(t.waitersInt.length)
-            val new_passengers = remaining_places.min(t.waiters(i))
+            var new_passengers = 0
+            s match {
+              case town: Town => {
+                val i = t.destinations.indexOf(s)
+                println("stops:" + stops)
+                println("destinations:" + t.destinations)
+                println(s)
+                println(i)
+                println(t.waitersInt.length)
+                new_passengers = remaining_places.min(t.waiters(i))
+                t.waitersInt(i).set(t.waiters(i) - new_passengers)
+              }
+              case f: Facility => {
+                new_passengers = remaining_places.min(t.jobSeekers)
+                t.jobSeekers -= new_passengers
+              }
+            }
             t.population -= new_passengers
-            t.waitersInt(i).set(t.waiters(i) - new_passengers)
             passengers += new Tuple2(s, new_passengers)
             remaining_places -= new_passengers
           }
@@ -36,24 +45,19 @@ case class PassengerCarriage() extends Carriage {
     }
   }
 
-  override def debark(structure: Structure) : Unit = {
-    structure match {
-      case t:Town => {
-        for (p <- passengers) {
-          if (p._1 == t) {
-            t.population += p._2
-            remaining_places += p._2
-            passengers -= p
-          }
+  override def debark(s: Structure) : Unit = {
+    for (p <- passengers) {
+      if (p._1 == s) {
+        remaining_places += p._2
+        passengers -= p
+        s match {
+          case t: Town => t.population += p._2
+          case f: Facility => f.workers += p._2
         }
       }
-  //     case f:Facility => {
-  //       f.workers += passengers
-  //       passengers = 0}
-      case _ => ()
     }
-    stops -= structure
-    if (stops.isEmpty) println("finished trip")
+    stops -= s
+    if (stops.isEmpty) println("PassengerCarriage > no more passengers")
   }
 
   tile = Tile.passengerWagonR

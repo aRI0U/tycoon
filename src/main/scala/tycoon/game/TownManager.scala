@@ -2,7 +2,7 @@ package tycoon.game
 
 import scala.collection.mutable.ListBuffer
 
-import tycoon.objects.structure.Town
+import tycoon.objects.structure._
 
 import scalafx.beans.property.{IntegerProperty, StringProperty}
 
@@ -18,16 +18,20 @@ class TownManager() {
   var towns_list = new ListBuffer[Town]
   var last_town : Int = 0
 
-  def newTown(town: Town) {
-    town.displayWaiters()
+  def newStructure(structure: Structure) {
     for (t <- towns_list) {
-      // add the new town to potential destinations
-      t.destinations += town
+      // add the new structure to potential destinations
+      t.destinations += structure
       t.waitersInt += IntegerProperty(0)
       t.waitersStr += new StringProperty
       t.waitersStr.last <== t.waitersInt.last.asString
-      t.printData += new Tuple2(town.name, t.waitersStr.last)
     }
+  }
+
+  def newTown(town: Town) {
+    newStructure(town)
+    for (t <- towns_list) t.printData += new Tuple2(town.name, t.waitersStr.last)
+    town.displayWaiters()
     towns_list += town
     last_town += 1
   }

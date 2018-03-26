@@ -143,8 +143,12 @@ class Game(val map_width : Int, val map_height : Int)
       structure match {
         case t : Town => townManager.newTown(t)
         tilemap.addEntity(t, 0)
-        case m : Mine => mines += m
-        tilemap.addEntity(m, 0)
+        case m : Mine => {
+          mines += m
+          townManager.newStructure(m)
+          tilemap.addEntity(m, 0)
+        }
+        
         //tilemap.addTile(1, pos.col, pos.row, Tile.mine)
       }
       structures += structure

@@ -34,7 +34,7 @@ class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
     train.boarding(itinerary)
     for (carriage <- train.carriages_list) {
       carriage match {
-        case p:PassengerCarriage =>
+        case p: PassengerCarriage =>
          game.playerMoney.set(game.playerMoney.value + (p.max_passengers - p.remaining_places) * p.ticket_price)
         case _ => ()
       }
