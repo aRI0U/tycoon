@@ -1,7 +1,7 @@
 package tycoon
 
 import tycoon.game.Game
-import tycoon.ui.{CreditsScreen, GameCreationScreen, GameScreen, StartScreen}
+import tycoon.ui.{CreditsScreen, GameScreen, StartScreen}
 
 import scalafx.application.JFXApp
 import scalafx.application.JFXApp.PrimaryStage
@@ -20,7 +20,6 @@ object Main extends JFXApp {
   val game = new Game(Settings.gameWidth, Settings.gameHeight)
 
   val startScreen = new StartScreen()
-  val gameCreationScreen = new GameCreationScreen(game)
   val gameScreen = new GameScreen(game)
   val creditsScreen = new CreditsScreen()
 
@@ -47,33 +46,17 @@ object Main extends JFXApp {
 
   startScreen.setOnStartGameCreation(new Runnable {
     def run() = {
-      switchScreen(gameCreationScreen)
-      gameCreationScreen.init()
+      switchScreen(gameScreen)
+      gameScreen.init()
       game.start()
     }
   })
-/*
-  startScreen.setOnStartGameCreation(new Runnable {
-    def run() = {
-      switchScreen(gameScreen)
-      gameScreen.init()
-      game.generateRandomMap()
-      game.start()
-    }
-  })*/
 
   startScreen.setOnOpenCredits(new Runnable {
     def run() = {
       switchScreen(creditsScreen)
       appScene.camera = new PerspectiveCamera
       appStage.resizable = false
-    }
-  })
-
-  gameCreationScreen.setOnValidate(new Runnable {
-    def run() = {
-      switchScreen(gameScreen)
-      gameScreen.init()
     }
   })
 

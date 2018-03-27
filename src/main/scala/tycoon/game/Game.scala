@@ -109,56 +109,7 @@ class Game(val map_width : Int, val map_height : Int)
   def playerMoney : IntegerProperty = _player.money
   def playerMoney_= (new_money: Int) = _player.money = new_money
 
-  def createStructure (kind: Int, pos: GridLocation) : Boolean = {
-    var structure : Structure = new Mine(pos, nb_structures)//, townManager)
-    var additionalCondition = true
-    kind match {
-      case 0 => additionalCondition = map.checkBgTile(pos, Tile.grass) && map.checkBgTile(pos.right, Tile.grass)
-      case _ => {
-        structure = new Mine(pos, nb_structures)
-        additionalCondition = map.checkBgTile(pos, Tile.rock)
-      }
-    }
 
-    if (map.gridContains(structure.gridRect) && map.isUnused(structure.gridRect) && additionalCondition)
-    {
-      structure match {
-        case t : Town => townManager.newTown(t)
-        case m : Mine => {
-          mines += m
-          townManager.newStructure(m)
-        }
-
-        //map.addTile(1, pos.col, pos.row, Tile.mine)
-      }
-      structures += structure
-      //tiledPane.addRenderable(structure)
-      map.add(structure, 0)
-      nb_structures += 1
-      game_graph.newStructure(structure)
-      true
-    }
-    else
-      false
-  }
-
-
-  def createTown (pos: GridLocation) : Boolean = {
-    createStruct(new SmallTown(pos, nb_structures), Tile.grass)
-  }
-
-  def removeAllTowns() : Boolean = {
-    towns.clear()
-    // entities.clear()    TODO
-    nb_structures = 0
-    townManager.towns_list = new ListBuffer[Town]
-    townManager.last_town = 0
-    true
-  }
-
-  def createMine (pos: GridLocation) : Boolean = {
-    createStructure(1, pos)
-  }
 
   // try to create rail at pos and return true in case of success
   def createRail(pos: GridLocation) : Boolean = {
