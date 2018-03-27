@@ -1,6 +1,5 @@
 package tycoon.game
 
-import tycoon.objects.graph.Map
 import tycoon.ui.Tile
 import tycoon.ui.Renderable
 import scala.util.Random
@@ -9,7 +8,12 @@ import scala.collection.mutable.ListBuffer
 import scala.math
 
 
+/*
+layer -1 (backgroundLayer) : background (grass, trees, rocks, lakes..)
+layer 0 : structures (town, airport, farm, factory, mine..) and rails
+layer 1 : movable entities (trains, planes, boats..)
 
+*/
 class TileMap (val width: Int, val height: Int, nbEntityLayers: Int = 2) {
   // general map
   def gridContains(rect: GridRectangle) =
@@ -19,20 +23,28 @@ class TileMap (val width: Int, val height: Int, nbEntityLayers: Int = 2) {
   // grid of structural entities (ie towns but not trains, max one per case (Option type))
   private var content = Array.fill[Option[Renderable]](width, height)(None)
 
+  // entities layers (for each layer, list of every entity on this layer)
+  private val entityLayers: Array[ListBuffer[Renderable]] = new Array(nbEntityLayers)
+  for (i <- 0 to nbEntityLayers - 1)
+    entityLayers(i) = new ListBuffer[Renderable]
 
-  def add(rect: GridRectangle, e: Renderable) = {
-    for ((col, row) <- rect.iterate) {
-      content(col)(row) = Some(e)
-      println("tycoon > objects > graph > Map.scala > addToMap: added element at pos (" + col + ", " + row + ")")
-    }
+
+  def add(e: Renderable, layer: Int = 0) = {
+    if (layer == 0)
+      for ((col, row) <- e.gridRect.iterate)
+        content(col)(row) = Some(e)
+    entityLayers(layer) += e
   }
 
+/*
   def remove(rect: GridRectangle) = {
     for ((col, row) <- rect.iterate) {
       content(col)(row) = None
       println("tycoon > objects > graph > Map.scala > addToMap: added element at pos (" + col + ", " + row + ")")
     }
-  }
+  } */
+
+  ///def removeEntity(e: Renderable, layer: Int = 0) = entityLayers(layer) -= e
 
   def isUnused(pos: GridLocation): Boolean =
     content(pos.col)(pos.row) == None
@@ -47,16 +59,6 @@ class TileMap (val width: Int, val height: Int, nbEntityLayers: Int = 2) {
   }
 
   def getContentAt(pos: GridLocation): Option[Renderable] = content(pos.col)(pos.row)
-
-
-
-  // entities layers (for each layer, list of every entity on this layer)
-  private val entityLayers: Array[ListBuffer[Renderable]] = new Array(nbEntityLayers)
-  for (i <- 0 to nbEntityLayers - 1)
-    entityLayers(i) = new ListBuffer[Renderable]
-
-  def addEntity(e: Renderable, layer: Int = 0) = entityLayers(layer) += e
-  def removeEntity(e: Renderable, layer: Int = 0) = entityLayers(layer) -= e
   def getEntities: Array[ListBuffer[Renderable]] = entityLayers.clone()
 
 

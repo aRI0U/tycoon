@@ -124,18 +124,16 @@ class Game(val map_width : Int, val map_height : Int)
     {
       structure match {
         case t : Town => townManager.newTown(t)
-        map.addEntity(t, 0)
         case m : Mine => {
           mines += m
           townManager.newStructure(m)
-          map.addEntity(m, 0)
         }
 
         //map.addTile(1, pos.col, pos.row, Tile.mine)
       }
       structures += structure
       //tiledPane.addRenderable(structure)
-      map.add(structure.gridRect, structure)
+      map.add(structure, 0)
       nb_structures += 1
       game_graph.newStructure(structure)
       true
@@ -199,13 +197,13 @@ class Game(val map_width : Int, val map_height : Int)
     trains += train
     //tiledPane.addRenderable(train)
     //map.addTile(1, pos.col, pos.row, Tile.locomotive)
-    map.addEntity(train, 1)
+    map.add(train, 1)
 
     // paying
     playerMoney.set(playerMoney.value - train.cost)
     for (carriage <- train.carriageList) {
       playerMoney.set(playerMoney.value - carriage.cost)
-      map.addEntity(carriage, 1)
+      map.add(carriage, 1)
       //tiledPane.addRenderable(carriage)
       //map.addTile(1, pos.col, pos.row, Tile.passenger_wagon)
       carriages+=carriage

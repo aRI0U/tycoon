@@ -47,8 +47,7 @@ class RailManager(map: TileMap, gameGraph: Graph) {
 
       if (created) {
         rails += rail
-        map.addEntity(rail, 0)
-        map.add(rail.gridRect, rail)
+        map.add(rail, 0)
 
         // apply correct rotation to rails
         if (rail.previous == rail && !rail.road.finished) { // first rail next to a struct
