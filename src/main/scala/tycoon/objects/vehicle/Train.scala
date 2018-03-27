@@ -13,54 +13,36 @@ import tycoon.game.Game
 import tycoon.ui.DraggableTiledPane
 
 
+class Train(town: Town, nb_carriages: Int) extends Vehicle(town) {
+  var location: Option[Structure] = Some(town)
 
-class Train(town : Town, nb_carriages : Int) extends Vehicle(town) {
-  var location : Option[Structure] = Some(town)
-
-
-  //Methods
-  def rotation(angle : Int) = {
-    //tile.getView.rotate = (angle)
+  def addCarriages() { // ??
+    for (i <- 1 to nb_carriages) carriageList += new PassengerCarriage
+    carriageList += new GoodsCarriage
   }
 
-  def add_carriage () {
-    for (i <- 1 to nb_carriages) carriages_list += new PassengerCarriage
-    carriages_list += new GoodsCarriage
-  }
-
-  def boarding (itinerary: ListBuffer[Road]) = {
+  def boarding(itinerary: ListBuffer[Road]) = {
     location match {
-      case (Some(struc)) => {
-        struc match {
-          case (town : Town) => {
-            for (carriage <- carriages_list) {
-              carriage match {
-                case p:PassengerCarriage =>
-                p.embark(town, itinerary)
-                case _ => ()
-              }
-            }
-          }
-        case other => {println("tycoon > objects > vehicle > Train.scala > boarding: *boarding in train* case of location is not a town ")}
-      }}
+      case Some(struct) => {
+        struct match {
+          case town: Town => carriageList.foreach(_.embark(town, itinerary))
+          case _ => println("tycoon > objects > vehicle > Train.scala > boarding: *boarding in train* case of location is not a town")
+        }
+      }
       case None => println("tycoon > objects > vehicle > Train.scala > boarding: no town")
     }
   }
 
-  def landing () = {
+  def landing() = {
     location match {
-      case (Some(s)) => {
-        for (carriage <- carriages_list) carriage.debark(s)
-      }
+      case Some(struct) => carriageList.foreach(_.debark(struct))
       case None => ()
     }
   }
 
   tile = Tile.locomotiveT
 
-  var speed = 10
-  var destination_x = 0
-  var destination_y = 0
+  var speed = 2.0
   val weight = 50
   val cost = 200
 
@@ -68,17 +50,15 @@ class Train(town : Town, nb_carriages : Int) extends Vehicle(town) {
   //var trail = road.rails
 
 
-  var carriages_list = new ListBuffer[Carriage]()
-  add_carriage()
+  var carriageList = new ListBuffer[Carriage]()
+  addCarriages()
 
   gridPos = location match {
-    case Some(structure : Town) => {
-      new GridLocation(structure.position.col +1,structure.position.row)
-    }
-    case Some(structure ) => structure.position
+    case Some(town: Town) => town.gridPos.right
+    case Some(struct) => struct.gridPos
     case None => current_rail match {
-      case Some(rail) => rail.position
-      case None => new GridLocation(0,0) // throw exn
+      case Some(rail) => rail.gridPos
+      case None => new GridLocation(0, 0) // throw exn
     }
   }
 }

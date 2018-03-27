@@ -11,7 +11,7 @@ import scala.collection.mutable.{HashMap, ListBuffer}
 import scalafx.beans.property.StringProperty
 
 
-class RailManager(map: Map, tilemap: TileMap, gameGraph: Graph) {
+class RailManager(map: TileMap, gameGraph: Graph) {
 
   private val rails: ListBuffer[Rail] = new ListBuffer()
   var nbNeighborRails: Int = 0
@@ -19,7 +19,7 @@ class RailManager(map: Map, tilemap: TileMap, gameGraph: Graph) {
   def createRail(pos: GridLocation) : Boolean = {
     val rail = new Rail(pos)
     var created = false
-    if (tilemap.gridContains(rail.gridRect) && map.isUnused(rail.gridRect) && tilemap.checkGrass(pos)) {
+    if (map.gridContains(rail.gridRect) && map.isUnused(rail.gridRect) && map.checkBgTile(pos, Tile.grass)) {
       nbNeighborRails = 0
 
       val neighbors = Array (
@@ -47,7 +47,7 @@ class RailManager(map: Map, tilemap: TileMap, gameGraph: Graph) {
 
       if (created) {
         rails += rail
-        tilemap.addEntity(rail, 0)
+        map.addEntity(rail, 0)
         map.add(rail.gridRect, rail)
 
         // apply correct rotation to rails

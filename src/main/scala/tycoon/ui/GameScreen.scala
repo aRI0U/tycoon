@@ -165,7 +165,7 @@ class GameScreen(val game: Game) extends BorderPane
       case Some(entity) => {
         entity match {
           case train : Train => {
-            println("tycoon > ui > GameScreen.scala > maybeClickRenderableAt: " + train.carriages_list)
+            println("tycoon > ui > GameScreen.scala > maybeClickRenderableAt: " + train.carriageList)
           }
           case structure : Structure => {
             structure match {
@@ -246,7 +246,7 @@ class GameScreen(val game: Game) extends BorderPane
       children = Seq(
         new Separator { orientation = Orientation.Horizontal ; styleClass += "sep" },
         new Text {
-          text <== StringProperty("Time: ").concat(game.time.asString)
+          text <== StringProperty("Time: undefined")
           margin = Insets(5)
         },
         new Text {

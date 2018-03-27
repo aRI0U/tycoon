@@ -11,83 +11,127 @@ import tycoon.objects.vehicle._
 import tycoon.game.Game
 import tycoon.game.GridLocation
 
-class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
+class Route(itinerary: ListBuffer[Road], train: Train, game: Game) {
+  private var onTheRoad = true
 
-  var on_the_road = true
+
+
   var dir_indicator = 1
 
-  var current_road : Option[Road]= None
+  var current_road: Option[Road] = None
 
-  def TailManager(entitie : Renderable, direction : Int) = {
+
+  def manageTile(entity : Renderable, direction : Int) = {
     val tileList = new ListBuffer[Tile]()
     tileList+=(Tile.passengerWagonB,Tile.passengerWagonR,Tile.passengerWagonT,Tile.passengerWagonL,Tile.goodsWagonB,Tile.goodsWagonR,Tile.goodsWagonT,Tile.goodsWagonL,Tile.locomotiveB,Tile.locomotiveR,Tile.locomotiveT,Tile.locomotiveL)
-    var entitieType = 1
-    entitie match {
-      case train : Train => entitieType = 2
-      case p : PassengerCarriage => entitieType = 0
+    var entityType = 1
+    entity match {
+      case train : Train => entityType = 2
+      case p : PassengerCarriage => entityType = 0
       case _ => ;
     }
-    entitie.tile = tileList(direction + 4*entitieType)
+    entity.tile = tileList(direction + 4*entityType)
   }
 
-  def departure () = {
+
+  def departure() = {
     train.boarding(itinerary)
-    for (carriage <- train.carriages_list) {
-      carriage match {
-        case p: PassengerCarriage =>
-         game.playerMoney.set(game.playerMoney.value + (p.max_passengers - p.remaining_places) * p.ticket_price)
+
+    train.carriageList.foreach {
+      carriage => carriage match {
+        case p: PassengerCarriage => // juste nb de passager ? ou le faire dans boarding ?
+          game.playerMoney.set(game.playerMoney.value + (p.max_passengers - p.remaining_places) * p.ticket_price)
         case _ => ()
       }
     }
-    val start = train.location.get
-    carriageMouvment(start.gridPos ,None, train.carriages_list)
-    //to select the right direction according to the construction sens
-    if (train.location.get == itinerary(itinerary.size - 1).startStructure.get) dir_indicator = 0
-    else dir_indicator = 1
 
-    train.location = None
-    start.list_trains -= train
-    train.visible = true
-    current_road = Some(itinerary(itinerary.size - 1))
-    itinerary.remove(itinerary.size - 1)
-    for (rail <- (current_road.get).rails) {
-      if (rail.direction((dir_indicator - 1) %2) == rail) {
-       train.current_rail = Some(rail)
+    train.location match {
+      case None => () // pb
+      case Some(struct) => {
+
+        carriageMouvment(struct.gridPos, None, train.carriageList)
+
+        if (struct == itinerary(itinerary.size - 1).startStructure.get) dir_indicator = 0 // PAS DE GET
+        else dir_indicator = 1
+
+        train.location = None
+        struct.list_trains -= train
+        train.visible = true
+
+        current_road = Some(itinerary.last)
+        for (rail <- itinerary.last.rails) {
+          if (rail.direction((dir_indicator - 1) %2) == rail) {
+           train.current_rail = Some(rail)
+          }
+        }
+        itinerary -= itinerary.last
+        rotateVehicle(train)
+        train.gridPos = (train.current_rail.get).gridPos
       }
     }
-    Vehiclerotation(train)
-    train.gridPos = (train.current_rail.get).position
-    //carriageMouvment(train.current_rail.get.gridPos, train.carriages_list)
-    //train.current_rail = current_road.rails
+
   }
 
   def arrival (road: Road) = {
     if (dir_indicator == 1) {train.location = road.startStructure}
     else {train.location = road.endStructure}
-    // println("tycoon > objects > graph > Route.scala > arrival: " + train.location.get.population)
     train.location match {
       case Some(s) => s.list_trains += train
       case None => ()
     }
     train.landing()
 
-    train.gridPos = (new GridLocation(train.location.get.position.col +1,train.location.get.position.row))
+    train.gridPos = train.location.get.gridPos.right
     if (itinerary.size == 0) {
-      on_the_road = false
-      for (car <- train.carriages_list) {
+      onTheRoad = false
+      for (car <- train.carriageList) {
         car.gridPos = (new GridLocation(-1,-1))
         car.current_rail = None
       }
     }
-    else carriageMouvment(train.current_rail.get.gridPos, train.current_rail, train.carriages_list)
+    else carriageMouvment(train.current_rail.get.gridPos, train.current_rail, train.carriageList)
     train.current_rail = None
     train.visible = true
   }
 
-  /// TWO NEXT FUNCTION COULD BE MERGE
+  //train mouvment
+  def update_box (road : Road) = {
+    train.current_rail match {
+      case Some(rail) => {
+          if (rail.direction(dir_indicator) == rail) {
+            arrival(road)
+          }
+          else {
+            train.current_rail = Some(rail.direction(dir_indicator))
+            rotateVehicle(train)
+            train.gridPos = (rail.direction(dir_indicator).gridPos)
+            carriageMouvment(rail.gridPos, Some(rail), train.carriageList)
+        }
+      }
+      case None => {
+      }
+    }
+  }
 
+
+  def update (dt: Double) {
+    intern_time += dt
+    if (onTheRoad) {
+      if (intern_time > 1) {
+        intern_time -=1
+        train.location match {
+          case Some(town) => departure()
+          case None => update_box(current_road.get)
+        }
+      }
+    }
+  }
+
+
+
+  /// TWO NEXT FUNCTION COULD BE MERGE
 // give the tile the orientation fitting with the rail
-  def Vehiclerotation (thing : Renderable) = {
+  def rotateVehicle (thing : Renderable) = {
     var r = new Rail(new GridLocation(-1,-1))
     thing match {
       case t : Train => r = t.current_rail.get
@@ -101,8 +145,8 @@ class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
       plus = 0
     }
     var id = 3
-    var x = r.position.col - comp_rail.position.col
-    var y = r.position.row - comp_rail.position.row
+    var x = r.gridPos.col - comp_rail.gridPos.col
+    var y = r.gridPos.row - comp_rail.gridPos.row
     if (x == -1) {
       id = 1
     }
@@ -116,7 +160,7 @@ class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
       id = 0
     }
     id = ((id + 2*plus) % 4)
-  TailManager(thing, id)
+    manageTile(thing, id)
   }
 
   def wagon_rotation (thing : Carriage) = {
@@ -128,8 +172,8 @@ class Route(itinerary : ListBuffer[Road], train : Train, game : Game) {
       comp_rail = r.direction(dir_indicator)
       plus = 0
     }
-    var x = r.position.col - comp_rail.position.col
-    var y = r.position.row - comp_rail.position.row
+    var x = r.gridPos.col - comp_rail.gridPos.col
+    var y = r.gridPos.row - comp_rail.gridPos.row
     if (x == 1) {
       thing.tile = Tile.passengerWagonT
     }
@@ -157,70 +201,14 @@ def carriageMouvment(fisrstPosition : GridLocation,optionRail : Option[Rail], ca
       car.gridPos = (pos1)
       car.current_rail = optionRail1
       optionRail1 match {
-        case Some(r) => Vehiclerotation(car)
+        case Some(r) => rotateVehicle(car)
         case _ => ;
       }
-      // (pos2 == pos1) match {
-      //   case true => {
-      //     car.gridPos = (pos1)
-      //     car.current_rail = optionRail1
-      //     Vehiclerotation(car)
-      //   }
-      //   case false => {}
-      // }
       pos1 = pos2
       optionRail1 = optionRail2
     }
   }
 }
 
-  //train mouvment
-  def update_box (road : Road) = {
-    train.current_rail match {
-      case Some(rail) => {
-          if (rail.direction(dir_indicator) == rail) {
-            arrival(road)
-          }
-          else {
-            train.current_rail = Some(rail.direction(dir_indicator))
-            Vehiclerotation(train)
-            train.gridPos = (rail.direction(dir_indicator).position)
-            //carriages update mouvment
-            carriageMouvment(rail.position, Some(rail), train.carriages_list)
-            // if (!train.carriages_list.isEmpty) {
-            //   var rail_chain1 : Option[Rail] = Some(rail)
-            //   var rail_chain2 : Option[Rail] = Some(rail)
-            //   for (car <- train.carriages_list) {
-            //     rail_chain2 = car.current_rail
-            //     car.current_rail = rail_chain1
-            //     rail_chain1 match {
-            //       case Some(r) => {
-            //         car.gridPos = (r.position)
-            //         Vehiclerotation(car)
-            //       }
-            //       case None => {}
-            //     }
-            //     rail_chain1 = rail_chain2
-            //   }
-            // }
-        }
-      }
-      case None => {
-      }
-    }
-  }
 
-
-  def update (dt : Double) {
-    intern_time += dt
-    if (on_the_road) {
-      if (intern_time > 1) {
-        intern_time -=1
-        train.location match {
-          case Some(town) => departure()
-          case None => update_box(current_road.get)
-        }
-      }
-    }
-  }
 }

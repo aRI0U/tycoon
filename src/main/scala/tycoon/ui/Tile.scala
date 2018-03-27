@@ -72,7 +72,7 @@ object Tile {
     farm3
   )
 
-  val grassAndGround = Array(
+  val grass = Array(
     new Tile(1, 3),
     new Tile(1, 4),
     new Tile(2, 1),

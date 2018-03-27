@@ -259,18 +259,15 @@ class DraggableTiledPane(val tm: TileMap) extends BorderPane {
       row <- minRow to maxRow
       col <- minCol to maxCol
     } {
-      tm.getBackgroundTile(col, row) match {
-        case Some(tile) => {
-          val layoutX = scaledTilesWidth.value * col + layoutShiftX
-          val layoutY = scaledTilesHeight.value * row + layoutShiftY
+      val tile = tm.getBackgroundTile(col, row)
 
-          val width = tile.width * scaledTilesWidth.value + 1 // extra pixel for smoother overlap
-          val height = tile.height * scaledTilesHeight.value + 1
+      val layoutX = scaledTilesWidth.value * col + layoutShiftX
+      val layoutY = scaledTilesHeight.value * row + layoutShiftY
 
-          gc.drawImage(Tile.tileset, tile.sx, tile.sy, tile.sw, tile.sh, layoutX, layoutY, width, height)
-        }
-        case _ => ()
-      }
+      val width = tile.width * scaledTilesWidth.value + 1 // extra pixel for smoother overlap
+      val height = tile.height * scaledTilesHeight.value + 1
+
+      gc.drawImage(Tile.tileset, tile.sx, tile.sy, tile.sw, tile.sh, layoutX, layoutY, width, height)
     }
 
     for {

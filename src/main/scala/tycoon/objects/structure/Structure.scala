@@ -16,7 +16,6 @@ abstract class Structure(pos: GridLocation, id: Int) extends Renderable(pos) {
   //Methods
   protected val _name = StringProperty("")
   def name : String = _name.value
-  def position : GridLocation = pos
 
   // intern_time
   var intern_time : Double = 0

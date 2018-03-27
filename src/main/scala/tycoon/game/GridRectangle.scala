@@ -3,6 +3,11 @@ package tycoon.game
 
 
 class GridRectangle(private var _pos: GridLocation, private var _cols: Int, private var _rows: Int) {
+
+  def this(x: Int, y: Int, cols: Int, rows: Int) {
+    this(new GridLocation(x, y), cols, rows)
+  }
+
   def left = _pos.col
   def top = _pos.row
   def right = _pos.col + _cols - 1

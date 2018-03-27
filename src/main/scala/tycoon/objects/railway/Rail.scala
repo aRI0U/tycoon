@@ -25,8 +25,6 @@ case class Rail(pos: GridLocation) extends Renderable(pos) {
     else previous
   }
 
-  def position : GridLocation = pos
-
   tile = Tile.straightRailBT // sgives_tile(tile_type)
 
   val cost = 10

@@ -23,40 +23,26 @@ import scalafx.beans.binding.Bindings
 
 class Game(val map_width : Int, val map_height : Int)
 {
-  var time = IntegerProperty(0)
-  var time_s : Double = 0
 
-  private class GameLoop extends AnimationTimer
-  {
-    var startNanoTime : Long = System.nanoTime()
 
-    override def handle(currentNanoTime: Long) {
-      var elapsedTime : Double = (currentNanoTime - startNanoTime) / 1000000000.0
-      startNanoTime = currentNanoTime
-
-      //if (elapsedTime > 0.01)
-      //    elapsedTime = 0.01
-
-      //println("tycoon > game > Game.scala > GameLoop: 1.0 / elapsedTime + " FPS")
-
-      update(elapsedTime)
-    }
-  }
-
-  var map = new Map(map_width, map_height)
+  // game map
   var game_graph = new Graph
-  val tilemap = new TileMap(map_width, map_height)
-  tilemap.fillBackground(Tile.grassAndGround,map)
-  // 2 numbers for ratio of choosen point in order to become lakes and ratio of points in teselation
-  tilemap.placeLandscape(10,5000)
+  val map = new TileMap(map_width, map_height)
+  map.fillBackground(Tile.grass)
+  map.sprinkleTile(Tile.tree, 3)
+  map.sprinkleTile(Tile.rock, 1)
+  map.generateLakes(10, 5000)
 
-  //Managers of game entities.
-  var railManager = new RailManager(map, tilemap, game_graph)
+  val tiledPane = new DraggableTiledPane(map)
+  tiledPane.moveToCenter()
+  tiledPane.requestFocus()
 
+
+  // game objects
+  var railManager = new RailManager(map, game_graph)
   var townManager = new TownManager()
 
   var nb_structures = 0
-
   val mine_price = 200
   val rail_price = 10
 
@@ -68,36 +54,34 @@ class Game(val map_width : Int, val map_height : Int)
   var routes = new ListBuffer[Route]()
   var carriages = new ListBuffer[Carriage]()
 
-  private val loop = new GameLoop()
-
-  // INIT
-
-  val tiledPane = new DraggableTiledPane(tilemap)
-  tiledPane.moveToCenter()
-  tiledPane.requestFocus()
-
-
-/*
-  entities.onChange((_, changes) => {
-    for (change <- changes)
-      change match {
-        case Add(_, added) =>
-          added.foreach(ent => tiledPane.addRenderable(ent))
-        case Remove(_, removed) =>
-          removed.foreach(ent => tiledPane.removeRenderable(ent))
-        case Reorder(from, to, permutation) => ()
-        case Update(pos, updated)           => ()
-      }
-  })*/
-
   private val player = new Player
 
 
-  def start () : Unit = {
-    player.money = 1000
 
-    time set 0
-    time_s = 0
+
+
+  // game loop
+
+  private class GameLoop extends AnimationTimer
+  {
+    var startNanoTime : Long = System.nanoTime()
+
+    override def handle(currentNanoTime: Long) {
+      var elapsedTime : Double = (currentNanoTime - startNanoTime) / 1000000000.0
+      startNanoTime = currentNanoTime
+
+      //if (elapsedTime > 0.01)
+      //    elapsedTime = 0.01
+      //println("tycoon > game > Game.scala > GameLoop: 1.0 / elapsedTime + " FPS")
+
+      update(elapsedTime)
+    }
+  }
+
+  private val loop = new GameLoop()
+
+  def start () : Unit = {
+    player.money = 1000 // move into player.init()
     loop.start()
   }
   def pause () : Unit = {}
@@ -108,13 +92,16 @@ class Game(val map_width : Int, val map_height : Int)
     routes foreach { _.update(dt) }
     structures foreach { _.update(dt) }
     tiledPane.render()
-
-    time_s += dt
-    if (time_s > 1) {
-      time_s -= 1
-      time.set(time.value + 1)
-    }
   }
+
+
+
+
+
+
+
+
+  // functions
 
   def playerName : StringProperty = player.name
   def playerName_= (new_name: String) = player.name = new_name
@@ -126,25 +113,25 @@ class Game(val map_width : Int, val map_height : Int)
     var structure : Structure = new Town(pos, nb_structures, townManager)
     var additionalCondition = true
     kind match {
-      case 0 => additionalCondition = tilemap.checkGrass(pos) && tilemap.checkGrass(new GridLocation(pos.row, pos.col+1))
+      case 0 => additionalCondition = map.checkBgTile(pos, Tile.grass) && map.checkBgTile(pos.right, Tile.grass)
       case _ => {
         structure = new Mine(pos, nb_structures)
-        additionalCondition = tilemap.checkTile(pos, Tile.rock)
+        additionalCondition = map.checkBgTile(pos, Tile.rock)
       }
     }
 
-    if (tilemap.gridContains(structure.gridRect) && map.isUnused(structure.gridRect) && additionalCondition)
+    if (map.gridContains(structure.gridRect) && map.isUnused(structure.gridRect) && additionalCondition)
     {
       structure match {
         case t : Town => townManager.newTown(t)
-        tilemap.addEntity(t, 0)
+        map.addEntity(t, 0)
         case m : Mine => {
           mines += m
           townManager.newStructure(m)
-          tilemap.addEntity(m, 0)
+          map.addEntity(m, 0)
         }
 
-        //tilemap.addTile(1, pos.col, pos.row, Tile.mine)
+        //map.addTile(1, pos.col, pos.row, Tile.mine)
       }
       structures += structure
       //tiledPane.addRenderable(structure)
@@ -211,16 +198,16 @@ class Game(val map_width : Int, val map_height : Int)
     town.addTrain(train)
     trains += train
     //tiledPane.addRenderable(train)
-    //tilemap.addTile(1, pos.col, pos.row, Tile.locomotive)
-    tilemap.addEntity(train, 1)
+    //map.addTile(1, pos.col, pos.row, Tile.locomotive)
+    map.addEntity(train, 1)
 
     // paying
     playerMoney.set(playerMoney.value - train.cost)
-    for (carriage <- train.carriages_list) {
+    for (carriage <- train.carriageList) {
       playerMoney.set(playerMoney.value - carriage.cost)
-      tilemap.addEntity(carriage, 1)
+      map.addEntity(carriage, 1)
       //tiledPane.addRenderable(carriage)
-      //tilemap.addTile(1, pos.col, pos.row, Tile.passenger_wagon)
+      //map.addTile(1, pos.col, pos.row, Tile.passenger_wagon)
       carriages+=carriage
     }
     true
