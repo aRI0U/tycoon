@@ -11,26 +11,15 @@ import scalafx.beans.property.{IntegerProperty, StringProperty}
 
 abstract class Structure(pos: GridLocation, id: Int) extends Renderable(pos) {
   val structure_id = id
-  var list_trains = new ListBuffer[Train]()
+  var trainList = new ListBuffer[Train]()
 
-  //Methods
   protected val _name = StringProperty("")
-  def name : String = _name.value
+  def name: String = _name.value
 
-  // intern_time
-  var intern_time : Double = 0
+  var intern_time: Double = 0
+  def update(dt: Double)
 
-  def update(dt: Double) = { }
-
-  //Train manipulation
-  def addTrain(train:Train) {
-    list_trains += train
-  }
-  def removeTrain(train:Train) {
-    list_trains -= train
-  }
-  def getTrain() : Option[Train] = {
-    if (list_trains.isEmpty) None
-    else Some(list_trains.last)
-  }
+  def addTrain(train: Train) = trainList += train
+  def removeTrain(train: Train) = trainList -= train
+  def getTrain: Option[Train] = trainList.lastOption
 }

@@ -74,6 +74,10 @@ class TileMap (val width: Int, val height: Int, nbEntityLayers: Int = 2) {
   def checkBgTile(col: Int, row: Int, tile: Tile) : Boolean = checkBgTile(new GridLocation(col, row), tile)
   def checkBgTile(col: Int, row: Int, tiles: Array[Tile]) : Boolean = tiles.exists(checkBgTile(col, row, _))
 
+  def checkBgTiles(rect: GridRectangle, tiles: Array[Tile]) : Boolean = {
+    rect.iterateGridLoc.forall(checkBgTile(_, tiles))
+  }
+
   /* randomly fill background layer of map using tiles */
   def fillBackground(tiles: Array[Tile]) : Unit = {
     val r = scala.util.Random

@@ -55,7 +55,7 @@ class Route(itinerary: ListBuffer[Road], train: Train, game: Game) {
         else dir_indicator = 1
 
         train.location = None
-        struct.list_trains -= train
+        struct.trainList -= train
         train.visible = true
 
         current_road = Some(itinerary.last)
@@ -76,7 +76,7 @@ class Route(itinerary: ListBuffer[Road], train: Train, game: Game) {
     if (dir_indicator == 1) {train.location = road.startStructure}
     else {train.location = road.endStructure}
     train.location match {
-      case Some(s) => s.list_trains += train
+      case Some(s) => s.trainList += train
       case None => ()
     }
     train.landing()
@@ -98,14 +98,14 @@ class Route(itinerary: ListBuffer[Road], train: Train, game: Game) {
   def update_box (road : Road) = {
     train.current_rail match {
       case Some(rail) => {
-          if (rail.direction(dir_indicator) == rail) {
-            arrival(road)
-          }
-          else {
-            train.current_rail = Some(rail.direction(dir_indicator))
-            rotateVehicle(train)
-            train.gridPos = (rail.direction(dir_indicator).gridPos)
-            carriageMouvment(rail.gridPos, Some(rail), train.carriageList)
+        if (rail.direction(dir_indicator) == rail) {
+          arrival(road)
+        }
+        else {
+          train.current_rail = Some(rail.direction(dir_indicator))
+          rotateVehicle(train)
+          train.gridPos = (rail.direction(dir_indicator).gridPos)
+          carriageMouvment(rail.gridPos, Some(rail), train.carriageList)
         }
       }
       case None => {

@@ -4,11 +4,13 @@ import tycoon.game.{Game, GridLocation}
 
 import scalafx.Includes._
 import scalafx.geometry.{Pos, Insets}
-import scalafx.scene.control.{Label, Tab, TabPane, Button}
+import scalafx.scene.control.{Label, Tab, TabPane, Button, ScrollPane}
 import scalafx.scene.input.MouseEvent
 import scalafx.scene.layout.{HBox, VBox, Priority}
 import scalafx.beans.property.{StringProperty, IntegerProperty, DoubleProperty, ReadOnlyDoubleWrapper}
 import scalafx.scene.text.Text
+
+import tycoon.objects.structure.BuyableStruct
 
 
 class InteractionsMenu(val game: Game) extends TabPane
@@ -32,14 +34,16 @@ class InteractionsMenu(val game: Game) extends TabPane
   */
 
   private val buildingTabContainer = new HBox()
-  buildingTab.setContent(buildingTabContainer)
+  buildingTab.content = new ScrollPane {
+    content = buildingTabContainer
+  }
 
-  private var selectedItem: Option[BuyableItem] = None
+  private var selectedItem: Option[BuyableStruct] = None
   private var selectedItemTab: Option[Tab] = None
 
   private val quantityBought = IntegerProperty(0)
 
-  def addBuyableItem(item: BuyableItem) = {
+  def addBuyableStruct(item: BuyableStruct) = {
     val itemBox = new VBox {
       styleClass += "buyableItem"
       children = Seq(
@@ -57,9 +61,9 @@ class InteractionsMenu(val game: Game) extends TabPane
     buildingTabContainer.children += new VBox(itemBox)
   }
 
-  private def addItemTab(item: BuyableItem) = {
+  private def addItemTab(item: BuyableStruct) = {
     val itemTab = new Tab()
-    itemTab.text = item.name + " building"
+    itemTab.text = item.name + " Building"
     this += itemTab
     this.selectionModel.value.selectLast()
     selectedItemTab = Some(itemTab)
@@ -81,16 +85,16 @@ class InteractionsMenu(val game: Game) extends TabPane
       text <== StringProperty("Quantity: ").concat(quantityBought.asString)
     }
     val txtTotalPrice = new Text {
-      text <== StringProperty("Total price: $").concat((quantityBought * item.price).asString)
+      text <== StringProperty("Total Cost: $").concat((quantityBought * item.price).asString)
     }
     val removeLastBt = new Button {
-      text = "Remove Last"
+      text = "Resell Last"
       margin = Insets(10)
       vgrow = Priority.Always
       maxHeight = Double.MaxValue
       visible <== quantityBought > 0
       onMouseClicked = _ =>
-        if(item.removeLastItem()) {
+        if(true) { // TODO REMOVE STRUCT IN GAME
           quantityBought.set(quantityBought.value - 1)
           tabPaneRequestFocus()
         }
@@ -138,7 +142,7 @@ class InteractionsMenu(val game: Game) extends TabPane
     selectedItem match {
       case Some(item) =>
         if(!dragging || item.createByDragging)
-          if(item.createItem(pos))
+          if(game.buyStruct(item, pos))
             quantityBought.set(quantityBought.value + 1)
       case None => ()
     }

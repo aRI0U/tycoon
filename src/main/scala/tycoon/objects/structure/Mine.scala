@@ -24,7 +24,6 @@ case class Mine(pos: GridLocation, id: Int) extends Facility(pos, id) {
   // for each product, necesary to indicate type, production_per_period and total extractable amount
 
   // initialization
-  var products = new ListBuffer[Good]
   var production_per_period = new ListBuffer[Int]
   var extractable_amount = new ListBuffer[Int]
 

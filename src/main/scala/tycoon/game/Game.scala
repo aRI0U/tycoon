@@ -54,7 +54,7 @@ class Game(val map_width : Int, val map_height : Int)
   var routes = new ListBuffer[Route]()
   var carriages = new ListBuffer[Carriage]()
 
-  private val player = new Player
+  private val _player = new Player
 
 
 
@@ -81,7 +81,7 @@ class Game(val map_width : Int, val map_height : Int)
   private val loop = new GameLoop()
 
   def start () : Unit = {
-    player.money = 1000 // move into player.init()
+    playerMoney = 1000000 // move into player.init()
     loop.start()
   }
   def pause () : Unit = {}
@@ -103,14 +103,14 @@ class Game(val map_width : Int, val map_height : Int)
 
   // functions
 
-  def playerName : StringProperty = player.name
-  def playerName_= (new_name: String) = player.name = new_name
+  def playerName : StringProperty = _player.name
+  def playerName_= (new_name: String) = _player.name = new_name
 
-  def playerMoney : IntegerProperty = player.money
-  def playerMoney_= (new_money: Int) = player.money = new_money
+  def playerMoney : IntegerProperty = _player.money
+  def playerMoney_= (new_money: Int) = _player.money = new_money
 
   def createStructure (kind: Int, pos: GridLocation) : Boolean = {
-    var structure : Structure = new Town(pos, nb_structures, townManager)
+    var structure : Structure = new Mine(pos, nb_structures)//, townManager)
     var additionalCondition = true
     kind match {
       case 0 => additionalCondition = map.checkBgTile(pos, Tile.grass) && map.checkBgTile(pos.right, Tile.grass)
@@ -144,7 +144,7 @@ class Game(val map_width : Int, val map_height : Int)
 
 
   def createTown (pos: GridLocation) : Boolean = {
-    createStructure(0, pos)
+    createStruct(new SmallTown(pos, nb_structures), Tile.grass)
   }
 
   def removeAllTowns() : Boolean = {
@@ -159,44 +159,60 @@ class Game(val map_width : Int, val map_height : Int)
   def createMine (pos: GridLocation) : Boolean = {
     createStructure(1, pos)
   }
-  def removeAllMines() : Boolean = {
-    mines.remove(mines.size-1)
-   //  entities.remove(entities.size-1)    TODO
-    nb_structures -= 1
-    true
-  }
 
   // try to create rail at pos and return true in case of success
   def createRail(pos: GridLocation) : Boolean = {
-    railManager.createRail(pos)
+     railManager.createRail(pos)
     // if returns true, remove money from player..
   }
 
-  def removeLastRail() : Boolean = { // TODO incomplet
-    //add some temporary list if deletion has to be made
-    val removedRail = rails(rails.size - 1)
-    if (removedRail.road.finished == true ) {
-      removedRail.road.finished = false
-      routes.remove(routes.size - 1)
+
+  /* KEEEEP BEGIN */
+
+  def createStruct(struct: Structure, tilesAllowed: Array[Tile]): Boolean = {
+    if (map.gridContains(struct.gridRect)
+        && map.isUnused(struct.gridRect)
+        && map.checkBgTiles(struct.gridRect, tilesAllowed)) {
+      structures += struct
+      map.add(struct, 0)
+      nb_structures += 1
+      game_graph.newStructure(struct)
+
+      struct match {
+        case town: Town => townManager.newTown(town)
+        case mine: Mine => { mines += mine ; townManager.newStructure(mine) }
+        case farm: Farm => ()
+        case factory: Factory => ()
+        case _ => ()
+      }
+      true
     }
-    if (removedRail.previous != removedRail)
-      removedRail.previous.next = removedRail.previous
-    rails.remove(rails.size - 1)
-    // entities.remove(entities.size-1)   // TODO
-    true
+    else false
   }
 
+  def buyStruct(struct: BuyableStruct, pos: GridLocation, player: Player = _player): Boolean = {
+    var bought: Boolean = false
+    if (player.money.value >= struct.price) {
+      struct.newInstance(pos, nb_structures) match {
+        case town: Town => bought = createStruct(town, Tile.grass)
+        case mine: Mine => bought = createStruct(mine, Array(Tile.rock))
+        case farm: Farm => bought = createStruct(farm, Tile.grass)
+        case factory: Factory => bought = createStruct(factory, Tile.grass)
+        case _ => ()
+      }
+    }
+    if (bought) player.pay(struct.price)
+    bought
+  }
+
+  /* KEEEEP END */
+
+
   def createTrain (town: Town) : Boolean = {
-    // Carriage number set at 3 by default
-    // + one good carriage now :)
     var train = new Train(town, 3)
 
-
-    // check if there is an other train ??
     town.addTrain(train)
     trains += train
-    //tiledPane.addRenderable(train)
-    //map.addTile(1, pos.col, pos.row, Tile.locomotive)
     map.add(train, 1)
 
     // paying
@@ -204,8 +220,6 @@ class Game(val map_width : Int, val map_height : Int)
     for (carriage <- train.carriageList) {
       playerMoney.set(playerMoney.value - carriage.cost)
       map.add(carriage, 1)
-      //tiledPane.addRenderable(carriage)
-      //map.addTile(1, pos.col, pos.row, Tile.passenger_wagon)
       carriages+=carriage
     }
     true
