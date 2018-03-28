@@ -35,15 +35,50 @@ class RailManager(map: TileMap, gameGraph: Graph) {
       for (i <- 0 to 3) {
         map.getContentAt(neighbors(i)) match {
           case Some(e) =>
+            e match {
+              case neighborRail: Rail => {
+                if (!rail.road.finished)
+                  if(lookAround(rail, neighborRail)) {
+                    created = true
+                    if (firstDir == -1) firstDir = i
+                    else secondDir = i
+                  }
+              }
+              case _ => ()
+            }
+          case _ => ()
+        }
+      }
+
+      for (i <- 0 to 3) {
+        map.getContentAt(neighbors(i)) match {
+          case Some(e) =>
+            e match {
+              case neighborStruct: Structure => {
+                if (!rail.road.finished)
+                  if(lookAround(rail, neighborStruct)) {
+                    created = true
+                    if (firstDir == -1) firstDir = i
+                    else secondDir = i
+                  }
+              }
+              case _ => ()
+            }
+          case _ => ()
+        }
+      }/*
+      for (i <- 0 to 3) {
+        map.getContentAt(neighbors(i)) match {
+          case Some(e) =>
             if (!rail.road.finished)
               if(lookAround(rail, e)) {
                 created = true
                 if (firstDir == -1) firstDir = i
                 else secondDir = i
               }
-          case None => ()
+          case _ => ()
         }
-      }
+      }*/
 
       if (created) {
         rails += rail
@@ -63,10 +98,10 @@ class RailManager(map: TileMap, gameGraph: Graph) {
           correctRotation(rail.previous)
         }
         else { // rail placed between two rails or structs or between a rail and a struct
-          if ((firstDir == 0 && rail.previous.gridPos.col == rail.gridPos.col && rail.previous.gridPos.row == rail.gridPos.row - 1)
-          || (firstDir == 1 && rail.previous.gridPos.row == rail.gridPos.row && rail.previous.gridPos.col == rail.gridPos.col + 1)
-          || (firstDir == 2 && rail.previous.gridPos.col == rail.gridPos.col && rail.previous.gridPos.row == rail.gridPos.row + 1)
-          || (firstDir == 3 && rail.previous.gridPos.row == rail.gridPos.row && rail.previous.gridPos.col == rail.gridPos.col - 1)) {
+          if ((firstDir == 0 && (rail.previous.gridPos.eq(rail.gridPos.top) || !rail.next.gridPos.eq(rail.gridPos.top)))
+          || (firstDir == 1 && (rail.previous.gridPos.eq(rail.gridPos.right) || !rail.next.gridPos.eq(rail.gridPos.right)))
+          || (firstDir == 2 && (rail.previous.gridPos.eq(rail.gridPos.bottom) || !rail.next.gridPos.eq(rail.gridPos.bottom)))
+          || (firstDir == 3 && (rail.previous.gridPos.eq(rail.gridPos.left) || !rail.next.gridPos.eq(rail.gridPos.left)))) {
             rail.previousDir = firstDir
             rail.nextDir = secondDir
           }
@@ -85,7 +120,7 @@ class RailManager(map: TileMap, gameGraph: Graph) {
           correctRotation(rail)
         }
 
-
+        println(firstDir, secondDir, rail.previousDir, rail.nextDir)
 
       }
     }
@@ -110,63 +145,63 @@ class RailManager(map: TileMap, gameGraph: Graph) {
     }
   }
 
-  def lookAround(rail: Rail, neighbor: Any): Boolean =  {
-    neighbor match {
-      case (s: Structure) => {
-        if (rail.road.startStructure == None) {
-          rail.road.startStructure = Some(s)
-          nbNeighborRails += 1
-          true
-        }
-        else if (rail.road.startStructure != Some(s)) {
-          rail.road = rail.previous.road
-          if (rail != rail.previous) {
-            rail.road.rails += rail
-            rail.road.length += 1
-          }
-          rail.road.endStructure = Some(s)
-          rail.road.finished = true
-          gameGraph.newRoad(rail.road)
-          println("tycoon > game > RailManager.scala > lookAround > new road of " + rail.road.length + " tracks")
-          true
-        }
-        else false
-      }
-
-      case (previousRail: Rail) => {
-        if (previousRail.next == previousRail && !previousRail.road.finished) {
-          nbNeighborRails += 1
-
-          if (nbNeighborRails == 1) {
-            rail.road = previousRail.road
-            rail.road.rails += rail
-            rail.road.length += 1
-            rail.previous = previousRail
-            previousRail.next = rail
-          }
-
-          // merge two sides of rails
-          else if (nbNeighborRails == 2 && previousRail.road.startStructure != rail.road.startStructure) {
-            for (r <- previousRail.road.rails) {
-              val tmp = r.next
-              r.next = r.previous
-              r.previous = tmp
-            }
-            rail.next = previousRail
-            previousRail.previous = rail
-            rail.road.finished = true
-            rail.road.endStructure = previousRail.road.startStructure
-            rail.road.rails ++= previousRail.road.rails
-            rail.road.length += previousRail.road.length
-            previousRail.road = rail.road
-            gameGraph.newRoad(rail.road)
-            println("tycoon > game > RailManager.scala > lookAround > new road of " + rail.road.length + " tracks")
-          }
-          true
-        }
-        else false
-      }
-      case _ => false
+  def lookAround(rail: Rail, neighbor: Structure): Boolean =  {
+    val s = neighbor
+    if (rail.road.startStructure == None) {
+      rail.road.startStructure = Some(s)
+      nbNeighborRails += 1
+      true
     }
+    else if (rail.road.startStructure != Some(s)) {
+      rail.road = rail.previous.road
+      if (rail != rail.previous) {
+        rail.road.rails += rail
+        //rail.road.length += 1
+      }
+      rail.road.endStructure = Some(s)
+      rail.road.finished = true
+      gameGraph.newRoad(rail.road)
+      println("tycoon > game > RailManager.scala > lookAround > new road of " + rail.road.length + " tracks")
+      true
+    }
+    else false
+  }
+
+  def lookAround(rail: Rail, neighbor: Rail): Boolean =  {
+    val previousRail = neighbor
+    if (previousRail.next == previousRail && !previousRail.road.finished) {
+      nbNeighborRails += 1
+
+      if (nbNeighborRails == 1) {
+        rail.road = previousRail.road
+        rail.road.rails += rail
+        rail.road.length += 1
+        rail.previous = previousRail
+        previousRail.next = rail
+      }
+
+      // merge two sides of rails
+      else if (nbNeighborRails == 2 && previousRail.road.startStructure != rail.road.startStructure) {
+        for (r <- previousRail.road.rails) {
+          val tmp = r.next
+          r.next = r.previous
+          r.previous = tmp
+          val tmp2 = r.nextDir
+          r.nextDir = r.previousDir
+          r.previousDir = tmp2
+        }
+        rail.next = previousRail
+        previousRail.previous = rail
+        rail.road.finished = true
+        rail.road.endStructure = previousRail.road.startStructure
+        rail.road.rails ++= previousRail.road.rails
+        rail.road.length += previousRail.road.length
+        previousRail.road = rail.road
+        gameGraph.newRoad(rail.road)
+        println("tycoon > game > RailManager.scala > lookAround > new road of " + rail.road.length + " tracks")
+      }
+      true
+    }
+    else false
   }
 }

@@ -15,7 +15,7 @@ import tycoon.ui.DraggableTiledPane
 class Train(town: Town, nbCarriages: Int, val owner: Player) extends Vehicle(town) {
   var location: Option[Structure] = Some(town)
   tile = Tile.locomotiveT
-  var speed = 2.0
+  var speed: Double = 200.0
   val weight = 50
   val cost = 200
   var currentRail : Option[Rail] = None

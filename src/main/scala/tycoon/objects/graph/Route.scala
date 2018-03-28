@@ -52,12 +52,16 @@ class Route(itinerary: ListBuffer[Road], train: Train) {
 
   def departure() = {
     // fill carriages, owner earns money accordingly
+    stops -= train.location.get
+
     train.boarding(stops)
+
+     for (carr <- train.carriageList) // TMP SINON ON VOIT RIEN
+        carr.visible = false
 
     train.location match {
       case None => ()
       case Some(struct) => {
-        stops -= struct
 
         carriageMovement(struct.gridPos, None, train.carriageList)
 
@@ -107,16 +111,95 @@ class Route(itinerary: ListBuffer[Road], train: Train) {
   }
 
   // train movement
-  def updateBox (road: Road) = {
+  def updateBox (road: Road, dt: Double) = {
     train.currentRail match {
       case Some(rail) => {
-        if (rail.nextInDir(dirIndicator) == rail)
-          arrival(road)
+        if (rail.nextInDir(dirIndicator) == rail) {
+          if (train.gridPos.pourcentageHeight > 0) {
+            train.gridPos.pourcentageHeight -= dt * train.speed
+            if (train.gridPos.pourcentageHeight <= 0) {
+              train.gridPos.pourcentageHeight = 0
+              rotateVehicle(train)
+            }
+          }
+          else if (train.gridPos.pourcentageWidth > 0) {
+            train.gridPos.pourcentageWidth -= dt * train.speed
+            if (train.gridPos.pourcentageWidth <= 0) {
+              train.gridPos.pourcentageHeight = 0
+              rotateVehicle(train)
+            }
+          }
+          else
+            arrival(road)
+        }
         else {
-          train.currentRail = Some(rail.nextInDir(dirIndicator))
-          rotateVehicle(train)
-          train.gridPos = rail.nextInDir(dirIndicator).gridPos
-          carriageMovement(rail.gridPos, Some(rail), train.carriageList)
+          if (rail.nextInDir(dirIndicator).gridPos.eq(train.gridPos.right)) {
+            if (train.gridPos.pourcentageHeight > 0) {
+              train.gridPos.pourcentageHeight -= dt * train.speed
+              if (train.gridPos.pourcentageHeight <= 0) {
+                train.gridPos.pourcentageHeight = 0
+                rotateVehicle(train)
+              }
+            } else {
+              train.gridPos.pourcentageWidth += dt * train.speed
+              if (train.gridPos.pourcentageWidth > 100) {
+                train.gridPos = train.gridPos.right
+                train.gridPos.pourcentageWidth = 0
+                train.currentRail = Some(rail.nextInDir(dirIndicator))
+                rotateVehicle(train)
+                carriageMovement(rail.gridPos, Some(rail), train.carriageList)
+              }
+            }
+          } else if (rail.nextInDir(dirIndicator).gridPos.eq(train.gridPos.left)) {
+            if (train.gridPos.pourcentageHeight > 0) {
+              train.gridPos.pourcentageHeight -= dt * train.speed
+              if (train.gridPos.pourcentageHeight <= 0) {
+                train.gridPos.pourcentageHeight = 0
+                rotateVehicle(train)
+              }
+            } else {
+              train.gridPos.pourcentageWidth -= dt * train.speed
+              if (train.gridPos.pourcentageWidth <= 0) {
+                train.gridPos = train.gridPos.left
+                train.gridPos.pourcentageWidth = 100
+                train.currentRail = Some(rail.nextInDir(dirIndicator))
+                carriageMovement(rail.gridPos, Some(rail), train.carriageList)
+              }
+            }
+          } else if (rail.nextInDir(dirIndicator).gridPos.eq(train.gridPos.top)) {
+            if (train.gridPos.pourcentageWidth > 0) {
+              train.gridPos.pourcentageWidth -= dt * train.speed
+              if (train.gridPos.pourcentageWidth <= 0) {
+                train.gridPos.pourcentageHeight = 0
+                rotateVehicle(train)
+              }
+            } else {
+              train.gridPos.pourcentageHeight -= dt * train.speed
+              if (train.gridPos.pourcentageHeight <= 0) {
+                train.gridPos = train.gridPos.top
+                train.gridPos.pourcentageHeight = 100
+                train.currentRail = Some(rail.nextInDir(dirIndicator))
+                carriageMovement(rail.gridPos, Some(rail), train.carriageList)
+              }
+            }
+          } else if (rail.nextInDir(dirIndicator).gridPos.eq(train.gridPos.bottom)) {
+            if (train.gridPos.pourcentageWidth > 0) {
+              train.gridPos.pourcentageWidth -= dt * train.speed
+              if (train.gridPos.pourcentageWidth <= 0) {
+                train.gridPos.pourcentageHeight = 0
+                rotateVehicle(train)
+              }
+            } else {
+              train.gridPos.pourcentageHeight += dt * train.speed
+              if (train.gridPos.pourcentageHeight > 100) {
+                train.gridPos = train.gridPos.bottom
+                train.gridPos.pourcentageHeight = 0
+                train.currentRail = Some(rail.nextInDir(dirIndicator))
+                rotateVehicle(train)
+                carriageMovement(rail.gridPos, Some(rail), train.carriageList)
+              }
+            }
+          }
         }
       }
       case None => ()
@@ -125,16 +208,23 @@ class Route(itinerary: ListBuffer[Road], train: Train) {
 
 
   def update (dt: Double) {
+    if (onTheRoad) {
+      train.location match {
+        case Some(town) => departure()
+        case None => updateBox(currentRoad.get, dt)
+      }
+    }
+  /*
     internTime += dt
     if (onTheRoad) {
       if (internTime > 1) {
         internTime -=1
         train.location match {
           case Some(town) => departure()
-          case None => updateBox(currentRoad.get)
+          case None => updateBox(currentRoad.get, dt)
         }
       }
-    }
+    }*/
   }
 
 

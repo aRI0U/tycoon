@@ -16,6 +16,9 @@ abstract class Town(pos: GridLocation, id: Int) extends Structure(pos, id) {
   tile = Tile.town
 
   protected val r = scala.util.Random
+  // names
+  var town_names = new ListBuffer[String]
+  town_names += ("Paris", "Lyon", "Toulouse", "Saclay", "Nice", "Strasbourg", "Mulhouse", "Aulnay-sous-Bois", "Cachan", "Hamburg", "Berlin", "Brno", "Caderousse","Stuttgart", "Wien", "Köln")
 
   // choose town name
   def chooseName() {
@@ -23,7 +26,7 @@ abstract class Town(pos: GridLocation, id: Int) extends Structure(pos, id) {
       /*val i = r.nextInt(townManager.unchosen_names.length)
       _name.set(townManager.unchosen_names(i))
       townManager.unchosen_names.remove(i)*/
-      _name.set("Tmp")
+      _name.set(town_names(id))
     }
     catch {
       case e: Exception => println("you've created too many towns")

@@ -274,8 +274,8 @@ class DraggableTiledPane(val tm: TileMap) extends BorderPane {
       layer <- tm.getEntities
       e <- layer
     } {
-      val layoutX = scaledTilesWidth.value * e.gridRect.left + layoutShiftX
-      val layoutY = scaledTilesHeight.value * e.gridRect.top + layoutShiftY
+      val layoutX = scaledTilesWidth.value * (e.gridRect.left + e.gridPos.pourcentageWidth / 100) + layoutShiftX
+      val layoutY = scaledTilesHeight.value * (e.gridRect.top + e.gridPos.pourcentageHeight / 100) + layoutShiftY
 
       val width = e.tile.width * scaledTilesWidth.value + 1 // extra pixel for smoother overlap
       val height = e.tile.height * scaledTilesHeight.value + 1

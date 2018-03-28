@@ -19,7 +19,7 @@ class GridRectangle(private var _pos: GridLocation, private var _cols: Int, priv
   def cols_= (newCols: Int) = _cols = newCols // vérifier que ca change bien right bottom et tout ; ou mettre properties
   def rows_= (newRows: Int) = _rows = newRows
 
-  def pos: GridLocation = new GridLocation(left, top)
+  def pos: GridLocation = _pos
   def pos_= (newPos: GridLocation) = _pos = newPos
 
   def contains(other: GridLocation): Boolean =

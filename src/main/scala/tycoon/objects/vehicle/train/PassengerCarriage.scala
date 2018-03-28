@@ -24,8 +24,8 @@ case class PassengerCarriage(_owner: Player) extends Carriage(_owner) {
             var newPassengers = 0
             stop match {
               case town: Town => {
-                val i = departureTown.destinations.indexOf(stop)
-                newPassengers = remainingPlaces.min(departureTown.waiters(i))
+                val i = departureTown.destinations.indexOf(town)
+                newPassengers = remainingPlaces.min(departureTown.waiters(i)) 
                 departureTown.waitersInt(i).set(departureTown.waiters(i) - newPassengers)
               }
               case facility: Facility => {
