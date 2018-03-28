@@ -1,6 +1,6 @@
 package tycoon.ui
 
-import tycoon.game.{Game, GridLocation}
+import tycoon.game.{Game, GridLocation, BuyableItem, BuyableStruct, BuyableRail}
 
 import scalafx.Includes._
 import scalafx.geometry.{Pos, Insets}
@@ -10,7 +10,6 @@ import scalafx.scene.layout.{HBox, VBox, Priority}
 import scalafx.beans.property.{StringProperty, IntegerProperty, DoubleProperty, ReadOnlyDoubleWrapper}
 import scalafx.scene.text.Text
 
-import tycoon.objects.structure.BuyableStruct
 
 
 class InteractionsMenu(val game: Game) extends TabPane
@@ -20,30 +19,33 @@ class InteractionsMenu(val game: Game) extends TabPane
   tabClosingPolicy = TabPane.TabClosingPolicy.Unavailable
 
   private val buildingTab = new Tab()
+  private val railsTab = new Tab()
   private val trainsTab = new Tab()
 
   buildingTab.text = "Build Structures"
+  railsTab.text = "Buy Rails"
   trainsTab.text = "Manage Trains"
 
   this += buildingTab
+  this += railsTab
   this += trainsTab
 
-
-  /**
-    BUILDING TAB
-  */
-
-  private val buildingTabContainer = new HBox()
+  private val buildingTabContainer = new Array[HBox](2)
+  buildingTabContainer(0) = new HBox
+  buildingTabContainer(1) = new HBox
   buildingTab.content = new ScrollPane {
-    content = buildingTabContainer
+    content = buildingTabContainer(0)
+  }
+  railsTab.content = new ScrollPane {
+    content = buildingTabContainer(1)
   }
 
-  private var selectedItem: Option[BuyableStruct] = None
+  private var selectedItem: Option[BuyableItem] = None
   private var selectedItemTab: Option[Tab] = None
 
   private val quantityBought = IntegerProperty(0)
 
-  def addBuyableStruct(item: BuyableStruct) = {
+  def addBuyableItem(item: BuyableItem, tabId: Int) = {
     val itemBox = new VBox {
       styleClass += "buyableItem"
       children = Seq(
@@ -58,10 +60,13 @@ class InteractionsMenu(val game: Game) extends TabPane
         addItemTab(item)
       }
     }
-    buildingTabContainer.children += new VBox(itemBox)
+    buildingTabContainer(tabId).children += new VBox(itemBox)
   }
 
-  private def addItemTab(item: BuyableStruct) = {
+  def addBuyableStruct(item: BuyableStruct) = addBuyableItem(item, 0)
+  def addBuyableRail(item: BuyableRail) = addBuyableItem(item, 1)
+
+  private def addItemTab(item: BuyableItem) = {
     val itemTab = new Tab()
     itemTab.text = item.name + " Building"
     this += itemTab
@@ -140,10 +145,20 @@ class InteractionsMenu(val game: Game) extends TabPane
 
   def mousePressed(pos: GridLocation, dragging: Boolean = false): Unit = {
     selectedItem match {
-      case Some(item) =>
-        if(!dragging || item.createByDragging)
-          if(game.buyStruct(item, pos))
-            quantityBought.set(quantityBought.value + 1)
+      case Some(item) => {
+        if(!dragging || item.createByDragging) {
+          item match {
+            case struct: BuyableStruct => {
+              if(game.buyStruct(struct, pos))
+                quantityBought.set(quantityBought.value + 1)
+            }
+            case rail: BuyableRail => {
+              if(game.buyRail(rail, pos))
+                quantityBought.set(quantityBought.value + 1)
+            }
+          }
+        }
+      }
       case None => ()
     }
   }

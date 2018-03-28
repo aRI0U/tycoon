@@ -16,8 +16,8 @@ class RailManager(map: TileMap, gameGraph: Graph) {
   private val rails: ListBuffer[Rail] = new ListBuffer()
   var nbNeighborRails: Int = 0
 
-  def createRail(pos: GridLocation) : Boolean = {
-    val rail = new Rail(pos)
+  def createRail(rail: Rail) : Boolean = {
+    val pos: GridLocation = rail.gridPos
     var created = false
     if (map.gridContains(rail.gridRect) && map.isUnused(rail.gridRect) && map.checkBgTile(pos, Tile.grass)) {
       nbNeighborRails = 0

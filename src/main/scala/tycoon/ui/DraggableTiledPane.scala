@@ -280,7 +280,8 @@ class DraggableTiledPane(val tm: TileMap) extends BorderPane {
       val width = e.tile.width * scaledTilesWidth.value + 1 // extra pixel for smoother overlap
       val height = e.tile.height * scaledTilesHeight.value + 1
 
-      gc.drawImage(Tile.tileset, e.tile.sx, e.tile.sy, e.tile.sw, e.tile.sh, layoutX, layoutY, width, height)
+      if (e.visible)
+        gc.drawImage(Tile.tileset, e.tile.sx, e.tile.sy, e.tile.sw, e.tile.sh, layoutX, layoutY, width, height)
     }
   }
 

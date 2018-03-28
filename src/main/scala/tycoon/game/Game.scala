@@ -2,9 +2,9 @@ package tycoon.game
 
 import tycoon.objects.structure._
 import tycoon.objects.railway._
+import tycoon.objects.vehicle.train._
 import tycoon.objects.vehicle._
 import tycoon.objects.graph._
-import tycoon.objects.carriage._
 import tycoon.game._
 import tycoon.ui.Tile
 import tycoon.ui.{Tile, Renderable, DraggableTiledPane}
@@ -111,12 +111,6 @@ class Game(val map_width : Int, val map_height : Int)
 
 
 
-  // try to create rail at pos and return true in case of success
-  def createRail(pos: GridLocation) : Boolean = {
-     railManager.createRail(pos)
-    // if returns true, remove money from player..
-  }
-
 
   /* KEEEEP BEGIN */
 
@@ -156,11 +150,25 @@ class Game(val map_width : Int, val map_height : Int)
     bought
   }
 
+  def buyRail(rail: BuyableRail, pos: GridLocation, player: Player = _player): Boolean = {
+    var bought: Boolean = false
+    if (player.money.value >= rail.price) {
+      rail.newInstance(pos) match {
+        case rail: Rail => bought = railManager.createRail(rail)
+        case _ => ()
+      }
+    }
+    if (bought) player.pay(rail.price)
+    bought
+  }
+
+
+
   /* KEEEEP END */
 
 
   def createTrain (town: Town) : Boolean = {
-    var train = new Train(town, 3)
+    var train = new Train(town, 3, _player)
 
     town.addTrain(train)
     trains += train
@@ -171,13 +179,13 @@ class Game(val map_width : Int, val map_height : Int)
     for (carriage <- train.carriageList) {
       playerMoney.set(playerMoney.value - carriage.cost)
       map.add(carriage, 1)
-      carriages+=carriage
+      carriages += carriage
     }
     true
   }
 
   def createRoute (departure: Structure, arrival: Structure, train: Train) {
-    val route = new Route(game_graph.shortestRoute(departure, arrival), train, this)
+    val route = new Route(game_graph.shortestRoute(departure, arrival), train)
     routes += route
   }
 }

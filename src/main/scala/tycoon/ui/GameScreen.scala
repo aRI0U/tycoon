@@ -1,7 +1,8 @@
 package tycoon.ui
 
 import tycoon.game._
-import tycoon.objects.vehicle._
+import tycoon.objects.vehicle.train._
+import tycoon.objects.vehicle.Vehicle
 import tycoon.objects.railway._
 import tycoon.objects.structure._
 
@@ -46,6 +47,8 @@ class GameScreen(val game: Game) extends BorderPane
   interactionsMenu.addBuyableStruct(BuyableStruct.Mine)
   interactionsMenu.addBuyableStruct(BuyableStruct.Farm)
   interactionsMenu.addBuyableStruct(BuyableStruct.Factory)
+
+  interactionsMenu.addBuyableRail(BuyableRail.Rail)
 
   def init () : Unit = {
     center = gamePane //
