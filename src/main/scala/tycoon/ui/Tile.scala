@@ -53,7 +53,7 @@ object Tile {
   val town = new Tile(4, 1, width = 2)
   val mine = new Tile(4, 3)
   val factory = new Tile(5, 1)
-  val farm1 = new Tile(5, 3, width = 2)
+  val farm1 = new Tile(5, 2, width = 2)
   val farm2 = new Tile(3, 8, width = 2)
   val farm3 = new Tile(3, 8, width = 2) // change
   val airport = new Tile(6, 3)

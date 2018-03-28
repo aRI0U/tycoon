@@ -21,7 +21,8 @@ class TownManager() {
   def newStructure(structure: Structure) {
     for (t <- towns_list) {
       // add the new structure to potential destinations
-      t.destinations += structure
+      if (structure != t)
+        t.destinations += structure
       t.waitersInt += IntegerProperty(0)
       t.waitersStr += new StringProperty
       t.waitersStr.last <== t.waitersInt.last.asString

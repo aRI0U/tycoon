@@ -27,3 +27,6 @@ Bugs:
 trains can be bought without money restriction
 rails
 Exit button closes bad thread and throws exn
+first rail sometimes erased when creating trip
+some rails dont match correctly (esp. at the end)
+pb when there is a loop of roads

@@ -5,7 +5,7 @@ import tycoon.game.GridLocation
 import tycoon.game.Game
 import tycoon.ui.Tile
 
-case class Farm(pos: GridLocation, id: Int) extends Structure(pos, id) {
+case class Farm(pos: GridLocation, id: Int) extends Facility(pos, id) {
   tile = Tile.farm(0)
   var tileType = 1
   //val price = game.farmPrice //To choose

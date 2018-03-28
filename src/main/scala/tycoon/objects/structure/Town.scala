@@ -12,17 +12,21 @@ import tycoon.ui.Tile
 import scalafx.beans.property.{IntegerProperty, StringProperty}
 
 
-case class Town(pos: GridLocation, id: Int, townManager: TownManager) extends Structure(pos, id) {
+abstract class Town(pos: GridLocation, id: Int) extends Structure(pos, id) {
   tile = Tile.town
 
   protected val r = scala.util.Random
+  // names
+  var town_names = new ListBuffer[String]
+  town_names += ("Paris", "Lyon", "Toulouse", "Saclay", "Nice", "Strasbourg", "Mulhouse", "Aulnay-sous-Bois", "Cachan", "Hamburg", "Berlin", "Brno", "Caderousse","Stuttgart", "Wien", "Köln")
 
   // choose town name
   def chooseName() {
     try {
-      val i = r.nextInt(townManager.unchosen_names.length)
+      /*val i = r.nextInt(townManager.unchosen_names.length)
       _name.set(townManager.unchosen_names(i))
-      townManager.unchosen_names.remove(i)
+      townManager.unchosen_names.remove(i)*/
+      _name.set(town_names(id))
     }
     catch {
       case e: Exception => println("you've created too many towns")
@@ -64,7 +68,7 @@ case class Town(pos: GridLocation, id: Int, townManager: TownManager) extends St
 
   def displayWaiters() {
     printData += new Tuple2("Waiting passengers", StringProperty(""))
-    for (town <- townManager.towns_list) {
+    /*for (town <- townManager.towns_list) {
       if (town != this) {
         destinations += town
         waitersInt += IntegerProperty(0)
@@ -72,7 +76,7 @@ case class Town(pos: GridLocation, id: Int, townManager: TownManager) extends St
         waitersStr.last <== waitersInt.last.asString
         printData += new Tuple2(town.name, waitersStr.last)
       }
-    }
+    }*/
   }
 
   def waiters(i: Int) : Int = waitersInt(i).value
@@ -122,7 +126,7 @@ case class Town(pos: GridLocation, id: Int, townManager: TownManager) extends St
   def name_= (new_name: String) = _name.set(new_name)
   def waiting_passengers : Int = _waiting_passengers.value
   def waiting_passengers_= (new_wait_pass: Int) = _waiting_passengers.set(new_wait_pass)
-  val max_population: Int = 1000
+  var max_population: Int = 1000
   population = 50 + r.nextInt(50)
   waiting_passengers = 0
 }

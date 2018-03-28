@@ -1,7 +1,8 @@
 package tycoon.ui
 
 import tycoon.game._
-import tycoon.objects.vehicle._
+import tycoon.objects.vehicle.train._
+import tycoon.objects.vehicle.Vehicle
 import tycoon.objects.railway._
 import tycoon.objects.structure._
 
@@ -40,17 +41,20 @@ class GameScreen(val game: Game) extends BorderPane
   private val interactionsMenu = new InteractionsMenu(game)
 
 // removes: TODO
-  interactionsMenu.addBuyableItem(new BuyableItem("Rail", 10, Tile.straightRailBT, game.createRail, () => game.removeLastRail(), createByDragging = true))
-  interactionsMenu.addBuyableItem(new BuyableItem("Mine", 300, Tile.mine, game.createMine, () => game.removeAllMines()))
-  interactionsMenu.addBuyableItem(new BuyableItem("Town", 500000, Tile.town, game.createTown, () => game.removeAllTowns()))
+  interactionsMenu.addBuyableStruct(BuyableStruct.SmallTown)
+  interactionsMenu.addBuyableStruct(BuyableStruct.MediumTown)
+  interactionsMenu.addBuyableStruct(BuyableStruct.LargeTown)
+  interactionsMenu.addBuyableStruct(BuyableStruct.Mine)
+  interactionsMenu.addBuyableStruct(BuyableStruct.Farm)
+  interactionsMenu.addBuyableStruct(BuyableStruct.Factory)
 
-
+  interactionsMenu.addBuyableRail(BuyableRail.Rail)
 
   def init () : Unit = {
-      center = gamePane //
-      gamePane.center = game.tiledPane
-      left = menuPane // can be moved out
-      bottom = interactionsMenu // can be moved out
+    center = gamePane //
+    gamePane.center = game.tiledPane
+    left = menuPane // can be moved out
+    bottom = interactionsMenu // can be moved out
   }
 
 
@@ -179,7 +183,7 @@ class GameScreen(val game: Game) extends BorderPane
             if (tripCreationMode) {
               if (firstStructureSelected.value) {
                 if (firstStructure != structure) {
-                  firstStructure.getTrain() match {
+                  firstStructure.getTrain match {
                     case Some(train) => {
                       try {
                         game.createRoute(firstStructure, structure, train)

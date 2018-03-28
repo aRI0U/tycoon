@@ -14,4 +14,7 @@ class Player {
 
   def money : IntegerProperty = _money
   def money_= (new_money: Int) = _money.set(new_money)
+
+  def pay(price: Int) = _money.set(_money.value - price)
+  def earn(amount: Int) = _money.set(_money.value + amount)
 }

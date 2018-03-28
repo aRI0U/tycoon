@@ -18,6 +18,11 @@ class GridLocation(private var _col: Int, private var _row: Int) {
   def bottom = new GridLocation(col, row + 1)
   def left = new GridLocation(col - 1, row)
 
+  var pourcentageWidth: Double = 0
+  var pourcentageHeight: Double = 0
+
+  def eq(other: GridLocation): Boolean = (col == other.col && row == other.row)
+
   // absolute position in pixels
   //def x: Double = _x
   //def y: Double = _y
