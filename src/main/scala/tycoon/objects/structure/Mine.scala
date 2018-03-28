@@ -60,13 +60,5 @@ case class Mine(pos: GridLocation, id: Int) extends Facility(pos, id) {
       intern_time -= production_time
     }
   }
-
-  // val product = new Iron()
-
-  //var production_per_period : Int = (diggers * (iron_amount - already_produced))/100
-
-
-
-
   //val price = game.mine_price //To choose
 }
