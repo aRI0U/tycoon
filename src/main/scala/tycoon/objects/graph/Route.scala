@@ -13,7 +13,9 @@ import tycoon.game.GridLocation
 
 class Route(itinerary: ListBuffer[Road], train: Train) {
   private var onTheRoad = true
-  var dirIndicator = 1
+  private var dirIndicator = 1
+
+
   var currentRoad: Option[Road] = None
   val stops: ListBuffer[Structure] = determineStops(itinerary)
 
@@ -52,51 +54,49 @@ class Route(itinerary: ListBuffer[Road], train: Train) {
 
   def departure() = {
     // fill carriages, owner earns money accordingly
-    stops -= train.location.get
+    stops -= train.location
 
     train.boarding(stops)
 
-     for (carr <- train.carriageList) // TMP SINON ON VOIT RIEN
-        carr.visible = false
+    carriageMovement(train.location.gridPos, None, train.carriageList)
 
-    train.location match {
-      case None => ()
-      case Some(struct) => {
+    if (train.location == itinerary.last.startStructure.get) dirIndicator = 0 // PAS DE GET
+    else dirIndicator = 1
 
-        carriageMovement(struct.gridPos, None, train.carriageList)
 
-        if (struct == itinerary.last.startStructure.get) dirIndicator = 0 // PAS DE GET
-        else dirIndicator = 1
+    train.location.trainList -= train
+    train.visible = true
 
-        train.location = None
-        struct.trainList -= train
-        train.visible = true
+    currentRoad = Some(itinerary.last)
+    for (rail <- itinerary.last.rails)
+      if (rail.nextInDir((dirIndicator + 1) % 2) == rail)
+        train.currentRail = Some(rail)
 
-        currentRoad = Some(itinerary.last)
-        for (rail <- itinerary.last.rails)
-          if (rail.nextInDir((dirIndicator - 1) % 2) == rail)
-           train.currentRail = Some(rail)
+    itinerary -= itinerary.last
+    rotateVehicle(train)
+    train.gridPos = (train.currentRail.get).gridPos
 
-        itinerary -= itinerary.last
-        rotateVehicle(train)
-        train.gridPos = (train.currentRail.get).gridPos
-      }
-    }
 
   }
 
   def arrival (road: Road) = {
-    if (dirIndicator == 1) train.location = road.startStructure
-    else train.location = road.endStructure
+    if (dirIndicator == 1)
+      road.startStructure match {
+        case Some(struct) => train.location = struct
+        case None => ()
+      }
+    else
+      road.endStructure match {
+        case Some(struct) => train.location = struct
+        case None => ()
+      }
 
-    train.location match {
-      case Some(struct) => struct.trainList += train
-                           stops -= struct
-      case None => ()
-    }
+
+    train.location.trainList += train
+    stops -= train.location
     train.landing()
 
-    train.gridPos = train.location.get.gridPos.right
+    train.gridPos = train.location.gridPos.right
 
     if (itinerary.size == 0) {
       onTheRoad = false
@@ -116,14 +116,14 @@ class Route(itinerary: ListBuffer[Road], train: Train) {
       case Some(rail) => {
         if (rail.nextInDir(dirIndicator) == rail) {
           if (train.gridPos.pourcentageHeight > 0) {
-            train.gridPos.pourcentageHeight -= dt * train.speed
+            train.gridPos.pourcentageHeight -= dt * train.speed.value
             if (train.gridPos.pourcentageHeight <= 0) {
               train.gridPos.pourcentageHeight = 0
               rotateVehicle(train)
             }
           }
           else if (train.gridPos.pourcentageWidth > 0) {
-            train.gridPos.pourcentageWidth -= dt * train.speed
+            train.gridPos.pourcentageWidth -= dt * train.speed.value
             if (train.gridPos.pourcentageWidth <= 0) {
               train.gridPos.pourcentageHeight = 0
               rotateVehicle(train)
@@ -135,13 +135,13 @@ class Route(itinerary: ListBuffer[Road], train: Train) {
         else {
           if (rail.nextInDir(dirIndicator).gridPos.eq(train.gridPos.right)) {
             if (train.gridPos.pourcentageHeight > 0) {
-              train.gridPos.pourcentageHeight -= dt * train.speed
+              train.gridPos.pourcentageHeight -= dt * train.speed.value
               if (train.gridPos.pourcentageHeight <= 0) {
                 train.gridPos.pourcentageHeight = 0
                 rotateVehicle(train)
               }
             } else {
-              train.gridPos.pourcentageWidth += dt * train.speed
+              train.gridPos.pourcentageWidth += dt * train.speed.value
               if (train.gridPos.pourcentageWidth > 100) {
                 train.gridPos = train.gridPos.right
                 train.gridPos.pourcentageWidth = 0
@@ -152,13 +152,13 @@ class Route(itinerary: ListBuffer[Road], train: Train) {
             }
           } else if (rail.nextInDir(dirIndicator).gridPos.eq(train.gridPos.left)) {
             if (train.gridPos.pourcentageHeight > 0) {
-              train.gridPos.pourcentageHeight -= dt * train.speed
+              train.gridPos.pourcentageHeight -= dt * train.speed.value
               if (train.gridPos.pourcentageHeight <= 0) {
                 train.gridPos.pourcentageHeight = 0
                 rotateVehicle(train)
               }
             } else {
-              train.gridPos.pourcentageWidth -= dt * train.speed
+              train.gridPos.pourcentageWidth -= dt * train.speed.value
               if (train.gridPos.pourcentageWidth <= 0) {
                 train.gridPos = train.gridPos.left
                 train.gridPos.pourcentageWidth = 100
@@ -168,13 +168,13 @@ class Route(itinerary: ListBuffer[Road], train: Train) {
             }
           } else if (rail.nextInDir(dirIndicator).gridPos.eq(train.gridPos.top)) {
             if (train.gridPos.pourcentageWidth > 0) {
-              train.gridPos.pourcentageWidth -= dt * train.speed
+              train.gridPos.pourcentageWidth -= dt * train.speed.value
               if (train.gridPos.pourcentageWidth <= 0) {
                 train.gridPos.pourcentageHeight = 0
                 rotateVehicle(train)
               }
             } else {
-              train.gridPos.pourcentageHeight -= dt * train.speed
+              train.gridPos.pourcentageHeight -= dt * train.speed.value
               if (train.gridPos.pourcentageHeight <= 0) {
                 train.gridPos = train.gridPos.top
                 train.gridPos.pourcentageHeight = 100
@@ -184,13 +184,13 @@ class Route(itinerary: ListBuffer[Road], train: Train) {
             }
           } else if (rail.nextInDir(dirIndicator).gridPos.eq(train.gridPos.bottom)) {
             if (train.gridPos.pourcentageWidth > 0) {
-              train.gridPos.pourcentageWidth -= dt * train.speed
+              train.gridPos.pourcentageWidth -= dt * train.speed.value
               if (train.gridPos.pourcentageWidth <= 0) {
                 train.gridPos.pourcentageHeight = 0
                 rotateVehicle(train)
               }
             } else {
-              train.gridPos.pourcentageHeight += dt * train.speed
+              train.gridPos.pourcentageHeight += dt * train.speed.value
               if (train.gridPos.pourcentageHeight > 100) {
                 train.gridPos = train.gridPos.bottom
                 train.gridPos.pourcentageHeight = 0
@@ -208,23 +208,7 @@ class Route(itinerary: ListBuffer[Road], train: Train) {
 
 
   def update (dt: Double) {
-    if (onTheRoad) {
-      train.location match {
-        case Some(town) => departure()
-        case None => updateBox(currentRoad.get, dt)
-      }
-    }
-  /*
-    internTime += dt
-    if (onTheRoad) {
-      if (internTime > 1) {
-        internTime -=1
-        train.location match {
-          case Some(town) => departure()
-          case None => updateBox(currentRoad.get, dt)
-        }
-      }
-    }*/
+    if (onTheRoad) updateBox(currentRoad.get, dt)
   }
 
 
@@ -283,8 +267,8 @@ class Route(itinerary: ListBuffer[Road], train: Train) {
 
   def carriageMovement(firstPosition: GridLocation, optionRail: Option[Rail], carriages: ListBuffer[Carriage]) = {
     if (!carriages.isEmpty) {
-      var pos1 = firstPosition
-      var pos2 = firstPosition
+      var pos1 = new GridLocation(firstPosition)
+      var pos2 = new GridLocation(firstPosition)
       var optionRail1 = optionRail
       var optionRail2 = optionRail
       for (car <- carriages) {

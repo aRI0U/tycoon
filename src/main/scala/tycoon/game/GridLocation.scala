@@ -13,6 +13,8 @@ class GridLocation(private var _col: Int, private var _row: Int) {
   def col: Int = _col
   def row: Int = _row
 
+  def this(pos: GridLocation) = this(pos.col, pos.row)
+
   def top = new GridLocation(col, row - 1)
   def right = new GridLocation(col + 1, row)
   def bottom = new GridLocation(col, row + 1)
