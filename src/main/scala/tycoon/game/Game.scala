@@ -137,7 +137,7 @@ class Game(val map_width : Int, val map_height : Int)
   def buyStruct(struct: BuyableStruct, pos: GridLocation, player: Player = _player): Boolean = {
     var bought: Boolean = false
     if (player.money.value >= struct.price) {
-      struct.newInstance(pos, nb_structures) match {
+      struct.newInstance(pos, nb_structures, townManager) match {
         case town: Town => bought = createStruct(town, Tile.grass)
         case mine: Mine => bought = createStruct(mine, Array(Tile.rock))
         case farm: Farm => bought = createStruct(farm, Tile.grass)
