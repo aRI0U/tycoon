@@ -27,19 +27,16 @@ case class Mine(pos: GridLocation, id: Int) extends Facility(pos, id) {
   var production_per_period = new ListBuffer[Int]
   var extractable_amount = new ListBuffer[Int]
 
-  def extract(id: Int) : Int = stocks(id).value
-  def extract_= (id: Int, new_stock: Int) = stocks(id).set(new_stock)
-
   // here are added new products
-  products += new Good("Coal")
+  products += new Ore("Coal")
   production_per_period += (10+r.nextInt(10))
   extractable_amount += 1000
 
-  products += new Good("Iron")
+  products += new Ore("Iron")
   production_per_period += (5+r.nextInt(5))
   extractable_amount+= (50+r.nextInt(100))
 
-  products += new Good("Gold")
+  products += new Ore("Gold")
   production_per_period += r.nextInt(2)
   extractable_amount += r.nextInt(50)
 
@@ -48,7 +45,7 @@ case class Mine(pos: GridLocation, id: Int) extends Facility(pos, id) {
   // update production
 
   def update_production(i: Int) = {
-    if (stocks(i).get() < extractable_amount(i))    stocks(i).set(extract(i) + production_per_period(i))
+    if (stocks(i) < extractable_amount(i))    stocksInt(i).set(stocks(i) + production_per_period(i))
   }
 
   override def update(dt: Double) = {

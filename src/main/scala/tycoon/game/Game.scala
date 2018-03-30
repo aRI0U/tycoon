@@ -57,9 +57,6 @@ class Game(val map_width : Int, val map_height : Int)
   private val _player = new Player
 
 
-
-
-
   // game loop
 
   private class GameLoop extends AnimationTimer
@@ -138,7 +135,7 @@ class Game(val map_width : Int, val map_height : Int)
   def buyStruct(struct: BuyableStruct, pos: GridLocation, player: Player = _player): Boolean = {
     var bought: Boolean = false
     if (player.money.value >= struct.price) {
-      struct.newInstance(pos, nb_structures) match {
+      struct.newInstance(pos, nb_structures, townManager) match {
         case town: Town => bought = createStruct(town, Tile.grass)
         case mine: Mine => bought = createStruct(mine, Array(Tile.rock))
         case farm: Farm => bought = createStruct(farm, Tile.grass)
@@ -167,12 +164,17 @@ class Game(val map_width : Int, val map_height : Int)
   /* KEEEEP END */
 
 
+  var nbTrains = IntegerProperty(0)
+
+
   def createTrain (town: Town) : Boolean = {
-    var train = new Train(town, 3, _player)
+    var train = new Train(town, IntegerProperty(3), _player)
 
     town.addTrain(train)
     trains += train
     map.add(train, 1)
+
+    nbTrains.set(nbTrains.value + 1)
 
     // paying
     playerMoney.set(playerMoney.value - train.cost)
@@ -186,6 +188,7 @@ class Game(val map_width : Int, val map_height : Int)
 
   def createRoute (departure: Structure, arrival: Structure, train: Train) {
     val route = new Route(game_graph.shortestRoute(departure, arrival), train)
+    route.departure()
     routes += route
   }
 }

@@ -12,7 +12,7 @@ import tycoon.ui.Tile
 import scalafx.beans.property.{IntegerProperty, StringProperty}
 
 
-case class SmallTown(pos: GridLocation, id: Int) extends Town(pos, id) {
+case class SmallTown(pos: GridLocation, id: Int, townManager: TownManager) extends Town(pos, id, townManager) {
   max_population = 1000
   population = 50 + r.nextInt(50)
 }

@@ -15,7 +15,6 @@ case class PassengerCarriage(_owner: Player) extends Carriage(_owner) {
   val maxPassengers = 10
   var remainingPlaces: Int = maxPassengers
 
-// TODO: player earns money from passenger tickets in embark here
   override def embark(departureStruct: Structure, stops: ListBuffer[Structure]) : Unit = {
     departureStruct match {
       case departureTown: Town => {
@@ -25,7 +24,7 @@ case class PassengerCarriage(_owner: Player) extends Carriage(_owner) {
             stop match {
               case town: Town => {
                 val i = departureTown.destinations.indexOf(town)
-                newPassengers = remainingPlaces.min(departureTown.waiters(i)) 
+                newPassengers = remainingPlaces.min(departureTown.waiters(i))
                 departureTown.waitersInt(i).set(departureTown.waiters(i) - newPassengers)
               }
               case facility: Facility => {

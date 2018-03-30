@@ -1,15 +1,17 @@
 package tycoon.ui
 
-import tycoon.game.{Game, GridLocation, BuyableItem, BuyableStruct, BuyableRail}
+import tycoon.game._
 
 import scalafx.Includes._
 import scalafx.geometry.{Pos, Insets}
-import scalafx.scene.control.{Label, Tab, TabPane, Button, ScrollPane}
+import scalafx.scene.control._
 import scalafx.scene.input.MouseEvent
 import scalafx.scene.layout.{HBox, VBox, Priority}
-import scalafx.beans.property.{StringProperty, IntegerProperty, DoubleProperty, ReadOnlyDoubleWrapper}
+import scalafx.beans.property._
 import scalafx.scene.text.Text
-
+import tycoon.objects.vehicle.train._
+import scalafx.collections.ObservableBuffer
+import scalafx.scene.control.TableColumn._
 
 
 class InteractionsMenu(val game: Game) extends TabPane
@@ -18,30 +20,30 @@ class InteractionsMenu(val game: Game) extends TabPane
 
   tabClosingPolicy = TabPane.TabClosingPolicy.Unavailable
 
-  private val buildingTab = new Tab()
-  private val railsTab = new Tab()
+  private val structuresTab = new Tab()
+  private val roadsTab = new Tab()
   private val trainsTab = new Tab()
 
-  buildingTab.text = "Build Structures"
-  railsTab.text = "Buy Rails"
+  structuresTab.text = "Build Structures"
+  roadsTab.text = "Build Roads"
   trainsTab.text = "Manage Trains"
 
-  this += buildingTab
-  this += railsTab
+  this += structuresTab
+  this += roadsTab
   this += trainsTab
+
+  /**
+   TABS FOR BUYING PHYSICAL OBJECTS (STRUCTURES, RAILS...)
+  */
 
   private val buildingTabContainer = new Array[HBox](2)
   buildingTabContainer(0) = new HBox
   buildingTabContainer(1) = new HBox
-  buildingTab.content = new ScrollPane {
-    content = buildingTabContainer(0)
-  }
-  railsTab.content = new ScrollPane {
-    content = buildingTabContainer(1)
-  }
+  structuresTab.content = new ScrollPane { content = buildingTabContainer(0) }
+  roadsTab.content = new ScrollPane { content = buildingTabContainer(1) }
 
-  private var selectedItem: Option[BuyableItem] = None
-  private var selectedItemTab: Option[Tab] = None
+  private var selectedBuildingItem: Option[BuyableItem] = None
+  private var selectedBuildingItemTab: Option[Tab] = None
 
   private val quantityBought = IntegerProperty(0)
 
@@ -55,7 +57,7 @@ class InteractionsMenu(val game: Game) extends TabPane
       )
       alignment = Pos.Center
       onMouseClicked = _ => {
-        selectedItem = Some(item)
+        selectedBuildingItem = Some(item)
         quantityBought.set(0)
         addItemTab(item)
       }
@@ -71,7 +73,7 @@ class InteractionsMenu(val game: Game) extends TabPane
     itemTab.text = item.name + " Building"
     this += itemTab
     this.selectionModel.value.selectLast()
-    selectedItemTab = Some(itemTab)
+    selectedBuildingItemTab = Some(itemTab)
 
     val closeTabBt = new Button {
       text = "Exit Construction"
@@ -83,6 +85,7 @@ class InteractionsMenu(val game: Game) extends TabPane
         stopBuilding()
       }
     }
+
     val txtIndivPrice = new Text {
       text = "Price: $" + item.price
     }
@@ -92,6 +95,7 @@ class InteractionsMenu(val game: Game) extends TabPane
     val txtTotalPrice = new Text {
       text <== StringProperty("Total Cost: $").concat((quantityBought * item.price).asString)
     }
+
     val removeLastBt = new Button {
       text = "Resell Last"
       margin = Insets(10)
@@ -99,7 +103,7 @@ class InteractionsMenu(val game: Game) extends TabPane
       maxHeight = Double.MaxValue
       visible <== quantityBought > 0
       onMouseClicked = _ =>
-        if(true) { // TODO REMOVE STRUCT IN GAME
+        if(true) {                                                              /* TODO ALLOW TO REMOVE STRUCTS IN GAME */
           quantityBought.set(quantityBought.value - 1)
           tabPaneRequestFocus()
         }
@@ -126,25 +130,125 @@ class InteractionsMenu(val game: Game) extends TabPane
   }
 
   private def removeItemTab() = {
-    selectedItemTab match {
+    selectedBuildingItemTab match {
       case Some(tab) =>
         this.tabs -= tab
         tabPaneRequestFocus()
       case None => ()
     }
-    selectedItemTab = None
+    selectedBuildingItemTab = None
   }
 
   private def stopBuilding() = {
     removeItemTab()
-    selectedItem = None
+    selectedBuildingItem = None
   }
+
+
+  /**
+    TAB FOR MANAGING TRAINS & CARRIAGES
+  */
+
+  private val trainsTabContainer = new HBox()
+  trainsTab.setContent(trainsTabContainer)
+
+  val showTrainsBt = new Button {
+    text <== StringProperty("Trains (").concat(game.nbTrains.asString) + " owned)"
+    margin = Insets(10)
+    vgrow = Priority.Always
+    maxHeight = Double.MaxValue
+    onMouseClicked = _ => openTrainsDataDialog()
+  }
+
+  trainsTabContainer.children = Seq(
+    showTrainsBt
+  )
+
+  // when creating train
+  // ask for train engine (determines speed, max carriages weight)
+  // carriages (maybe a list of available carriages with a Add/Remove thing)
+  // a town
+  // also display the total price before validating
+
+  // when creating route
+  // choose start town
+  // and also a add/remove last thing with the options available being the cities connected
+  // (pas forcément juste à coté, le train peut aller de paris à lyon sans sarreter a clermond et continuer vers strasbourg)
+  // et une ville peut meme etre choisie plusieurs fois (juste pas 2 fois a la suite)
+  // OU choisir uniquement villes adjacentes et pour chacune choisir s'y on sy arrete ou pas
+  // ensuite choisir un train dans startTown
+  // et enfin choisir la répétition du trajet (une seule fois ou n fois, aller/retours tt le temps avec x temps de pause entre chaque retour
+  // ou a chaque stop)
+
+  def openTrainsDataDialog() = {
+    // id | state | from/in | next stop | speed | weight | engine | nb passenger carriages | nb passagers | passagers max | nb goods carriage | infos sur les goods | profits générés par ce train
+    val trains = new ObservableBuffer[Train]
+    for (train <- game.trains) trains += train
+
+    val content = new TableView[Train](trains) {
+      columns ++= List(
+        new TableColumn[Train, String] {
+          text = "State"
+          cellValueFactory = { input => {
+            val state = StringProperty("")
+            state <== when(input.value.onTheRoad) choose "En chemin" otherwise "A l'arret"
+            state
+          }}
+          resizable = false
+          editable = false
+          minWidth = 50
+        },
+        new TableColumn[Train, String] {
+          text = "From / In"
+          cellValueFactory = { _.value.speed.asString } // create a StructureProperty...
+          resizable = false
+          editable = false
+          minWidth = 100
+        },
+        new TableColumn[Train, String] {
+          text = "Destination"
+          cellValueFactory = { _.value.nbCarriages.asString }
+          resizable = false
+          editable = false
+          minWidth = 100
+        },
+        new TableColumn[Train, String] {
+          text = "Speed"
+          cellValueFactory = { _.value.speed.asString }
+          resizable = false
+          editable = false
+          minWidth = 200
+        },
+        new TableColumn[Train, String] {
+          text = "Nb Carriages"
+          cellValueFactory = { _.value.nbCarriages.asString }
+          resizable = false
+          editable = false
+          minWidth = 200
+        }
+      )
+    }
+
+    val dialog = new Dialog
+    dialog.title = "Trains Owned"
+    dialog.dialogPane.value.buttonTypes = Seq(ButtonType.Close)
+    dialog.dialogPane().content = content
+    dialog.showAndWait()
+  }
+
+  /* TODO  new Label("Nb of trains + others stats on them, button to see list of
+   all trains with all their features (current trajet, nb passagers, engine, carriages..),
+    bouton pour acheter nouveau train (locomotive), bouton pour acheter carriage, bouton pour gérer trains (carriages") */
+
+
+  /* FUNCTIONS USED BY ALL TABS */
 
   private def selectFirstTab() = this.selectionModel.value.selectFirst()
   private def tabPaneRequestFocus() = this.requestFocus()
 
   def mousePressed(pos: GridLocation, dragging: Boolean = false): Unit = {
-    selectedItem match {
+    // buying physical objects (structures, rails..)
+    selectedBuildingItem match {
       case Some(item) => {
         if(!dragging || item.createByDragging) {
           item match {
@@ -161,29 +265,16 @@ class InteractionsMenu(val game: Game) extends TabPane
       }
       case None => ()
     }
+
   }
 
   this.selectionModel.value.selectedItem.onChange {
-    selectedItemTab match {
+    // quit building when changing tab
+    selectedBuildingItemTab match {
       case Some(tab) =>
         if (!tab.selected.value)
           stopBuilding()
       case None => ()
     }
   }
-
-
-  /**
-    TRAINS TAB
-  */
-
-  private val trainsTabContainer = new HBox()
-  trainsTab.setContent(trainsTabContainer)
-
-  trainsTabContainer.children = Seq(
-  // TODO  new Label("Nb of trains + others stats on them, button to see list of all trains with all their features (current trajet, nb passagers, engine, carriages..), bouton pour acheter nouveau train (locomotive), bouton pour acheter carriage, bouton pour gérer trains (carriages")
-  )
-
-
-
 }
