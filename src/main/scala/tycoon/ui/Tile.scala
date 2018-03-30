@@ -48,6 +48,7 @@ object Tile {
   val goodsWagonT = new Tile(7, 6)
 
   val liquid_wagon = new Tile(6, 1)
+  val plane= new Tile(6, 2)
 
   //structure tiles
   val town = new Tile(4, 1, width = 2)

@@ -47,6 +47,7 @@ class GameScreen(val game: Game) extends BorderPane
   interactionsMenu.addBuyableStruct(BuyableStruct.Mine)
   interactionsMenu.addBuyableStruct(BuyableStruct.Farm)
   interactionsMenu.addBuyableStruct(BuyableStruct.Factory)
+  interactionsMenu.addBuyableStruct(BuyableStruct.Airport)
 
   interactionsMenu.addBuyableRail(BuyableRail.Rail)
 
@@ -102,10 +103,12 @@ class GameScreen(val game: Game) extends BorderPane
   /* to be beautified */
 
   private var tripCreationMode : Boolean = false
+  private var flyMode : Boolean = false
   private var firstStructureSelected = BooleanProperty(false)
   private var firstStructure : Structure = _
 
   private var buyingTrainMode : Boolean = false
+  private var buyingPlaneMode : Boolean = false
 
   private def init_buyingTrains () {
     tripCreationMode = false
@@ -126,6 +129,58 @@ class GameScreen(val game: Game) extends BorderPane
           text = "Exit train buying" ; margin = Insets(10)
           onMouseClicked = (e: MouseEvent) => {
             buyingTrainMode = false
+            menuPane.top = actionsPane
+          }
+        },
+        new Separator { orientation = Orientation.Horizontal ; styleClass += "sep" }
+      )
+    }
+  }
+
+  private def initBuyPlane() {
+    tripCreationMode = false
+    buyingPlaneMode = true
+
+    menuPane.top = new VBox {
+
+      children = Seq(
+        new Text {
+          text = "Select an airport to add a plan in it (costs 500)"
+          margin = Insets(10)
+        },
+        /*new Text {
+          text = "Number of passenger carriages (costs 20 per carriage):"
+          margin = Insets(5)
+        },*/
+        new Button {
+          text = "Exit Plain buying" ; margin = Insets(10)
+          onMouseClicked = (e: MouseEvent) => {
+            buyingPlaneMode = false
+            menuPane.top = actionsPane
+          }
+        },
+        new Separator { orientation = Orientation.Horizontal ; styleClass += "sep" }
+      )
+    }
+  }
+
+  private def initFly () {
+    flyMode = true
+    buyingPlaneMode = false
+
+    firstStructureSelected.set(false)
+
+    menuPane.top = new VBox {
+
+      children = Seq(
+        new Text {
+          text <== when (firstStructureSelected) choose "Select destination town" otherwise "Select depart town"
+          margin = Insets(10)
+        },
+        new Button {
+          text = "Exit trip creation" ; margin = Insets(10)
+          onMouseClicked = (e: MouseEvent) => {
+            flyMode = false
             menuPane.top = actionsPane
           }
         },
@@ -178,7 +233,12 @@ class GameScreen(val game: Game) extends BorderPane
                 println("tycoon > ui > GameScreen.scala > maybeClickRenderableAt: new train in " + town.name + " town")
                 if (game.createTrain(town)) return
               }}
-              case _ => ()
+              case airport : Airport => {
+                if (buyingPlaneMode) {
+                  println("tycoon > ui > GameScreen.scala > maybeClickRenderableAt: new plane in an airport")
+                  if (game.createPlane(airport)) return
+                }
+              }
             }
             if (tripCreationMode) {
               if (firstStructureSelected.value) {
@@ -203,6 +263,32 @@ class GameScreen(val game: Game) extends BorderPane
                 firstStructure = structure
               }
             }
+
+            if (flyMode) {
+              if (firstStructureSelected.value) {
+                if (firstStructure != structure) {
+                  firstStructure.getPlane match {
+                    case Some(plane) => {
+                      try {
+                        game.createFly(firstStructure, structure, plane)
+                        println("tycoon > ui > GameScreen.scala > maybeClickRenderableAt: create trip from " + firstStructure.name + " to " + structure.name)
+                      }
+                      catch {
+                        case e: IllegalStateException => println("tycoon > ui > GameScreen.scala > maybeClickRenderableAt: trains cannot fly!")
+                      }
+                    }
+                    case None => println("tycoon > ui > GameScreen.scala > maybeClickRenderableAt: to plane here")
+                  }
+                  tripCreationMode = false
+                  menuPane.top = actionsPane
+                }
+              } else {
+                firstStructureSelected.set(true)
+                firstStructure = structure
+              }
+            }
+
+
           }
           case r : Rail => { }
           case _ => {  }
@@ -237,6 +323,14 @@ class GameScreen(val game: Game) extends BorderPane
       new Button {
         text = "Create a train trip" ; margin = Insets(10)
         onMouseClicked = _ => init_tripCreation()
+      },
+      new Button {
+        text = "Buy Plane" ; margin = Insets(10)
+        onMouseClicked = _ => initBuyPlane()
+      },
+      new Button {
+        text = "Create a plan fly" ; margin = Insets(10)
+        onMouseClicked = _ => initFly()
       },
       new Separator { orientation = Orientation.Horizontal ; styleClass += "sep" }
     )

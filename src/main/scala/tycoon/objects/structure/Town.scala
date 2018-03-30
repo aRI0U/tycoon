@@ -36,6 +36,8 @@ abstract class Town(pos: GridLocation, id: Int) extends Structure(pos, id) {
 
   chooseName()
 
+  //Booleans about town facilities
+  var isAirport = false
 
    // _name = StringProperty(city_names(id))
   protected var _population = IntegerProperty(0)

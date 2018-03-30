@@ -31,6 +31,7 @@ object BuyableStruct {
   def newMine(pos: GridLocation, id: Int): Mine = new Mine(pos, id)
   def newFarm(pos: GridLocation, id: Int): Farm = new Farm(pos, id)
   def newFactory(pos: GridLocation, id: Int): Factory = new Factory(pos, id)
+  def newAirport(pos: GridLocation, id: Int): Airport = new Airport(pos, id)
 
   val SmallTown = new BuyableStruct("Small Town", 50, Tile.town, newSmallTown)
   val MediumTown = new BuyableStruct("Medium Town", 100, Tile.town, newMediumTown)
@@ -38,6 +39,7 @@ object BuyableStruct {
   val Mine = new BuyableStruct("Mine", 50, Tile.mine, newMine)
   val Farm = new BuyableStruct("Farm", 100, Tile.farm1, newFarm)
   val Factory = new BuyableStruct("Factory", 150, Tile.factory, newFactory)
+  val Airport = new BuyableStruct("Airport", 1000, Tile.airport, newAirport)
 }
 
 
