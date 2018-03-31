@@ -20,8 +20,11 @@ class GridLocation(private var _col: Int, private var _row: Int) {
   def bottom = new GridLocation(col, row + 1)
   def left = new GridLocation(col - 1, row)
 
-  var pourcentageWidth: Double = 0
-  var pourcentageHeight: Double = 0
+  var percentageWidth: Double = 0
+  var percentageHeight: Double = 0
+
+  def adjustedCol: Double = col + percentageWidth / 100
+  def adjustedRow: Double = row + percentageHeight / 100
 
   def eq(other: GridLocation): Boolean = (col == other.col && row == other.row)
   override def clone(): GridLocation = new GridLocation(col, row)

@@ -1,8 +1,7 @@
 package tycoon.ui
 
 
-import tycoon.game.GridLocation
-import tycoon.game.TileMap
+import tycoon.game.{GridLocation, GridRectangle, TileMap}
 
 import scalafx.Includes._
 import scalafx.scene.Scene
@@ -243,24 +242,11 @@ class DraggableTiledPane(val tm: TileMap) extends BorderPane {
     if (yOffset.value <= minOffsetY) yOffset.set(minOffsetY)
     else if (yOffset.value >= maxOffsetY) yOffset.set(maxOffsetY)
 
-    // maximal rectangle of the tilemap that can be displayed
-    val minRow: Int = Math.floor(yOffset.value / scaledTilesHeight.value).toInt //- 1
-    val minCol: Int = Math.floor(xOffset.value / scaledTilesWidth.value).toInt //- 1
-    val maxRow: Int = Math.min(Math.ceil((yOffset.value + canvas.height.value) / scaledTilesHeight.value).toInt, tm.height - 1)
-    val maxCol: Int = Math.min(Math.ceil((xOffset.value + canvas.width.value) / scaledTilesWidth.value).toInt, tm.width - 1)
-
     // pre-compute some values
     val layoutShiftX = - scaledTilesWidth.value * tileXOffset.value - (xOffset.value % scaledTilesWidth.value)
     val layoutShiftY = - scaledTilesHeight.value * tileYOffset.value - (yOffset.value % scaledTilesHeight.value)
 
-    clearCanvas()
-
-    for {
-      row <- minRow to maxRow
-      col <- minCol to maxCol
-    } {
-      val tile = tm.getBackgroundTile(col, row)
-
+    def drawTile(tile: Tile, col: Double, row: Double) = {
       val layoutX = scaledTilesWidth.value * col + layoutShiftX
       val layoutY = scaledTilesHeight.value * row + layoutShiftY
 
@@ -269,50 +255,30 @@ class DraggableTiledPane(val tm: TileMap) extends BorderPane {
 
       gc.drawImage(Tile.tileset, tile.sx, tile.sy, tile.sw, tile.sh, layoutX, layoutY, width, height)
     }
-    for {
-      row <- minRow to maxRow
-      col <- minCol to maxCol
-    } {
-      tm.getStructureAt(col, row) match {
+
+    // maximal rectangle of the tilemap that can be displayed
+    val minRow: Int = Math.floor(yOffset.value / scaledTilesHeight.value).toInt //- 1
+    val minCol: Int = Math.floor(xOffset.value / scaledTilesWidth.value).toInt //- 1
+    val maxRow: Int = Math.min(Math.ceil((yOffset.value + canvas.height.value) / scaledTilesHeight.value).toInt, tm.height - 1)
+    val maxCol: Int = Math.min(Math.ceil((xOffset.value + canvas.width.value) / scaledTilesWidth.value).toInt, tm.width - 1)
+
+    val maxRect = new GridRectangle(minCol, minRow, maxCol - minCol + 1, maxRow - minRow + 1)
+
+    // clear and draw
+    clearCanvas()
+
+    maxRect.iterateTuple foreach {
+      case (col, row) => drawTile(tm.getBackgroundTile(col, row), col, row)
+    }
+    maxRect.iterateTuple foreach {
+      case (col, row) => tm.getStructureAt(col, row) match {
+        case Some(e) => drawTile(e.tile, e.gridPos.adjustedCol, e.gridPos.adjustedRow)
         case None => ()
-        case Some(e) => {
-          val tile = e.tile
-
-          val layoutX = scaledTilesWidth.value * e.gridPos.col + layoutShiftX
-          val layoutY = scaledTilesHeight.value * e.gridPos.row + layoutShiftY
-
-          val width = tile.width * scaledTilesWidth.value + 1 // extra pixel for smoother overlap
-          val height = tile.height * scaledTilesHeight.value + 1
-
-          gc.drawImage(Tile.tileset, tile.sx, tile.sy, tile.sw, tile.sh, layoutX, layoutY, width, height)
-        }
-      }
-      for (e <- tm.entities) {
-        val tile = e.tile
-
-        val layoutX = scaledTilesWidth.value * e.gridPos.col + layoutShiftX
-        val layoutY = scaledTilesHeight.value * e.gridPos.row + layoutShiftY
-
-        val width = tile.width * scaledTilesWidth.value + 1 // extra pixel for smoother overlap
-        val height = tile.height * scaledTilesHeight.value + 1
-
-        gc.drawImage(Tile.tileset, tile.sx, tile.sy, tile.sw, tile.sh, layoutX, layoutY, width, height)
       }
     }
-
-    // for {
-    //   layer <- tm.getEntities
-    //   e <- layer
-    // } {
-    //   val layoutX = scaledTilesWidth.value * (e.gridRect.left + e.gridPos.pourcentageWidth / 100) + layoutShiftX
-    //   val layoutY = scaledTilesHeight.value * (e.gridRect.top + e.gridPos.pourcentageHeight / 100) + layoutShiftY
-    //
-    //   val width = e.tile.width * scaledTilesWidth.value + 1 // extra pixel for smoother overlap
-    //   val height = e.tile.height * scaledTilesHeight.value + 1
-    //
-    //   if (e.visible)
-    //     gc.drawImage(Tile.tileset, e.tile.sx, e.tile.sy, e.tile.sw, e.tile.sh, layoutX, layoutY, width, height)
-    // }
+    tm.entities foreach {
+      e => drawTile(e.tile, e.gridPos.adjustedCol, e.gridPos.adjustedRow)
+    }
   }
 
   /** given an absolute position on the screen (in pixels), return the GridLocation in which it is, depending on the offset */

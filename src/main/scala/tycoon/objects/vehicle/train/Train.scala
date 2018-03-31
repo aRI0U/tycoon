@@ -13,10 +13,18 @@ import tycoon.ui.DraggableTiledPane
 
 
 class Train(initialTown: Town, val nbCarriages: IntegerProperty, val owner: Player) extends Vehicle(initialTown) {
+
+  // used in display
+  private var _moving = BooleanProperty(false)
+  def moving: BooleanProperty = _moving
+
+
+
+
+
   var location: Structure = initialTown // town if !onTheRoad, origin if onTheRoad
-  var onTheRoad = BooleanProperty(false)
   tile = Tile.locomotiveT
-  var speed = DoubleProperty(200.0)
+  var speed = DoubleProperty(200.0) // in tile size percentage per second (ie in tile * 100 / s), here 2tiles/sec
   val weight = 50
   val cost = 200
   var currentRail : Option[Rail] = None
@@ -36,12 +44,12 @@ class Train(initialTown: Town, val nbCarriages: IntegerProperty, val owner: Play
   }
 
   def boarding(stops: ListBuffer[Structure]) = {
-    onTheRoad.set(true)
+    moving.set(true)
     carriageList foreach (_.embark(location, stops))
   }
 
   def landing() = {
-    onTheRoad.set(false)
+    moving.set(false)
     carriageList.foreach(_.debark(location))
   }
 }

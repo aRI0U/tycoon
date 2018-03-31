@@ -119,17 +119,17 @@ class Route(itinerary: ListBuffer[Road], train: Train) {
     train.currentRail match {
       case Some(rail) => {
         if (rail.nextInDir(dirIndicator) == rail) {
-          if (train.gridPos.pourcentageHeight > 0) {
-            train.gridPos.pourcentageHeight -= dt * train.speed.value
-            if (train.gridPos.pourcentageHeight <= 0) {
-              train.gridPos.pourcentageHeight = 0
+          if (train.gridPos.percentageHeight > 0) {
+            train.gridPos.percentageHeight -= dt * train.speed.value
+            if (train.gridPos.percentageHeight <= 0) {
+              train.gridPos.percentageHeight = 0
               rotateVehicle(train)
             }
           }
-          else if (train.gridPos.pourcentageWidth > 0) {
-            train.gridPos.pourcentageWidth -= dt * train.speed.value
-            if (train.gridPos.pourcentageWidth <= 0) {
-              train.gridPos.pourcentageHeight = 0
+          else if (train.gridPos.percentageWidth > 0) {
+            train.gridPos.percentageWidth -= dt * train.speed.value
+            if (train.gridPos.percentageWidth <= 0) {
+              train.gridPos.percentageHeight = 0
               rotateVehicle(train)
             }
           }
@@ -138,66 +138,66 @@ class Route(itinerary: ListBuffer[Road], train: Train) {
         }
         else {
           if (rail.nextInDir(dirIndicator).gridPos.eq(train.gridPos.right)) {
-            if (train.gridPos.pourcentageHeight > 0) {
-              train.gridPos.pourcentageHeight -= dt * train.speed.value
-              if (train.gridPos.pourcentageHeight <= 0) {
-                train.gridPos.pourcentageHeight = 0
+            if (train.gridPos.percentageHeight > 0) {
+              train.gridPos.percentageHeight -= dt * train.speed.value
+              if (train.gridPos.percentageHeight <= 0) {
+                train.gridPos.percentageHeight = 0
                 rotateVehicle(train)
               }
             } else {
-              train.gridPos.pourcentageWidth += dt * train.speed.value
-              if (train.gridPos.pourcentageWidth > 100) {
+              train.gridPos.percentageWidth += dt * train.speed.value
+              if (train.gridPos.percentageWidth > 100) {
                 train.gridPos = train.gridPos.right
-                train.gridPos.pourcentageWidth = 0
+                train.gridPos.percentageWidth = 0
                 train.currentRail = Some(rail.nextInDir(dirIndicator))
                 rotateVehicle(train)
                 carriageMovement(rail.gridPos, Some(rail), train.carriageList)
               }
             }
           } else if (rail.nextInDir(dirIndicator).gridPos.eq(train.gridPos.left)) {
-            if (train.gridPos.pourcentageHeight > 0) {
-              train.gridPos.pourcentageHeight -= dt * train.speed.value
-              if (train.gridPos.pourcentageHeight <= 0) {
-                train.gridPos.pourcentageHeight = 0
+            if (train.gridPos.percentageHeight > 0) {
+              train.gridPos.percentageHeight -= dt * train.speed.value
+              if (train.gridPos.percentageHeight <= 0) {
+                train.gridPos.percentageHeight = 0
                 rotateVehicle(train)
               }
             } else {
-              train.gridPos.pourcentageWidth -= dt * train.speed.value
-              if (train.gridPos.pourcentageWidth <= 0) {
+              train.gridPos.percentageWidth -= dt * train.speed.value
+              if (train.gridPos.percentageWidth <= 0) {
                 train.gridPos = train.gridPos.left
-                train.gridPos.pourcentageWidth = 100
+                train.gridPos.percentageWidth = 100
                 train.currentRail = Some(rail.nextInDir(dirIndicator))
                 carriageMovement(rail.gridPos, Some(rail), train.carriageList)
               }
             }
           } else if (rail.nextInDir(dirIndicator).gridPos.eq(train.gridPos.top)) {
-            if (train.gridPos.pourcentageWidth > 0) {
-              train.gridPos.pourcentageWidth -= dt * train.speed.value
-              if (train.gridPos.pourcentageWidth <= 0) {
-                train.gridPos.pourcentageHeight = 0
+            if (train.gridPos.percentageWidth > 0) {
+              train.gridPos.percentageWidth -= dt * train.speed.value
+              if (train.gridPos.percentageWidth <= 0) {
+                train.gridPos.percentageHeight = 0
                 rotateVehicle(train)
               }
             } else {
-              train.gridPos.pourcentageHeight -= dt * train.speed.value
-              if (train.gridPos.pourcentageHeight <= 0) {
+              train.gridPos.percentageHeight -= dt * train.speed.value
+              if (train.gridPos.percentageHeight <= 0) {
                 train.gridPos = train.gridPos.top
-                train.gridPos.pourcentageHeight = 100
+                train.gridPos.percentageHeight = 100
                 train.currentRail = Some(rail.nextInDir(dirIndicator))
                 carriageMovement(rail.gridPos, Some(rail), train.carriageList)
               }
             }
           } else if (rail.nextInDir(dirIndicator).gridPos.eq(train.gridPos.bottom)) {
-            if (train.gridPos.pourcentageWidth > 0) {
-              train.gridPos.pourcentageWidth -= dt * train.speed.value
-              if (train.gridPos.pourcentageWidth <= 0) {
-                train.gridPos.pourcentageHeight = 0
+            if (train.gridPos.percentageWidth > 0) {
+              train.gridPos.percentageWidth -= dt * train.speed.value
+              if (train.gridPos.percentageWidth <= 0) {
+                train.gridPos.percentageHeight = 0
                 rotateVehicle(train)
               }
             } else {
-              train.gridPos.pourcentageHeight += dt * train.speed.value
-              if (train.gridPos.pourcentageHeight > 100) {
+              train.gridPos.percentageHeight += dt * train.speed.value
+              if (train.gridPos.percentageHeight > 100) {
                 train.gridPos = train.gridPos.bottom
-                train.gridPos.pourcentageHeight = 0
+                train.gridPos.percentageHeight = 0
                 train.currentRail = Some(rail.nextInDir(dirIndicator))
                 rotateVehicle(train)
                 carriageMovement(rail.gridPos, Some(rail), train.carriageList)
