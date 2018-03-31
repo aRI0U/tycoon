@@ -40,7 +40,6 @@ class GameScreen(val game: Game) extends BorderPane
 
   private val interactionsMenu = new InteractionsMenu(game)
 
-// removes: TODO
   interactionsMenu.addBuyableStruct(BuyableStruct.SmallTown)
   interactionsMenu.addBuyableStruct(BuyableStruct.MediumTown)
   interactionsMenu.addBuyableStruct(BuyableStruct.LargeTown)
@@ -51,13 +50,6 @@ class GameScreen(val game: Game) extends BorderPane
 
   interactionsMenu.addBuyableRail(BuyableRail.Rail)
 
-  def init () : Unit = {
-    center = gamePane //
-    gamePane.center = game.tiledPane
-    left = menuPane // can be moved out
-    bottom = interactionsMenu // can be moved out
-    top = informationPane
-  }
 
 
   private val informationPane = new BorderPane {
@@ -396,4 +388,13 @@ class GameScreen(val game: Game) extends BorderPane
   }
 
 
+
+
+
+  left = menuPane
+  bottom = interactionsMenu
+  top = informationPane
+  center = gamePane
+
+  def init(): Unit = gamePane.center = game.tiledPane
 }

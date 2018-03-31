@@ -51,11 +51,28 @@ class Game(val map_width : Int, val map_height : Int)
 
   var infoTextTimer: Double = 0
   val informationText = StringProperty("")
-  def clearInfoText(): Unit = informationText.set("")
+  def clearInfoText(): Unit = setRandomInfoText()
   def setInfoText(s: String, duration: Double = 4): Unit = {
     informationText.set(s)
     infoTextTimer = duration
   }
+  private def setRandomInfoText() = {
+    val r = scala.util.Random
+    val randomTexts = Seq(
+      "random texts but i have no inspiration 1",
+      "random texts but i have no inspiration 2",
+      "random texts but i have no inspiration 3",
+      "random texts but i have no inspiration 4",
+      "random texts but i have no inspiration 5",
+      "random texts but i have no inspiration 6",
+      "random texts but i have no inspiration 7",
+      "random texts but i have no inspiration 8",
+      "random texts but i have no inspiration 9",
+      "random texts but i have no inspiration 10"
+    )
+    setInfoText(randomTexts(r.nextInt(randomTexts.length)))
+  }
+  setRandomInfoText()
 
 
   // game map
