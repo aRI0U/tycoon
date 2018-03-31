@@ -33,7 +33,7 @@ class RailManager(map: TileMap, gameGraph: Graph) {
       var secondDir: Int = -1
 
       for (i <- 0 to 3) {
-        map.getContentAt(neighbors(i)) match {
+        map.getStructureAt(neighbors(i)) match {
           case Some(e) =>
             e match {
               case neighborRail: Rail => {
@@ -51,7 +51,7 @@ class RailManager(map: TileMap, gameGraph: Graph) {
       }
 
       for (i <- 0 to 3) {
-        map.getContentAt(neighbors(i)) match {
+        map.getStructureAt(neighbors(i)) match {
           case Some(e) =>
             e match {
               case neighborStruct: Structure => {
@@ -68,7 +68,7 @@ class RailManager(map: TileMap, gameGraph: Graph) {
         }
       }/*
       for (i <- 0 to 3) {
-        map.getContentAt(neighbors(i)) match {
+        map.getStructureAt(neighbors(i)) match {
           case Some(e) =>
             if (!rail.road.finished)
               if(lookAround(rail, e)) {
@@ -82,7 +82,7 @@ class RailManager(map: TileMap, gameGraph: Graph) {
 
       if (created) {
         rails += rail
-        map.add(rail, 0)
+        map.addStructure(rail)
 
         // apply correct rotation to rails
         if (rail.previous == rail && !rail.road.finished) { // first rail next to a struct

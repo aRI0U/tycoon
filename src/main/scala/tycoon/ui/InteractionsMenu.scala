@@ -183,7 +183,7 @@ class InteractionsMenu(val game: Game) extends TabPane
   def openTrainsDataDialog() = {
     // id | state | from/in | next stop | speed | weight | engine | nb passenger carriages | nb passagers | passagers max | nb goods carriage | infos sur les goods | profits générés par ce train
     val trains = new ObservableBuffer[Train]
-    for (train <- game.trains) trains += train
+    trains ++= game.trains
 
     val content = new TableView[Train](trains) {
       columns ++= List(

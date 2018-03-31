@@ -222,25 +222,24 @@ class GameScreen(val game: Game) extends BorderPane
     var debugStr = "tycoon > ui > GameScreen.scala > mousePressed: "
     debugStr += "pos(" + pos.col.toString + ", " + pos.row.toString + ")"
     debugStr += ", background(" + game.map.getBackgroundTile(pos).name + ")"
-    debugStr += ", layer0("
+    debugStr += ", structure("
 
-    game.map.getContentAt(pos, 0) match {
-      case None => debugStr += "none"
+    game.map.getStructureAt(pos) match {
+      case None => ()
       case Some(e) => debugStr += e.tile.name
     }
 
-    debugStr += "), layer1("
+    debugStr += "), entities("
 
-    game.map.getContentAt(pos, 1) match {
-      case None => debugStr += "none"
-      case Some(e) => debugStr += e.tile.name
-    }
+    game.map.getEntitiesAt(pos) foreach { e => debugStr += e.tile.name + ", " }
+    if (debugStr.takeRight(1) != "(") debugStr = debugStr.dropRight(2)
 
     debugStr += ")"
     println(debugStr)
 
-    /*
-    game.map.getContentAt(pos) match {
+    /////
+
+    game.map.getStructureAt(pos) match {
       case Some(entity) => {
         entity match {
           case train : Train => {
@@ -316,7 +315,7 @@ class GameScreen(val game: Game) extends BorderPane
         bindPrintData(entity.printData)
       }
       case None => println("tycoon > ui > GameScreen.scala > maybeClickRenderableAt: nothing in map at this position")
-    } */
+    }
   }
 
   def bindPrintData(data: ListBuffer[(String, StringProperty)]) {

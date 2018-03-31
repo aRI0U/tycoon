@@ -55,7 +55,7 @@ class Game(val map_width : Int, val map_height : Int)
   map.fillBackground(Tile.grass)
   map.sprinkleTile(Tile.tree, 3)
   map.sprinkleTile(Tile.rock, 1)
-  map.generateLakes(5, 2000)
+  // map.generateLakes(5, 2000) SLOW
 
   val tiledPane = new DraggableTiledPane(map)
   tiledPane.moveToCenter()
@@ -141,7 +141,7 @@ class Game(val map_width : Int, val map_height : Int)
         && map.isUnused(struct.gridRect)
         && map.checkBgTiles(struct.gridRect, tilesAllowed)) {
       structures += struct
-      map.add(struct, 0)
+      map.addStructure(struct)
       nb_structures += 1
       game_graph.newStructure(struct)
 
@@ -168,10 +168,10 @@ class Game(val map_width : Int, val map_height : Int)
         case factory: Factory => bought = createStruct(factory, Tile.grass)
         case airport: Airport => {
           //Airport is a Town facilitie, has to be contained in a town.
-          val around = map.lookAround(pos)
+          val around = map.getSurroundingStructures(pos)
           for (neighbor <- around) {
             neighbor match {
-              case Some(town : Town) => {
+              case town: Town => {
                 if (!town.hasAirport && createStruct(airport, Tile.grass)) {
                   bought = true
                   town.hasAirport = true
@@ -213,7 +213,7 @@ class Game(val map_width : Int, val map_height : Int)
 
     town.addTrain(train)
     trains += train
-    map.add(train, 1)
+    map.addEntity(train)
 
     nbTrains.set(nbTrains.value + 1)
 
@@ -221,7 +221,7 @@ class Game(val map_width : Int, val map_height : Int)
     playerMoney.set(playerMoney.value - train.cost)
     for (carriage <- train.carriageList) {
       playerMoney.set(playerMoney.value - carriage.cost)
-      map.add(carriage, 1)
+      map.addEntity(carriage)
       carriages += carriage
     }
     true
@@ -232,7 +232,7 @@ class Game(val map_width : Int, val map_height : Int)
 
     airport.addPlane(plane)
     planes += plane
-    map.add(plane, 1)
+    map.addEntity(plane)
 
     // paying
     playerMoney.set(playerMoney.value - plane.cost)

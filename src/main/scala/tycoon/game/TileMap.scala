@@ -6,76 +6,77 @@ import scala.util.Random
 import scalafx.geometry.Rectangle2D
 import scala.collection.mutable.ListBuffer
 import scala.math
+import scala.collection.mutable.Set
 
 
-/**
-layer -1 (backgroundLayer) : background (grass, trees, rocks, lakes..)
-layer 0 : structures (town, airport, farm, factory, mine..) and rails
-layer 1 : movable entities (trains, planes, boats..)
-*/
-
-class TileMap (val width: Int, val height: Int, val nbEntityLayers: Int = 2) {
-
+class TileMap (val width: Int, val height: Int) {
   private val backgroundLayer = Array.fill[Tile](width, height)(Tile.default)
-  private var layers = Array.fill[Option[Renderable]](nbEntityLayers, width, height)(None)
-
-
-  def add(e: Renderable, layer: Int = 0) = {
-    for ((col, row) <- e.gridRect.iterate)
-      layers(layer)(col)(row) = Some(e)
-  }
-
-  def isUnused(pos: GridLocation): Boolean =
-    layers(0)(pos.col)(pos.row) == None
-
-  def isUnused(rect: GridRectangle): Boolean = {
-    var bool = true
-    for ((col, row) <- rect.iterate) {
-      if (layers(0)(col)(row) != None)
-        bool = false
-    }
-    bool
-  }
-
-  def lookAround(pos: GridLocation) : Array[Option[Renderable]] = {
-    Array(pos.top, pos.top.right, pos.right, pos.bottom.right, pos.bottom, pos.bottom.left, pos.left, pos.top.left)
-    .filter(gridContains)
-    .map(getContentAt(_, 0))
-  }
+  private var structuresLayer = Array.fill[Option[Renderable]](width, height)(None)
+  private val entityLayer = Set[Renderable]()
 
   /** test whether pos/rect is included in map */
   def gridContains(rect: GridRectangle): Boolean =
     (rect.left >= 0 && rect.top >= 0 && rect.right <= width - 1 && rect.bottom <= height - 1)
   def gridContains(pos: GridLocation): Boolean = gridContains(new GridRectangle(pos, 1, 1))
 
-  /** get content from background layer or entities layers */
+  /** add structure (ie town, facility, rail..) to map */
+  def addStructure(e: Renderable) = {
+    for ((col, row) <- e.gridRect.iterateTuple)
+      structuresLayer(col)(row) = Some(e)
+  }
+  /** test whether there is a structure at pos/in rect */
+  def isUnused(pos: GridLocation): Boolean = structuresLayer(pos.col)(pos.row) == None
+  def isUnused(rect: GridRectangle): Boolean = rect.iterate.forall(isUnused)
+  /** get structure at location if there is one */
+  def getStructureAt(pos: GridLocation): Option[Renderable] = getStructureAt(pos.col, pos.row)
+  def getStructureAt(col: Int, row: Int): Option[Renderable] = structuresLayer(col)(row)
+  /** return structures found in the 8 surrounding cases (modulo grid borders) */
+  def getSurroundingStructures(pos: GridLocation) : Array[Renderable] = {
+    Array(pos.top, pos.top.right, pos.right, pos.bottom.right,
+          pos.bottom, pos.bottom.left, pos.left, pos.top.left)
+    .filter(gridContains)
+    .map(getStructureAt)
+    .flatten
+  }
+
+  /** add entity (ie train, plane, boat..) to map */
+  def addEntity(e: Renderable) = entityLayer += e
+  /** get set of all entities */
+  def entities: Set[Renderable] = entityLayer
+  /** get set of entities at location */
+  def getEntitiesAt(pos: GridLocation): Set[Renderable] =
+    entities filter { e: Renderable => e.gridPos.eq(pos) }
+
+  /** set background tiles (ie grass, rock, tree, water, sand..) */
+  def setBackgroundTile(pos: GridLocation, tile: Tile) = backgroundLayer(pos.col)(pos.row) = tile
+  /** get tiles from background layer */
   def getBackgroundTile(col: Int, row: Int): Tile = backgroundLayer(col)(row)
   def getBackgroundTile(pos: GridLocation): Tile = getBackgroundTile(pos.col, pos.row)
-  def getContentAt(pos: GridLocation, layer: Int = 0): Option[Renderable] = getContentAt(pos.col, pos.row, layer)
-  def getContentAt(col: Int, row: Int, layer: Int): Option[Renderable] = layers(layer)(col)(row)
-
   /** check whether tilemap at pos/rect is made only of tile(s) */
   def checkBgTile(pos: GridLocation, tile: Tile) : Boolean = backgroundLayer(pos.col)(pos.row) == tile
   def checkBgTile(pos: GridLocation, tiles: Array[Tile]) : Boolean = tiles.exists(checkBgTile(pos, _))
   def checkBgTile(col: Int, row: Int, tile: Tile) : Boolean = checkBgTile(new GridLocation(col, row), tile)
   def checkBgTile(col: Int, row: Int, tiles: Array[Tile]) : Boolean = tiles.exists(checkBgTile(col, row, _))
-  def checkBgTiles(rect: GridRectangle, tiles: Array[Tile]) : Boolean = rect.iterateGridLoc.forall(checkBgTile(_, tiles))
+  def checkBgTiles(rect: GridRectangle, tiles: Array[Tile]) : Boolean = rect.iterate.forall(checkBgTile(_, tiles))
 
   /** randomly fill background layer of map using tiles */
   def fillBackground(tiles: Array[Tile]) : Unit = {
     val r = scala.util.Random
     if (tiles.length >= 1)
-      for ((col, row) <- new GridRectangle(0, 0, width, height).iterate)
-        backgroundLayer(col)(row) = tiles(r.nextInt(tiles.length))
+      new GridRectangle(0, 0, width, height)
+      .iterate
+      .foreach { setBackgroundTile(_, tiles(r.nextInt(tiles.length))) }
   }
 
   /** randomly add tile in background layer given a rate of apperance */
-  def sprinkleTile(tile: Tile, pourcentage: Int) = {
+  def sprinkleTile(tile: Tile, percentage: Int) = {
     val r = scala.util.Random
-    if (pourcentage >= 1 && pourcentage <= 100)
-      for ((col, row) <- new GridRectangle(0, 0, width, height).iterate)
-        if (r.nextInt(100) + 1 <= pourcentage && checkBgTile(col, row, Tile.grass))
-          backgroundLayer(col)(row) = tile
+    if (percentage >= 1 && percentage <= 100)
+      new GridRectangle(0, 0, width, height)
+      .iterate
+      .filter { _ => r.nextInt(100) + 1 <= percentage }
+      .filter { checkBgTile(_, Tile.grass) }
+      .foreach { setBackgroundTile(_, tile) }
   }
 
 
@@ -90,7 +91,7 @@ class TileMap (val width: Int, val height: Int, val nbEntityLayers: Int = 2) {
 
     // add random points in lakeStarter at a rate of 1 / generatedPoints
     var lakeStarter = new ListBuffer[GridLocation]
-    for ((col, row) <- new GridRectangle(0, 0, width, height).iterate)
+    for ((col, row) <- new GridRectangle(0, 0, width, height).iterateTuple)
       if (r.nextInt(generatedPoints) == 0)
         lakeStarter += new GridLocation(col, row)
 
@@ -99,7 +100,7 @@ class TileMap (val width: Int, val height: Int, val nbEntityLayers: Int = 2) {
     for (i <- 0 to lakeStarter.size - 1)
       teselationPoints(i) = new ListBuffer[GridLocation]
 
-    for ((col, row) <- new GridRectangle(0, 0, width, height).iterate) {
+    for ((col, row) <- new GridRectangle(0, 0, width, height).iterateTuple) {
       var distance = height + width
       var nearestPoint = 0
       var counter = 0
@@ -123,7 +124,7 @@ class TileMap (val width: Int, val height: Int, val nbEntityLayers: Int = 2) {
         }
       }
     }
-    for ((col, row) <- new GridRectangle(0, 0, width, height).iterate) {
+    for ((col, row) <- new GridRectangle(0, 0, width, height).iterateTuple) {
       // traiter les cas de bordure de lac pour rendre les bon tiles
       if (col > 0 && row > 0 && row< height -2 && col < width -2) {
         val neighbors = Array (

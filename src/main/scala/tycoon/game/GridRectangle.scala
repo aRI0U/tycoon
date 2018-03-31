@@ -32,12 +32,7 @@ class GridRectangle(private var _pos: GridLocation, private var _cols: Int, priv
     for {
       col <- left to right
       row <- top to bottom
-    } yield (col, row)
-  }
-  def iterateGridLoc = {
-    for {
-      col <- left to right
-      row <- top to bottom
     } yield new GridLocation(col, row)
   }
+  def iterateTuple = iterate map { pos: GridLocation => (pos.col, pos.row) }
 }

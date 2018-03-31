@@ -270,11 +270,10 @@ class DraggableTiledPane(val tm: TileMap) extends BorderPane {
       gc.drawImage(Tile.tileset, tile.sx, tile.sy, tile.sw, tile.sh, layoutX, layoutY, width, height)
     }
     for {
-      layer <- 0 until tm.nbEntityLayers
       row <- minRow to maxRow
       col <- minCol to maxCol
     } {
-      tm.getContentAt(col, row, layer) match {
+      tm.getStructureAt(col, row) match {
         case None => ()
         case Some(e) => {
           val tile = e.tile
@@ -287,6 +286,17 @@ class DraggableTiledPane(val tm: TileMap) extends BorderPane {
 
           gc.drawImage(Tile.tileset, tile.sx, tile.sy, tile.sw, tile.sh, layoutX, layoutY, width, height)
         }
+      }
+      for (e <- tm.entities) {
+        val tile = e.tile
+
+        val layoutX = scaledTilesWidth.value * e.gridPos.col + layoutShiftX
+        val layoutY = scaledTilesHeight.value * e.gridPos.row + layoutShiftY
+
+        val width = tile.width * scaledTilesWidth.value + 1 // extra pixel for smoother overlap
+        val height = tile.height * scaledTilesHeight.value + 1
+
+        gc.drawImage(Tile.tileset, tile.sx, tile.sy, tile.sw, tile.sh, layoutX, layoutY, width, height)
       }
     }
 
