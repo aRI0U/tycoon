@@ -66,6 +66,7 @@ class Route(itinerary: ListBuffer[Road], train: Train) {
 
     train.location.trainList -= train
     train.visible = true
+    train.carriageList foreach (_.visible = true)
 
     currentRoad = Some(itinerary.last)
     for (rail <- itinerary.last.rails)
@@ -74,7 +75,7 @@ class Route(itinerary: ListBuffer[Road], train: Train) {
 
     itinerary -= itinerary.last
     rotateVehicle(train)
-    train.gridPos = (train.currentRail.get).gridPos
+    train.gridPos = (train.currentRail.get).gridPos.clone()
 
 
   }
@@ -108,6 +109,9 @@ class Route(itinerary: ListBuffer[Road], train: Train) {
     else carriageMovement(train.currentRail.get.gridPos, train.currentRail, train.carriageList)
     train.currentRail = None
     train.visible = true
+
+    if(stops.length > 0)
+      departure()
   }
 
   // train movement
