@@ -31,7 +31,7 @@ class Game(val map_width : Int, val map_height : Int)
   map.fillBackground(Tile.grass)
   map.sprinkleTile(Tile.tree, 3)
   map.sprinkleTile(Tile.rock, 1)
-  map.generateLakes(10, 5000)
+  map.generateLakes(5, 2000)
 
   val tiledPane = new DraggableTiledPane(map)
   tiledPane.moveToCenter()
@@ -51,6 +51,7 @@ class Game(val map_width : Int, val map_height : Int)
   var mines = new ListBuffer[Mine]()
   var towns = new ListBuffer[Town]()
   var trains = new ListBuffer[Train]()
+  var planes = new ListBuffer[Plane]()
   var routes = new ListBuffer[Route]()
   var carriages = new ListBuffer[Carriage]()
 
@@ -125,6 +126,7 @@ class Game(val map_width : Int, val map_height : Int)
         case mine: Mine => { mines += mine ; townManager.newStructure(mine) }
         case farm: Farm => ()
         case factory: Factory => ()
+        case airport: Airport => ()
         case _ => ()
       }
       true
@@ -135,11 +137,26 @@ class Game(val map_width : Int, val map_height : Int)
   def buyStruct(struct: BuyableStruct, pos: GridLocation, player: Player = _player): Boolean = {
     var bought: Boolean = false
     if (player.money.value >= struct.price) {
-      struct.newInstance(pos, nb_structures) match {
+      struct.newInstance(pos, nb_structures, townManager) match {
         case town: Town => bought = createStruct(town, Tile.grass)
         case mine: Mine => bought = createStruct(mine, Array(Tile.rock))
         case farm: Farm => bought = createStruct(farm, Tile.grass)
         case factory: Factory => bought = createStruct(factory, Tile.grass)
+        case airport: Airport => {
+          //Airport is a Town facilitie, has to be contained in a town.
+          val around = map.lookAround(pos)
+          for (neighbor <- around) {
+            neighbor match {
+              case Some(town : Town) => {
+                if (!town.isAirport) {
+                  bought = createStruct(airport, Tile.grass)
+                  town.isAirport = true
+                }
+              }
+              case _ => ()
+            }
+          }
+        }
         case _ => ()
       }
     }
@@ -186,9 +203,24 @@ class Game(val map_width : Int, val map_height : Int)
     true
   }
 
+  def createPlane (airport: Airport) : Boolean = {
+    var plane = new Plane(airport, _player)
+
+    airport.addPlane(plane)
+    planes += plane
+    map.add(plane, 1)
+
+    // paying
+    playerMoney.set(playerMoney.value - plane.cost)
+    true
+  }
+
   def createRoute (departure: Structure, arrival: Structure, train: Train) {
     val route = new Route(game_graph.shortestRoute(departure, arrival), train)
     route.departure()
     routes += route
+  }
+  def createFly (departure: Structure, arrival: Structure, plane : Plane) {
+    println ("tycoon > game > Game.scala > create Fly: creation of a fly betwenn to to airport with a plane ")
   }
 }

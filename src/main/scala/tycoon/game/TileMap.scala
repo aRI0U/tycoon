@@ -58,6 +58,26 @@ class TileMap (val width: Int, val height: Int, nbEntityLayers: Int = 2) {
     bool
   }
 
+  def lookAround(pos: GridLocation) : Array[Option[Renderable]] = {
+    //carefull of border case.
+    var col = pos.col
+    var row = pos.row
+    var neighbors = new Array[Option[Renderable]](8)
+    if (col > 0 && row > 0 && row< height -2 && col < width -2) {
+      neighbors = Array (
+          getContentAt(new GridLocation(col, row - 1)),
+          getContentAt(new GridLocation(col + 1, row)),
+          getContentAt(new GridLocation(col, row + 1)),
+          getContentAt(new GridLocation(col - 1, row)),
+          getContentAt(new GridLocation(col - 1, row + 1)),
+          getContentAt(new GridLocation(col - 1, row - 1)),
+          getContentAt(new GridLocation(col + 1, row + 1)),
+          getContentAt(new GridLocation(col + 1, row - 1))
+        )
+    }
+    return neighbors
+  }
+
   def getContentAt(pos: GridLocation): Option[Renderable] = content(pos.col)(pos.row)
   def getEntities: Array[ListBuffer[Renderable]] = entityLayers.clone()
 
@@ -133,20 +153,20 @@ class TileMap (val width: Int, val height: Int, nbEntityLayers: Int = 2) {
         for (pos <- teselationPoints(i)) {
           backgroundLayer(pos.col)(pos.row) = Tile.plainWater
         }
-          // traiter les cas de bordure de lac pour rendre les bon tiles
-        for (pos <- teselationPoints(i)) {
-          if (pos.col > 0 && pos.row > 0 && pos.row< height -2 && pos.col < width -2) {
-            val neighbors = Array (
-              new GridLocation(pos.col, pos.row - 1),
-              new GridLocation(pos.col + 1, pos.row),
-              new GridLocation(pos.col, pos.row + 1),
-              new GridLocation(pos.col - 1, pos.row)
-            )
-            for (j <- 0 to 3) {
-              if (checkBgTile(neighbors(j), Tile.grass))
-                backgroundLayer(pos.col)(pos.row) = Tile.plainSand
-            }
-          }
+      }
+    }
+    for ((col, row) <- new GridRectangle(0, 0, width, height).iterate) {
+      // traiter les cas de bordure de lac pour rendre les bon tiles
+      if (col > 0 && row > 0 && row< height -2 && col < width -2) {
+        val neighbors = Array (
+          new GridLocation(col, row - 1),
+          new GridLocation(col + 1, row),
+          new GridLocation(col, row + 1),
+          new GridLocation(col - 1, row)
+        )
+        for (j <- 0 to 3) {
+          if (checkBgTile(neighbors(j), Tile.grass) && checkBgTile(col,row,Tile.plainWater))
+            backgroundLayer(col)(row) = Tile.plainSand
         }
       }
     }

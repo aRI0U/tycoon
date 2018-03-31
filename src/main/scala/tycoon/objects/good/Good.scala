@@ -2,6 +2,5 @@ package tycoon.objects.good
 
 // very provisoire !!!
 
-class Good(name: String) {
-  val label : String = name
+abstract class Good(val label: String) {
 }

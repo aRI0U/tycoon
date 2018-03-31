@@ -12,7 +12,7 @@ import tycoon.ui.Tile
 import scalafx.beans.property.{IntegerProperty, StringProperty}
 
 
-abstract class Town(pos: GridLocation, id: Int) extends Structure(pos, id) {
+abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extends Structure(pos, id) {
   tile = Tile.town
 
   protected val r = scala.util.Random
@@ -36,6 +36,8 @@ abstract class Town(pos: GridLocation, id: Int) extends Structure(pos, id) {
 
   chooseName()
 
+  //Booleans about town facilities
+  var isAirport = false
 
    // _name = StringProperty(city_names(id))
   protected var _population = IntegerProperty(0)
@@ -68,7 +70,7 @@ abstract class Town(pos: GridLocation, id: Int) extends Structure(pos, id) {
 
   def displayWaiters() {
     printData += new Tuple2("Waiting passengers", StringProperty(""))
-    /*for (town <- townManager.towns_list) {
+    for (town <- townManager.towns_list) {
       if (town != this) {
         destinations += town
         waitersInt += IntegerProperty(0)
@@ -76,7 +78,7 @@ abstract class Town(pos: GridLocation, id: Int) extends Structure(pos, id) {
         waitersStr.last <== waitersInt.last.asString
         printData += new Tuple2(town.name, waitersStr.last)
       }
-    }*/
+    }
   }
 
   def waiters(i: Int) : Int = waitersInt(i).value
