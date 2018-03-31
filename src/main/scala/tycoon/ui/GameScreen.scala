@@ -59,6 +59,25 @@ class GameScreen(val game: Game) extends BorderPane
       text <== game.informationText
     }
     left = new QuitButtons
+    right = new HBox {
+      alignment = Pos.Center
+      children = Seq(
+        new Button {
+          text = "<<"
+          margin = Insets(5)
+          onMouseClicked = { _ => game.decreaseSpeed() }
+        },
+        new Text {
+          text <== game.speedMultiplier.asString.concat("x")
+          margin = Insets(5)
+        },
+        new Button {
+          text = ">>"
+          margin = Insets(5)
+          onMouseClicked = { _ => game.increaseSpeed() }
+        }
+      )
+    }
   }
 
 

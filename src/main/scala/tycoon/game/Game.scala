@@ -7,6 +7,7 @@ import tycoon.objects.vehicle._
 import tycoon.objects.graph._
 import tycoon.game._
 import tycoon.ui.Tile
+import scalafx.beans.property._
 import tycoon.ui.{Tile, Renderable, DraggableTiledPane}
 
 import javafx.animation.AnimationTimer
@@ -114,6 +115,11 @@ class Game(val map_width : Int, val map_height : Int)
   var totalElapsedTime: Double = 0
   val elapsedTimeStr = StringProperty("")
 
+  var speedMultiplier = DoubleProperty(1.0)
+
+  def increaseSpeed() = speedMultiplier.set(Math.min(speedMultiplier.value * 2, 64))
+  def decreaseSpeed() = speedMultiplier.set(Math.max(speedMultiplier.value / 2, 0.25))
+
   private class GameLoop extends AnimationTimer
   {
     var startNanoTime : Long = System.nanoTime()
@@ -143,7 +149,7 @@ class Game(val map_width : Int, val map_height : Int)
   def stop () : Unit = {}
 
   private def update(dt : Double) : Unit = {
-    totalElapsedTime += dt
+    totalElapsedTime += dt * speedMultiplier.value
 
     var currentDuration: Int = totalElapsedTime.toInt
     val nbYears = currentDuration / 31104000
@@ -168,8 +174,8 @@ class Game(val map_width : Int, val map_height : Int)
     )
 
     //update trains position here ?
-    routes foreach { _.update(dt) }
-    structures foreach { _.update(dt) }
+    routes foreach { _.update(dt * speedMultiplier.value) }
+    structures foreach { _.update(dt * speedMultiplier.value) }
     tiledPane.render()
 
     if (infoTextTimer > 0)
