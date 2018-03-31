@@ -49,6 +49,15 @@ class Game(val map_width : Int, val map_height : Int)
   }
 
 
+  var infoTextTimer: Double = 0
+  val informationText = StringProperty("")
+  def clearInfoText(): Unit = informationText.set("")
+  def setInfoText(s: String, duration: Double = 4): Unit = {
+    informationText.set(s)
+    infoTextTimer = duration
+  }
+
+
   // game map
   var game_graph = new Graph
   val map = new TileMap(map_width, map_height)
@@ -114,6 +123,10 @@ class Game(val map_width : Int, val map_height : Int)
     routes foreach { _.update(dt) }
     structures foreach { _.update(dt) }
     tiledPane.render()
+
+    if (infoTextTimer > 0)
+      infoTextTimer -= dt
+    else clearInfoText()
   }
 
 

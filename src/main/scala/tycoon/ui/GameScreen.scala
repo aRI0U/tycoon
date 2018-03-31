@@ -56,6 +56,17 @@ class GameScreen(val game: Game) extends BorderPane
     gamePane.center = game.tiledPane
     left = menuPane // can be moved out
     bottom = interactionsMenu // can be moved out
+    top = informationPane
+  }
+
+
+  private val informationPane = new BorderPane {
+    id = "informationPane"
+    center = new Text {
+      margin = Insets(5)
+      text <== game.informationText
+    }
+    left = new QuitButtons
   }
 
 
@@ -374,9 +385,8 @@ class GameScreen(val game: Game) extends BorderPane
           text <== StringProperty("Balance: $").concat(game.playerMoney.asString)
           fill <== when (game.playerMoney > 0) choose Green otherwise Red
           margin = Insets(5)
-        },
-        new Separator { orientation = Orientation.Horizontal ; styleClass += "sep" },
-        new QuitButtons
+        }
+
       )
     }
 

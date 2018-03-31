@@ -6,8 +6,8 @@
 
 #menu {
   -fx-border-color: transparent black transparent transparent;
-   -fx-border-width: 1;
-   -fx-background-color: #DDD;
+  -fx-border-width: 1;
+  -fx-background-color: #DDD;
 }
 
 #body {
@@ -28,4 +28,10 @@
     -fx-border-style: solid;
     -fx-border-width: 0 0 1 0; /* its make really one-pixel-border */
     -fx-border-color: red;
+}
+
+#informationPane {
+  -fx-background-color: lightgrey;
+  -fx-border-color: transparent transparent black transparent;
+  -fx-border-width: 1;
 }

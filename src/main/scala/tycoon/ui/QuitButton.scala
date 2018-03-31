@@ -35,10 +35,10 @@ class QuitButtons extends VBox
 
   children = new HBox {
     children = Seq(
-     
+
       new Button {
         text = "Quit Game"
-        margin = Insets(10)
+        margin = Insets(5)
 
         onMouseClicked = (e: MouseEvent) => {
           val alert = new Alert(Alert.AlertType.Warning) {

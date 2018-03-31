@@ -102,11 +102,13 @@ class InteractionsMenu(val game: Game) extends TabPane
       vgrow = Priority.Always
       maxHeight = Double.MaxValue
       visible <== quantityBought > 0
-      onMouseClicked = _ =>
+      onMouseClicked = _ => {
+        game.setInfoText("TODO")
         if(true) {                                                              /* TODO ALLOW TO REMOVE STRUCTS IN GAME */
           quantityBought.set(quantityBought.value - 1)
           tabPaneRequestFocus()
         }
+      }
     }
 
     val imgContainer = new VBox {
