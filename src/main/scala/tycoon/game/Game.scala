@@ -25,6 +25,7 @@ import scala.xml.XML
 import scala.io.Source
 import java.io.{FileNotFoundException, IOException}
 import scala.util.Try
+import scalafx.util.converter.{DateStringConverter, DateTimeStringConverter}
 
 
 
@@ -110,11 +111,16 @@ class Game(val map_width : Int, val map_height : Int)
 
   // game loop
 
+  var totalElapsedTime: Double = 0
+  val elapsedTimeStr = StringProperty("")
+
   private class GameLoop extends AnimationTimer
   {
     var startNanoTime : Long = System.nanoTime()
 
-    override def handle(currentNanoTime: Long) {
+    def init() = startNanoTime = System.nanoTime()
+
+    override def handle(currentNanoTime: Long) = {
       var elapsedTime : Double = (currentNanoTime - startNanoTime) / 1000000000.0
       startNanoTime = currentNanoTime
 
@@ -130,12 +136,37 @@ class Game(val map_width : Int, val map_height : Int)
 
   def start () : Unit = {
     playerMoney = 1000000 // move into player.init()
+    loop.init()
     loop.start()
   }
   def pause () : Unit = {}
   def stop () : Unit = {}
 
   private def update(dt : Double) : Unit = {
+    totalElapsedTime += dt
+
+    var currentDuration: Int = totalElapsedTime.toInt
+    val nbYears = currentDuration / 31104000
+    currentDuration %= 31104000
+    val nbMonths = currentDuration / 2592000
+    currentDuration %= 2592000
+    val nbDays = currentDuration / 86400
+    currentDuration %= 86400
+    val nbHours = currentDuration / 3600
+    currentDuration %= 3600
+    val nbMinutes = currentDuration / 60
+    currentDuration %= 60
+    val nbSeconds = currentDuration
+
+    elapsedTimeStr.set(
+      nbYears.toString + "y"
+      + nbMonths.toString + "m"
+      + nbDays.toString + "d"
+      + nbHours.toString + "h"
+      + nbMinutes.toString + "m"
+      + nbSeconds.toString + "s"
+    )
+
     //update trains position here ?
     routes foreach { _.update(dt) }
     structures foreach { _.update(dt) }

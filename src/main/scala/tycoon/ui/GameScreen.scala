@@ -366,7 +366,7 @@ class GameScreen(val game: Game) extends BorderPane
       children = Seq(
         new Separator { orientation = Orientation.Horizontal ; styleClass += "sep" },
         new Text {
-          text <== StringProperty("Time: undefined")
+          text <== game.elapsedTimeStr
           margin = Insets(5)
         },
         new Text {
