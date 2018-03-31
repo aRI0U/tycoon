@@ -21,8 +21,32 @@ import scalafx.beans.property.{StringProperty, IntegerProperty}
 import scalafx.beans.binding.Bindings
 
 
+import scala.xml.XML
+import scala.io.Source
+import java.io.{FileNotFoundException, IOException}
+import scala.util.Try
+
+
+
+
 class Game(val map_width : Int, val map_height : Int)
 {
+  def loadMap(filepath: String) : Boolean = {
+    Try {
+      val xml = XML.loadFile(filepath)
+
+      println("All foods:")
+      (xml \ "food" \ "name") foreach (i => println(i.text))
+      println("\nSpecials:")
+      for (food <- (xml \ "food"))
+        if ((food \ "special").length > 0)
+          println((food \ "special" \ "@id").text)
+      println("\nSpecials again:")
+      for (id <- (xml \ "food" \ "special"))
+        println((id \ "@id").text)
+
+    }.isSuccess
+  }
 
 
   // game map
@@ -148,9 +172,9 @@ class Game(val map_width : Int, val map_height : Int)
           for (neighbor <- around) {
             neighbor match {
               case Some(town : Town) => {
-                if (!town.isAirport) {
-                  bought = createStruct(airport, Tile.grass)
-                  town.isAirport = true
+                if (!town.hasAirport && createStruct(airport, Tile.grass)) {
+                  bought = true
+                  town.hasAirport = true
                 }
               }
               case _ => ()

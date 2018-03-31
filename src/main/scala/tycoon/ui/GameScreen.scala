@@ -90,8 +90,7 @@ class GameScreen(val game: Game) extends BorderPane
 
         val pos = game.tiledPane.screenPxToGridLoc(e.x, e.y)
         interactionsMenu.mousePressed(pos)
-
-        maybeClickRenderableAt(pos)
+        mousePressed(pos)
       }
     }
   }
@@ -219,7 +218,28 @@ class GameScreen(val game: Game) extends BorderPane
 
 
 
-  def maybeClickRenderableAt(pos: GridLocation): Unit = {
+  def mousePressed(pos: GridLocation): Unit = {
+    var debugStr = "tycoon > ui > GameScreen.scala > mousePressed: "
+    debugStr += "pos(" + pos.col.toString + ", " + pos.row.toString + ")"
+    debugStr += ", background(" + game.map.getBackgroundTile(pos).name + ")"
+    debugStr += ", layer0("
+
+    game.map.getContentAt(pos, 0) match {
+      case None => debugStr += "none"
+      case Some(e) => debugStr += e.tile.name
+    }
+
+    debugStr += "), layer1("
+
+    game.map.getContentAt(pos, 1) match {
+      case None => debugStr += "none"
+      case Some(e) => debugStr += e.tile.name
+    }
+
+    debugStr += ")"
+    println(debugStr)
+
+    /*
     game.map.getContentAt(pos) match {
       case Some(entity) => {
         entity match {
@@ -296,7 +316,7 @@ class GameScreen(val game: Game) extends BorderPane
         bindPrintData(entity.printData)
       }
       case None => println("tycoon > ui > GameScreen.scala > maybeClickRenderableAt: nothing in map at this position")
-    }
+    } */
   }
 
   def bindPrintData(data: ListBuffer[(String, StringProperty)]) {

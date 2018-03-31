@@ -37,7 +37,7 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
   chooseName()
 
   //Booleans about town facilities
-  var isAirport = false
+  var hasAirport = false
 
    // _name = StringProperty(city_names(id))
   protected var _population = IntegerProperty(0)

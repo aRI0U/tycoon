@@ -8,97 +8,60 @@ import scala.collection.mutable.ListBuffer
 import scala.math
 
 
-/*
+/**
 layer -1 (backgroundLayer) : background (grass, trees, rocks, lakes..)
 layer 0 : structures (town, airport, farm, factory, mine..) and rails
 layer 1 : movable entities (trains, planes, boats..)
-
 */
-class TileMap (val width: Int, val height: Int, nbEntityLayers: Int = 2) {
-  // general map
-  def gridContains(rect: GridRectangle) =
-    (rect.left >= 0 && rect.top >= 0 && rect.right <= width - 1 && rect.bottom <= height - 1)
 
+class TileMap (val width: Int, val height: Int, val nbEntityLayers: Int = 2) {
 
-  // grid of structural entities (ie towns but not trains, max one per case (Option type))
-  private var content = Array.fill[Option[Renderable]](width, height)(None)
-
-  // entities layers (for each layer, list of every entity on this layer)
-  private val entityLayers: Array[ListBuffer[Renderable]] = new Array(nbEntityLayers)
-  for (i <- 0 to nbEntityLayers - 1)
-    entityLayers(i) = new ListBuffer[Renderable]
+  private val backgroundLayer = Array.fill[Tile](width, height)(Tile.default)
+  private var layers = Array.fill[Option[Renderable]](nbEntityLayers, width, height)(None)
 
 
   def add(e: Renderable, layer: Int = 0) = {
-    if (layer == 0)
-      for ((col, row) <- e.gridRect.iterate)
-        content(col)(row) = Some(e)
-    entityLayers(layer) += e
+    for ((col, row) <- e.gridRect.iterate)
+      layers(layer)(col)(row) = Some(e)
   }
 
-/*
-  def remove(rect: GridRectangle) = {
-    for ((col, row) <- rect.iterate) {
-      content(col)(row) = None
-      println("tycoon > objects > graph > Map.scala > addToMap: added element at pos (" + col + ", " + row + ")")
-    }
-  } */
-
-  ///def removeEntity(e: Renderable, layer: Int = 0) = entityLayers(layer) -= e
-
   def isUnused(pos: GridLocation): Boolean =
-    content(pos.col)(pos.row) == None
+    layers(0)(pos.col)(pos.row) == None
 
   def isUnused(rect: GridRectangle): Boolean = {
     var bool = true
     for ((col, row) <- rect.iterate) {
-      if (content(col)(row) != None)
+      if (layers(0)(col)(row) != None)
         bool = false
     }
     bool
   }
 
   def lookAround(pos: GridLocation) : Array[Option[Renderable]] = {
-    //carefull of border case.
-    var col = pos.col
-    var row = pos.row
-    var neighbors = new Array[Option[Renderable]](8)
-    if (col > 0 && row > 0 && row< height -2 && col < width -2) {
-      neighbors = Array (
-          getContentAt(new GridLocation(col, row - 1)),
-          getContentAt(new GridLocation(col + 1, row)),
-          getContentAt(new GridLocation(col, row + 1)),
-          getContentAt(new GridLocation(col - 1, row)),
-          getContentAt(new GridLocation(col - 1, row + 1)),
-          getContentAt(new GridLocation(col - 1, row - 1)),
-          getContentAt(new GridLocation(col + 1, row + 1)),
-          getContentAt(new GridLocation(col + 1, row - 1))
-        )
-    }
-    return neighbors
+    Array(pos.top, pos.top.right, pos.right, pos.bottom.right, pos.bottom, pos.bottom.left, pos.left, pos.top.left)
+    .filter(gridContains)
+    .map(getContentAt(_, 0))
   }
 
-  def getContentAt(pos: GridLocation): Option[Renderable] = content(pos.col)(pos.row)
-  def getEntities: Array[ListBuffer[Renderable]] = entityLayers.clone()
+  /** test whether pos/rect is included in map */
+  def gridContains(rect: GridRectangle): Boolean =
+    (rect.left >= 0 && rect.top >= 0 && rect.right <= width - 1 && rect.bottom <= height - 1)
+  def gridContains(pos: GridLocation): Boolean = gridContains(new GridRectangle(pos, 1, 1))
 
+  /** get content from background layer or entities layers */
+  def getBackgroundTile(col: Int, row: Int): Tile = backgroundLayer(col)(row)
+  def getBackgroundTile(pos: GridLocation): Tile = getBackgroundTile(pos.col, pos.row)
+  def getContentAt(pos: GridLocation, layer: Int = 0): Option[Renderable] = getContentAt(pos.col, pos.row, layer)
+  def getContentAt(col: Int, row: Int, layer: Int): Option[Renderable] = layers(layer)(col)(row)
 
-  // background layer
-  private val backgroundLayer = Array.fill[Tile](width, height)(Tile.default)
-
-  def getBackgroundTile(col: Int, row: Int) = backgroundLayer(col)(row)
-  def addBackgroundTile(col: Int, row: Int, tile: Tile) = backgroundLayer(col)(row) = tile
-
+  /** check whether tilemap at pos/rect is made only of tile(s) */
   def checkBgTile(pos: GridLocation, tile: Tile) : Boolean = backgroundLayer(pos.col)(pos.row) == tile
-  // convenience overloads of checkBgTile
   def checkBgTile(pos: GridLocation, tiles: Array[Tile]) : Boolean = tiles.exists(checkBgTile(pos, _))
   def checkBgTile(col: Int, row: Int, tile: Tile) : Boolean = checkBgTile(new GridLocation(col, row), tile)
   def checkBgTile(col: Int, row: Int, tiles: Array[Tile]) : Boolean = tiles.exists(checkBgTile(col, row, _))
+  def checkBgTiles(rect: GridRectangle, tiles: Array[Tile]) : Boolean = rect.iterateGridLoc.forall(checkBgTile(_, tiles))
 
-  def checkBgTiles(rect: GridRectangle, tiles: Array[Tile]) : Boolean = {
-    rect.iterateGridLoc.forall(checkBgTile(_, tiles))
-  }
-
-  /* randomly fill background layer of map using tiles */
+  /** randomly fill background layer of map using tiles */
   def fillBackground(tiles: Array[Tile]) : Unit = {
     val r = scala.util.Random
     if (tiles.length >= 1)
@@ -106,7 +69,7 @@ class TileMap (val width: Int, val height: Int, nbEntityLayers: Int = 2) {
         backgroundLayer(col)(row) = tiles(r.nextInt(tiles.length))
   }
 
-  /* randomly add tile in background layer given a rate of apperance */
+  /** randomly add tile in background layer given a rate of apperance */
   def sprinkleTile(tile: Tile, pourcentage: Int) = {
     val r = scala.util.Random
     if (pourcentage >= 1 && pourcentage <= 100)
@@ -114,6 +77,11 @@ class TileMap (val width: Int, val height: Int, nbEntityLayers: Int = 2) {
         if (r.nextInt(100) + 1 <= pourcentage && checkBgTile(col, row, Tile.grass))
           backgroundLayer(col)(row) = tile
   }
+
+
+
+
+
 
   // 2 ratios of points that will become lakes and points in teselation
   /* generate lakes idk how */

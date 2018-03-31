@@ -7,7 +7,8 @@ import scalafx.application.JFXApp
 import scalafx.application.JFXApp.PrimaryStage
 import scalafx.scene.{PerspectiveCamera, Scene}
 import scalafx.scene.layout.{Pane, StackPane}
-
+import scalafx.stage.FileChooser
+import scalafx.stage.FileChooser.ExtensionFilter
 
 object Settings { // to be moved
   val gameWidth = 400
@@ -29,7 +30,7 @@ object Main extends JFXApp {
   val appStage = new PrimaryStage {
     title = "Tycoon Game"
     resizable = true
-    maximized = true
+    // maximized = true
     minWidth = 800
     minHeight = 600
     scene = appScene
@@ -46,6 +47,23 @@ object Main extends JFXApp {
 
   startScreen.setOnStartGameCreation(new Runnable {
     def run() = {
+      switchScreen(gameScreen)
+      gameScreen.init()
+      game.start()
+    }
+  })
+
+  startScreen.setOnLoadGame(new Runnable {
+    def run() = {
+      val fileChooser = new FileChooser {
+       title = "Open Game Save"
+       extensionFilters.setAll(new ExtensionFilter("Tycoon Save Files (*.xml)", "*.xml"))
+      }
+      var selectedFile = fileChooser.showOpenDialog(stage)
+      while (selectedFile == null || !game.loadMap(selectedFile.toString())) {
+        println("Game backup couldn't be opened or read.")
+        selectedFile = fileChooser.showOpenDialog(stage)
+      }
       switchScreen(gameScreen)
       gameScreen.init()
       game.start()

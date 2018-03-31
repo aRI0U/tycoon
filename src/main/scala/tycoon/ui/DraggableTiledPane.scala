@@ -269,20 +269,40 @@ class DraggableTiledPane(val tm: TileMap) extends BorderPane {
 
       gc.drawImage(Tile.tileset, tile.sx, tile.sy, tile.sw, tile.sh, layoutX, layoutY, width, height)
     }
-
     for {
-      layer <- tm.getEntities
-      e <- layer
+      layer <- 0 until tm.nbEntityLayers
+      row <- minRow to maxRow
+      col <- minCol to maxCol
     } {
-      val layoutX = scaledTilesWidth.value * (e.gridRect.left + e.gridPos.pourcentageWidth / 100) + layoutShiftX
-      val layoutY = scaledTilesHeight.value * (e.gridRect.top + e.gridPos.pourcentageHeight / 100) + layoutShiftY
+      tm.getContentAt(col, row, layer) match {
+        case None => ()
+        case Some(e) => {
+          val tile = e.tile
 
-      val width = e.tile.width * scaledTilesWidth.value + 1 // extra pixel for smoother overlap
-      val height = e.tile.height * scaledTilesHeight.value + 1
+          val layoutX = scaledTilesWidth.value * e.gridPos.col + layoutShiftX
+          val layoutY = scaledTilesHeight.value * e.gridPos.row + layoutShiftY
 
-      if (e.visible)
-        gc.drawImage(Tile.tileset, e.tile.sx, e.tile.sy, e.tile.sw, e.tile.sh, layoutX, layoutY, width, height)
+          val width = tile.width * scaledTilesWidth.value + 1 // extra pixel for smoother overlap
+          val height = tile.height * scaledTilesHeight.value + 1
+
+          gc.drawImage(Tile.tileset, tile.sx, tile.sy, tile.sw, tile.sh, layoutX, layoutY, width, height)
+        }
+      }
     }
+
+    // for {
+    //   layer <- tm.getEntities
+    //   e <- layer
+    // } {
+    //   val layoutX = scaledTilesWidth.value * (e.gridRect.left + e.gridPos.pourcentageWidth / 100) + layoutShiftX
+    //   val layoutY = scaledTilesHeight.value * (e.gridRect.top + e.gridPos.pourcentageHeight / 100) + layoutShiftY
+    //
+    //   val width = e.tile.width * scaledTilesWidth.value + 1 // extra pixel for smoother overlap
+    //   val height = e.tile.height * scaledTilesHeight.value + 1
+    //
+    //   if (e.visible)
+    //     gc.drawImage(Tile.tileset, e.tile.sx, e.tile.sy, e.tile.sw, e.tile.sh, layoutX, layoutY, width, height)
+    // }
   }
 
   /** given an absolute position on the screen (in pixels), return the GridLocation in which it is, depending on the offset */

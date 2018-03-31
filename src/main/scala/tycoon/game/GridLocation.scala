@@ -24,7 +24,7 @@ class GridLocation(private var _col: Int, private var _row: Int) {
   var pourcentageHeight: Double = 0
 
   def eq(other: GridLocation): Boolean = (col == other.col && row == other.row)
-  def clone(): GridLocation = new GridLocation(pos.col, pos.row)
+  override def clone(): GridLocation = new GridLocation(col, row)
   // absolute position in pixels
   //def x: Double = _x
   //def y: Double = _y
