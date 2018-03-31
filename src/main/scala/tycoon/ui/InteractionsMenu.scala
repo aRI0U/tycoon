@@ -180,23 +180,31 @@ class InteractionsMenu(val game: Game) extends TabPane
   // et enfin choisir la répétition du trajet (une seule fois ou n fois, aller/retours tt le temps avec x temps de pause entre chaque retour
   // ou a chaque stop)
 
-  // id | state | from/in | next stop | speed | weight | engine | nb passenger carriages | nb passagers
+  // next stop | speed | weight | engine | nb passenger carriages | nb passagers
   // | passagers max | nb goods carriage | infos sur les goods | profits générés par ce train
 
   def openTrainsDataDialog() = {
     val trains = new ObservableBuffer[Train]
     trains ++= game.trains // filter on whether owner is player
 
-    val stateCol = new TableColumn[Train, String]("State")
-    stateCol.minWidth = 100
+    val idCol = new TableColumn[Train, String]("ID")
+    idCol.minWidth = 30
+    idCol.cellValueFactory = { cell => IntegerProperty(cell.value.id).asString }
+
+    val stateCol = new TableColumn[Train, String]("STATE")
+    stateCol.minWidth = 80
     stateCol.cellValueFactory = { cell => {
       val stateStr = StringProperty("")
       stateStr <== when (cell.value.moving) choose "Moving" otherwise "Stationary"
       stateStr
     }}
 
+    val locationCol = new TableColumn[Train, String]("IN/FROM")
+    locationCol.minWidth = 100
+    locationCol.cellValueFactory = _.value.locationName
+
     val table = new TableView(trains)
-    table.columns += stateCol
+    table.columns ++= Seq(idCol, stateCol, locationCol)
 
 
       /*

@@ -209,7 +209,7 @@ class Game(val map_width : Int, val map_height : Int)
 
 
   def createTrain (town: Town) : Boolean = {
-    var train = new Train(town, IntegerProperty(3), _player)
+    var train = new Train(nbTrains.value, town, IntegerProperty(3), _player)
 
     town.addTrain(train)
     trains += train

@@ -33,7 +33,7 @@ class RailManager(map: TileMap, gameGraph: Graph) {
       var secondDir: Int = -1
 
       for (i <- 0 to 3) {
-        map.getStructureAt(neighbors(i)) match {
+        map.maybeGetStructureAt(neighbors(i)) match {
           case Some(e) =>
             e match {
               case neighborRail: Rail => {
@@ -51,7 +51,7 @@ class RailManager(map: TileMap, gameGraph: Graph) {
       }
 
       for (i <- 0 to 3) {
-        map.getStructureAt(neighbors(i)) match {
+        map.maybeGetStructureAt(neighbors(i)) match {
           case Some(e) =>
             e match {
               case neighborStruct: Structure => {
@@ -68,7 +68,7 @@ class RailManager(map: TileMap, gameGraph: Graph) {
         }
       }/*
       for (i <- 0 to 3) {
-        map.getStructureAt(neighbors(i)) match {
+        map.maybeGetStructureAt(neighbors(i)) match {
           case Some(e) =>
             if (!rail.road.finished)
               if(lookAround(rail, e)) {

@@ -28,14 +28,14 @@ class TileMap (val width: Int, val height: Int) {
   def isUnused(pos: GridLocation): Boolean = structuresLayer(pos.col)(pos.row) == None
   def isUnused(rect: GridRectangle): Boolean = rect.iterate.forall(isUnused)
   /** get structure at location if there is one */
-  def getStructureAt(pos: GridLocation): Option[Renderable] = getStructureAt(pos.col, pos.row)
-  def getStructureAt(col: Int, row: Int): Option[Renderable] = structuresLayer(col)(row)
+  def maybeGetStructureAt(pos: GridLocation): Option[Renderable] = maybeGetStructureAt(pos.col, pos.row)
+  def maybeGetStructureAt(col: Int, row: Int): Option[Renderable] = structuresLayer(col)(row)
   /** return structures found in the 8 surrounding cases (modulo grid borders) */
   def getSurroundingStructures(pos: GridLocation) : Array[Renderable] = {
     Array(pos.top, pos.top.right, pos.right, pos.bottom.right,
           pos.bottom, pos.bottom.left, pos.left, pos.top.left)
     .filter(gridContains)
-    .map(getStructureAt)
+    .map(maybeGetStructureAt)
     .flatten
   }
 

@@ -255,6 +255,7 @@ class DraggableTiledPane(val tm: TileMap) extends BorderPane {
 
       gc.drawImage(Tile.tileset, tile.sx, tile.sy, tile.sw, tile.sh, layoutX, layoutY, width, height)
     }
+    def drawEntity(e: Renderable) = drawTile(e.tile, e.gridPos.adjustedCol, e.gridPos.adjustedRow)
 
     // maximal rectangle of the tilemap that can be displayed
     val minRow: Int = Math.floor(yOffset.value / scaledTilesHeight.value).toInt //- 1
@@ -264,21 +265,15 @@ class DraggableTiledPane(val tm: TileMap) extends BorderPane {
 
     val maxRect = new GridRectangle(minCol, minRow, maxCol - minCol + 1, maxRow - minRow + 1)
 
-    // clear and draw
+    // clear pane
     clearCanvas()
 
-    maxRect.iterateTuple foreach {
-      case (col, row) => drawTile(tm.getBackgroundTile(col, row), col, row)
-    }
-    maxRect.iterateTuple foreach {
-      case (col, row) => tm.getStructureAt(col, row) match {
-        case Some(e) => drawTile(e.tile, e.gridPos.adjustedCol, e.gridPos.adjustedRow)
-        case None => ()
-      }
-    }
-    tm.entities foreach {
-      e => drawTile(e.tile, e.gridPos.adjustedCol, e.gridPos.adjustedRow)
-    }
+    // draw background layer
+    maxRect.iterateTuple foreach { case (col, row) => drawTile(tm.getBackgroundTile(col, row), col, row) }
+    // draw structural layer
+    maxRect.iterate.map(tm.maybeGetStructureAt).flatten foreach drawEntity
+    // draw entity layer
+    tm.entities foreach drawEntity
   }
 
   /** given an absolute position on the screen (in pixels), return the GridLocation in which it is, depending on the offset */

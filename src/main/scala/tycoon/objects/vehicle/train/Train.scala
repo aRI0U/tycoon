@@ -12,17 +12,25 @@ import tycoon.game.{Game, GridLocation, Player}
 import tycoon.ui.DraggableTiledPane
 
 
-class Train(initialTown: Town, val nbCarriages: IntegerProperty, val owner: Player) extends Vehicle(initialTown) {
+class Train(val id: Int, initialTown: Town, val nbCarriages: IntegerProperty, val owner: Player) extends Vehicle(initialTown) {
 
   // used in display
+  // id
   private var _moving = BooleanProperty(false)
   def moving: BooleanProperty = _moving
 
+  // current structure if moving is false, origin structure otherwise
+  private var _location: ObjectProperty[Structure] = ObjectProperty(initialTown)
+  private var _locationName = StringProperty(initialTown.name)
+  _location.onChange { _locationName.set(_location.value.name) }
+
+  def location: Structure = _location.value
+  def location_=(newStruct: Structure) = _location.set(newStruct)
+  def locationName: StringProperty = _locationName
 
 
 
 
-  var location: Structure = initialTown // town if !onTheRoad, origin if onTheRoad
   tile = Tile.locomotiveT
   var speed = DoubleProperty(200.0) // in tile size percentage per second (ie in tile * 100 / s), here 2tiles/sec
   val weight = 50

@@ -224,7 +224,7 @@ class GameScreen(val game: Game) extends BorderPane
     debugStr += ", background(" + game.map.getBackgroundTile(pos).name + ")"
     debugStr += ", structure("
 
-    game.map.getStructureAt(pos) match {
+    game.map.maybeGetStructureAt(pos) match {
       case None => ()
       case Some(e) => debugStr += e.tile.name
     }
@@ -239,7 +239,7 @@ class GameScreen(val game: Game) extends BorderPane
 
     /////
 
-    game.map.getStructureAt(pos) match {
+    game.map.maybeGetStructureAt(pos) match {
       case Some(entity) => {
         entity match {
           case train : Train => {
