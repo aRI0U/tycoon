@@ -180,8 +180,7 @@ class InteractionsMenu(val game: Game) extends TabPane
   // et enfin choisir la répétition du trajet (une seule fois ou n fois, aller/retours tt le temps avec x temps de pause entre chaque retour
   // ou a chaque stop)
 
-  // next stop | speed | weight | engine | nb passenger carriages | nb passagers
-  // | passagers max | nb goods carriage | infos sur les goods | profits générés par ce train
+
 
   def openTrainsDataDialog() = {
     val trains = new ObservableBuffer[Train]
@@ -203,53 +202,18 @@ class InteractionsMenu(val game: Game) extends TabPane
     locationCol.minWidth = 100
     locationCol.cellValueFactory = _.value.locationName
 
+    val nextLocationCol = new TableColumn[Train, String]("GOING TO")
+    nextLocationCol.minWidth = 100
+    nextLocationCol.cellValueFactory = _.value.nextLocationName
+
+    val speedCol = new TableColumn[Train, String]("SPEED")
+    speedCol.minWidth = 80
+    speedCol.cellValueFactory = _.value.speed.asString.concat(" mph")
+
+    // could add weight, nb of each type of carriages, nb passengers, nb max passengers, goods, profits the train made so far
+
     val table = new TableView(trains)
-    table.columns ++= Seq(idCol, stateCol, locationCol)
-
-
-      /*
-
-    val content = new TableView[Train](trains) {
-      columns ++= List(
-        new TableColumn[Train, String] {
-          text = "State"
-          cellValueFactory = { input => {
-            val state = StringProperty("")
-            state <== when(input.value.onTheRoad) choose "En chemin" otherwise "A l'arret"
-            state
-          }}
-          minWidth = 50
-        },
-        new TableColumn[Train, String] {
-          text = "From / In"
-          cellValueFactory = { _.value.speed.asString } // create a StructureProperty...
-          resizable = false
-          editable = false
-          minWidth = 100
-        },
-        new TableColumn[Train, String] {
-          text = "Destination"
-          cellValueFactory = { _.value.nbCarriages.asString }
-          resizable = false
-          editable = false
-          minWidth = 100
-        },
-        new TableColumn[Train, String] {
-          text = "Speed"
-          cellValueFactory = { _.value.speed.asString }
-          resizable = false
-          editable = false
-          minWidth = 200
-        },
-        new TableColumn[Train, String] {
-          text = "Nb Carriages"
-          cellValueFactory = { _.value.nbCarriages.asString }
-          resizable = false
-          editable = false
-          minWidth = 200
-        }
-      )
-    }*/
+    table.columns ++= Seq(idCol, stateCol, locationCol, nextLocationCol, speedCol)
 
     val dialog = new Dialog
     dialog.title = "Your Trains"
