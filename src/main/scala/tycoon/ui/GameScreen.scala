@@ -62,9 +62,14 @@ class GameScreen(val game: Game) extends BorderPane
     right = new HBox {
       alignment = Pos.Center
       children = Seq(
+        new Text {
+          text <== game.fps.asString
+          wrappingWidth = 20
+        },
+        new Text(" FPS"),
         new Button {
           text = "<<"
-          margin = Insets(5)
+          margin = Insets(5, 5, 5, 10)
           onMouseClicked = { _ => game.decreaseSpeed() }
         },
         new Text {
@@ -393,7 +398,7 @@ class GameScreen(val game: Game) extends BorderPane
           margin = Insets(5)
         },
         new Text {
-          text <== StringProperty("Balance: $").concat(game.playerMoney.asString)
+          text <== StringProperty("Balance: $").concat(game.playerFormattedMoney)
           fill <== when (game.playerMoney > 0) choose Green otherwise Red
           margin = Insets(5)
         }

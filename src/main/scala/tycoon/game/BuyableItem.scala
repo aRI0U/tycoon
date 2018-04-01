@@ -12,7 +12,9 @@ import tycoon.ui.Tile
 
 
 sealed abstract class BuyableItem(val name: String, val price: Int, val tile: Tile) {
-  def priceStr: String = "$" + price.toString
+  private val formatter = java.text.NumberFormat.getIntegerInstance
+
+  def priceStr: String = "$" + formatter.format(price)
 
   var createByDragging: Boolean = false
 }

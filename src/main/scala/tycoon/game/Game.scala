@@ -72,7 +72,7 @@ class Game(val map_width : Int, val map_height : Int)
       "random texts but i have no inspiration 9",
       "random texts but i have no inspiration 10"
     )
-    setInfoText(randomTexts(r.nextInt(randomTexts.length)))
+    setInfoText(randomTexts(r.nextInt(randomTexts.length)), 10.0)
   }
   setRandomInfoText()
 
@@ -116,6 +116,7 @@ class Game(val map_width : Int, val map_height : Int)
   val elapsedTimeStr = StringProperty("")
 
   var speedMultiplier = DoubleProperty(1.0)
+  var fps = IntegerProperty(0)
 
   def increaseSpeed() = speedMultiplier.set(Math.min(speedMultiplier.value * 2, 64))
   def decreaseSpeed() = speedMultiplier.set(Math.max(speedMultiplier.value / 2, 0.25))
@@ -130,9 +131,7 @@ class Game(val map_width : Int, val map_height : Int)
       var elapsedTime : Double = (currentNanoTime - startNanoTime) / 1000000000.0
       startNanoTime = currentNanoTime
 
-      //if (elapsedTime > 0.01)
-      //    elapsedTime = 0.01
-      //println("tycoon > game > Game.scala > GameLoop: 1.0 / elapsedTime + " FPS")
+      fps.set((1.0 / elapsedTime).toInt)
 
       update(elapsedTime)
     }
@@ -152,25 +151,22 @@ class Game(val map_width : Int, val map_height : Int)
     totalElapsedTime += dt * speedMultiplier.value
 
     var currentDuration: Int = totalElapsedTime.toInt
-    val nbYears = currentDuration / 31104000
-    currentDuration %= 31104000
-    val nbMonths = currentDuration / 2592000
-    currentDuration %= 2592000
-    val nbDays = currentDuration / 86400
-    currentDuration %= 86400
-    val nbHours = currentDuration / 3600
-    currentDuration %= 3600
-    val nbMinutes = currentDuration / 60
+    val nbYears = currentDuration / 518400
+    currentDuration %= 518400
+    val nbMonths = currentDuration / 43200
+    currentDuration %= 43200
+    val nbDays = currentDuration / 1440
+    currentDuration %= 1440
+    val nbHours = currentDuration / 60
     currentDuration %= 60
-    val nbSeconds = currentDuration
+    val nbMinutes = currentDuration
 
     elapsedTimeStr.set(
-      nbYears.toString + "y"
-      + nbMonths.toString + "m"
-      + nbDays.toString + "d"
-      + nbHours.toString + "h"
-      + nbMinutes.toString + "m"
-      + nbSeconds.toString + "s"
+      (if (nbYears > 0) nbYears.toString + "y" else "")
+      + (if (nbMonths > 0) nbMonths.toString + "m" else "")
+      + (if (nbDays > 0) nbDays.toString + "d" else "")
+      + (if (nbHours > 0) nbHours.toString + "h" else "")
+      + (if (nbMinutes > 0) nbMinutes.toString + "m" else "")
     )
 
     //update trains position here ?
@@ -197,6 +193,8 @@ class Game(val map_width : Int, val map_height : Int)
 
   def playerMoney : IntegerProperty = _player.money
   def playerMoney_= (new_money: Int) = _player.money = new_money
+
+  def playerFormattedMoney: StringProperty = _player.formattedMoney
 
 
 
