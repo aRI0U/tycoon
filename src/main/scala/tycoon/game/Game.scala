@@ -53,7 +53,10 @@ class Game(val map_width : Int, val map_height : Int)
 
   var infoTextTimer: Double = 0
   val informationText = StringProperty("")
-  def clearInfoText(): Unit = setRandomInfoText()
+  def clearInfoText(force: Boolean = true): Unit = {
+    if (force || (!force && infoTextTimer < 0))
+      setRandomInfoText()
+  }
   def setInfoText(s: String, duration: Double = 4): Unit = {
     informationText.set(s)
     infoTextTimer = duration
@@ -174,9 +177,11 @@ class Game(val map_width : Int, val map_height : Int)
     structures foreach { _.update(dt * speedMultiplier.value) }
     tiledPane.render()
 
-    if (infoTextTimer > 0)
+    if (infoTextTimer > 0) {
       infoTextTimer -= dt
-    else clearInfoText()
+      if (infoTextTimer <= 0)
+        clearInfoText()
+    }
   }
 
 
@@ -304,9 +309,9 @@ class Game(val map_width : Int, val map_height : Int)
     true
   }
 
-  def createRoute (departure: Structure, arrival: Structure, train: Train) {
-    val route = new Route(game_graph.shortestRoute(departure, arrival), train)
-    route.departure()
+  def createRoute(roads: ListBuffer[Road], stops: ListBuffer[Structure], train: Train) = {
+    val route = new Route(roads, stops, train)
+    route.start()
     routes += route
   }
   def createFly (departure: Structure, arrival: Structure, plane : Plane) {

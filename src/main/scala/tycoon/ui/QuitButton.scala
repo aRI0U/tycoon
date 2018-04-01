@@ -29,7 +29,7 @@ import scalafx.beans.binding.Bindings
 import scala.collection.mutable.ListBuffer
 
 
-class QuitButtons extends VBox
+class QuitButton extends VBox
 {
   alignment = Pos.BottomCenter
 

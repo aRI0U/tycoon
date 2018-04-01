@@ -58,7 +58,7 @@ class GameScreen(val game: Game) extends BorderPane
       margin = Insets(5)
       text <== game.informationText
     }
-    left = new QuitButtons
+    left = new QuitButton
     right = new HBox {
       alignment = Pos.Center
       children = Seq(
@@ -253,7 +253,13 @@ class GameScreen(val game: Game) extends BorderPane
 
     game.map.maybeGetStructureAt(pos) match {
       case None => ()
-      case Some(e) => debugStr += e.tile.name
+      case Some(e) => {
+        debugStr += e.tile.name
+        e match {
+          case struct: Structure => interactionsMenu.structureClicked(struct)
+          case _ => () // rail
+        }
+      }
     }
 
     debugStr += "), entities("
@@ -292,7 +298,7 @@ class GameScreen(val game: Game) extends BorderPane
                   firstStructure.getTrain match {
                     case Some(train) => {
                       try {
-                        game.createRoute(firstStructure, structure, train)
+                        //game.createRoute(firstStructure, structure, train)
                         println("tycoon > ui > GameScreen.scala > maybeClickRenderableAt: create trip from " + firstStructure.name + " to " + structure.name)
                       }
                       catch {

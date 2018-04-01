@@ -11,13 +11,27 @@ import tycoon.objects.vehicle._
 import tycoon.game.Game
 import tycoon.game.GridLocation
 
-class RouteBis(itinerary: ListBuffer[Road], train: Train) {
+
+/*
+itinerary: list of roads in path order
+stops: structures of the path in which the train should stop and take passengers/goods
+
+journey: instance of a route in one or the other direction
+(a route can be set to be infinitely repeated, and each repetition will create a journey)
+
+
+RouteBis = future Route
+Route = future Journey
+*/
+
+
+class RouteBis(itinerary: ListBuffer[Road], stops: ListBuffer[Structure], train: Train) {
   private var onTheRoad = true
   private var dirIndicator = 1
 
 
   var currentRoad: Option[Road] = None
-  val stops: ListBuffer[Structure] = determineStops(itinerary)
+  //val stops: ListBuffer[Structure] = determineStops(itinerary)
 
 
   def determineStops(itinerary: ListBuffer[Road]) : ListBuffer[Structure] = {
