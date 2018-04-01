@@ -291,6 +291,7 @@ class GameScreen(val game: Game) extends BorderPane
                   if (game.createPlane(airport)) return
                 }
               }
+              case _ => ()
             }
             if (tripCreationMode) {
               if (firstStructureSelected.value) {

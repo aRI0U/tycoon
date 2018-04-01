@@ -270,7 +270,11 @@ class Game(val map_width : Int, val map_height : Int)
     bought
   }
 
-
+  def createRoute(roads: ListBuffer[Road], stops: ListBuffer[Structure], train: Train) = {
+    val route = new Route(roads, stops, train)
+    route.start()
+    routes += route
+  }
 
   /* KEEEEP END */
 
@@ -309,11 +313,6 @@ class Game(val map_width : Int, val map_height : Int)
     true
   }
 
-  def createRoute(roads: ListBuffer[Road], stops: ListBuffer[Structure], train: Train) = {
-    val route = new Route(roads, stops, train)
-    route.start()
-    routes += route
-  }
   def createFly (departure: Structure, arrival: Structure, plane : Plane) {
     println ("tycoon > game > Game.scala > create Fly: creation of a fly betwenn to to airport with a plane ")
   }
