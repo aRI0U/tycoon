@@ -31,12 +31,21 @@ class TileMap (val width: Int, val height: Int) {
   def maybeGetStructureAt(pos: GridLocation): Option[Renderable] = maybeGetStructureAt(pos.col, pos.row)
   def maybeGetStructureAt(col: Int, row: Int): Option[Renderable] = structuresLayer(col)(row)
   /** return structures found in the 8 surrounding cases (modulo grid borders) */
-  def getSurroundingStructures(pos: GridLocation) : Array[Renderable] = {
-    Array(pos.top, pos.top.right, pos.right, pos.bottom.right,
+  def getSurroundingStructures(pos: GridLocation, ind : Int ) : Array[Renderable] = {
+    if (ind == 1) {
+      Array(pos.top, pos.top.right, pos.right, pos.bottom.right,
           pos.bottom, pos.bottom.left, pos.left, pos.top.left)
-    .filter(gridContains)
-    .map(maybeGetStructureAt)
-    .flatten
+          .filter(gridContains)
+          .map(maybeGetStructureAt)
+          .flatten
+    } else {
+        Array(pos.top, pos.right,
+          pos.bottom,  pos.left)
+          .filter(gridContains)
+          .map(maybeGetStructureAt)
+          .flatten
+
+    }
   }
 
   /** add entity (ie train, plane, boat..) to map */
@@ -85,7 +94,7 @@ class TileMap (val width: Int, val height: Int) {
 
 
   // 2 ratios of points that will become lakes and points in teselation
-  /* generate lakes idk how */
+  /* generate lakes with a random collection of central points for Voronoi tilings. Some Cells become lake randomly.*/
   def generateLakes(choosenPoint : Int, generatedPoints : Int) : Unit = {
     val r = scala.util.Random
 

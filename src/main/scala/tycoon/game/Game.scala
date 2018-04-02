@@ -238,13 +238,37 @@ class Game(val map_width : Int, val map_height : Int)
         case factory: Factory => bought = createStruct(factory, Tile.grass)
         case airport: Airport => {
           //Airport is a Town facilitie, has to be contained in a town.
-          val around = map.getSurroundingStructures(pos)
+          val around = map.getSurroundingStructures(pos,1)
           for (neighbor <- around) {
             neighbor match {
               case town: Town => {
                 if (!town.hasAirport && createStruct(airport, Tile.grass)) {
                   bought = true
                   town.hasAirport = true
+                }
+              }
+              case _ => ()
+            }
+          }
+        }
+        case field: Field => {
+          val around = map.getSurroundingStructures(pos,0)
+          for (neighbor <- around) {
+            neighbor match {
+              case farm: Farm => {
+                if ((farm.haOfField < 10) && createStruct(field, Tile.grass)) {
+                  bought = true
+                  farm.haOfField += 1
+                  farm.fields +=  field
+                  field.dependanceFarm = Some(farm)
+                }
+              }
+              case fieldBis : Field => {
+                if ((fieldBis.dependanceFarm.get.haOfField < 10) && createStruct(field, Tile.grass)) {
+                  bought = true
+                  fieldBis.dependanceFarm.get.haOfField += 1
+                  fieldBis.dependanceFarm.get.fields += field
+                  field.dependanceFarm = fieldBis.dependanceFarm
                 }
               }
               case _ => ()
