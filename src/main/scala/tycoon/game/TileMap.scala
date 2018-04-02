@@ -100,6 +100,7 @@ class TileMap (val width: Int, val height: Int) {
 
     // add random points in lakeStarter at a rate of 1 / generatedPoints
     var lakeStarter = new ListBuffer[GridLocation]
+    var riverStarter = new ListBuffer[GridLocation]
     for ((col, row) <- new GridRectangle(0, 0, width, height).iterateTuple)
       if (r.nextInt(generatedPoints) == 0)
         lakeStarter += new GridLocation(col, row)
@@ -110,13 +111,13 @@ class TileMap (val width: Int, val height: Int) {
       teselationPoints(i) = new ListBuffer[GridLocation]
 
     for ((col, row) <- new GridRectangle(0, 0, width, height).iterateTuple) {
-      var distance = height + width
+      var distance = (height + width).toDouble
       var nearestPoint = 0
       var counter = 0
       for (pos <- lakeStarter) {
         var x = Math.abs(pos.row - row)
         var y = Math.abs(pos.col - col)
-        var r = Math.ceil(Math.sqrt(Math.pow(x,2) + Math.pow(y,2))).toInt
+        var r = (Math.sqrt(Math.pow(x,2) + Math.pow(y,2)))
         if (r < distance) {
           distance = r
           nearestPoint = counter
@@ -143,8 +144,52 @@ class TileMap (val width: Int, val height: Int) {
           new GridLocation(col - 1, row)
         )
         for (j <- 0 to 3) {
-          if (checkBgTile(neighbors(j), Tile.grass) && checkBgTile(col,row,Tile.plainWater))
-            backgroundLayer(col)(row) = Tile.plainSand
+          if (checkBgTile(neighbors(j), Tile.grass) && checkBgTile(col,row,Tile.plainWater)) {
+            var randomPoint = scala.util.Random
+            if (randomPoint.nextInt(50)==1) {
+              riverStarter += (new GridLocation(col,row))
+            }
+            else backgroundLayer(col)(row) = Tile.plainSand
+          }
+        }
+      }
+    }
+
+    // Aptempt of river construction with bronian movment.
+    for (pos <- riverStarter) {
+      var position = pos
+      var positions = new Array[GridLocation](4)
+      var origine = r.nextInt(4)
+      var source = false
+      while(!source) {
+        setBackgroundTile(position, Tile.plainWater)
+        var random = scala.util.Random
+        if (random.nextInt(200) == 1){
+          source = true
+        }
+        if (position.col > 0 && position.row > 0 && position.row< height -2 && position.col < width -2) {
+          var previous = position
+          positions = Array(position.top, position.right, position.bottom,  position.left)
+          if (random.nextInt(2)==1) {
+            position = positions(origine)
+          }
+          else{
+            if (random.nextInt(32)==2) {
+              position = positions((origine + 1) %4)
+              origine = (origine + 1) %4
+            }else {
+              if (random.nextInt(32)==1) {
+                position = positions((origine + 3) %4)
+                origine = (origine + 3) %4
+              }else {
+                // position = positions((origine - 2) %3)
+                // origine = (origine - 2) %3
+              }
+            }
+          }
+          if (checkBgTile(position, Tile.plainWater)) {
+            position = previous
+          }
         }
       }
     }

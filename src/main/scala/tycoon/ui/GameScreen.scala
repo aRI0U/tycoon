@@ -48,6 +48,7 @@ class GameScreen(val game: Game) extends BorderPane
   interactionsMenu.addBuyableStruct(BuyableStruct.Factory)
   interactionsMenu.addBuyableStruct(BuyableStruct.Airport)
   interactionsMenu.addBuyableStruct(BuyableStruct.Field)
+  interactionsMenu.addBuyableStruct(BuyableStruct.Dock)
 
   interactionsMenu.addBuyableRail(BuyableRail.Rail)
 
@@ -190,6 +191,8 @@ class GameScreen(val game: Game) extends BorderPane
       )
     }
   }
+
+
 
   private def initFly () {
     flyMode = true
@@ -381,6 +384,10 @@ class GameScreen(val game: Game) extends BorderPane
       new Button {
         text = "Buy Plane" ; margin = Insets(10)
         onMouseClicked = _ => initBuyPlane()
+      },
+      new Button {
+        text = "Buy Boat" ; margin = Insets(10)
+        onMouseClicked = _ => {}//initBuyBoat()
       },
       new Button {
         text = "Create a plan fly" ; margin = Insets(10)

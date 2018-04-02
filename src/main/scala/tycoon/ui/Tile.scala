@@ -48,6 +48,7 @@ object Tile {
   val goodsWagonT = new Tile("goodsWagonT", 7, 6)
 
   val liquidWagon = new Tile("liquidWagon", 6, 1)
+  val boat = new Tile("boat", 6, 4)
   val plane = new Tile("plane", 6, 2)
 
   //structure tiles
@@ -61,6 +62,7 @@ object Tile {
   val field2 = new Tile("field2", 1, 8)
   val field3 = new Tile("field3", 3, 8)
   val airport = new Tile("airport", 6, 3)
+  val dock = new Tile("dock", 4, 7)
 
   val straightRailBT = new Tile("straightRailBT", 1, 1)
   val straightRailLR = new Tile("straightRailLR", 2, 6)
