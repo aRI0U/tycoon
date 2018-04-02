@@ -86,7 +86,7 @@ class Game(val map_width : Int, val map_height : Int)
   map.fillBackground(Tile.grass)
   map.sprinkleTile(Tile.tree, 3)
   map.sprinkleTile(Tile.rock, 1)
-  // map.generateLakes(5, 2000) SLOW
+  map.generateLakes(5, 2000) //SLOW
 
   val tiledPane = new DraggableTiledPane(map)
   tiledPane.moveToCenter()
@@ -221,6 +221,7 @@ class Game(val map_width : Int, val map_height : Int)
         case farm: Farm => ()
         case factory: Factory => ()
         case airport: Airport => ()
+        case dock : Dock => ()
         case _ => ()
       }
       true
@@ -245,6 +246,24 @@ class Game(val map_width : Int, val map_height : Int)
                 if (!town.hasAirport && createStruct(airport, Tile.grass)) {
                   bought = true
                   town.hasAirport = true
+                  airport.dependanceTown = Some(town)
+                  town.airport = Some(airport)
+                }
+              }
+              case _ => ()
+            }
+          }
+        }
+        case dock: Dock => {
+          val around = map.getSurroundingStructures(pos,1)
+          for (neighbor <- around) {
+            neighbor match {
+              case town: Town => {
+                if (!town.hasDock && createStruct(dock, Array(Tile.plainSand,Tile.plainWater))) {
+                  bought = true
+                  town.hasDock = true
+                  dock.dependanceTown = Some(town)
+                  town.dock = Some(dock)
                 }
               }
               case _ => ()
