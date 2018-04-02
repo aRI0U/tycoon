@@ -8,9 +8,9 @@ import tycoon.ui.Tile
 import scala.collection.mutable.{HashMap, ListBuffer}
 
 class Road {
-  var finished : Boolean = false
-  var startStructure : Option[Structure] = None
-  var endStructure : Option[Structure] = None
-  var rails : ListBuffer[Rail] = new ListBuffer
-  var length : Int = 0
+  var finished: Boolean = false
+  var startStructure: Option[Structure] = None
+  var endStructure: Option[Structure] = None
+  var rails: ListBuffer[Rail] = new ListBuffer
+  var length: Int = 0
 }

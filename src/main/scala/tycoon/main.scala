@@ -60,13 +60,19 @@ object Main extends JFXApp {
        extensionFilters.setAll(new ExtensionFilter("Tycoon Save Files (*.xml)", "*.xml"))
       }
       var selectedFile = fileChooser.showOpenDialog(stage)
-      while (selectedFile == null || !game.loadMap(selectedFile.toString())) {
-        println("Game backup couldn't be opened or read.")
-        selectedFile = fileChooser.showOpenDialog(stage)
+      do {
+        if (game.loadMap(selectedFile.toString())) {
+          switchScreen(gameScreen)
+          gameScreen.init()
+          game.start()
+          selectedFile = null
+        }
+        else {
+          println("Game backup couldn't be opened or read.")
+          selectedFile = fileChooser.showOpenDialog(stage)
+        }
       }
-      switchScreen(gameScreen)
-      gameScreen.init()
-      game.start()
+      while (selectedFile != null)
     }
   })
 

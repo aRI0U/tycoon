@@ -10,7 +10,7 @@ import scalafx.beans.property.{IntegerProperty, StringProperty}
 
 
 abstract class Structure(pos: GridLocation, id: Int) extends Renderable(pos) {
-  val structure_id = id
+  val structureId = id
   var trainList = new ListBuffer[Train]()
   var planeList = new ListBuffer[Plane]()
 

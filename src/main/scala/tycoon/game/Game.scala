@@ -53,7 +53,10 @@ class Game(val map_width : Int, val map_height : Int)
 
   var infoTextTimer: Double = 0
   val informationText = StringProperty("")
-  def clearInfoText(): Unit = setRandomInfoText()
+  def clearInfoText(force: Boolean = true): Unit = {
+    if (force || (!force && infoTextTimer < 0))
+      setRandomInfoText()
+  }
   def setInfoText(s: String, duration: Double = 4): Unit = {
     informationText.set(s)
     infoTextTimer = duration
@@ -174,9 +177,11 @@ class Game(val map_width : Int, val map_height : Int)
     structures foreach { _.update(dt * speedMultiplier.value) }
     tiledPane.render()
 
-    if (infoTextTimer > 0)
+    if (infoTextTimer > 0) {
       infoTextTimer -= dt
-    else clearInfoText()
+      if (infoTextTimer <= 0)
+        clearInfoText()
+    }
   }
 
 
@@ -233,13 +238,37 @@ class Game(val map_width : Int, val map_height : Int)
         case factory: Factory => bought = createStruct(factory, Tile.grass)
         case airport: Airport => {
           //Airport is a Town facilitie, has to be contained in a town.
-          val around = map.getSurroundingStructures(pos)
+          val around = map.getSurroundingStructures(pos,1)
           for (neighbor <- around) {
             neighbor match {
               case town: Town => {
                 if (!town.hasAirport && createStruct(airport, Tile.grass)) {
                   bought = true
                   town.hasAirport = true
+                }
+              }
+              case _ => ()
+            }
+          }
+        }
+        case field: Field => {
+          val around = map.getSurroundingStructures(pos,0)
+          for (neighbor <- around) {
+            neighbor match {
+              case farm: Farm => {
+                if ((farm.haOfField < 10) && createStruct(field, Tile.grass)) {
+                  bought = true
+                  farm.haOfField += 1
+                  farm.fields +=  field
+                  field.dependanceFarm = Some(farm)
+                }
+              }
+              case fieldBis : Field => {
+                if ((fieldBis.dependanceFarm.get.haOfField < 10) && createStruct(field, Tile.grass)) {
+                  bought = true
+                  fieldBis.dependanceFarm.get.haOfField += 1
+                  fieldBis.dependanceFarm.get.fields += field
+                  field.dependanceFarm = fieldBis.dependanceFarm
                 }
               }
               case _ => ()
@@ -265,7 +294,11 @@ class Game(val map_width : Int, val map_height : Int)
     bought
   }
 
-
+  def createRoute(roads: ListBuffer[Road], stops: ListBuffer[Structure], train: Train) = {
+    val route = new Route(roads, stops, train)
+    route.start()
+    routes += route
+  }
 
   /* KEEEEP END */
 
@@ -304,11 +337,6 @@ class Game(val map_width : Int, val map_height : Int)
     true
   }
 
-  def createRoute (departure: Structure, arrival: Structure, train: Train) {
-    val route = new Route(game_graph.shortestRoute(departure, arrival), train)
-    route.departure()
-    routes += route
-  }
   def createFly (departure: Structure, arrival: Structure, plane : Plane) {
     println ("tycoon > game > Game.scala > create Fly: creation of a fly betwenn to to airport with a plane ")
   }

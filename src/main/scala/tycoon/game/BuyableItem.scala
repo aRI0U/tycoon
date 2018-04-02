@@ -34,6 +34,7 @@ object BuyableStruct {
   def newFarm(pos: GridLocation, id: Int, townManager: TownManager): Farm = new Farm(pos, id)
   def newFactory(pos: GridLocation, id: Int, townManager: TownManager): Factory = new Factory(pos, id)
   def newAirport(pos: GridLocation, id: Int, townManager: TownManager): Airport = new Airport(pos, id)
+  def newField(pos: GridLocation, id: Int, townManager: TownManager): Field = new Field(pos, id)
 
   val SmallTown = new BuyableStruct("Small Town", 50, Tile.town, newSmallTown)
   val MediumTown = new BuyableStruct("Medium Town", 100, Tile.town, newMediumTown)
@@ -42,6 +43,7 @@ object BuyableStruct {
   val Farm = new BuyableStruct("Farm", 100, Tile.farm1, newFarm)
   val Factory = new BuyableStruct("Factory", 150, Tile.factory, newFactory)
   val Airport = new BuyableStruct("Airport", 1000, Tile.airport, newAirport)
+  val Field = new BuyableStruct("Field", 100, Tile.field1, newField)
 }
 
 

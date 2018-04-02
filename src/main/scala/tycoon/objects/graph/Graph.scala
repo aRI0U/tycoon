@@ -8,7 +8,7 @@ import tycoon.objects.railway._
 import tycoon.game.Game
 
 class Vertex(s: Structure) {
-  val origin : Int = s.structure_id
+  val origin : Int = s.structureId
   var links : ListBuffer[(Int,Road)] = new ListBuffer
 }
 
@@ -19,19 +19,18 @@ class Graph {
 
   def newStructure(s:Structure) : Unit = {
     content += new Vertex(s)
-    println("tycoon > objects > graph > Graph.scala > newStructure: added structure n° " + s.structure_id)
+    println("tycoon > objects > graph > Graph.scala > newStructure: added structure n° " + s.structureId)
   }
 
   def newRoad(road:Road) : Unit = {
     if (road.finished) {
-      print_graph()
       road.startStructure match {
         case None => ()
         case Some(s_town) => road.endStructure match {
           case None => ()
           case Some(e_town) => {
-            val s_id = s_town.structure_id
-            val e_id = e_town.structure_id
+            val s_id = s_town.structureId
+            val e_id = e_town.structureId
             for (vertex <- content) {
               if (vertex.origin == s_id) vertex.links += ((e_id, road))
               else {if (vertex.origin == e_id) vertex.links += ((s_id, road))}
@@ -44,8 +43,8 @@ class Graph {
     print_graph()
   }
 
-  def removeStructure(s:Structure) = {
-    val id = s.structure_id
+  def removeStructure(s: Structure) = {
+    val id = s.structureId
     for (vertex <- content) {
       if (vertex.origin == id) content -= vertex
       else {
@@ -58,9 +57,9 @@ class Graph {
 
   def print_graph() {
     for (vertex <- content) {
-      println ("tycoon > objects > graph > Graph.scala > print_graph: " + vertex.origin + ":")
+      println("tycoon > objects > graph > Graph.scala > print_graph: Vertex " + vertex.origin + ":")
       for (link <- vertex.links) {
-        println("tycoon > objects > graph > Graph.scala > print_graph: " + link._1)
+        println("tycoon > objects > graph > Graph.scala > print_graph: |--> connected to " + link._1)
       }
     }
   }
@@ -82,36 +81,34 @@ class Graph {
       case None => None
       case Some(x) => n match {
         case None => None
-        case Some(y) => Some(x+y)
+        case Some(y) => Some(x + y)
       }
     }
   }
 
   def shortestRoute(departure: Structure, arrival: Structure) : ListBuffer[Road] = {
-    // initialization
-    print_graph()
     val l = content.length
-    println("tycoon > objects > graph > Graph.scala > shortestRoute: " + l)
+
     var d : Array[Option[Int]] = new Array[Option[Int]](l)
     for (i <- 0 to l-1) d(i) = None
-    d(departure.structure_id) = Some(0)
+    d(departure.structureId) = Some(0)
 
-    var not_visited : ListBuffer[Vertex] = content.clone
+    var notVisited : ListBuffer[Vertex] = content.clone
     var previous : Array[Option[(Int, Road)]] = new Array[Option[(Int, Road)]](l)
     for (i <- 0 to l-1) previous(i) = None
 
-    while (!(not_visited.isEmpty)) {
+    while (notVisited.nonEmpty) {
       // find closest structure
       var mini : Option[Int] = None
-      var next_stop : Vertex = not_visited(0)
-      for (s <- not_visited) {
+      var next_stop : Vertex = notVisited(0)
+      for (s <- notVisited) {
         val distance : Option[Int] = d(s.origin)
         if (optionMin(distance, mini)) {
           mini = distance
           next_stop = s
         }
       }
-      not_visited -= next_stop
+      notVisited -= next_stop
 
       for (neighbor <- next_stop.links) {
         val id = neighbor._1
@@ -124,16 +121,16 @@ class Graph {
       }
     }
     var final_path = new ListBuffer[Road]
-    var last_step = arrival.structure_id
+    var last_step = arrival.structureId
     var k = l
-    while ((last_step != departure.structure_id)) {
+    while (last_step != departure.structureId) {
       var predecessor = previous(last_step)
       predecessor match {
         case Some(p) => {
-          final_path += p._2
+          final_path.prepend(p._2) // preprend
           last_step = p._1
         }
-        case None => throw new IllegalStateException("no path")
+        case None => throw new IllegalStateException("no path joining the two structures")
       }
     }
     final_path

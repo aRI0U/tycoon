@@ -1,32 +1,34 @@
 
+TODO:
+
+remettre la musique sans que ca lag
+
+graphe: dijkstra tile by tile (gridLocation origin, gridLocation destination, Array des tiles autorisées sur le chemin (que water pour boat..))
+
+train est mal rotationné sur la première tile (rotateTrain pas appelé juste après boarding)
+
+ajouter création de train dans le menu avec choix du nombre de carriages et sélection de la ville
+
+déplacer & afficher les carriages et leur rotation
+
+dessiner tiles bateau / port / camion
+
+faire toute l'économie et le transport des marchandises dans les véhicules en fonction de celle-ci
+
+fermes: produire des trucs en fonction des saisons
+
+facilities: ajouter pleins de produits, de recettes pour créer ces produits etc et les produire périodiquement (ne pas créer une classe pour chaque produit)
+
+"Load Game" créer un format .xml pour une map, créer une map par défaut et gérer l'ouverture d'un fichier .xml into une instance de TileMap
 
 
-General:
 
-fix the music
-Printable -> print data of every Renderable clicked on even if several are overlaping
-implement pixel-to-pixel location with built-in move function and test it with trains
-interatcions menu: continue with trains ; in building mode, display info about current building
-Game: in createTown, createRail.. handle player money (ie return false if not enough money, and reduce player's money when building, according to a price)
-graph: dijkstra tile by tile
-merge Map & TileMap (& Graph?)
-add condition when tile is drawn with position & a lil offset
+BUGS:
 
+bugs de jonction des rails des fois mais j'arrive pas à reproduire le bug
 
-Beautify:
+bouton "quitter" lance exception des fois (à vérifier)
 
-remove useless imports
-delete useless printlns and clarify the others
-put things at the right place (prices should not be in gamescreen)
-_s => caps
+villes: population peut dépasser population max (cf. en mettant en x64)
 
-
-
-Bugs:
-
-trains can be bought without money restriction
-rails
-Exit button closes bad thread and throws exn
-first rail sometimes erased when creating trip
-some rails dont match correctly (esp. at the end)
-pb when there is a loop of roads
+rail ne se termine pas si on ajoute une structure à une extrémité non terminée

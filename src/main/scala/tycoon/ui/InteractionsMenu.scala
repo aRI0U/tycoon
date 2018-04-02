@@ -12,6 +12,9 @@ import scalafx.scene.text.Text
 import tycoon.objects.vehicle.train._
 import scalafx.collections.ObservableBuffer
 import scalafx.scene.control.TableColumn._
+import scala.collection.mutable.ListBuffer
+import tycoon.objects.structure._
+import tycoon.objects.railway._
 
 
 class InteractionsMenu(val game: Game) extends TabPane
@@ -32,6 +35,8 @@ class InteractionsMenu(val game: Game) extends TabPane
   this += roadsTab
   this += trainsTab
 
+  private var currentTemporaryTab: Option[Tab] = None
+
   /**
    TABS FOR BUYING PHYSICAL OBJECTS (STRUCTURES, RAILS...)
   */
@@ -43,7 +48,6 @@ class InteractionsMenu(val game: Game) extends TabPane
   roadsTab.content = new ScrollPane { content = buildingTabContainer(1) }
 
   private var selectedBuildingItem: Option[BuyableItem] = None
-  private var selectedBuildingItemTab: Option[Tab] = None
 
   private val quantityBought = IntegerProperty(0)
 
@@ -73,7 +77,7 @@ class InteractionsMenu(val game: Game) extends TabPane
     itemTab.text = item.name + " Building"
     this += itemTab
     this.selectionModel.value.selectLast()
-    selectedBuildingItemTab = Some(itemTab)
+    currentTemporaryTab = Some(itemTab)
 
     val closeTabBt = new Button {
       text = "Exit Construction"
@@ -131,18 +135,9 @@ class InteractionsMenu(val game: Game) extends TabPane
     itemTab.setContent(container)
   }
 
-  private def removeItemTab() = {
-    selectedBuildingItemTab match {
-      case Some(tab) =>
-        this.tabs -= tab
-        tabPaneRequestFocus()
-      case None => ()
-    }
-    selectedBuildingItemTab = None
-  }
 
   private def stopBuilding() = {
-    removeItemTab()
+    removeTemporaryTab()
     selectedBuildingItem = None
   }
 
@@ -162,8 +157,17 @@ class InteractionsMenu(val game: Game) extends TabPane
     onMouseClicked = _ => openTrainsDataDialog()
   }
 
+  val newRouteBt = new Button {
+    text = "New Route"
+    margin = Insets(10)
+    vgrow = Priority.Always
+    maxHeight = Double.MaxValue
+    onMouseClicked = _ => startTrainRouteCreation()
+  }
+
   trainsTabContainer.children = Seq(
-    showTrainsBt
+    showTrainsBt,
+    newRouteBt
   )
 
   // when creating train
@@ -183,10 +187,9 @@ class InteractionsMenu(val game: Game) extends TabPane
   // ou a chaque stop)
 
 
-
-  def openTrainsDataDialog() = {
+  def getTrainsTableView(trainList: ListBuffer[Train]) : TableView[Train] = {
     val trains = new ObservableBuffer[Train]
-    trains ++= game.trains // filter on whether owner is player
+    trains ++= trainList
 
     val idCol = new TableColumn[Train, String]("ID")
     idCol.minWidth = 30
@@ -216,13 +219,102 @@ class InteractionsMenu(val game: Game) extends TabPane
 
     val table = new TableView(trains)
     table.columns ++= Seq(idCol, stateCol, locationCol, nextLocationCol, speedCol)
+    table
+  }
 
+  def openTrainsDataDialog() = {
     val dialog = new Dialog
     dialog.title = "Your Trains"
     dialog.dialogPane.value.buttonTypes = Seq(ButtonType.Close)
-    dialog.dialogPane().content = table
+    dialog.dialogPane().content = getTrainsTableView(game.trains) // for P3: filter on whether owner is player
     dialog.showAndWait()
   }
+
+  def startTrainRouteCreation() = {
+    val trainRouteTab = new Tab()
+    trainRouteTab.text = "Train Route Creation"
+    this += trainRouteTab
+    this.selectionModel.value.selectLast()
+    currentTemporaryTab = Some(trainRouteTab)
+
+    val closeTabBt = new Button {
+      text = "Cancel Creation"
+      margin = Insets(10)
+      vgrow = Priority.Always
+      maxHeight = Double.MaxValue
+      onMouseClicked = _ => {
+        selectFirstTab()
+        stopBuilding()
+      }
+    }
+
+    val finishRouteBt = new Button {
+      text = "Finish Route"
+      margin = Insets(10)
+      vgrow = Priority.Always
+      maxHeight = Double.MaxValue
+      onMouseClicked = _ => finishTrainRouteCreation()
+    }
+
+    val container = new HBox(20.0)
+    container.children += closeTabBt
+    container.children += finishRouteBt
+    trainRouteTab.setContent(container)
+
+    game.setInfoText("[Train Route Creation] Select the town where the journey shall begin!", -1)
+    routeStops.clear()
+    routeRoads.clear()
+    creatingTrainRoute = true
+    routeMaxSize = 10
+
+  }
+
+  private val routeStops = new ListBuffer[Structure]()
+  private val routeRoads = new ListBuffer[Road]()
+  private var creatingTrainRoute = false
+  private var routeMaxSize = 0
+
+  private def finishTrainRouteCreation() = {
+    var created: Boolean = false
+    if (routeStops.length >= 2) {
+      val trainsView: TableView[Train] = getTrainsTableView(routeStops(0).trainList)
+      trainsView.selectionModel.value.selectFirst()
+
+      val dialog = new Dialog
+      dialog.title = "Selected a train for the route"
+      dialog.dialogPane.value.buttonTypes = Seq(ButtonType.Finish, ButtonType.Cancel)
+      dialog.dialogPane().content = trainsView
+      dialog.showAndWait() match {
+        case Some(ButtonType.Finish) => {
+          val routeTrain: Train = trainsView.selectionModel.value.selectedItem.value
+          if (routeTrain != null) {
+            game.createRoute(routeRoads.clone(), routeStops.clone(), routeTrain)
+            // il faut encore tt ce qui est route répétée ou non, et ici le train s'arrête à tt les stops mais il faudrait pas
+            game.setInfoText("[Train Route Creation] The route has been created!")
+          }
+          else {
+            game.setInfoText("[Train Route Creation] You didn't select any train.")
+          }
+        }
+        case _ => stopCreatingRoute()
+      }
+    } else {
+      game.setInfoText("[Train Route Creation] There wasn't enough stops to create a route.")
+    }
+
+    stopCreatingRoute()
+  }
+
+  private def stopCreatingRoute() = {
+    removeTemporaryTab()
+    routeStops.clear()
+    routeRoads.clear()
+    creatingTrainRoute = false
+    game.clearInfoText(force = false)
+  }
+
+
+
 
   /* TODO  new Label("Nb of trains + others stats on them, button to see list of
    all trains with all their features (current trajet, nb passagers, engine, carriages..),
@@ -253,15 +345,73 @@ class InteractionsMenu(val game: Game) extends TabPane
       }
       case None => ()
     }
+  }
 
+  def structureClicked(struct: Structure) {
+    struct match {
+      case town: Town => {
+        if (creatingTrainRoute) {
+          if (routeStops.isEmpty) {
+            if (town.trainList.isEmpty) {
+              game.setInfoText("[Train Route Creation] There is no train in this town. No train no gain!", -1)
+            }
+            else {
+              routeStops += town
+              game.setInfoText("[Train Route Creation] Now select from 1 to " + routeMaxSize.toString + " stops.", -1)
+            }
+          }
+          else if (routeStops.length < routeMaxSize && town != routeStops.last) {
+            try {
+              routeRoads ++= game.game_graph.shortestRoute(routeStops.last, town)
+              routeStops += town
+              if (routeStops.length == routeMaxSize)
+                finishTrainRouteCreation()
+              game.setInfoText("[Train Route Creation] Now select from 1 to " + routeMaxSize.toString + " stops (" + (routeStops.length - 1).toString + ").", -1)
+            }
+            catch {
+              case e: IllegalStateException =>
+                game.setInfoText("[Train Route Creation] This town cannot be reached from the previous stop. Trains can't fly!", -1)
+            }
+          }
+        }
+      }
+      case facility: Facility => {
+        if (creatingTrainRoute && routeStops.nonEmpty && routeStops.length < routeMaxSize && facility != routeStops.last) {
+          try {
+            routeRoads ++= game.game_graph.shortestRoute(routeStops.last, facility)
+            routeStops += facility
+            if (routeStops.length == routeMaxSize)
+              finishTrainRouteCreation()
+            game.setInfoText("[Train Route Creation] Now select from 1 to " + routeMaxSize.toString + " stops (" + (routeStops.length - 1).toString + ").", -1)
+          }
+          catch {
+            case e: IllegalStateException =>
+              game.setInfoText("[Train Route Creation] This facility cannot be reached from the previous stop. Trains can't fly!", -1)
+          }
+        }
+      }
+      case _ => ()
+    }
+  }
+
+  private def removeTemporaryTab() = {
+    currentTemporaryTab match {
+      case Some(tab) =>
+        this.tabs -= tab
+        tabPaneRequestFocus()
+        currentTemporaryTab = None
+      case None => ()
+    }
   }
 
   this.selectionModel.value.selectedItem.onChange {
     // quit building when changing tab
-    selectedBuildingItemTab match {
+    currentTemporaryTab match {
       case Some(tab) =>
-        if (!tab.selected.value)
+        if (!tab.selected.value) {
           stopBuilding()
+          stopCreatingRoute()
+        }
       case None => ()
     }
   }
