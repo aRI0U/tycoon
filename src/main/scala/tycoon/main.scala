@@ -11,8 +11,8 @@ import scalafx.stage.FileChooser
 import scalafx.stage.FileChooser.ExtensionFilter
 
 object Settings { // to be moved
-  val gameWidth = 1000
-  val gameHeight = 1000
+  val gameWidth = 500
+  val gameHeight = 500
 }
 
 
@@ -61,15 +61,19 @@ object Main extends JFXApp {
       }
       var selectedFile = fileChooser.showOpenDialog(stage)
       do {
-        if (game.loadMap(selectedFile.toString())) {
-          switchScreen(gameScreen)
-          gameScreen.init()
-          game.start()
-          selectedFile = null
-        }
-        else {
-          println("Game backup couldn't be opened or read.")
-          selectedFile = fileChooser.showOpenDialog(stage)
+        try {
+          if (game.loadMap(selectedFile.toString())) {
+            switchScreen(gameScreen)
+            gameScreen.init()
+            game.start()
+            selectedFile = null
+          }
+          else {
+            println("Game backup couldn't be opened or read.")
+            selectedFile = fileChooser.showOpenDialog(stage)
+          }
+        } catch {
+          case e: NullPointerException => ()
         }
       }
       while (selectedFile != null)

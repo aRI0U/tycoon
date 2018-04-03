@@ -54,6 +54,8 @@ class RailManager(map: TileMap, gameGraph: Graph) {
         map.maybeGetStructureAt(neighbors(i)) match {
           case Some(e) =>
             e match {
+              case airport : Airport => {}
+              case field : Field => {}
               case neighborStruct: Structure => {
                 if (!rail.road.finished)
                   if(lookAround(rail, neighborStruct)) {

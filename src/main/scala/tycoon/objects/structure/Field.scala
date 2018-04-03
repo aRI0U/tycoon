@@ -5,9 +5,10 @@ import tycoon.game.GridLocation
 import tycoon.game.Game
 import tycoon.ui.Tile
 
-case class Airport(pos: GridLocation, id: Int) extends Structure(pos, id) {
-  tile = Tile.airport
-  var dependanceTown : Option [Town]= None
+case class Field(pos: GridLocation, id: Int) extends Structure(pos, id) {
+  tile = Tile.field1
+  var tileType = 0
+  var dependanceFarm : Option[Farm] = None
   def update(dt: Double) = {
   }
 }

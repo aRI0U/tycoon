@@ -48,16 +48,21 @@ object Tile {
   val goodsWagonT = new Tile("goodsWagonT", 7, 6)
 
   val liquidWagon = new Tile("liquidWagon", 6, 1)
+  val boat = new Tile("boat", 6, 4)
   val plane = new Tile("plane", 6, 2)
 
   //structure tiles
   val town = new Tile("town", 4, 1, width = 2)
   val mine = new Tile("mine", 4, 3)
   val factory = new Tile("factory", 5, 1)
-  val farm1 = new Tile("farm1", 5, 2, width = 2)
-  val farm2 = new Tile("farm2", 3, 8, width = 2)
-  val farm3 = new Tile("farm3", 3, 8, width = 2) // change
+  val farm1 = new Tile("farm1", 2, 7, width = 2)
+  val farm2 = new Tile("farm2", 1, 7, width = 2)
+  val farm3 = new Tile("farm3", 3, 7, width = 2)
+  val field1 = new Tile("field1", 2, 8)
+  val field2 = new Tile("field2", 1, 8)
+  val field3 = new Tile("field3", 3, 8)
   val airport = new Tile("airport", 6, 3)
+  val dock = new Tile("dock", 4, 7)
 
   val straightRailBT = new Tile("straightRailBT", 1, 1)
   val straightRailLR = new Tile("straightRailLR", 2, 6)
@@ -66,7 +71,11 @@ object Tile {
   val turningRailTR = new Tile("turningRailTR", 1, 5)
   val turningRailTL = new Tile("turningRailTL", 2, 5)
 
-
+val field = Array(
+    field1,
+    field2,
+    field3
+  )
   val farm = Array(
     farm1,
     farm2,
