@@ -28,14 +28,14 @@ case class Farm(pos: GridLocation, id: Int) extends Facility(pos, id) {
   productionPerPeriod += (20)
 
   products += new Food("Corn")
-  productionPerPeriod += (haOfField*4)
+  productionPerPeriod += (4)
 
   displayProducts()
 
   // update production
 
   def update_production(i: Int) = {
-    stocksInt(i).set(stocks(i) + productionPerPeriod(i))
+    stocksInt(i).set(stocks(i) + productionPerPeriod(i)*((workers*0.1 + 1).toInt)*haOfField)
   }
 
   override def update(dt: Double) = {

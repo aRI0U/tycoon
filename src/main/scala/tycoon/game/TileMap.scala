@@ -130,7 +130,7 @@ class TileMap (val width: Int, val height: Int) {
       var randomPoint = scala.util.Random
       if (randomPoint.nextInt(choosenPoint) == 1) {
         for (pos <- teselationPoints(i)) {
-          backgroundLayer(pos.col)(pos.row) = Tile.plainWater
+          backgroundLayer(pos.col)(pos.row) = Tile.water(r.nextInt(Tile.water.length))
         }
       }
     }
@@ -144,12 +144,12 @@ class TileMap (val width: Int, val height: Int) {
           new GridLocation(col - 1, row)
         )
         for (j <- 0 to 3) {
-          if (checkBgTile(neighbors(j), Tile.grass) && checkBgTile(col,row,Tile.plainWater)) {
+          if (checkBgTile(neighbors(j), Tile.grass) && checkBgTile(col,row,Tile.water)) {
             var randomPoint = scala.util.Random
             if (randomPoint.nextInt(50)==1) {
               riverStarter += (new GridLocation(col,row))
             }
-            else backgroundLayer(col)(row) = Tile.plainSand
+            else backgroundLayer(col)(row) = Tile.sand(r.nextInt(Tile.sand.length))
           }
         }
       }
@@ -162,7 +162,7 @@ class TileMap (val width: Int, val height: Int) {
       var origine = r.nextInt(4)
       var source = false
       while(!source) {
-        setBackgroundTile(position, Tile.plainWater)
+        setBackgroundTile(position, Tile.water(r.nextInt(Tile.water.length)))
         var random = scala.util.Random
         if (random.nextInt(200) == 1){
           source = true
@@ -187,7 +187,7 @@ class TileMap (val width: Int, val height: Int) {
               }
             }
           }
-          if (checkBgTile(position, Tile.plainWater)) {
+          if (checkBgTile(position, Tile.water) || (checkBgTile(position, Tile.sand) )) {
             position = previous
           }
         }
