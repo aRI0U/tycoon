@@ -6,8 +6,9 @@ import tycoon.ui.Renderable
 import tycoon.objects.structure._
 import tycoon.objects.railway._
 import tycoon.game.{GridLocation, Player}
+import tycoon.objects.vehicle._
 
-abstract class Carriage(_owner: Player) extends Renderable(new GridLocation(-1, -1)) {
+abstract class Carriage(initialTown: Structure, _owner: Player) extends Vehicle(initialTown) {
   var currentRail: Option[Rail] = None
   var stops = new ListBuffer[Structure]
 
@@ -21,5 +22,6 @@ abstract class Carriage(_owner: Player) extends Renderable(new GridLocation(-1, 
   def debark(s: Structure) : Unit = {}
 
   val cost = 20
+  val weight = 50
 
 }

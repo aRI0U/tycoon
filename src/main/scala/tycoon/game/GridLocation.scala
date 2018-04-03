@@ -27,6 +27,7 @@ class GridLocation(private var _col: Int, private var _row: Int) {
   def adjustedRow: Double = row + percentageHeight / 100
 
   def eq(other: GridLocation): Boolean = (col == other.col && row == other.row)
+  def setLoc(other: GridLocation): Unit = { _col = other.col ; _row = other.row }
   override def clone(): GridLocation = new GridLocation(col, row)
   // absolute position in pixels
   //def x: Double = _x

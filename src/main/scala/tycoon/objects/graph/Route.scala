@@ -28,59 +28,42 @@ class Route(itinerary: ListBuffer[Road], stops: ListBuffer[Structure], train: Tr
   }
 
   def departure() = {
-    println("departure")
-    // train stopped at this stop
-    if (currentStruct == stops(currentStopIndex)) {
-      println("boards here")
+    if (currentStruct == stops(currentStopIndex)) { // train stopped here
       val nextStops: ListBuffer[Structure] = stops.drop(currentStopIndex + 1).filter(_ != currentStruct)
       train.boarding(nextStops)
-
       stops(currentStopIndex).trainList -= train
-      train.visible = true
-      train.carriageList foreach (_.visible = true)
     }
 
     // dirIndicator -- 0: startStructure -> endStructure ; 1: endStructure -> startStructure
     if (currentStruct == itinerary(currentRoadIndex).startStructure.get) dirIndicator = 0
     else dirIndicator = 1
 
-    for (rail <- itinerary(currentRoadIndex).rails)
-      if (rail.nextInDir((dirIndicator + 1) % 2) == rail) {
-        train.currentRail = Some(rail)
-        train.gridPos = rail.gridPos.clone()
-      }
+    var firstRail: Rail =
+      itinerary(currentRoadIndex).rails
+      .filter { rail: Rail => rail.nextInDir((dirIndicator + 1) % 2) == rail }
+      .last
 
-    train.gridPos = (train.currentRail.get).gridPos.clone()
+    train.departure(firstRail)
   }
 
   def arrival() = {
-    println("arrival")
+    train.arrival()
 
     if (dirIndicator == 0) currentStruct = itinerary(currentRoadIndex).endStructure.get
     else currentStruct = itinerary(currentRoadIndex).startStructure.get
 
     currentRoadIndex += 1
 
-    if (currentStruct == stops(currentStopIndex + 1)) { // stop at this struct
-      println("lands here")
+    if (currentStruct == stops(currentStopIndex + 1)) { // train stops here
       currentStopIndex += 1
       train.location = currentStruct
       train.location.trainList += train
       train.gridPos = train.location.gridPos.right
       train.landing()
-    } else {
-      train.arrived = false
     }
 
-    if (currentStopIndex == stops.length - 1) { // arrival
-      for (carr <- train.carriageList) {
-        carr.visible = false
-        carr.currentRail = None
-      }
-    }
-    else {
+    if (currentStopIndex < stops.length - 1)
       departure()
-    }
   }
 
   def update (dt: Double) {
@@ -88,7 +71,7 @@ class Route(itinerary: ListBuffer[Road], stops: ListBuffer[Structure], train: Tr
       if (train.arrived)
         arrival()
       else
-        train.move(dt, dirIndicator)
+        train.update(dt, dirIndicator)
     }
   }
 }

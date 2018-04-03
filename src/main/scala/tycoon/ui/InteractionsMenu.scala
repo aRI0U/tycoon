@@ -364,9 +364,9 @@ class InteractionsMenu(val game: Game) extends TabPane
             try {
               routeRoads ++= game.game_graph.shortestRoute(routeStops.last, town)
               routeStops += town
-              if (routeStops.length == routeMaxSize)
-                finishTrainRouteCreation()
               game.setInfoText("[Train Route Creation] Now select from 1 to " + routeMaxSize.toString + " stops (" + (routeStops.length - 1).toString + ").", -1)
+              if (routeStops.length + 1 == routeMaxSize)
+                finishTrainRouteCreation()
             }
             catch {
               case e: IllegalStateException =>

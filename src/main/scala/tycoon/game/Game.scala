@@ -154,22 +154,19 @@ class Game(val map_width : Int, val map_height : Int)
     totalElapsedTime += dt * speedMultiplier.value
 
     var currentDuration: Int = totalElapsedTime.toInt
-    val nbYears = currentDuration / 518400
-    currentDuration %= 518400
-    val nbMonths = currentDuration / 43200
-    currentDuration %= 43200
-    val nbDays = currentDuration / 1440
-    currentDuration %= 1440
-    val nbHours = currentDuration / 60
-    currentDuration %= 60
-    val nbMinutes = currentDuration
+    val nbYears = currentDuration / 8640
+    currentDuration %= 8640
+    val nbMonths = currentDuration / 720
+    currentDuration %= 720
+    val nbDays = currentDuration / 24
+    currentDuration %= 24
+    val nbHours = currentDuration
 
     elapsedTimeStr.set(
       (if (nbYears > 0) nbYears.toString + "y" else "")
       + (if (nbMonths > 0) nbMonths.toString + "m" else "")
       + (if (nbDays > 0) nbDays.toString + "d" else "")
       + (if (nbHours > 0) nbHours.toString + "h" else "")
-      + (if (nbMinutes > 0) nbMinutes.toString + "m" else "")
     )
 
     //update trains position here ?
@@ -294,6 +291,7 @@ class Game(val map_width : Int, val map_height : Int)
     // paying
     playerMoney.set(playerMoney.value - train.cost)
     for (carriage <- train.carriageList) {
+      println("new carriage")
       playerMoney.set(playerMoney.value - carriage.cost)
       map.addEntity(carriage)
       carriages += carriage

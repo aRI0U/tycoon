@@ -10,7 +10,7 @@ import tycoon.game.{GridLocation, Player}
 import tycoon.objects.railway._
 
 
-case class GoodsCarriage(_owner: Player) extends Carriage(_owner) {
+case class GoodsCarriage(initialTown: Structure, _owner: Player) extends Carriage(initialTown, _owner) {
   tile = Tile.goodsWagonR
 
   override def debark(structure: Structure) = {

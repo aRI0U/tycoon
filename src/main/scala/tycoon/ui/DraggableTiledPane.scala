@@ -271,9 +271,9 @@ class DraggableTiledPane(val tm: TileMap) extends BorderPane {
     // draw background layer
     maxRect.iterateTuple foreach { case (col, row) => drawTile(tm.getBackgroundTile(col, row), col, row) }
     // draw structural layer
-    maxRect.iterate.map(tm.maybeGetStructureAt).flatten foreach drawEntity
+    maxRect.iterate.map(tm.maybeGetStructureAt).flatten.filter(_.visible) foreach drawEntity
     // draw entity layer
-    tm.entities foreach drawEntity
+    tm.entities.filter(_.visible) foreach drawEntity
   }
 
   /** given an absolute position on the screen (in pixels), return the GridLocation in which it is, depending on the offset */
