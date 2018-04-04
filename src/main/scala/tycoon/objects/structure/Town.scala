@@ -65,7 +65,7 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
 
   // gestion of the waiting passengers
 
-  var total_waiters = 0
+  var totalWaiters = 0
   var destinations = new ListBuffer[Structure]
   var waitersInt = new ListBuffer[IntegerProperty]
   var waitersStr = new ListBuffer[StringProperty]
@@ -103,9 +103,9 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
 
   def updateWaiters () = {
     try {
-      if (total_waiters < population/3) {
+      if (totalWaiters < population/3) {
         val new_waiters = (r.nextInt(population))/30
-        total_waiters += new_waiters
+        totalWaiters += new_waiters
         val destination = r.nextInt(waitersInt.length)
         waitersInt(destination).set(waiters(destination) + new_waiters)
       }
@@ -134,21 +134,47 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
   population = 50 + r.nextInt(50)
   waiting_passengers = 0
 
-  var products = new ListBuffer[Good]
-  var stocksInt = new ListBuffer[IntegerProperty]
-  var stocksStr = new ListBuffer[StringProperty]
+  // requests of the town
 
-  products += new Ore("Coal")
+  var requests = new ListBuffer[Good]
+  var needsInt = new ListBuffer[IntegerProperty]
+  var needsStr = new ListBuffer[StringProperty]
+  var pricesInt = new ListBuffer[IntegerProperty]
 
-  def stocks(i: Int) : Int = stocksInt(i).value
-  def stocks_= (i: Int, new_stock: Int) = stocksInt(i).set(new_stock)
+  def needs(i: Int) : Int = needsInt(i).value
+  def prices(i: Int) : Int = pricesInt(i).value
 
-  def displayProducts() {
-    for (p <- products) {
-      stocksInt += IntegerProperty(0)
-      stocksStr += new StringProperty
-      stocksStr.last <== stocksInt.last.asString
-      printData += new Tuple2(p.label, stocksStr.last)
+  def newRequest(good: Good, amount: Int) {
+    requests += good
+    needsInt += IntegerProperty(amount)
+    needsStr += new StringProperty
+    pricesInt += IntegerProperty(1) // will evolve with time using townManager
+    needsStr.last <== needsInt.last.asString.concat(" for $").concat(pricesInt.last.asString).concat(" per unity")
+    printData += new Tuple2(good.label, needsStr.last)
+  }
+
+  def satisfyRequest(good: Good, i: Int, soldQuantity: Int) : Boolean = {
+    // returns true iff the request is completely satisfied
+    needsInt(i).set(needs(i) - soldQuantity)
+    if (soldQuantity == needs(i)) {
+      // delete the request
+      requests -= requests(i)
+      needsInt -= needsInt(i)
+      needsStr -= needsStr(i)
+      pricesInt -= pricesInt(i)
+
+      val data = printData.find(data => good.label == data._1)
+      data match {
+        case Some(d) => printData -= d
+        case None => println("tycoon > objects > structure > Town : an unexisting request has been discovered")
+      }
+      true
+    }
+    else {
+      false
     }
   }
+
+  newRequest(new Food("Cake"), 200)
+  newRequest(new Ore("Iron"), 50)
 }

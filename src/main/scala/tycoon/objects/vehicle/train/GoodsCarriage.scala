@@ -9,6 +9,8 @@ import tycoon.ui.Tile
 import tycoon.game.{GridLocation, Player}
 import tycoon.objects.railway._
 
+import scalafx.beans.property.IntegerProperty
+
 
 case class GoodsCarriage(id: Int, initialTown: Structure, _owner: Player) extends Carriage(id, initialTown, _owner) {
   tile = Tile.goodsWagonR
@@ -26,7 +28,10 @@ case class GoodsCarriage(id: Int, initialTown: Structure, _owner: Player) extend
             for (p <- l) requests += p._1
           }
         }
-        case _  => ()
+        case t: Town => {
+          for (good <- t.requests) requests += good.label
+        }
+        case _ => ()
       }
     }
     requests
@@ -64,18 +69,34 @@ case class GoodsCarriage(id: Int, initialTown: Structure, _owner: Player) extend
     println("GoodsCarriage > debark")
     structure match {
       case t: Town => {
-        for (i <- 0 to t.products.length-1) {
-          for (merch <- merchandises) {
-            if (merch.kind.label == t.products(i).label) {
-              println(merch.kind, remainingSpace, t.stocks(i))
-              println(merch)
-              // add the product
-              t.stocksInt(i).set(t.stocks(i) + merch.quantity)
-              // empty the carriage
-              merchandises -= merch
-              remainingSpace += merch.quantity*merch.kind.weight
-              println(merch.kind, remainingSpace, t.stocks(i))
+        var i = 0 // number of satisfied requests
+        for (merch <- merchandises) {
+          var i = 0
+          while (i < t.requests.length) {
+            if (merch.kind.label == t.requests(i).label) {
+              val soldQuantity = merch.quantity.min(t.needs(i))
+              // add the product to the town
+              var index = t.products.indexOf(merch.kind)
+              if (index == -1) {
+                t.products += merch.kind
+                t.stocksInt += IntegerProperty(soldQuantity)
+              }
+              else {
+                t.stocksInt(index).set(t.stocks(index) + soldQuantity)
+              }
+              // delete the merchandise from the carriage
+              if (merch.quantity > soldQuantity) {
+                merch.quantity -= soldQuantity
+              }
+              else merchandises -= merch
+              remainingSpace += soldQuantity*merch.kind.size
+              weight -= soldQuantity*merch.kind.weight
+              // be paid
+              owner.earn(prices(i)*soldQuantity)
+              // satisfy the request
+              if (!t.satisfyRequest(merch.kind, i, soldQuantity)) i += 1
             }
+            else i += 1
           }
         }
       }
@@ -83,8 +104,6 @@ case class GoodsCarriage(id: Int, initialTown: Structure, _owner: Player) extend
         for (i <- 0 to f.products.length-1) {
           for (merch <- merchandises) {
             if (merch.kind.label == f.products(i).label) {
-              println(merch.kind, remainingSpace, f.stocks(i))
-              println(merch)
               // add the product
               f.stocksInt(i).set(f.stocks(i) + merch.quantity)
               // empty the carriage
@@ -98,4 +117,9 @@ case class GoodsCarriage(id: Int, initialTown: Structure, _owner: Player) extend
       }
     }
   }
+}
+
+
+object GoodsCarriage {
+  val Price: Int = 30
 }

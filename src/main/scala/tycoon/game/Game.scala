@@ -142,6 +142,7 @@ class Game(val map_width : Int, val map_height : Int)
   var carriages = new ListBuffer[Carriage]()
 
   private val _player = new Player
+  def player: Player = _player
 
 
   // game loop
@@ -394,6 +395,25 @@ class Game(val map_width : Int, val map_height : Int)
 
   var nbTrains = IntegerProperty(0)
 
+  def addCarriage(carriage: Carriage, train: Train): Unit = {
+    /* TODO add carriage limit constraint */
+    map.addEntity(carriage)
+    carriages += carriage
+    train.addCarriage(carriage)
+    nbVehicles += 1
+  }
+  def buyPassengerCarriage(train: Train): Boolean = {
+    if (!train.moving.value && player.pay(PassengerCarriage.Price)) {
+      addCarriage(new PassengerCarriage(nbVehicles, train.location, _player), train)
+      true
+    } else false
+  }
+  def buyGoodsCarriage(train: Train): Boolean = {
+    if (!train.moving.value && player.pay(GoodsCarriage.Price)) {
+      addCarriage(new GoodsCarriage(nbVehicles, train.location, _player), train)
+      true
+    } else false
+  }
 
   def createTrain (train: Train, town: Town, player: Player): Unit = {
     town.addTrain(train)
