@@ -49,6 +49,7 @@ object Main extends JFXApp {
     def run() = {
       switchScreen(gameScreen)
       gameScreen.init()
+      game.generateRandomMap()
       game.start()
     }
   })

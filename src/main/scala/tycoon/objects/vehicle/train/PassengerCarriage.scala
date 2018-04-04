@@ -55,7 +55,6 @@ case class PassengerCarriage(id: Int, initialTown: Structure, _owner: Player) ex
         }
       }
     }
-    if (stops.isEmpty) println("PassengerCarriage > no more passengers")
   }
 
 }

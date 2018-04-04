@@ -33,6 +33,10 @@ import scalafx.util.converter.{DateStringConverter, DateTimeStringConverter}
 
 class Game(val map_width : Int, val map_height : Int)
 {
+  var game_graph = new Graph
+  var map = new TileMap(map_width, map_height)
+  map.fillBackground(Tile.grass)
+
   def loadMap(filepath: String) : Boolean = {
     Try {
       val xml = XML.loadFile(filepath)
@@ -48,6 +52,12 @@ class Game(val map_width : Int, val map_height : Int)
         println((id \ "@id").text)
 
     }.isSuccess
+  }
+
+  def generateRandomMap() = {
+    map.sprinkleTile(Tile.tree, 3)
+    map.sprinkleTile(Tile.rock, 1)
+    map.generateLakes(5, 2000) //SLOW
   }
 
 
@@ -81,12 +91,6 @@ class Game(val map_width : Int, val map_height : Int)
 
 
   // game map
-  var game_graph = new Graph
-  val map = new TileMap(map_width, map_height)
-  map.fillBackground(Tile.grass)
-  map.sprinkleTile(Tile.tree, 3)
-  map.sprinkleTile(Tile.rock, 1)
-  map.generateLakes(5, 2000) //SLOW
 
   val tiledPane = new DraggableTiledPane(map)
   tiledPane.moveToCenter()
