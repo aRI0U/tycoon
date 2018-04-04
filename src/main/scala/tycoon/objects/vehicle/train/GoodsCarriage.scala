@@ -62,7 +62,22 @@ case class GoodsCarriage(_owner: Player) extends Carriage(_owner) {
   override def debark(structure: Structure) = {
     println("GoodsCarriage > debark")
     structure match {
-      case t: Town => ()
+      case t: Town => {
+        for (i <- 0 to t.products.length-1) {
+          for (merch <- merchandises) {
+            if (merch.kind.label == t.products(i).label) {
+              println(merch.kind, remainingSpace, t.stocks(i))
+              println(merch)
+              // add the product
+              t.stocksInt(i).set(t.stocks(i) + merch.quantity)
+              // empty the carriage
+              merchandises -= merch
+              remainingSpace += merch.quantity*merch.kind.weight
+              println(merch.kind, remainingSpace, t.stocks(i))
+            }
+          }
+        }
+      }
       case f: Facility => {
         for (i <- 0 to f.products.length-1) {
           for (merch <- merchandises) {

@@ -140,6 +140,8 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
   var stocksInt = new ListBuffer[IntegerProperty]
   var stocksStr = new ListBuffer[StringProperty]
 
+  products += new Ore("Coal")
+
   def stocks(i: Int) : Int = stocksInt(i).value
   def stocks_= (i: Int, new_stock: Int) = stocksInt(i).set(new_stock)
 
