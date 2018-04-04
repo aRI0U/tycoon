@@ -134,13 +134,47 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
   population = 50 + r.nextInt(50)
   waiting_passengers = 0
 
-  // products existing in the town
+  // requests of the town
 
   var requests = new ListBuffer[Good]
   var needsInt = new ListBuffer[IntegerProperty]
   var needsStr = new ListBuffer[StringProperty]
   var pricesInt = new ListBuffer[IntegerProperty]
-  var pricesStr = new ListBuffer[StringProperty]
 
+  def needs(i: Int) : Int = needsInt(i).value
+  def prices(i: Int) : Int = pricesInt(i).value
 
+  def newRequest(good: Good, amount: Int) {
+    requests += good
+    needsInt += IntegerProperty(amount)
+    needsStr += new StringProperty
+    pricesInt += IntegerProperty(1) // will evolve with time using townManager
+    needsStr.last <== needsInt.last.asString.concat(" for $").concat(pricesInt.last.asString).concat(" per unity")
+    printData += new Tuple2(good.label, needsStr.last)
+  }
+
+  def satisfyRequest(good: Good, i: Int, soldQuantity: Int) : Boolean = {
+    // returns true iff the request is completely satisfied
+    needsInt(i).set(needs(i) - soldQuantity)
+    if (soldQuantity == needs(i)) {
+      // delete the request
+      requests -= requests(i)
+      needsInt -= needsInt(i)
+      needsStr -= needsStr(i)
+      pricesInt -= pricesInt(i)
+
+      val data = printData.find(data => good.label == data._1)
+      data match {
+        case Some(d) => printData -= d
+        case None => println("tycoon > objects > structure > Town : an unexisting request has been discovered")
+      }
+      true
+    }
+    else {
+      false
+    }
+  }
+
+  newRequest(new Food("Cake"), 200)
+  newRequest(new Ore("Iron"), 50)
 }
