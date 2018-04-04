@@ -20,13 +20,6 @@ abstract class Facility(pos: GridLocation, id: Int) extends Structure(pos, id) {
   def workers_= (new_workers: Int) = _workers.set(new_workers)
 
 
-  var products = new ListBuffer[Good]
-  var stocksInt = new ListBuffer[IntegerProperty]
-  var stocksStr = new ListBuffer[StringProperty]
-
-  def stocks(i: Int) : Int = stocksInt(i).value
-  def stocks_= (i: Int, new_stock: Int) = stocksInt(i).set(new_stock)
-
   def displayProducts() {
     for (p <- products) {
       stocksInt += IntegerProperty(0)

@@ -60,3 +60,7 @@ case class PassengerCarriage(id: Int, initialTown: Structure, _owner: Player) ex
   }
 
 }
+
+object PassengerCarriage {
+  val Price: Int = 30
+}

@@ -30,6 +30,14 @@ abstract class Structure(pos: GridLocation, id: Int) extends Renderable(pos) {
   def getTrain: Option[Train] = trainList.lastOption
   def getPlane: Option[Plane] = planeList.lastOption
 
+  // products present in a structure
+  var products = new ListBuffer[Good]
+  var stocksInt = new ListBuffer[IntegerProperty]
+  var stocksStr = new ListBuffer[StringProperty]
+
+  def stocks(i: Int) : Int = stocksInt(i).value
+  def stocks_= (i: Int, new_stock: Int) = stocksInt(i).set(new_stock)
+
   def throwEvent(s: String) {
     throw new EventException(s)
   }

@@ -15,13 +15,15 @@ import scalafx.scene.control.TableColumn._
 import scala.collection.mutable.ListBuffer
 import tycoon.objects.structure._
 import tycoon.objects.railway._
-
+import scalafx.scene.paint.Color
 
 class InteractionsMenu(val game: Game) extends TabPane
 {
   stylesheets += "style/gamescreen.css"
 
   tabClosingPolicy = TabPane.TabClosingPolicy.Unavailable
+
+  private val formatter = java.text.NumberFormat.getIntegerInstance
 
   private val structuresTab = new Tab()
   private val roadsTab = new Tab()
@@ -80,13 +82,13 @@ class InteractionsMenu(val game: Game) extends TabPane
 
   private def addItemTab(item: BuyableItem) = {
     val itemTab = new Tab()
-    itemTab.text = item.name + " Building"
+    itemTab.text = item.name + " Buying"
     this += itemTab
     this.selectionModel.value.selectLast()
     currentTemporaryTab = Some(itemTab)
 
     val closeTabBt = new Button {
-      text = "Exit Construction"
+      text = "Exit Buying"
       margin = Insets(10)
       vgrow = Priority.Always
       maxHeight = Double.MaxValue
@@ -106,15 +108,14 @@ class InteractionsMenu(val game: Game) extends TabPane
       text <== StringProperty("Total Cost: $").concat((quantityBought * item.price).asString)
     }
 
-    val removeLastBt = new Button {
+    val removeLastBt = new Button { /* TODO */
       text = "Resell Last"
       margin = Insets(10)
       vgrow = Priority.Always
       maxHeight = Double.MaxValue
       visible <== quantityBought > 0
       onMouseClicked = _ => {
-        game.setInfoText("TODO")
-        if(true) {                                                              /* TODO ALLOW TO REMOVE STRUCTS IN GAME */
+        if(true) {
           quantityBought.set(quantityBought.value - 1)
           tabPaneRequestFocus()
         }
@@ -134,7 +135,7 @@ class InteractionsMenu(val game: Game) extends TabPane
 
     val container = new HBox(20.0)
     container.children += closeTabBt
-    container.children += removeLastBt
+    // container.children += removeLastBt /* button is not functional yet */
     container.children += imgContainer
     container.children += buyingDataContainer
 
@@ -171,26 +172,93 @@ class InteractionsMenu(val game: Game) extends TabPane
     onMouseClicked = _ => startTrainRouteCreation()
   }
 
+  val buyCarriagesBt = new Button {
+    text = "Buy Carriages"
+    margin = Insets(10)
+    vgrow = Priority.Always
+    maxHeight = Double.MaxValue
+    onMouseClicked = _ => openCarriagesBuyingDialog()
+  }
+
   trainsTabContainer.children = Seq(
     showTrainsBt,
-    newRouteBt
+    newRouteBt,
+    buyCarriagesBt
   )
 
-  // when creating train
-  // ask for train engine (determines speed, max carriages weight)
-  // carriages (maybe a list of available carriages with a Add/Remove thing)
-  // a town
-  // also display the total price before validating
 
-  // when creating route
-  // choose start town
-  // and also a add/remove last thing with the options available being the cities connected
-  // (pas forcément juste à coté, le train peut aller de paris à lyon sans sarreter a clermond et continuer vers strasbourg)
-  // et une ville peut meme etre choisie plusieurs fois (juste pas 2 fois a la suite)
-  // OU choisir uniquement villes adjacentes et pour chacune choisir s'y on sy arrete ou pas
-  // ensuite choisir un train dans startTown
-  // et enfin choisir la répétition du trajet (une seule fois ou n fois, aller/retours tt le temps avec x temps de pause entre chaque retour
-  // ou a chaque stop)
+  def openCarriagesBuyingDialog() = {
+    val stoppedTrains: ListBuffer[Train] = game.trains filter (!_.moving.value)
+    val stoppedTrainsTable: TableView[Train] = getTrainsTableView(stoppedTrains)
+    stoppedTrainsTable.selectionModel.value.selectFirst()
+
+    val passengerCarriagesSpinner = new Spinner[Integer](0, 5, 0)
+    passengerCarriagesSpinner.maxWidth = 60
+    val goodsCarriagesSpinner = new Spinner[Integer](0, 5, 0)
+    goodsCarriagesSpinner.maxWidth = 60
+
+    val passengerCarriageContent = new HBox(10)
+    passengerCarriageContent.alignment = Pos.CenterLeft
+    passengerCarriageContent.children += new Label("Add")
+    passengerCarriageContent.children += passengerCarriagesSpinner
+    passengerCarriageContent.children += new Label("Passenger Carriages (unit price: $" + PassengerCarriage.Price + ")")
+
+    val goodsCarriageContent = new HBox(10)
+    goodsCarriageContent.alignment = Pos.CenterLeft
+    goodsCarriageContent.children += new Label("Add")
+    goodsCarriageContent.children += goodsCarriagesSpinner
+    goodsCarriageContent.children += new Label("Goods Carriages (unit price: $" + GoodsCarriage.Price + ")")
+
+    var totalCost: Int = 0
+    val totalCostStr = StringProperty("0")
+    passengerCarriagesSpinner.value.onChange {
+      totalCost = (passengerCarriagesSpinner.value.value * PassengerCarriage.Price
+                  + goodsCarriagesSpinner.value.value * GoodsCarriage.Price)
+      totalCostStr.set(formatter.format(totalCost))
+    }
+    goodsCarriagesSpinner.value.onChange {
+      totalCost = (passengerCarriagesSpinner.value.value * PassengerCarriage.Price
+                  + goodsCarriagesSpinner.value.value * GoodsCarriage.Price)
+      totalCostStr.set(formatter.format(totalCost))
+    }
+
+    val totalPrice = new Text {
+      text <== StringProperty("Total Cost: $").concat(totalCostStr)
+      fill <== when (game.playerMoney >= totalCost) choose Color.Green otherwise Color.Red
+    }
+
+    val content = new VBox(10)
+    content.children += passengerCarriageContent
+    content.children += goodsCarriageContent
+    content.children += new Label("To This Train:")
+    content.children += stoppedTrainsTable
+    content.children += totalPrice
+
+    val dialog = new Dialog
+    dialog.title = "Buy Carriages"
+    dialog.dialogPane.value.buttonTypes = Seq(ButtonType.Finish, ButtonType.Cancel)
+    dialog.dialogPane().content = content
+    dialog.showAndWait() match {
+      case Some(ButtonType.Finish) => {
+        val train: Train = stoppedTrainsTable.selectionModel.value.selectedItem.value
+        if (train == null)
+          game.setInfoText("[Carriages Buying] You didn't select any train.")
+        else if (train.moving.value)
+          game.setInfoText("[Carriages Buying] You cannot add carriages to a moving train.")
+        else {
+          var bought: Boolean = true
+          (1 to passengerCarriagesSpinner.value.value) foreach { _ => bought = bought && game.buyPassengerCarriage(train) }
+          (1 to goodsCarriagesSpinner.value.value) foreach { _ => bought = bought && game.buyGoodsCarriage(train) }
+          if (bought)
+            game.setInfoText("[Carriages Buying] The carriages have been bought.")
+          else
+            game.setInfoText("[Carriages Buying] All the carriages couldn't be bought. You reached the limit or didn't have enough money.")
+
+        }
+      }
+      case _ => ()
+    }
+  }
 
 
   def getTrainsTableView(trainList: ListBuffer[Train]) : TableView[Train] = {
@@ -232,7 +300,7 @@ class InteractionsMenu(val game: Game) extends TabPane
     val dialog = new Dialog
     dialog.title = "Your Trains"
     dialog.dialogPane.value.buttonTypes = Seq(ButtonType.Close)
-    dialog.dialogPane().content = getTrainsTableView(game.trains) // for P3: filter on whether owner is player
+    dialog.dialogPane().content = getTrainsTableView(game.trains) // for Part 3: filter on whether owner is player
     dialog.showAndWait()
   }
 

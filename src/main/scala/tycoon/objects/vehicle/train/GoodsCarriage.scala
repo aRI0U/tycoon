@@ -84,3 +84,8 @@ case class GoodsCarriage(id: Int, initialTown: Structure, _owner: Player) extend
     }
   }
 }
+
+
+object GoodsCarriage {
+  val Price: Int = 30
+}
