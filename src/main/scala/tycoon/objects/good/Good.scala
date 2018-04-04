@@ -1,7 +1,28 @@
 package tycoon.objects.good
 
-// very provisoire !!!
-
 abstract class Good(val label: String) {
-  val weight = 1
+
+  def initSize() :Double = {
+    label match {
+      case _ => 1
+    }
+  }
+  val size = initSize()
+
+  // weight must be strictly positive otherwise it creates ArithmeticException
+  def initWeight() : Double = {
+    label match {
+      case _ => 1
+    }
+  }
+  val weight = initWeight()
+
+  def initLiquid() : Boolean = {
+    label match {
+      case _ => false
+    }
+  }
+  val liquid = initLiquid()
+
+  var packed = false
 }

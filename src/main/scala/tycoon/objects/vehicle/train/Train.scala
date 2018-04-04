@@ -5,14 +5,16 @@ import scala.collection.mutable.ListBuffer
 import tycoon.game.Game
 import tycoon.objects.railway._
 import tycoon.objects.structure._
-import tycoon.objects.vehicle.Vehicle
+import tycoon.objects.vehicle._
 import scalafx.beans.property._
 import tycoon.ui.Tile
 import tycoon.game.{Game, GridLocation, Player}
 import tycoon.ui.DraggableTiledPane
 
 
-class Train(val id: Int, initialTown: Town, val nbCarriages: IntegerProperty, val owner: Player) extends Vehicle(initialTown) {
+
+
+class Train(val id: Int, initialTown: Structure, val owner: Player) extends Vehicle(id, initialTown, owner) {
 
   // used in display
   // id
@@ -47,24 +49,28 @@ class Train(val id: Int, initialTown: Town, val nbCarriages: IntegerProperty, va
   var arrived: Boolean = true
 
 
+  def update(dt: Double, dirIndicator: Int) = {
+    move(dt, dirIndicator)
+    for (c <- carriageList)
+      if (c.visible == true) {
+        moveCarriage(c, dt, dirIndicator)
+      }
+  }
+
   // train movement
   def move(dt: Double, dirIndicator: Int) = {
     currentRail match {
       case Some(rail) => {
-        if (rail.nextInDir(dirIndicator) == rail) {
+        if (rail.nextInDir((dirIndicator + 1) % 2) == rail) // first rail
+          rotateTrain(this, dirIndicator)
+        if (rail.nextInDir(dirIndicator) == rail) { // last rail
           if (gridPos.percentageHeight > 0) {
-            gridPos.percentageHeight -= dt * speed.value
-            if (gridPos.percentageHeight <= 0) {
-              gridPos.percentageHeight = 0
-              rotateTrain(this, dirIndicator)
-            }
+            moveTmp(gridPos, North, dt, speed.value, moveNext = false)
+            rotateTrain(this, dirIndicator)
           }
           else if (gridPos.percentageWidth > 0) {
-            gridPos.percentageWidth -= dt * speed.value
-            if (gridPos.percentageWidth <= 0) {
-              gridPos.percentageHeight = 0
-              rotateTrain(this, dirIndicator)
-            }
+            moveTmp(gridPos, West, dt, speed.value, moveNext = false)
+            rotateTrain(this, dirIndicator)
           }
           else
             arrived = true
@@ -72,67 +78,130 @@ class Train(val id: Int, initialTown: Town, val nbCarriages: IntegerProperty, va
         else {
           if (rail.nextInDir(dirIndicator).gridPos.eq(gridPos.right)) {
             if (gridPos.percentageHeight > 0) {
-              gridPos.percentageHeight -= dt * speed.value
-              if (gridPos.percentageHeight <= 0) {
-                gridPos.percentageHeight = 0
+              if (moveTmp(gridPos, North, dt, speed.value, moveNext = false)) {
                 rotateTrain(this, dirIndicator)
+                maybeDisplayNewCarriage()
               }
             } else {
-              gridPos.percentageWidth += dt * speed.value
-              if (gridPos.percentageWidth > 100) {
-                gridPos = gridPos.right
-                gridPos.percentageWidth = 0
+              if (moveTmp(gridPos, East, dt, speed.value)) {
                 currentRail = Some(rail.nextInDir(dirIndicator))
                 rotateTrain(this, dirIndicator)
-                //carriageMovement(rail.gridPos, Some(rail), carriageList)
+                maybeDisplayNewCarriage()
               }
             }
           } else if (rail.nextInDir(dirIndicator).gridPos.eq(gridPos.left)) {
             if (gridPos.percentageHeight > 0) {
-              gridPos.percentageHeight -= dt * speed.value
-              if (gridPos.percentageHeight <= 0) {
-                gridPos.percentageHeight = 0
+              if (moveTmp(gridPos, North, dt, speed.value, moveNext = false)) {
                 rotateTrain(this, dirIndicator)
+                maybeDisplayNewCarriage()
               }
             } else {
-              gridPos.percentageWidth -= dt * speed.value
-              if (gridPos.percentageWidth <= 0) {
-                gridPos = gridPos.left
-                gridPos.percentageWidth = 100
+              if (moveTmp(gridPos, West, dt, speed.value)) {
                 currentRail = Some(rail.nextInDir(dirIndicator))
+                maybeDisplayNewCarriage()
                 //carriageMovement(rail.gridPos, Some(rail), carriageList)
               }
             }
           } else if (rail.nextInDir(dirIndicator).gridPos.eq(gridPos.top)) {
             if (gridPos.percentageWidth > 0) {
-              gridPos.percentageWidth -= dt * speed.value
-              if (gridPos.percentageWidth <= 0) {
-                gridPos.percentageHeight = 0
+              if (moveTmp(gridPos, West, dt, speed.value, moveNext = false)) {
                 rotateTrain(this, dirIndicator)
+                maybeDisplayNewCarriage()
               }
             } else {
-              gridPos.percentageHeight -= dt * speed.value
-              if (gridPos.percentageHeight <= 0) {
-                gridPos = gridPos.top
-                gridPos.percentageHeight = 100
+              if (moveTmp(gridPos, North, dt, speed.value)) {
                 currentRail = Some(rail.nextInDir(dirIndicator))
+                maybeDisplayNewCarriage()
                 //carriageMovement(rail.gridPos, Some(rail), carriageList)
               }
             }
           } else if (rail.nextInDir(dirIndicator).gridPos.eq(gridPos.bottom)) {
             if (gridPos.percentageWidth > 0) {
-              gridPos.percentageWidth -= dt * speed.value
-              if (gridPos.percentageWidth <= 0) {
-                gridPos.percentageHeight = 0
+              if (moveTmp(gridPos, West, dt, speed.value, moveNext = false)) {
                 rotateTrain(this, dirIndicator)
+                maybeDisplayNewCarriage()
               }
             } else {
-              gridPos.percentageHeight += dt * speed.value
-              if (gridPos.percentageHeight > 100) {
-                gridPos = gridPos.bottom
-                gridPos.percentageHeight = 0
+              if (moveTmp(gridPos, South, dt, speed.value)) {
                 currentRail = Some(rail.nextInDir(dirIndicator))
                 rotateTrain(this, dirIndicator)
+                maybeDisplayNewCarriage()
+                //carriageMovement(rail.gridPos, Some(rail), carriageList)
+              }
+            }
+          }
+        }
+      }
+      case None => ()
+    }
+  }
+
+// a ne pas appeler si on va north ou west sur le premier rail (ni si on a un virage en premier rail)
+// plus simple regarder qd currentRail du train change et alors afficher un nouveau carriage
+// pas suffisant -> regarder si le train est 0/0% ?
+  def maybeDisplayNewCarriage() = {
+    if (carriageList.filter(_.visible == false).nonEmpty) {
+      carriageList.filter(_.visible == false)(0).visible = true
+    }
+  }
+
+  // train movement
+  def moveCarriage(c: Carriage, dt: Double, dirIndicator: Int) = {
+    c.currentRail match {
+      case Some(rail) => {
+        if (rail.nextInDir((dirIndicator + 1) % 2) == rail) // first rail
+          {}//rotateTrain(c, dirIndicator)
+        if (rail.nextInDir(dirIndicator) == rail) { // last rail
+          if (c.gridPos.percentageHeight > 0) {
+            moveTmp(c.gridPos, North, dt, speed.value, moveNext = false)
+            //rotateTrain(c, dirIndicator)
+          }
+          else if (c.gridPos.percentageWidth > 0) {
+            moveTmp(c.gridPos, West, dt, speed.value, moveNext = false)
+            //rotateTrain(c, dirIndicator)
+          }
+          else
+            arrived = true
+        }
+        else {
+          if (rail.nextInDir(dirIndicator).gridPos.eq(c.gridPos.right)) {
+            if (c.gridPos.percentageHeight > 0) {
+              if (moveTmp(c.gridPos, North, dt, speed.value, moveNext = false))
+                {}//rotateTrain(c, dirIndicator)
+            } else {
+              if (moveTmp(c.gridPos, East, dt, speed.value)) {
+                c.currentRail = Some(rail.nextInDir(dirIndicator))
+                //rotateTrain(c, dirIndicator)
+              }
+            }
+          } else if (rail.nextInDir(dirIndicator).gridPos.eq(c.gridPos.left)) {
+            if (c.gridPos.percentageHeight > 0) {
+              if (moveTmp(c.gridPos, North, dt, speed.value, moveNext = false))
+                {}//rotateTrain(c, dirIndicator)
+            } else {
+              if (moveTmp(c.gridPos, West, dt, speed.value)) {
+                c.currentRail = Some(rail.nextInDir(dirIndicator))
+                //carriageMovement(rail.gridPos, Some(rail), carriageList)
+              }
+            }
+          } else if (rail.nextInDir(dirIndicator).gridPos.eq(c.gridPos.top)) {
+            if (c.gridPos.percentageWidth > 0) {
+              if (moveTmp(c.gridPos, West, dt, speed.value, moveNext = false))
+                {}//rotateTrain(c, dirIndicator)
+            } else {
+              if (moveTmp(c.gridPos, North, dt, speed.value)) {
+                c.currentRail = Some(rail.nextInDir(dirIndicator))
+                //carriageMovement(rail.gridPos, Some(rail), carriageList)
+              }
+            }
+          } else if (rail.nextInDir(dirIndicator).gridPos.eq(c.gridPos.bottom)) {
+            if (c.gridPos.percentageWidth > 0) {
+              if (moveTmp(c.gridPos, West, dt, speed.value, moveNext = false))
+                {}//rotateTrain(c, dirIndicator)
+            } else {
+              if (moveTmp(c.gridPos, South, dt, speed.value)) {
+                c.currentRail = Some(rail.nextInDir(dirIndicator))
+                //rotateTrain(c, dirIndicator)
                 //carriageMovement(rail.gridPos, Some(rail), carriageList)
               }
             }
@@ -157,79 +226,33 @@ class Train(val id: Int, initialTown: Town, val nbCarriages: IntegerProperty, va
     entity.tile = tileList(direction + 4 * entityType)
   }*/
 
-  def rotateTrain(train: Train, dirIndicator: Int) = {
-    train.currentRail match {
-      case Some(rail) => {
-        var changeDir = if (rail == rail.nextInDir(dirIndicator)) 1 else 0
-        var nextRail = rail.nextInDir((dirIndicator + changeDir) % 2)
+  def rotateTrain(v: Vehicle, dirIndicator: Int) = {
+    v match {
+      case train: Train => {
+        train.currentRail match {
+          case Some(rail) => {
+            var changeDir = if (rail == rail.nextInDir(dirIndicator)) 1 else 0
+            var nextRail = rail.nextInDir((dirIndicator + changeDir) % 2)
 
-        var direction = 1
-        if (nextRail.gridPos.eq(rail.gridPos.top)) direction = 0
-        else if (nextRail.gridPos.eq(rail.gridPos.right)) direction = 1
-        else if (nextRail.gridPos.eq(rail.gridPos.bottom)) direction = 2
-        else if (nextRail.gridPos.eq(rail.gridPos.left)) direction = 3
-        direction = (direction + 2 * changeDir) % 4
+            var direction = 1
+            if (nextRail.gridPos.eq(rail.gridPos.top)) direction = 0
+            else if (nextRail.gridPos.eq(rail.gridPos.right)) direction = 1
+            else if (nextRail.gridPos.eq(rail.gridPos.bottom)) direction = 2
+            else if (nextRail.gridPos.eq(rail.gridPos.left)) direction = 3
+            direction = (direction + 2 * changeDir) % 4
 
-        val tiles = Array(Tile.locomotiveT, Tile.locomotiveR, Tile.locomotiveB, Tile.locomotiveL)
-        train.tile = tiles(direction)
-      }
-      case None => ()
-    }
-  }
-/*
-  def wagon_rotation(thing: Carriage) = {
-    var r = thing.currentRail.get
-    //choosing rail with witch we compare the direction tookeen by the train
-    var compRail = r.nextInDir((dirIndicator - 1) %2)
-    var plus = 1
-    if (!(r == r.nextInDir(dirIndicator))) {
-      compRail = r.nextInDir(dirIndicator)
-      plus = 0
-    }
-    var x = r.gridPos.col - compRail.gridPos.col
-    var y = r.gridPos.row - compRail.gridPos.row
-    if (x == 1)
-      thing.tile = Tile.passengerWagonT
-    if (x == -1)
-      thing.rotation(- 90 + plus * 180)
-    if (y == 1)
-      thing.rotation(180 + plus * 180)
-    if (y == -1)
-      thing.rotation(0 + plus * 180)
-  }
-  protected var internTime: Double = 0
-
-  def carriageMovement(firstPosition: GridLocation, optionRail: Option[Rail], carriages: ListBuffer[Carriage]) = {
-    if (!carriages.isEmpty) {
-      var pos1 = new GridLocation(firstPosition)
-      var pos2 = new GridLocation(firstPosition)
-      var optionRail1 = optionRail
-      var optionRail2 = optionRail
-      for (car <- carriages) {
-        pos2 = car.gridPos
-        optionRail2 = car.currentRail
-        car.gridPos = (pos1)
-        car.currentRail = optionRail1
-        optionRail1 match {
-          case Some(r) => rotateVehicle(car)
-          case _ => ()
+            val tiles = Array(Tile.locomotiveT, Tile.locomotiveR, Tile.locomotiveB, Tile.locomotiveL)
+            train.tile = tiles(direction)
+          }
+          case None => ()
         }
-        pos1 = pos2
-        optionRail1 = optionRail2
       }
+      case _ => ()
     }
-  }*/
-      //carriageMovement(location.gridPos, None, carriageList)
-
-
-  //   rotateVehicle(train)
-/*carriageMovement(currentRail.get.gridPos, currentRail, carriageList)
-currentRail = None
-visible = true*/
-
+  }
 
   tile = Tile.locomotiveT
-  val weight = 50
+  var weight = 50
   val cost = 200
   var currentRail : Option[Rail] = None
   var carriageList = new ListBuffer[Carriage]()
@@ -237,28 +260,52 @@ visible = true*/
 
   addCarriages()
 
-  gridPos = location match {
-    case town: Town => town.gridPos.right
-    case struct: Structure => struct.gridPos
-  }
+  gridPos = location.gridPos.right
+  carriageList foreach (_.visible = false)
+  carriageList foreach (_.gridPos = location.gridPos.right)
 
   def addCarriages() {
-    for (i <- 1 to nbCarriages.value) carriageList += new PassengerCarriage(owner)
-    carriageList += new GoodsCarriage(owner)
+    // tmp
+    // il faut ajouter les carriage dans game et les donner au train (pour l'id)
+    carriageList += new PassengerCarriage(0, initialTown, owner)
+    carriageList += new PassengerCarriage(0, initialTown, owner)
+    carriageList += new PassengerCarriage(0, initialTown, owner)
+    carriageList += new GoodsCarriage(0, initialTown, owner)
+    carriageList += new GoodsCarriage(0, initialTown, owner)
   }
 
-  def boarding(stops: ListBuffer[Structure]) = {
-    moving.set(true)
+  def departure(firstRail: Rail) = {
+    currentRail = Some(firstRail)
+    gridPos = firstRail.gridPos.clone()
     arrived = false
+    visible = true
+    moving.set(true)
+
+    for (carr <- carriageList) {
+      carr.currentRail = Some(firstRail)
+      carr.gridPos = firstRail.gridPos.clone()
+      carr.visible = false
+    }
+
     speed.set(engineThrust.value) // modulo weight of carriages here..
-    _nextLocation.set(Some(stops(0)))
-    carriageList foreach (_.embark(location, stops))
   }
 
-  def landing() = {
+  def arrival() = {
+    for (carr <- carriageList) {
+      carr.visible = false
+      carr.currentRail = None
+    }
     moving.set(false)
     speed.set(0)
     _nextLocation.set(None)
+  }
+
+  def boarding(stops: ListBuffer[Structure]) = {
+    carriageList foreach (_.embark(location, stops))
+    _nextLocation.set(Some(stops(0)))
+  }
+
+  def landing() = {
     carriageList.foreach(_.debark(location))
   }
 }

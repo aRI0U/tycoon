@@ -12,7 +12,7 @@ import scala.collection.mutable.Set
 class TileMap (val width: Int, val height: Int) {
   private val backgroundLayer = Array.fill[Tile](width, height)(Tile.default)
   private var structuresLayer = Array.fill[Option[Renderable]](width, height)(None)
-  private val entityLayer = Set[Renderable]()
+  private val entityLayer = ListBuffer[Renderable]()
 
   /** test whether pos/rect is included in map */
   def gridContains(rect: GridRectangle): Boolean =
@@ -29,7 +29,10 @@ class TileMap (val width: Int, val height: Int) {
   def isUnused(rect: GridRectangle): Boolean = rect.iterate.forall(isUnused)
   /** get structure at location if there is one */
   def maybeGetStructureAt(pos: GridLocation): Option[Renderable] = maybeGetStructureAt(pos.col, pos.row)
-  def maybeGetStructureAt(col: Int, row: Int): Option[Renderable] = structuresLayer(col)(row)
+  def maybeGetStructureAt(col: Int, row: Int): Option[Renderable] = {
+    if (gridContains(new GridLocation(col, row))) structuresLayer(col)(row)
+    else None
+  }
   /** return structures found in the 8 surrounding cases (modulo grid borders) */
   def getSurroundingStructures(pos: GridLocation, ind : Int ) : Array[Renderable] = {
     if (ind == 1) {
@@ -51,9 +54,9 @@ class TileMap (val width: Int, val height: Int) {
   /** add entity (ie train, plane, boat..) to map */
   def addEntity(e: Renderable) = entityLayer += e
   /** get set of all entities */
-  def entities: Set[Renderable] = entityLayer
+  def entities: ListBuffer[Renderable] = entityLayer
   /** get set of entities at location */
-  def getEntitiesAt(pos: GridLocation): Set[Renderable] =
+  def getEntitiesAt(pos: GridLocation): ListBuffer[Renderable] =
     entities filter { e: Renderable => e.gridPos.eq(pos) }
 
   /** set background tiles (ie grass, rock, tree, water, sand..) */

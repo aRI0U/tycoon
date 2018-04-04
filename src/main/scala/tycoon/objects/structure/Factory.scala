@@ -67,6 +67,10 @@ case class Factory(pos: GridLocation, id: Int) extends Facility(pos, id) {
   }
 
   override def update(dt: Double) = {
+    if (workers > 0 && r.nextInt(3000) == 0) {
+      workers -= 1
+      throwEvent("[Factory n°"+id+"] Industrial accident: A worker tragically passed away...")
+    }
     intern_time += dt
     if (intern_time > productionTime) {
       updateProduction()
