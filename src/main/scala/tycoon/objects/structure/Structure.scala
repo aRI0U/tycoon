@@ -5,6 +5,7 @@ import scala.util.Random
 
 import tycoon.objects.vehicle._
 import tycoon.objects.vehicle.train._
+import tycoon.objects.good._
 import tycoon.ui.Renderable
 import tycoon.game.GridLocation
 

@@ -19,7 +19,6 @@ abstract class Facility(pos: GridLocation, id: Int) extends Structure(pos, id) {
   def workers : Int = _workers.value
   def workers_= (new_workers: Int) = _workers.set(new_workers)
 
-
   def displayProducts() {
     for (p <- products) {
       stocksInt += IntegerProperty(0)
