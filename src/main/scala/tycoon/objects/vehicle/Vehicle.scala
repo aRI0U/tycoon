@@ -17,7 +17,7 @@ case object West extends Direction
 
 
 abstract class Vehicle(struct: Structure) extends Renderable(new GridLocation(-1, -1)) {
-  val weight : Int
+  var weight : Double
   val cost : Int
 
 

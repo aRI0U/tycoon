@@ -22,6 +22,6 @@ abstract class Carriage(initialTown: Structure, _owner: Player) extends Vehicle(
   def debark(s: Structure) : Unit = {}
 
   val cost = 20
-  val weight = 50
+  var weight: Double = 200
 
 }

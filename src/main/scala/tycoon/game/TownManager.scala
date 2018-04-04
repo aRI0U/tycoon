@@ -10,9 +10,9 @@ import scalafx.beans.property.{IntegerProperty, StringProperty}
 class TownManager() {
 
   // names
-  var town_names = new ListBuffer[String]
-  town_names += ("Paris", "Lyon", "Toulouse", "Saclay", "Nice", "Strasbourg", "Mulhouse", "Aulnay-sous-Bois", "Cachan", "Hamburg", "Berlin", "Brno", "Caderousse","Stuttgart", "Wien", "Köln")
-  var unchosen_names = town_names
+  var townNames = new ListBuffer[String]
+  townNames += ("Paris", "Lyon", "Toulouse", "Saclay", "Nice", "Strasbourg", "Mulhouse", "Aulnay-sous-Bois", "Cachan", "Hamburg", "Berlin", "Brno", "Caderousse","Stuttgart", "Wien", "Köln")
+  var unchosenNames = townNames
 
   // information about towns
   var towns_list = new ListBuffer[Town]
@@ -33,7 +33,10 @@ class TownManager() {
     newStructure(town)
     for (t <- towns_list) t.printData += new Tuple2(town.name, t.waitersStr.last)
     town.displayWaiters()
+    town.displayProducts()
     towns_list += town
     last_town += 1
   }
+
+  // economy will be inserted here
 }

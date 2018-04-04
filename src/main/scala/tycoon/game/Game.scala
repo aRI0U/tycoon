@@ -171,7 +171,12 @@ class Game(val map_width : Int, val map_height : Int)
 
     //update trains position here ?
     routes foreach { _.update(dt * speedMultiplier.value) }
-    structures foreach { _.update(dt * speedMultiplier.value) }
+    try {
+      structures foreach { _.update(dt * speedMultiplier.value)}
+    } catch {
+      case e: EventException => setInfoText(e.s, 3)
+    }
+
     tiledPane.render()
 
     if (infoTextTimer > 0) {
@@ -215,15 +220,14 @@ class Game(val map_width : Int, val map_height : Int)
       struct match {
         case town: Town => townManager.newTown(town)
         case mine: Mine => { mines += mine ; townManager.newStructure(mine) }
-        case farm: Farm => ()
-        case factory: Factory => ()
-        case airport: Airport => ()
-        case dock : Dock => ()
-        case _ => ()
+        case _ => townManager.newStructure(_)
       }
       true
     }
-    else false
+    else {
+      setInfoText("You can create mines only on deposits!", 2)
+      false
+    }
   }
 
   def buyStruct(struct: BuyableStruct, pos: GridLocation, player: Player = _player): Boolean = {
@@ -256,7 +260,7 @@ class Game(val map_width : Int, val map_height : Int)
           for (neighbor <- around) {
             neighbor match {
               case town: Town => {
-                if (!town.hasDock && createStruct(dock, Array(Tile.plainSand,Tile.plainWater))) {
+                if (!town.hasDock && createStruct(dock, Tile.sand ++ Tile.water)) {
                   bought = true
                   town.hasDock = true
                   dock.dependanceTown = Some(town)
@@ -276,6 +280,7 @@ class Game(val map_width : Int, val map_height : Int)
                   bought = true
                   farm.haOfField += 1
                   farm.fields +=  field
+                  farm.productionPerPeriod(1) += 4
                   field.dependanceFarm = Some(farm)
                 }
               }
@@ -311,6 +316,7 @@ class Game(val map_width : Int, val map_height : Int)
   }
 
   def createRoute(roads: ListBuffer[Road], stops: ListBuffer[Structure], train: Train) = {
+    // the constraints of weight and thrust will be added here
     val route = new Route(roads, stops, train)
     route.start()
     routes += route

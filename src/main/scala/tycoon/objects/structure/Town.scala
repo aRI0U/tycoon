@@ -6,6 +6,7 @@ import scala.Array
 import tycoon.game.GridLocation
 import tycoon.game.{Game, TownManager}
 import tycoon.objects.structure._
+import tycoon.objects.good._
 
 import tycoon.ui.Tile
 
@@ -15,18 +16,16 @@ import scalafx.beans.property.{IntegerProperty, StringProperty}
 abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extends Structure(pos, id) {
   tile = Tile.town
 
-  protected val r = scala.util.Random
-  // names
-  var town_names = new ListBuffer[String]
-  town_names += ("Paris", "Lyon", "Toulouse", "Saclay", "Nice", "Strasbourg", "Mulhouse", "Aulnay-sous-Bois", "Cachan", "Hamburg", "Berlin", "Brno", "Caderousse","Stuttgart", "Wien", "Köln")
-
   // choose town name
   def chooseName() {
     try {
       /*val i = r.nextInt(townManager.unchosen_names.length)
       _name.set(townManager.unchosen_names(i))
       townManager.unchosen_names.remove(i)*/
-      _name.set(town_names(id))
+      val nameId = r.nextInt(townManager.townNames.length)
+      val name = townManager.townNames(nameId)
+      _name.set(name)
+      townManager.unchosenNames -= name
     }
     catch {
       case e: Exception => println("you've created too many towns")
@@ -134,4 +133,20 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
   var max_population: Int = 1000
   population = 50 + r.nextInt(50)
   waiting_passengers = 0
+
+  var products = new ListBuffer[Good]
+  var stocksInt = new ListBuffer[IntegerProperty]
+  var stocksStr = new ListBuffer[StringProperty]
+
+  def stocks(i: Int) : Int = stocksInt(i).value
+  def stocks_= (i: Int, new_stock: Int) = stocksInt(i).set(new_stock)
+
+  def displayProducts() {
+    for (p <- products) {
+      stocksInt += IntegerProperty(0)
+      stocksStr += new StringProperty
+      stocksStr.last <== stocksInt.last.asString
+      printData += new Tuple2(p.label, stocksStr.last)
+    }
+  }
 }

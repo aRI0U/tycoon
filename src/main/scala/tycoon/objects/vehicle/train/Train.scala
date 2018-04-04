@@ -252,7 +252,7 @@ class Train(val id: Int, initialTown: Town, val nbCarriages: IntegerProperty, va
   }
 
   tile = Tile.locomotiveT
-  val weight = 50
+  var weight = 50
   val cost = 200
   var currentRail : Option[Rail] = None
   var carriageList = new ListBuffer[Carriage]()

@@ -274,34 +274,43 @@ class InteractionsMenu(val game: Game) extends TabPane
   private var creatingTrainRoute = false
   private var routeMaxSize = 0
 
+
   private def finishTrainRouteCreation() = {
     var created: Boolean = false
-    if (routeStops.length >= 2) {
-      val trainsView: TableView[Train] = getTrainsTableView(routeStops(0).trainList)
-      trainsView.selectionModel.value.selectFirst()
+    if (routeStops.length >= 2 && routeStops(0).trainList.length >= 1) {
+      routeStops.last match {
+        case _: Town => {
+          val trainsView: TableView[Train] = getTrainsTableView(routeStops(0).trainList)
+          trainsView.selectionModel.value.selectFirst()
+          val repeatRoute = new CheckBox("Repeat Route Indefinitely")
+          repeatRoute.selected = false
+          val content = new VBox(10)
+          content.children ++= Seq(trainsView, repeatRoute)
 
-      val dialog = new Dialog
-      dialog.title = "Selected a train for the route"
-      dialog.dialogPane.value.buttonTypes = Seq(ButtonType.Finish, ButtonType.Cancel)
-      dialog.dialogPane().content = trainsView
-      dialog.showAndWait() match {
-        case Some(ButtonType.Finish) => {
-          val routeTrain: Train = trainsView.selectionModel.value.selectedItem.value
+          val dialog = new Dialog
+          dialog.title = "Select a train for the route"
+          dialog.dialogPane.value.buttonTypes = Seq(ButtonType.Finish, ButtonType.Cancel)
+          dialog.dialogPane().content = content
+          val routeTrain: Train = dialog.showAndWait() match {
+            case Some(ButtonType.Finish) =>
+              trainsView.selectionModel.value.selectedItem.value
+            case _ => null
+          }
           if (routeTrain != null) {
             game.createRoute(routeRoads.clone(), routeStops.clone(), routeTrain)
-            // il faut encore tt ce qui est route répétée ou non, et ici le train s'arrête à tt les stops mais il faudrait pas
             game.setInfoText("[Train Route Creation] The route has been created!")
           }
           else {
             game.setInfoText("[Train Route Creation] You didn't select any train.")
           }
         }
-        case _ => stopCreatingRoute()
+        case _ =>
+          game.setInfoText("[Train Route Creation] The last stop isn't a town. The route couldn't be created.")
       }
-    } else {
-      game.setInfoText("[Train Route Creation] There wasn't enough stops to create a route.")
-    }
 
+    } else {
+      game.setInfoText("[Train Route Creation] There wasn't enough stops or trains to create a route.")
+    }
     stopCreatingRoute()
   }
 
@@ -357,14 +366,14 @@ class InteractionsMenu(val game: Game) extends TabPane
             }
             else {
               routeStops += town
-              game.setInfoText("[Train Route Creation] Now select from 1 to " + routeMaxSize.toString + " stops.", -1)
+              game.setInfoText("[Train Route Creation] Now select from 1 to " + routeMaxSize.toString + " stops (last one must be a town).", -1)
             }
           }
           else if (routeStops.length < routeMaxSize && town != routeStops.last) {
             try {
               routeRoads ++= game.game_graph.shortestRoute(routeStops.last, town)
               routeStops += town
-              game.setInfoText("[Train Route Creation] Now select from 1 to " + routeMaxSize.toString + " stops (" + (routeStops.length - 1).toString + ").", -1)
+              game.setInfoText("[Train Route Creation] Now select from 1 to " + routeMaxSize.toString + " stops (last one must be a town) (" + (routeStops.length - 1).toString + ").", -1)
               if (routeStops.length + 1 == routeMaxSize)
                 finishTrainRouteCreation()
             }
@@ -382,7 +391,7 @@ class InteractionsMenu(val game: Game) extends TabPane
             routeStops += facility
             if (routeStops.length == routeMaxSize)
               finishTrainRouteCreation()
-            game.setInfoText("[Train Route Creation] Now select from 1 to " + routeMaxSize.toString + " stops (" + (routeStops.length - 1).toString + ").", -1)
+            game.setInfoText("[Train Route Creation] Now select from 1 to " + routeMaxSize.toString + " stops (" + (routeStops.length - 1).toString + ") (last one must be a town).", -1)
           }
           catch {
             case e: IllegalStateException =>
