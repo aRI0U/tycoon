@@ -30,8 +30,6 @@ object Tile {
   val default = new Tile("default", 0, 0)
   val tree = new Tile("tree", 3, 4)
   val rock = new Tile("rock", 4, 4)
-  val plainWater = new Tile("plainWater", 6, 5)
-  val plainSand = new Tile("plainSand", 4, 8)
 
   //vehicle stuff
   val locomotiveL = new Tile("locomotiveL", 3, 5)
@@ -80,6 +78,20 @@ val field = Array(
     farm1,
     farm2,
     farm3
+  )
+
+  // val plainWater = new Tile("plainWater", 6, 5)
+  // val plainSand = new Tile("plainSand", 4, 8)
+  val sand = Array(
+    new Tile("sand",4,8),
+    new Tile("sand",5,8),
+    new Tile("sand",5,7)
+  )
+
+  val water = Array(
+    new Tile("water",6,5),
+    new Tile("water",5,5),
+    new Tile("water",5,4)
   )
 
   val grass = Array(

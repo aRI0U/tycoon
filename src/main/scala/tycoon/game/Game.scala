@@ -259,7 +259,7 @@ class Game(val map_width : Int, val map_height : Int)
           for (neighbor <- around) {
             neighbor match {
               case town: Town => {
-                if (!town.hasDock && createStruct(dock, Array(Tile.plainSand,Tile.plainWater))) {
+                if (!town.hasDock && createStruct(dock, Tile.sand ++ Tile.water)) {
                   bought = true
                   town.hasDock = true
                   dock.dependanceTown = Some(town)
