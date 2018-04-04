@@ -65,7 +65,7 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
 
   // gestion of the waiting passengers
 
-  var total_waiters = 0
+  var totalWaiters = 0
   var destinations = new ListBuffer[Structure]
   var waitersInt = new ListBuffer[IntegerProperty]
   var waitersStr = new ListBuffer[StringProperty]
@@ -103,9 +103,9 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
 
   def updateWaiters () = {
     try {
-      if (total_waiters < population/3) {
+      if (totalWaiters < population/3) {
         val new_waiters = (r.nextInt(population))/30
-        total_waiters += new_waiters
+        totalWaiters += new_waiters
         val destination = r.nextInt(waitersInt.length)
         waitersInt(destination).set(waiters(destination) + new_waiters)
       }

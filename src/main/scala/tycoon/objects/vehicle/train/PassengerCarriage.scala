@@ -26,6 +26,7 @@ case class PassengerCarriage(id: Int, initialTown: Structure, _owner: Player) ex
                 val i = departureTown.destinations.indexOf(town)
                 newPassengers = remainingPlaces.min(departureTown.waiters(i))
                 departureTown.waitersInt(i).set(departureTown.waiters(i) - newPassengers)
+                departureTown.totalWaiters -= newPassengers
               }
               case facility: Facility => {
                 newPassengers = remainingPlaces.min(departureTown.jobSeekers)
