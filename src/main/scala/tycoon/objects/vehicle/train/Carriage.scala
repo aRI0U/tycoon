@@ -8,7 +8,7 @@ import tycoon.objects.railway._
 import tycoon.game.{GridLocation, Player}
 import tycoon.objects.vehicle._
 
-abstract class Carriage(initialTown: Structure, _owner: Player) extends Vehicle(initialTown) {
+abstract class Carriage(id: Int, initialTown: Structure, _owner: Player) extends Vehicle(id, initialTown, _owner) {
   var currentRail: Option[Rail] = None
   var stops = new ListBuffer[Structure]
 

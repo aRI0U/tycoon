@@ -14,7 +14,7 @@ import tycoon.ui.DraggableTiledPane
 
 
 
-class Train(val id: Int, initialTown: Town, val nbCarriages: IntegerProperty, val owner: Player) extends Vehicle(initialTown) {
+class Train(val id: Int, initialTown: Structure, val owner: Player) extends Vehicle(id, initialTown, owner) {
 
   // used in display
   // id
@@ -265,11 +265,13 @@ class Train(val id: Int, initialTown: Town, val nbCarriages: IntegerProperty, va
   carriageList foreach (_.gridPos = location.gridPos.right)
 
   def addCarriages() {
-    carriageList += new PassengerCarriage(initialTown, owner)
-    carriageList += new PassengerCarriage(initialTown, owner)
-    carriageList += new PassengerCarriage(initialTown, owner)
-    carriageList += new GoodsCarriage(initialTown, owner)
-    carriageList += new GoodsCarriage(initialTown, owner)
+    // tmp
+    // il faut ajouter les carriage dans game et les donner au train (pour l'id)
+    carriageList += new PassengerCarriage(0, initialTown, owner)
+    carriageList += new PassengerCarriage(0, initialTown, owner)
+    carriageList += new PassengerCarriage(0, initialTown, owner)
+    carriageList += new GoodsCarriage(0, initialTown, owner)
+    carriageList += new GoodsCarriage(0, initialTown, owner)
   }
 
   def departure(firstRail: Rail) = {

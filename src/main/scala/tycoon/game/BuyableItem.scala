@@ -9,6 +9,8 @@ import scalafx.scene.layout.{HBox, VBox, Priority}
 import tycoon.objects.structure._
 import tycoon.objects.railway._
 import tycoon.ui.Tile
+import tycoon.objects.vehicle._
+import tycoon.objects.vehicle.train._
 
 
 sealed abstract class BuyableItem(val name: String, val price: Int, val tile: Tile) {
@@ -49,13 +51,27 @@ object BuyableStruct {
 }
 
 
-case class BuyableRail(override val name: String, override val price: Int, override val tile: Tile, val newInstance: GridLocation => Rail)
+case class BuyableRoad(override val name: String, override val price: Int, override val tile: Tile, val newInstance: GridLocation => Rail)
 extends BuyableItem(name, price, tile) {
   createByDragging = true
 }
 
-object BuyableRail {
+object BuyableRoad {
   def newRail(pos: GridLocation): Rail = new Rail(pos)
 
-  val Rail = new BuyableRail("Rail", 5, Tile.straightRailBT, newRail)
+  val Rail = new BuyableRoad("Rail", 5, Tile.straightRailBT, newRail)
+}
+
+
+case class BuyableVehicle(override val name: String, override val price: Int, override val tile: Tile, val newInstance: (Int, Structure, Player) => Vehicle)
+extends BuyableItem(name, price, tile) {
+  createByDragging = false
+}
+
+object BuyableVehicle {
+  def newTrain(id: Int, struct: Structure, player: Player): Train = new Train(id, struct, player)
+  def newPlane(id: Int, struct: Structure, player: Player): Plane = new Plane(id, struct, player)
+
+  val Train = new BuyableVehicle("Train", 125, Tile.locomotiveB, newTrain)
+  val Plane = new BuyableVehicle("Plane", 300, Tile.plane, newPlane)
 }

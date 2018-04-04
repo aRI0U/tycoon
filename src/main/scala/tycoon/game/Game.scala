@@ -170,7 +170,10 @@ class Game(val map_width : Int, val map_height : Int)
     )
 
     //update trains position here ?
+
     routes foreach { _.update(dt * speedMultiplier.value) }
+    // delete routes that are not active anymore
+    routes = routes filter { r: Route => r.active || r.repeated }
     try {
       structures foreach { _.update(dt * speedMultiplier.value)}
     } catch {
@@ -303,7 +306,7 @@ class Game(val map_width : Int, val map_height : Int)
     bought
   }
 
-  def buyRail(rail: BuyableRail, pos: GridLocation, player: Player = _player): Boolean = {
+  def buyRail(rail: BuyableRoad, pos: GridLocation, player: Player = _player): Boolean = {
     var bought: Boolean = false
     if (player.money.value >= rail.price) {
       rail.newInstance(pos) match {
@@ -315,9 +318,42 @@ class Game(val map_width : Int, val map_height : Int)
     bought
   }
 
-  def createRoute(roads: ListBuffer[Road], stops: ListBuffer[Structure], train: Train) = {
+  var nbVehicles: Int = 0
+
+  def buyVehicle(vehicle: BuyableVehicle, pos: GridLocation, player: Player = _player): Boolean = {
+    var bought: Boolean = false
+    if (player.money.value >= vehicle.price) {
+      map.maybeGetStructureAt(pos) match {
+        case Some(e) => e match {
+          case struct: Structure => {
+            vehicle.newInstance(nbVehicles, struct, player) match {
+              case train: Train => struct match {
+                case town: Town =>
+                  createTrain(train, town, player)
+                  bought = true
+                case _ => ()
+              }
+              case plane: Plane => struct match {
+                case airport: Airport =>
+                  createPlane(plane, airport, player)
+                  bought = true
+                case _ => ()
+              }
+              case _ => ()
+            }
+          }
+          case _ => ()
+        }
+        case None => ()
+      }
+    }
+    if (bought) { nbVehicles += 1 ; player.pay(vehicle.price) }
+    bought
+  }
+
+  def createRoute(roads: ListBuffer[Road], stops: ListBuffer[Structure], train: Train, repeatRoute: Boolean) = {
     // the constraints of weight and thrust will be added here
-    val route = new Route(roads, stops, train)
+    val route = new Route(roads, stops, train, repeatRoute)
     route.start()
     routes += route
   }
@@ -328,36 +364,23 @@ class Game(val map_width : Int, val map_height : Int)
   var nbTrains = IntegerProperty(0)
 
 
-  def createTrain (town: Town) : Boolean = {
-    var train = new Train(nbTrains.value, town, IntegerProperty(3), _player)
-
+  def createTrain (train: Train, town: Town, player: Player): Unit = {
     town.addTrain(train)
     trains += train
     map.addEntity(train)
-
     nbTrains.set(nbTrains.value + 1)
 
-    // paying
-    playerMoney.set(playerMoney.value - train.cost)
-    for (carriage <- train.carriageList) {
-      println("new carriage")
+    for (carriage <- train.carriageList) { // TEMP, todo: interface pour créer train avec carriages et faire payer avant dans buyVehicle
       playerMoney.set(playerMoney.value - carriage.cost)
       map.addEntity(carriage)
       carriages += carriage
     }
-    true
   }
 
-  def createPlane (airport: Airport) : Boolean = {
-    var plane = new Plane(airport, _player)
-
+  def createPlane (plane: Plane, airport: Airport, player: Player): Unit = {
     airport.addPlane(plane)
     planes += plane
     map.addEntity(plane)
-
-    // paying
-    playerMoney.set(playerMoney.value - plane.cost)
-    true
   }
 
   def createFly (departure: Structure, arrival: Structure, plane : Plane) {

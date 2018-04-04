@@ -10,7 +10,7 @@ import tycoon.game.{GridLocation, Player}
 import tycoon.objects.railway._
 
 
-case class GoodsCarriage(initialTown: Structure, _owner: Player) extends Carriage(initialTown, _owner) {
+case class GoodsCarriage(id: Int, initialTown: Structure, _owner: Player) extends Carriage(id, initialTown, _owner) {
   tile = Tile.goodsWagonR
   val maxSpace : Double = 100
   var remainingSpace : Double = maxSpace

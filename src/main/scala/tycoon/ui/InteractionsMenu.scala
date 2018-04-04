@@ -25,14 +25,17 @@ class InteractionsMenu(val game: Game) extends TabPane
 
   private val structuresTab = new Tab()
   private val roadsTab = new Tab()
+  private val vehiclesTab = new Tab()
   private val trainsTab = new Tab()
 
   structuresTab.text = "Build Structures"
   roadsTab.text = "Build Roads"
+  vehiclesTab.text = "Buy Vehicles"
   trainsTab.text = "Manage Trains"
 
   this += structuresTab
   this += roadsTab
+  this += vehiclesTab
   this += trainsTab
 
   private var currentTemporaryTab: Option[Tab] = None
@@ -41,13 +44,15 @@ class InteractionsMenu(val game: Game) extends TabPane
    TABS FOR BUYING PHYSICAL OBJECTS (STRUCTURES, RAILS...)
   */
 
-  private val buildingTabContainer = new Array[HBox](2)
+  private val buildingTabContainer = new Array[HBox](3)
   buildingTabContainer(0) = new HBox
   buildingTabContainer(1) = new HBox
+  buildingTabContainer(2) = new HBox
   structuresTab.content = new ScrollPane { content = buildingTabContainer(0) }
   roadsTab.content = new ScrollPane { content = buildingTabContainer(1) }
+  vehiclesTab.content = new ScrollPane { content = buildingTabContainer(2) }
 
-  private var selectedBuildingItem: Option[BuyableItem] = None
+  private var selectedBuyableItem: Option[BuyableItem] = None
 
   private val quantityBought = IntegerProperty(0)
 
@@ -61,7 +66,7 @@ class InteractionsMenu(val game: Game) extends TabPane
       )
       alignment = Pos.Center
       onMouseClicked = _ => {
-        selectedBuildingItem = Some(item)
+        selectedBuyableItem = Some(item)
         quantityBought.set(0)
         addItemTab(item)
       }
@@ -70,7 +75,8 @@ class InteractionsMenu(val game: Game) extends TabPane
   }
 
   def addBuyableStruct(item: BuyableStruct) = addBuyableItem(item, 0)
-  def addBuyableRail(item: BuyableRail) = addBuyableItem(item, 1)
+  def addBuyableRoad(item: BuyableRoad) = addBuyableItem(item, 1)
+  def addBuyableVehicle(item: BuyableVehicle) = addBuyableItem(item, 2)
 
   private def addItemTab(item: BuyableItem) = {
     val itemTab = new Tab()
@@ -138,7 +144,7 @@ class InteractionsMenu(val game: Game) extends TabPane
 
   private def stopBuilding() = {
     removeTemporaryTab()
-    selectedBuildingItem = None
+    selectedBuyableItem = None
   }
 
 
@@ -274,42 +280,37 @@ class InteractionsMenu(val game: Game) extends TabPane
   private var creatingTrainRoute = false
   private var routeMaxSize = 0
 
-
   private def finishTrainRouteCreation() = {
-    var created: Boolean = false
-    if (routeStops.length >= 2 && routeStops(0).trainList.length >= 1) {
-      routeStops.last match {
-        case _: Town => {
-          val trainsView: TableView[Train] = getTrainsTableView(routeStops(0).trainList)
-          trainsView.selectionModel.value.selectFirst()
-          val repeatRoute = new CheckBox("Repeat Route Indefinitely")
-          repeatRoute.selected = false
-          val content = new VBox(10)
-          content.children ++= Seq(trainsView, repeatRoute)
+    if (routeStops.length <= 1)
+      game.setInfoText("[Train Route Creation] There wasn't enough stops to create a route.")
+    else if (routeStops(0).trainList.isEmpty)
+      game.setInfoText("[Train Route Creation] There wasn't enough trains to create a route.")
+    else if (!routeStops.last.isInstanceOf[Town])
+      game.setInfoText("[Train Route Creation] The last stop isn't a town. The route couldn't be created.")
+    else {
+      val trainsView: TableView[Train] = getTrainsTableView(routeStops(0).trainList)
+      trainsView.selectionModel.value.selectFirst()
+      val repeatRouteCb = new CheckBox("Repeat Route Indefinitely")
+      repeatRouteCb.selected = false
+      val content = new VBox(10)
+      content.children ++= Seq(trainsView, repeatRouteCb)
 
-          val dialog = new Dialog
-          dialog.title = "Select a train for the route"
-          dialog.dialogPane.value.buttonTypes = Seq(ButtonType.Finish, ButtonType.Cancel)
-          dialog.dialogPane().content = content
-          val routeTrain: Train = dialog.showAndWait() match {
-            case Some(ButtonType.Finish) =>
-              trainsView.selectionModel.value.selectedItem.value
-            case _ => null
-          }
-          if (routeTrain != null) {
-            game.createRoute(routeRoads.clone(), routeStops.clone(), routeTrain)
-            game.setInfoText("[Train Route Creation] The route has been created!")
-          }
-          else {
-            game.setInfoText("[Train Route Creation] You didn't select any train.")
-          }
-        }
-        case _ =>
-          game.setInfoText("[Train Route Creation] The last stop isn't a town. The route couldn't be created.")
+      val dialog = new Dialog
+      dialog.title = "Select a train for the route"
+      dialog.dialogPane.value.buttonTypes = Seq(ButtonType.Finish, ButtonType.Cancel)
+      dialog.dialogPane().content = content
+
+      val routeTrain: Train = dialog.showAndWait() match {
+        case Some(ButtonType.Finish) =>
+          trainsView.selectionModel.value.selectedItem.value
+        case _ => null
       }
-
-    } else {
-      game.setInfoText("[Train Route Creation] There wasn't enough stops or trains to create a route.")
+      if (routeTrain == null)
+        game.setInfoText("[Train Route Creation] You didn't select any train.")
+      else {
+        game.createRoute(routeRoads.clone(), routeStops.clone(), routeTrain, repeatRouteCb.selected.value)
+        game.setInfoText("[Train Route Creation] The route has been created!")
+      }
     }
     stopCreatingRoute()
   }
@@ -337,7 +338,7 @@ class InteractionsMenu(val game: Game) extends TabPane
 
   def mousePressed(pos: GridLocation, dragging: Boolean = false): Unit = {
     // buying physical objects (structures, rails..)
-    selectedBuildingItem match {
+    selectedBuyableItem match {
       case Some(item) => {
         if(!dragging || item.createByDragging) {
           item match {
@@ -345,8 +346,12 @@ class InteractionsMenu(val game: Game) extends TabPane
               if(game.buyStruct(struct, pos))
                 quantityBought.set(quantityBought.value + 1)
             }
-            case rail: BuyableRail => {
+            case rail: BuyableRoad => {
               if(game.buyRail(rail, pos))
+                quantityBought.set(quantityBought.value + 1)
+            }
+            case vehicle: BuyableVehicle => {
+              if(game.buyVehicle(vehicle, pos))
                 quantityBought.set(quantityBought.value + 1)
             }
           }

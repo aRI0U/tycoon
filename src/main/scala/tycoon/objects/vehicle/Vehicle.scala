@@ -3,7 +3,7 @@ package tycoon.objects.vehicle
 import tycoon.ui.Renderable
 import tycoon.objects.railway.Road
 import tycoon.objects.structure._
-import tycoon.game.GridLocation
+import tycoon.game.{Player, GridLocation}
 
 
 
@@ -16,7 +16,7 @@ case object South extends Direction
 case object West extends Direction
 
 
-abstract class Vehicle(struct: Structure) extends Renderable(new GridLocation(-1, -1)) {
+abstract class Vehicle(id: Int, struct: Structure, owner: Player) extends Renderable(new GridLocation(-1, -1)) {
   var weight : Double
   val cost : Int
 
