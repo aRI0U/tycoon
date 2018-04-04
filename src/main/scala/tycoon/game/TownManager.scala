@@ -33,7 +33,6 @@ class TownManager() {
     newStructure(town)
     for (t <- towns_list) t.printData += new Tuple2(town.name, t.waitersStr.last)
     town.displayWaiters()
-    town.displayProducts()
     towns_list += town
     last_town += 1
   }
