@@ -274,34 +274,39 @@ class InteractionsMenu(val game: Game) extends TabPane
   private var creatingTrainRoute = false
   private var routeMaxSize = 0
 
+  private def trainSelectionTab(trainsView: TableView[Train]) : Train = {
+    val dialog = new Dialog
+    dialog.title = "Selected a train for the route"
+    dialog.dialogPane.value.buttonTypes = Seq(ButtonType.Finish, ButtonType.Cancel)
+    dialog.dialogPane().content = trainsView
+    dialog.showAndWait() match {
+      case Some(ButtonType.Finish) => {
+        trainsView.selectionModel.value.selectedItem.value
+      }
+      case _ => null
+    }
+  }
+
   private def finishTrainRouteCreation() = {
     var created: Boolean = false
     if (routeStops.length >= 2) {
       val trainsView: TableView[Train] = getTrainsTableView(routeStops(0).trainList)
       trainsView.selectionModel.value.selectFirst()
-
-      val dialog = new Dialog
-      dialog.title = "Selected a train for the route"
-      dialog.dialogPane.value.buttonTypes = Seq(ButtonType.Finish, ButtonType.Cancel)
-      dialog.dialogPane().content = trainsView
-      dialog.showAndWait() match {
-        case Some(ButtonType.Finish) => {
-          val routeTrain: Train = trainsView.selectionModel.value.selectedItem.value
-          if (routeTrain != null) {
-            game.createRoute(routeRoads.clone(), routeStops.clone(), routeTrain)
-            // il faut encore tt ce qui est route répétée ou non, et ici le train s'arrête à tt les stops mais il faudrait pas
-            game.setInfoText("[Train Route Creation] The route has been created!")
-          }
-          else {
-            game.setInfoText("[Train Route Creation] You didn't select any train.")
-          }
-        }
-        case _ => stopCreatingRoute()
+      var routeTrain : Train = routeStops(0).trainList(0)
+      if (routeStops(0).trainList.length > 1) {
+        routeTrain = trainSelectionTab(trainsView)
+      }
+      if (routeTrain != null) {
+        game.createRoute(routeRoads.clone(), routeStops.clone(), routeTrain)
+        // il faut encore tt ce qui est route répétée ou non, et ici le train s'arrête à tt les stops mais il faudrait pas
+        game.setInfoText("[Train Route Creation] The route has been created!")
+      }
+      else {
+        game.setInfoText("[Train Route Creation] You didn't select any train.")
       }
     } else {
       game.setInfoText("[Train Route Creation] There wasn't enough stops to create a route.")
     }
-
     stopCreatingRoute()
   }
 

@@ -21,5 +21,6 @@ abstract class Carriage(_owner: Player) extends Renderable(new GridLocation(-1, 
   def debark(s: Structure) : Unit = {}
 
   val cost = 20
+  var weight : Double = 200
 
 }

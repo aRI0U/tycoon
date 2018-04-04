@@ -16,8 +16,6 @@ import scalafx.beans.property.{IntegerProperty, StringProperty}
 case class Mine(pos: GridLocation, id: Int) extends Facility(pos, id) {
   tile = Tile.mine
 
-  protected val r = scala.util.Random
-
   val production_time = 100
 
   // list of available products:
@@ -49,7 +47,11 @@ case class Mine(pos: GridLocation, id: Int) extends Facility(pos, id) {
   }
 
   override def update(dt: Double) = {
-    if (r.nextInt(10000) == 0) workers = 0 // rockslide
+    // random rockslides can kill workers
+    if (workers > 0 && r.nextInt(10000) == 0) {
+      workers = 0
+      throwEvent("[Mine n°"+id+"] Rockslide: All diggers died!")
+    }
     intern_time += dt*workers
     if(intern_time > production_time) {
       for (i <- 0 to products.length - 1) update_production(i)

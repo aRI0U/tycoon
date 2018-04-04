@@ -12,8 +12,8 @@ import tycoon.objects.railway._
 
 case class GoodsCarriage(_owner: Player) extends Carriage(_owner) {
   tile = Tile.goodsWagonR
-  val maxSpace : Int = 100
-  var remainingSpace : Int = maxSpace
+  val maxSpace : Double = 100
+  var remainingSpace : Double = maxSpace
   var merchandises = new ListBuffer[Merchandise]
 
 
@@ -43,14 +43,15 @@ case class GoodsCarriage(_owner: Player) extends Carriage(_owner) {
           if (requests.contains(product.label)) {
             println(product, remainingSpace, f.stocks(i))
             // determine how much quantity can be transported in the carriage
-            var quantity = remainingSpace.min(f.stocks(i)/(product.weight))
+            var quantity = (remainingSpace.toInt).min((f.stocks(i)/(product.size)).toInt)
             if (quantity > 0) {
               // remove the product from the facility
               f.stocksInt(i).set(f.stocks(i) - quantity)
               // add the product in the carriage
               merchandises += new Merchandise(product, quantity)
               println("GoodsCarriage > just embarked" + quantity)
-              remainingSpace -= quantity*product.weight
+              remainingSpace -= quantity*product.size
+              weight += quantity*product.weight
               println(product, remainingSpace, f.stocks(i))
             }
           }
@@ -73,7 +74,8 @@ case class GoodsCarriage(_owner: Player) extends Carriage(_owner) {
               f.stocksInt(i).set(f.stocks(i) + merch.quantity)
               // empty the carriage
               merchandises -= merch
-              remainingSpace += merch.quantity*merch.kind.weight
+              remainingSpace += merch.quantity*merch.kind.size
+              weight -= merch.quantity*merch.kind.weight
               println(merch.kind, remainingSpace, f.stocks(i))
             }
           }

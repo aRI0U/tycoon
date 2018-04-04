@@ -1,6 +1,7 @@
 package tycoon.objects.structure
 
 import scala.collection.mutable.ListBuffer
+import scala.util.Random
 
 import tycoon.objects.vehicle._
 import tycoon.objects.vehicle.train._
@@ -15,6 +16,8 @@ abstract class Structure(pos: GridLocation, id: Int) extends Renderable(pos) {
   var trainList = new ListBuffer[Train]()
   var planeList = new ListBuffer[Plane]()
 
+  protected val r = scala.util.Random
+
   protected val _name = StringProperty("")
   def name: String = _name.value
 
@@ -26,4 +29,11 @@ abstract class Structure(pos: GridLocation, id: Int) extends Renderable(pos) {
   def removeTrain(train: Train) = trainList -= train
   def getTrain: Option[Train] = trainList.lastOption
   def getPlane: Option[Plane] = planeList.lastOption
+
+  def throwEvent(s: String) {
+    throw new EventException(s)
+  }
+}
+
+class EventException(val s: String) extends Exception {
 }
