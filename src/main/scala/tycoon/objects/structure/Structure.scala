@@ -2,6 +2,7 @@ package tycoon.objects.structure
 
 import scala.collection.mutable.ListBuffer
 
+import tycoon.objects.vehicle._
 import tycoon.objects.vehicle.train._
 import tycoon.ui.Renderable
 import tycoon.game.GridLocation

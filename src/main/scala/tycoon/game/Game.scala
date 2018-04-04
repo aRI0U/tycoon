@@ -279,6 +279,7 @@ class Game(val map_width : Int, val map_height : Int)
                   bought = true
                   farm.haOfField += 1
                   farm.fields +=  field
+                  farm.productionPerPeriod(1) += 4
                   field.dependanceFarm = Some(farm)
                 }
               }

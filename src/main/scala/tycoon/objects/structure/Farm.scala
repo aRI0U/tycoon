@@ -39,24 +39,26 @@ case class Farm(pos: GridLocation, id: Int) extends Facility(pos, id) {
   }
 
   override def update(dt: Double) = {
-    intern_time += dt
-    //for daily production
-    if(intern_time > production_time) {
-      productionCounter +=1
-      //just for Corn, every 4 days
-      if (productionCounter == 4) {
-        if (tileType == 2) {
-          update_production(1)
+    if (workers > 0) {
+      intern_time += dt
+      //for daily production
+      if(intern_time > production_time) {
+        productionCounter +=1
+        //just for Corn, every 4 days
+        if (productionCounter == 4) {
+          if (tileType == 2) {
+            update_production(1)
+          }
+          productionCounter = 0
+          tileType = (tileType +1) % 3
+          tile = Tile.farm(tileType)
+          for (field <- fields) {
+            field.tile = Tile.field(tileType)
+          }
         }
-        productionCounter = 0
-        tileType = (tileType +1) % 3
-        tile = Tile.farm(tileType)
-        for (field <- fields) {
-          field.tile = Tile.field(tileType)
-        }
+        update_production(0)
+        intern_time -= production_time
       }
-      update_production(0)
-      intern_time -= production_time
     }
   }
 }
