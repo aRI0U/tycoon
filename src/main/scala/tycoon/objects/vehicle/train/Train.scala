@@ -258,21 +258,11 @@ class Train(val id: Int, initialTown: Structure, val owner: Player) extends Vehi
   var carriageList = new ListBuffer[Carriage]()
   var from = StringProperty(initialTown.name)
 
-  addCarriages()
-
   gridPos = location.gridPos.right
   carriageList foreach (_.visible = false)
   carriageList foreach (_.gridPos = location.gridPos.right)
 
-  def addCarriages() {
-    // tmp
-    // il faut ajouter les carriage dans game et les donner au train (pour l'id)
-    carriageList += new PassengerCarriage(0, initialTown, owner)
-    carriageList += new PassengerCarriage(0, initialTown, owner)
-    carriageList += new PassengerCarriage(0, initialTown, owner)
-    carriageList += new GoodsCarriage(0, initialTown, owner)
-    carriageList += new GoodsCarriage(0, initialTown, owner)
-  }
+  def addCarriage(carriage: Carriage): Unit = carriageList += carriage
 
   def departure(firstRail: Rail) = {
     currentRail = Some(firstRail)

@@ -21,6 +21,11 @@ class Player {
   def money_=(new_money: Int) = _money.set(new_money)
   def formattedMoney: StringProperty = _formattedMoney
 
-  def pay(price: Int) = _money.set(_money.value - price)
+  def pay(price: Int): Boolean = {
+    if (money.value >= price) { _money.set(_money.value - price) ; true }
+    else false
+  }
   def earn(amount: Int) = _money.set(_money.value + amount)
+
+  def canAffordPaying(amount: Int): Boolean = money.value >= amount
 }
