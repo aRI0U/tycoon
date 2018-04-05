@@ -100,18 +100,23 @@ case class GoodsCarriage(id: Int, initialTown: Structure, _owner: Player) extend
               val soldQuantity = merch.quantity.min(t.needs(i))
               // add the product to the town
               var index = t.products.indexOf(merch.kind)
+              // if this product doesn't exist yet in the town we have to add it
               if (index == -1) {
                 t.products += merch.kind
-                t.stocksInt += IntegerProperty(soldQuantity)
+                index = t.datedProducts.length
+                t.datedProducts += new ListBuffer[Merchandise]
+                t.stocksInt += IntegerProperty(0)
+              }
+              // if the merchandise is entirely sold
+              if (soldQuantity == merch.quantity) {
+                t.datedProducts(index) += merch
+                merchandises -= merch
               }
               else {
-                t.stocksInt(index).set(t.stocks(index) + soldQuantity)
-              }
-              // delete the merchandise from the carriage
-              if (merch.quantity > soldQuantity) {
+                t.datedProducts(index) += new Merchandise(merch.kind, soldQuantity, merch.productionDate)
                 merch.quantity -= soldQuantity
               }
-              else merchandises -= merch
+              t.stocksInt(index).set(t.stocks(index) + soldQuantity)
               remainingSpace += soldQuantity*merch.kind.size
               weight -= soldQuantity*merch.kind.weight
               // be paid
