@@ -7,7 +7,7 @@ import tycoon.game._
 
 import scalafx.beans.property.{IntegerProperty, StringProperty}
 
-abstract class Facility(pos: GridLocation, id: Int) extends Structure(pos, id) {
+abstract class Facility(pos: GridLocation, id: Int, val townManager: TownManager) extends Structure(pos, id) {
 
   // workers
   protected var _workers = IntegerProperty(0)

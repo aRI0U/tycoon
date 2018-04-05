@@ -33,16 +33,41 @@ abstract class Structure(pos: GridLocation, id: Int) extends Renderable(pos) {
 
   // products present in a structure
   var products = new ListBuffer[Good]
+  var datedProducts = new ListBuffer[ListBuffer[Merchandise]]
   var stocksInt = new ListBuffer[IntegerProperty]
   var stocksStr = new ListBuffer[StringProperty]
 
   def stocks(i: Int) : Int = stocksInt(i).value
   def stocks_= (i: Int, new_stock: Int) = stocksInt(i).set(new_stock)
 
+  def updateStocks() = {
+    for (i <- 0 to stocksInt.length - 1) {
+      var totalQuantity = 0
+      for (m <- datedProducts(i)) totalQuantity += m.quantity
+      stocksInt(i).set(totalQuantity)
+    }
+  }
+
+  def updateExpiredProducts(currentTime: Double) = {
+    for (merchList <- datedProducts) {
+      for (m <- merchList) {
+        m.expiryDate match {
+          case Some(time) => {
+            if (currentTime > time) {
+              merchList -= m
+              throwEvent("Be careful! "+m.kind.label+"s expire if you wait too long")
+            }
+          }
+          case None => ()
+        }
+      }
+    }
+    updateStocks()
+  }
+
   def throwEvent(s: String) {
     throw new EventException(s)
   }
 }
 
-class EventException(val s: String) extends Exception {
-}
+class EventException(val s: String) extends Exception {}

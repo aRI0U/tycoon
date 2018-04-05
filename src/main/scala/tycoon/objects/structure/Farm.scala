@@ -4,11 +4,10 @@ import scala.util.Random
 import scala.collection.mutable.ListBuffer
 
 import tycoon.objects.good._
-import tycoon.game.GridLocation
-import tycoon.game.Game
+import tycoon.game._
 import tycoon.ui.Tile
 
-case class Farm(pos: GridLocation, id: Int) extends Facility(pos, id) {
+case class Farm(pos: GridLocation, id: Int, tManager: TownManager) extends Facility(pos, id, tManager) {
   tile = Tile.farm(0)
   var tileType = 0
   var production_time = 50
@@ -25,9 +24,11 @@ case class Farm(pos: GridLocation, id: Int) extends Facility(pos, id) {
   // productionPerPeriod += ()
 
   products += new Food("Egg")
+  datedProducts += new ListBuffer[Merchandise]
   productionPerPeriod += (20)
 
   products += new Food("Corn")
+  datedProducts += new ListBuffer[Merchandise]
   productionPerPeriod += (4)
 
   displayProducts()
@@ -57,6 +58,7 @@ case class Farm(pos: GridLocation, id: Int) extends Facility(pos, id) {
           }
         }
         update_production(0)
+        updateExpiredProducts(townManager.getTime())
         intern_time -= production_time
       }
     }
