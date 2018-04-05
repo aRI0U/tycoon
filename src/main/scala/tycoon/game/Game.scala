@@ -99,7 +99,7 @@ class Game(val map_width : Int, val map_height : Int)
 
   // game objects
   var railManager = new RailManager(map, game_graph)
-  var townManager = new TownManager()
+  var townManager = new TownManager(this)
 
   var nb_structures = 0
   val mine_price = 200

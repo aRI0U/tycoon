@@ -30,7 +30,6 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
     catch {
       case e: Exception => println("you've created too many towns")
     }
-
   }
 
   chooseName()
@@ -117,11 +116,12 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
 
   override def update(dt: Double) = {
     intern_time += dt
-    if (intern_time > 1) {
+    if (intern_time > 2) {
+      intern_time -= 1
       updatePopulation()
       updateJobSeekers()
       updateWaiters()
-      intern_time -= 1
+      updateConsumption()
     }
   }
 
@@ -175,6 +175,64 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
     }
   }
 
-  newRequest(new Food("Cake"), 200)
-  newRequest(new Ore("Iron"), 50)
+  var hunger = 0
+  var alreadyDiet = false
+  var alreadyStarving = false
+  val lunchTime = 100
+  val dietTime = 150
+  val starvingTime = 300
+
+  // consumption of food
+  def updateConsumption() = {
+    if (hunger > lunchTime) {
+      var nutritiousNeeds = population
+      var i = 0
+      // feed the population
+      while (i < products.length && nutritiousNeeds > 0) {
+        products(i) match {
+          case Food(_) => {
+            while (nutritiousNeeds > 0 && datedProducts(i).length > 0) {
+              var m = datedProducts(i)(0)
+              m.kind match {
+                case f: Food => nutritiousNeeds -= m.quantity*f.nutritiousness
+                case _ => println("Town > list products doesn't correspond to list datedProducts: enormous mistake!")
+              }
+              datedProducts(i) -= m
+            }
+          }
+          case _ => () // for the moment we consider that people eat only food
+        }
+      }
+      hunger *= nutritiousNeeds/population
+      if (hunger > starvingTime) {
+        population = (population-hunger).max(1)
+        hunger += 5
+        if (!alreadyStarving) {
+          alreadyStarving = true
+          newRequest(new Food("Cake"), population)
+          throwEvent("["+name+"] Everyone is starving, nur noch ein Gott kann uns retten...")
+        }
+      }
+      else {
+        alreadyStarving = false
+        if (hunger > dietTime) {
+          hunger += 3
+          if (!alreadyDiet) {
+            alreadyDiet = true
+            newRequest(new Food("Cake"), nutritiousNeeds/2)
+            throwEvent("["+name+"] People are hungry!")
+          }
+        }
+        else {
+          alreadyDiet = false
+          hunger += 2
+        }
+      }
+    }
+    else {
+      alreadyStarving = false
+      alreadyDiet = false
+      hunger += 1
+    }
+  }
 }

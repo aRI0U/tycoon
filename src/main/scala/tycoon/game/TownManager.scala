@@ -7,7 +7,7 @@ import tycoon.objects.structure._
 import scalafx.beans.property.{IntegerProperty, StringProperty}
 
 
-class TownManager() {
+class TownManager(game: Game) {
 
   // names
   var townNames = new ListBuffer[String]
@@ -37,5 +37,5 @@ class TownManager() {
     last_town += 1
   }
 
-  // economy will be inserted here
+  def getTime() : Double = game.totalElapsedTime
 }
