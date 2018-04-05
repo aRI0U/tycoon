@@ -115,9 +115,9 @@ class Game(val map_width : Int, val map_height : Int)
   var game_graph = new Graph
   val map = new TileMap(map_width, map_height)
   map.fillBackground(Tile.grass)
-  //map.sprinkleTile(Tile.tree, 3)
-  //map.sprinkleTile(Tile.rock, 1)
-  //map.generateLakes(5, 2000) //SLOW
+  map.sprinkleTile(Tile.tree, 3)
+  map.sprinkleTile(Tile.rock, 1)
+  map.generateLakes(5, 2000) //SLOW
 
   val tiledPane = new DraggableTiledPane(map)
   tiledPane.moveToCenter()

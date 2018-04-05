@@ -92,7 +92,7 @@ case class GoodsCarriage(id: Int, initialTown: Structure, _owner: Player) extend
               remainingSpace += soldQuantity*merch.kind.size
               weight -= soldQuantity*merch.kind.weight
               // be paid
-              owner.earn(prices(i)*soldQuantity)
+              // owner.earn(prices(i)*soldQuantity)
               // satisfy the request
               if (!t.satisfyRequest(merch.kind, i, soldQuantity)) i += 1
             }
