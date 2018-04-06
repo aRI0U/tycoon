@@ -233,7 +233,10 @@ class Game(val map_width : Int, val map_height : Int)
       true
     }
     else {
-      setInfoText("You can create mines only on deposits!", 2)
+      struct match {
+        case m: Mine => setInfoText("You can create mines only on deposits!", 2)
+        case _ => ()
+      }
       false
     }
   }

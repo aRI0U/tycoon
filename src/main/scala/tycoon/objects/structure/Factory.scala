@@ -13,52 +13,52 @@ case class Factory(pos: GridLocation, id: Int, tManager: TownManager) extends Fa
 
   val productionTime = 5
 
-  val initialProductsList = List(List(("Coal",3)))
+  val recipesList : ListBuffer[List[(Good, Int)]] = ListBuffer(List((new Ore("Coal"),3)))
 
   // disponible products
 
-  products += new Ore("Coal")
-  datedProducts += new ListBuffer[Merchandise]
-
-  products += new Food("Cake")
-  datedProducts += new ListBuffer[Merchandise]
-
-  displayProducts()
-
-  def convertedInto(initialProducts: List[(String,Int)]) : List[(String,Int)] = {
-    // possible conversions are hardcoded here
-    initialProducts match {
-      case List(("Coal",3)) => List(("Cake",1))
-      case _ => List()
+  def addRecipeProducts(recipe: List[(Good, Int)]) = {
+    for (p <- recipe) {
+      var i = 0
+      while (i < products.length && !areSameGoods(products(i), p._1)) i += 1
+      if (i == products.length) {
+        products += p._1
+        datedProducts += new ListBuffer[Merchandise]
+      }
     }
   }
 
+  recipesList.foreach(r => addRecipeProducts(r))
 
-  def process(initialProducts: List[(String,Int)], finalProducts: List[(String,Int)]) = {
+  for (i <- 0 to recipesList.length-1)    addRecipeProducts(convertedInto(i))
+
+  displayProducts()
+
+  def convertedInto(recipeId: Int) : List[(Good,Int)] = {
+    // possible conversions are hardcoded here
+    recipeId match {
+      case 0 => List((new Food("Cake"),1))
+      case _ => throw new IndexOutOfBoundsException
+    }
+  }
+
+  def process(initialProducts: List[(Good,Int)], finalProducts: List[(Good,Int)]) = {
     // determine the indices of the useful products
     var usefulIndices = new ListBuffer[Int]
     for (product <- initialProducts) {
       for (i <- 0 to products.length-1) {
-        if (product._1 == products(i).label) usefulIndices += i
+        if (areSameGoods(product._1, products(i))) usefulIndices += i
       }
     }
     // determine how much could be processed
     var producedQuantity = workers
     for (j <- 0 to usefulIndices.length-1) {
       val i = usefulIndices(j)
-      if (initialProducts(j)._1 == products(i).label) {
+      if (areSameGoods(initialProducts(j)._1, products(i))) {
         val m = stocks(i)/initialProducts(j)._2
         if (m < producedQuantity) producedQuantity = m
       }
     }
-    // for (product <- initialProducts) {
-    //   for (i <- 0 to products.length-1) {
-    //     if (product._1 == products(i).label) {
-    //       var m = stocks(i)/product._2
-    //       if (m < producedQuantity) producedQuantity = m
-    //     }
-    //   }
-
     // consume the initial products
     for (j <- 0 to usefulIndices.length-1) {
       val i = usefulIndices(j)
@@ -76,7 +76,7 @@ case class Factory(pos: GridLocation, id: Int, tManager: TownManager) extends Fa
     // create the final products
     for (i <- 0 to products.length-1) {
       for (product <- finalProducts) {
-        if (products(i).label == product._1) {
+        if (areSameGoods(products(i), product._1)) {
           datedProducts(i) += new Merchandise(products(i), producedQuantity*product._2, townManager.getTime())
         }
       }
@@ -84,8 +84,8 @@ case class Factory(pos: GridLocation, id: Int, tManager: TownManager) extends Fa
   }
 
   def updateProduction() = {
-    for (products <- initialProductsList) {
-      process(products, convertedInto(products))
+    for (i <- 0 to recipesList.length-1) {
+      process(recipesList(i), convertedInto(i))
     }
     updateStocks()
   }

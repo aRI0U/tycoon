@@ -68,6 +68,10 @@ abstract class Structure(pos: GridLocation, id: Int) extends Renderable(pos) {
   def throwEvent(s: String) {
     throw new EventException(s)
   }
+
+  def areSameGoods(g1: Good, g2: Good) : Boolean = {
+    (g1.label == g2.label)
+  }
 }
 
 class EventException(val s: String) extends Exception {}

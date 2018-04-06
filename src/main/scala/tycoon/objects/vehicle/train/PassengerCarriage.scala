@@ -15,7 +15,7 @@ case class PassengerCarriage(id: Int, initialTown: Structure, _owner: Player) ex
   val maxPassengers = 10
   var remainingPlaces: Int = maxPassengers
 
-  override def embark(departureStruct: Structure, stops: ListBuffer[Structure]) : Unit = {
+  def embark(departureStruct: Structure, stops: ListBuffer[Structure]) : Unit = {
     departureStruct match {
       case departureTown: Town => {
         for (stop <- stops) {
@@ -45,7 +45,7 @@ case class PassengerCarriage(id: Int, initialTown: Structure, _owner: Player) ex
     }
   }
 
-  override def debark(s: Structure) : Unit = {
+  def debark(s: Structure) : Unit = {
     for (p <- passengers) {
       if (p._1 == s) {
         remainingPlaces += p._2

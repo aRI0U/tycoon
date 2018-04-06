@@ -22,32 +22,40 @@ case class Mine(pos: GridLocation, id: Int, tManager: TownManager) extends Facil
 
   // initialization
   var productionPerPeriod = new ListBuffer[Int]
-  var extractable_amount = new ListBuffer[Int]
+  var extractableAmount = new ListBuffer[Int]
+  var allExtracted = new ListBuffer[Boolean]
 
   // here are added new products
   products += new Ore("Coal")
   datedProducts += new ListBuffer[Merchandise]
   productionPerPeriod += (10+r.nextInt(10))
-  extractable_amount += 1000
+  extractableAmount += 1000
+  allExtracted += false
 
   products += new Ore("Iron")
   datedProducts += new ListBuffer[Merchandise]
   productionPerPeriod += (5+r.nextInt(5))
-  extractable_amount+= (50+r.nextInt(100))
+  extractableAmount+= (50+r.nextInt(100))
+  allExtracted += false
 
   products += new Ore("Gold")
   datedProducts += new ListBuffer[Merchandise]
   productionPerPeriod += r.nextInt(2)
-  extractable_amount += r.nextInt(50)
+  extractableAmount += r.nextInt(50)
+  allExtracted += false
 
   displayProducts()
 
   // update production
 
   def update_production(i: Int) = {
-    if (stocks(i) < extractable_amount(i)) {
+    if (!allExtracted(i)) {
       datedProducts(i) += new Merchandise(products(i), productionPerPeriod(i), townManager.getTime())
       stocksInt(i).set(stocks(i) + productionPerPeriod(i))
+      if (stocks(i) >= extractableAmount(i)) {
+        allExtracted(i) = true
+        throwEvent("[Mine n°"+id+"] "+products(i).label+"s: everything has been extracted in this mine")
+      }
     }
   }
 
