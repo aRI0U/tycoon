@@ -24,7 +24,7 @@ abstract class Good(val label: String) {
   }
   val liquid = initLiquid()
 
-  def initPackage() : Good = {
+  def initPackage() : Good = {this}
     label match {
       case _ => new Ore("Iron")
     }
