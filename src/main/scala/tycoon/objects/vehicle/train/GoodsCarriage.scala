@@ -47,20 +47,43 @@ case class GoodsCarriage(id: Int, initialTown: Structure, _owner: Player) extend
           val product = f.products(i)
           if (requests.contains(product.label)) {
             println(product, remainingSpace, f.stocks(i))
-            // determine how much quantity can be transported in the carriage
-            var quantity = (remainingSpace.toInt).min((f.stocks(i)/(product.size)).toInt)
-            if (quantity > 0) {
-              // remove the product from the facility
-              f.stocksInt(i).set(f.stocks(i) - quantity)
-              // add the product in the carriage
-              merchandises += new Merchandise(product, quantity)
-              println("GoodsCarriage > just embarked" + quantity)
-              remainingSpace -= quantity*product.size
-              weight += quantity*product.weight
-              println(product, remainingSpace, f.stocks(i))
+            var flag = true
+            while (flag && f.datedProducts(i).length > 0) {
+              val m = f.datedProducts(i)(0)
+              if (m.quantity*m.kind.size <= remainingSpace) {
+                // delete the merchandise from the facility
+                f.datedProducts(i) -= m
+                // add the merchandise to the carriage
+                merchandises += m
+                remainingSpace -= m.quantity*m.kind.size
+                weight += m.quantity*m.kind.weight
+              }
+              else {
+                // sometimes it is necessary to divide merchandises
+                var quantity = (remainingSpace/m.kind.size).toInt
+                if (quantity > 0) {
+                  f.datedProducts(i) -= m
+                  f.datedProducts(i) += new Merchandise(m.kind, m.quantity-quantity, m.productionDate)
+                  merchandises += new Merchandise(m.kind, quantity, m.productionDate)
+                  remainingSpace -= quantity*m.kind.size
+                  weight += quantity*m.kind.weight
+                }
+                flag = false
+              }
             }
+            // if (quantity > 0) {
+            //   // remove the product from the facility
+            //   f.stocksInt(i).set(f.stocks(i) - quantity)
+            //   // add the product in the carriage
+            //   merchandises += new Merchandise(product, quantity, f.townManager.getTime())
+            //   println("GoodsCarriage > just embarked" + quantity)
+            //   remainingSpace -= quantity*product.size
+            //   weight += quantity*product.weight
+            //   println(product, remainingSpace, f.stocks(i))
+            // }
           }
         }
+        f.updateStocks()
       }
     }
   }
@@ -92,7 +115,7 @@ case class GoodsCarriage(id: Int, initialTown: Structure, _owner: Player) extend
               remainingSpace += soldQuantity*merch.kind.size
               weight -= soldQuantity*merch.kind.weight
               // be paid
-              // owner.earn(prices(i)*soldQuantity)
+              owner.earn(t.prices(i)*soldQuantity)
               // satisfy the request
               if (!t.satisfyRequest(merch.kind, i, soldQuantity)) i += 1
             }
@@ -102,18 +125,25 @@ case class GoodsCarriage(id: Int, initialTown: Structure, _owner: Player) extend
       }
       case f: Facility => {
         for (i <- 0 to f.products.length-1) {
-          for (merch <- merchandises) {
-            if (merch.kind.label == f.products(i).label) {
-              // add the product
-              f.stocksInt(i).set(f.stocks(i) + merch.quantity)
-              // empty the carriage
-              merchandises -= merch
-              remainingSpace += merch.quantity*merch.kind.size
-              weight -= merch.quantity*merch.kind.weight
-              println(merch.kind, remainingSpace, f.stocks(i))
+          for (m <- merchandises) {
+            if (m.kind.label == f.products(i).label) {
+              // take off the merchandise from the carriage
+              merchandises -= m
+              remainingSpace += m.quantity*m.kind.size
+              weight -= m.quantity*m.kind.weight
+              // add the merchandise
+              f.datedProducts(i) += m
+              // // add the product
+              // f.stocksInt(i).set(f.stocks(i) + merch.quantity)
+              // // empty the carriage
+              // merchandises -= merch
+              // remainingSpace += merch.quantity*merch.kind.size
+              // weight -= merch.quantity*merch.kind.weight
+              // println(merch.kind, remainingSpace, f.stocks(i))
             }
           }
         }
+        f.updateStocks()
       }
     }
   }

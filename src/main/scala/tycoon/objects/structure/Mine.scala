@@ -4,8 +4,7 @@ import scala.util.Random
 import scala.collection.mutable.ListBuffer
 
 import tycoon.objects.good._
-import tycoon.game.GridLocation
-import tycoon.game.Game
+import tycoon.game._
 import tycoon.ui.Tile
 
 import scalafx.beans.property.{IntegerProperty, StringProperty}
@@ -13,7 +12,7 @@ import scalafx.beans.property.{IntegerProperty, StringProperty}
 // once built, a mine can produce a limited quantity of iron (iron_amount), the quantity of extracted iron depends on the number of diggers and on the quantity that has already been extracted (it is harder and harder to find iron)
 
 
-case class Mine(pos: GridLocation, id: Int) extends Facility(pos, id) {
+case class Mine(pos: GridLocation, id: Int, tManager: TownManager) extends Facility(pos, id, tManager) {
   tile = Tile.mine
 
   val production_time = 100
@@ -27,14 +26,17 @@ case class Mine(pos: GridLocation, id: Int) extends Facility(pos, id) {
 
   // here are added new products
   products += new Ore("Coal")
+  datedProducts += new ListBuffer[Merchandise]
   productionPerPeriod += (10+r.nextInt(10))
   extractable_amount += 1000
 
   products += new Ore("Iron")
+  datedProducts += new ListBuffer[Merchandise]
   productionPerPeriod += (5+r.nextInt(5))
   extractable_amount+= (50+r.nextInt(100))
 
   products += new Ore("Gold")
+  datedProducts += new ListBuffer[Merchandise]
   productionPerPeriod += r.nextInt(2)
   extractable_amount += r.nextInt(50)
 
@@ -43,19 +45,24 @@ case class Mine(pos: GridLocation, id: Int) extends Facility(pos, id) {
   // update production
 
   def update_production(i: Int) = {
-    if (stocks(i) < extractable_amount(i))    stocksInt(i).set(stocks(i) + productionPerPeriod(i))
+    if (stocks(i) < extractable_amount(i)) {
+      datedProducts(i) += new Merchandise(products(i), productionPerPeriod(i), townManager.getTime())
+      stocksInt(i).set(stocks(i) + productionPerPeriod(i))
+    }
   }
 
   override def update(dt: Double) = {
-    // random rockslides can kill workers
-    if (workers > 0 && r.nextInt(10000) == 0) {
-      workers = 0
-      throwEvent("[Mine n°"+id+"] Rockslide: All diggers died!")
-    }
-    intern_time += dt*workers
-    if(intern_time > production_time) {
-      for (i <- 0 to products.length - 1) update_production(i)
-      intern_time -= production_time
+    if (workers > 0) {
+      // random rockslides can kill workers
+      if (r.nextInt(10000) == 0) {
+        workers = 0
+        throwEvent("[Mine n°"+id+"] Rockslide: All diggers died!")
+      }
+      intern_time += dt*workers
+      if(intern_time > production_time) {
+        for (i <- 0 to products.length - 1) update_production(i)
+        intern_time -= production_time
+      }
     }
   }
   //val price = game.mine_price //To choose
