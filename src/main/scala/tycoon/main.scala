@@ -70,7 +70,7 @@ object Main extends JFXApp {
             selectedFile = null
           }
           else {
-            println("Game backup couldn't be opened or read.")
+            println("Game backup couldn't be opened or read. ")
             selectedFile = fileChooser.showOpenDialog(stage)
           }
         } catch {
