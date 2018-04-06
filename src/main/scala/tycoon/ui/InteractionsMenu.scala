@@ -311,21 +311,45 @@ class InteractionsMenu(val game: Game) extends TabPane
     val routes = new ObservableBuffer[Route]
     routes ++= routeList
 
-    // val idCol = new TableColumn[Train, String]("ID")
-    // idCol.minWidth = 30
-    // idCol.cellValueFactory = { cell => IntegerProperty(cell.value.id).asString }
+    val idCol = new TableColumn[Route, String]("TRAIN ID")
+    idCol.minWidth = 30
+    idCol.cellValueFactory = { cell => IntegerProperty(cell.value.train.id).asString }
 
+    val stopsCol = new TableColumn[Route, String]("STOPS")
+    stopsCol.minWidth = 300
+    stopsCol.cellValueFactory = { cell =>
+      StringProperty(cell.value.stops map { struct: Structure => struct.name } mkString ", ") }
 
     val table = new TableView(routes)
-    table.columns ++= Seq()
+    table.minWidth = 400
+    table.columns ++= Seq(idCol, stopsCol)
     table
   }
 
   def openManageRoutesDialog() = {
+    val routes = getRoutesTableView(game.routes filter (_.repeated))
+
+    val removeBt = new Button {
+      text = "Remove Route"
+      onMouseClicked = _ => {
+        val route: Route = routes.selectionModel.value.selectedItem.value
+        if (route == null)
+          game.setInfoText("You didn't select any route.")
+        else {
+          route.repeated = false
+          game.setInfoText("Route will be removed once the train reach its final stop.")
+        }
+      }
+    }
+
+    val content = new VBox(10)
+    content.children.add(routes)
+    content.children.add(removeBt)
+
     val dialog = new Dialog
-    dialog.title = "Your Routes (only showing repeted routes)"
+    dialog.title = "Your Routes (only showing repeated routes)"
     dialog.dialogPane.value.buttonTypes = Seq(ButtonType.Close)
-    dialog.dialogPane().content = getRoutesTableView(game.routes filter (_.repeated))
+    dialog.dialogPane().content = content
     dialog.showAndWait()
   }
 
