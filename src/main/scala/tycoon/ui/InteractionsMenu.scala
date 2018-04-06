@@ -16,6 +16,7 @@ import scala.collection.mutable.ListBuffer
 import tycoon.objects.structure._
 import tycoon.objects.railway._
 import scalafx.scene.paint.Color
+import tycoon.objects.graph.Route
 
 class InteractionsMenu(val game: Game) extends TabPane
 {
@@ -172,6 +173,14 @@ class InteractionsMenu(val game: Game) extends TabPane
     onMouseClicked = _ => startTrainRouteCreation()
   }
 
+  val showRoutesBt = new Button {
+    text = "Manage Routes"
+    margin = Insets(10)
+    vgrow = Priority.Always
+    maxHeight = Double.MaxValue
+    onMouseClicked = _ => openManageRoutesDialog()
+  }
+
   val buyCarriagesBt = new Button {
     text = "Buy Carriages"
     margin = Insets(10)
@@ -183,7 +192,8 @@ class InteractionsMenu(val game: Game) extends TabPane
   trainsTabContainer.children = Seq(
     showTrainsBt,
     newRouteBt,
-    buyCarriagesBt
+    buyCarriagesBt,
+    showRoutesBt
   )
 
 
@@ -296,11 +306,34 @@ class InteractionsMenu(val game: Game) extends TabPane
     table
   }
 
+
+  def getRoutesTableView(routeList: ListBuffer[Route]) : TableView[Route] = {
+    val routes = new ObservableBuffer[Route]
+    routes ++= routeList
+
+    // val idCol = new TableColumn[Train, String]("ID")
+    // idCol.minWidth = 30
+    // idCol.cellValueFactory = { cell => IntegerProperty(cell.value.id).asString }
+
+
+    val table = new TableView(routes)
+    table.columns ++= Seq()
+    table
+  }
+
+  def openManageRoutesDialog() = {
+    val dialog = new Dialog
+    dialog.title = "Your Routes (only showing repeted routes)"
+    dialog.dialogPane.value.buttonTypes = Seq(ButtonType.Close)
+    dialog.dialogPane().content = getRoutesTableView(game.routes filter (_.repeated))
+    dialog.showAndWait()
+  }
+
   def openTrainsDataDialog() = {
     val dialog = new Dialog
     dialog.title = "Your Trains"
     dialog.dialogPane.value.buttonTypes = Seq(ButtonType.Close)
-    dialog.dialogPane().content = getTrainsTableView(game.trains) // for Part 3: filter on whether owner is player
+    dialog.dialogPane().content = getTrainsTableView(game.trains)
     dialog.showAndWait()
   }
 
