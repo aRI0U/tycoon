@@ -88,6 +88,7 @@ class TileMap (val width: Int, val height: Int) {
       .iterate
       .filter { _ => r.nextInt(100) + 1 <= percentage }
       .filter { checkBgTile(_, Tile.grass) }
+      .filter { maybeGetStructureAt(_) == None}
       .foreach { setBackgroundTile(_, tile) }
   }
 

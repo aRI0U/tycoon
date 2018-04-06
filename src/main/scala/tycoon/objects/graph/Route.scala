@@ -13,7 +13,7 @@ import tycoon.game.GridLocation
 
 
 
-class Route(private var itinerary: ListBuffer[Road], private var stops: ListBuffer[Structure], train: Train, val repeated: Boolean) {
+class Route(private var itinerary: ListBuffer[Road], var stops: ListBuffer[Structure], val train: Train, var repeated: Boolean) {
 
   def active: Boolean = currentRoadIndex <= itinerary.length - 1
 

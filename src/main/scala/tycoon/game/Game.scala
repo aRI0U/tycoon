@@ -33,22 +33,55 @@ import scalafx.util.converter.{DateStringConverter, DateTimeStringConverter}
 
 class Game(val map_width : Int, val map_height : Int)
 {
-  def loadMap(filepath: String) : Boolean = {
-    Try {
-      val xml = XML.loadFile(filepath)
 
-      println("All foods:")
-      (xml \ "food" \ "name") foreach (i => println(i.text))
-      println("\nSpecials:")
-      for (food <- (xml \ "food"))
-        if ((food \ "special").length > 0)
-          println((food \ "special" \ "@id").text)
-      println("\nSpecials again:")
-      for (id <- (xml \ "food" \ "special"))
-        println((id \ "@id").text)
+  // def loadMap(filepath: String) : Boolean = {
+  //   Try {
+  //     val xml = XML.loadFile(filepath)
+  //
+  //     //please do somwhere else than
+  //     println("All foods:")
+  //     val goods = xml \ "Goods"
+  //     ( xml \\ "Food" \\ "@name") foreach (i => println(i.text))
+  //     ( goods \\ "Ore" \\ "@name") foreach (i => println(i.text))
+  //
+  //     //map treatment
+  //     val mapXML = xml \ "Map"
+  //     val mapName = mapXML \ "@name"
+  //     val width = mapXML \ "@width"
+  //     val height = mapXML \ "@height"
+  //
+  //     var cities = ListBuffer[Array[Any]]()
+  //     for (city <- (mapXML \\ "City")) {
+  //       var nbFactories = 0
+  //       for (factory <- (city \\ "Factory")) nbFactories+=1
+  //       buyStruct(new LargeTown(new GridLocation(city(1),city(2))), new GridLocation(city(1),city(2)),player)
+  //       // cities += Array (
+  //       //   city \ "@name",
+  //       //   city \ "@x",
+  //       //   city \ "@y",
+  //       //   city \ "@population",
+  //       //   nbFactories
+  //       // )
+  //     }
 
-    }.isSuccess
-  }
+      // for (city <-  cities){
+      //   buyStruct(new LargeTown, new GridLocation(city(1),city(2)),player)
+      // }
+
+
+
+      // println("\nSpecials:")
+      // for (food <- (xml \\ "Food"))
+      //   if ((food \ "special").length > 0)
+      //     println((food \ "special" \ "@id").text)
+      // println("\nSpecials again:")
+      // for (id <- (xml \ "food" \ "special"))
+      //   println((id \ "@id").text)
+
+  //   }.isSuccess
+  // }
+  // var playerInit = new Player
+  // playerInit.money.set(Int.MaxValue)
 
 
   var infoTextTimer: Double = 0
@@ -81,12 +114,18 @@ class Game(val map_width : Int, val map_height : Int)
 
 
   // game map
+<<<<<<< HEAD
   var game_graph = new Graph
-  val map = new TileMap(map_width, map_height)
+  var map = new TileMap(map_width, map_height)
   map.fillBackground(Tile.grass)
-  map.sprinkleTile(Tile.tree, 3)
-  map.sprinkleTile(Tile.rock, 1)
-  map.generateLakes(5, 2000) //SLOW
+
+  def fillNewGame() {
+    map.sprinkleTile(Tile.tree, 3)
+    map.sprinkleTile(Tile.rock, 1)
+    map.generateLakes(5, 2000) //SLOW
+  }
+=======
+>>>>>>> 8c87df1aa98cf40f5041fd3ec1757770341b1d97
 
   val tiledPane = new DraggableTiledPane(map)
   tiledPane.moveToCenter()
@@ -409,4 +448,47 @@ class Game(val map_width : Int, val map_height : Int)
   def createFly (departure: Structure, arrival: Structure, plane : Plane) {
     println ("tycoon > game > Game.scala > create Fly: creation of a fly betwenn to to airport with a plane ")
   }
+
+  def loadMap(filepath: String) : Boolean = {
+    Try {
+      val xml = XML.loadFile(filepath)
+
+      //please do somwhere else than
+      println("All foods:")
+      val goods = xml \ "Goods"
+      ( xml \\ "Food" \\ "@name") foreach (i => println(i.text))
+      ( goods \\ "Ore" \\ "@name") foreach (i => println(i.text))
+
+      //map treatment
+      val mapXML = xml \ "Map"
+      val mapName = (mapXML \ "@name").text
+      val width = (mapXML \ "@width").text.toInt
+      val height = (mapXML \ "@height").text.toInt
+
+      // map = new TileMap(width, height)
+      // map.fillBackground(Tile.grass)
+
+      var cities = ListBuffer[Array[Any]]()
+      var id = 0
+      for (city <- (mapXML \\ "City")) {
+        var nbFactories = 0
+        for (factory <- (city \\ "Factory")) nbFactories+=1
+        var pos = new GridLocation((city \ "@x").text.toInt,(city \ "@y").text.toInt)
+        var town = new LargeTown(pos,id,townManager)
+        createStruct(town,Tile.grass)
+        town.setName((city \ "@name").text)
+        town.population_=((city \ "@population").text.toInt)
+        if (nbFactories>0) {
+          var factory = new Factory(pos.left,id,townManager)
+          createStruct(factory,Tile.grass)
+          factory.workers_=(nbFactories)
+        }
+        ( city \\ "Airport") foreach (i => createStruct(new Airport(pos.left.top,id),Tile.grass))
+      }
+
+      map.sprinkleTile(Tile.tree, 3)
+      map.sprinkleTile(Tile.rock, 1)
+      // map.generateLakes(5, 2000) //SLOW
+    }
+  }.isSuccess
 }

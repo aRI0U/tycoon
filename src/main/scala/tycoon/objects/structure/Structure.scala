@@ -40,6 +40,8 @@ abstract class Structure(pos: GridLocation, id: Int) extends Renderable(pos) {
   def stocks(i: Int) : Int = stocksInt(i).value
   def stocks_= (i: Int, new_stock: Int) = stocksInt(i).set(new_stock)
 
+  def setName(s : String) = _name.set(s)
+
   def updateStocks() = {
     for (i <- 0 to stocksInt.length - 1) {
       var totalQuantity = 0

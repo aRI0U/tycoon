@@ -48,7 +48,9 @@ object Main extends JFXApp {
   startScreen.setOnStartGameCreation(new Runnable {
     def run() = {
       switchScreen(gameScreen)
+      game.fillNewGame()
       gameScreen.init()
+      game.generateRandomMap()
       game.start()
     }
   })
@@ -69,7 +71,7 @@ object Main extends JFXApp {
             selectedFile = null
           }
           else {
-            println("Game backup couldn't be opened or read.")
+            println("Game backup couldn't be opened or read. ")
             selectedFile = fileChooser.showOpenDialog(stage)
           }
         } catch {

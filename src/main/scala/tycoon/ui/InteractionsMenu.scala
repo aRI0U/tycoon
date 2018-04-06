@@ -16,6 +16,7 @@ import scala.collection.mutable.ListBuffer
 import tycoon.objects.structure._
 import tycoon.objects.railway._
 import scalafx.scene.paint.Color
+import tycoon.objects.graph.Route
 
 class InteractionsMenu(val game: Game) extends TabPane
 {
@@ -172,6 +173,14 @@ class InteractionsMenu(val game: Game) extends TabPane
     onMouseClicked = _ => startTrainRouteCreation()
   }
 
+  val showRoutesBt = new Button {
+    text = "Manage Routes"
+    margin = Insets(10)
+    vgrow = Priority.Always
+    maxHeight = Double.MaxValue
+    onMouseClicked = _ => openManageRoutesDialog()
+  }
+
   val buyCarriagesBt = new Button {
     text = "Buy Carriages"
     margin = Insets(10)
@@ -183,7 +192,8 @@ class InteractionsMenu(val game: Game) extends TabPane
   trainsTabContainer.children = Seq(
     showTrainsBt,
     newRouteBt,
-    buyCarriagesBt
+    buyCarriagesBt,
+    showRoutesBt
   )
 
 
@@ -296,11 +306,58 @@ class InteractionsMenu(val game: Game) extends TabPane
     table
   }
 
+
+  def getRoutesTableView(routeList: ListBuffer[Route]) : TableView[Route] = {
+    val routes = new ObservableBuffer[Route]
+    routes ++= routeList
+
+    val idCol = new TableColumn[Route, String]("TRAIN ID")
+    idCol.minWidth = 30
+    idCol.cellValueFactory = { cell => IntegerProperty(cell.value.train.id).asString }
+
+    val stopsCol = new TableColumn[Route, String]("STOPS")
+    stopsCol.minWidth = 300
+    stopsCol.cellValueFactory = { cell =>
+      StringProperty(cell.value.stops map { struct: Structure => struct.name } mkString ", ") }
+
+    val table = new TableView(routes)
+    table.minWidth = 400
+    table.columns ++= Seq(idCol, stopsCol)
+    table
+  }
+
+  def openManageRoutesDialog() = {
+    val routes = getRoutesTableView(game.routes filter (_.repeated))
+
+    val removeBt = new Button {
+      text = "Remove Route"
+      onMouseClicked = _ => {
+        val route: Route = routes.selectionModel.value.selectedItem.value
+        if (route == null)
+          game.setInfoText("You didn't select any route.")
+        else {
+          route.repeated = false
+          game.setInfoText("Route will be removed once the train reach its final stop.")
+        }
+      }
+    }
+
+    val content = new VBox(10)
+    content.children.add(routes)
+    content.children.add(removeBt)
+
+    val dialog = new Dialog
+    dialog.title = "Your Routes (only showing repeated routes)"
+    dialog.dialogPane.value.buttonTypes = Seq(ButtonType.Close)
+    dialog.dialogPane().content = content
+    dialog.showAndWait()
+  }
+
   def openTrainsDataDialog() = {
     val dialog = new Dialog
     dialog.title = "Your Trains"
     dialog.dialogPane.value.buttonTypes = Seq(ButtonType.Close)
-    dialog.dialogPane().content = getTrainsTableView(game.trains) // for Part 3: filter on whether owner is player
+    dialog.dialogPane().content = getTrainsTableView(game.trains)
     dialog.showAndWait()
   }
 

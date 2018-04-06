@@ -28,7 +28,10 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
       townManager.unchosenNames -= name
     }
     catch {
-      case e: Exception => println("you've created too many towns")
+      case e: Exception => {
+        _name.set("random name")
+        println("you've created too many towns")
+      }
     }
   }
 
