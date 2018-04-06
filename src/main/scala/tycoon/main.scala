@@ -48,6 +48,7 @@ object Main extends JFXApp {
   startScreen.setOnStartGameCreation(new Runnable {
     def run() = {
       switchScreen(gameScreen)
+      game.fillNewGame()
       gameScreen.init()
       game.start()
     }
