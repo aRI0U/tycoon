@@ -92,9 +92,10 @@ case class Factory(pos: GridLocation, id: Int, tManager: TownManager) extends Fa
 
   override def update(dt: Double) = {
     if (workers > 0) {
-      if (r.nextInt((3000-workers).max(0)) == 0) {
-        workers -= 1
-        throwEvent("[Factory n°"+id+"] Industrial accident: A worker tragically passed away...")
+      if (r.nextInt((7000-workers).max(100)) == 0) {
+        val deads = r.nextInt(10)
+        workers -= deads
+        throwEvent("[Factory n°"+id+"] Industrial accident: "+deads+" workers tragically passed away...")
       }
       intern_time += dt
       if (intern_time > productionTime) {

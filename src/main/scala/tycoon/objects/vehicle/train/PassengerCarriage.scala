@@ -51,7 +51,10 @@ case class PassengerCarriage(id: Int, initialTown: Structure, _owner: Player) ex
         remainingPlaces += p._2
         passengers -= p
         s match {
-          case t: Town => t.population += p._2
+          case t: Town => {
+            t.population += p._2
+            t.alive = true
+          }
           case f: Facility => f.workers += p._2
         }
       }
