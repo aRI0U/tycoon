@@ -50,6 +50,13 @@ class TileMap (val width: Int, val height: Int) {
 
     }
   }
+  def getSurroundingTiles(pos: GridLocation) : Array[Tile] = {
+        Array(getBackgroundTile(pos.top),
+        getBackgroundTile(pos.right),
+        getBackgroundTile(pos.bottom),
+        getBackgroundTile(pos.left))
+    }
+  }
 
   /** add entity (ie train, plane, boat..) to map */
   def addEntity(e: Renderable) = entityLayer += e

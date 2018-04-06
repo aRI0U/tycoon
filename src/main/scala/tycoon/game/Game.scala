@@ -114,7 +114,6 @@ class Game(val map_width : Int, val map_height : Int)
 
 
   // game map
-<<<<<<< HEAD
   var game_graph = new Graph
   var map = new TileMap(map_width, map_height)
   map.fillBackground(Tile.grass)
@@ -124,8 +123,6 @@ class Game(val map_width : Int, val map_height : Int)
     map.sprinkleTile(Tile.rock, 1)
     map.generateLakes(5, 2000) //SLOW
   }
-=======
->>>>>>> 8c87df1aa98cf40f5041fd3ec1757770341b1d97
 
   val tiledPane = new DraggableTiledPane(map)
   tiledPane.moveToCenter()
@@ -473,21 +470,34 @@ class Game(val map_width : Int, val map_height : Int)
       for (city <- (mapXML \\ "City")) {
         var nbFactories = 0
         for (factory <- (city \\ "Factory")) nbFactories+=1
-        var pos = new GridLocation((city \ "@x").text.toInt,(city \ "@y").text.toInt)
-        var town = new LargeTown(pos,id,townManager)
+        var pos = new GridLocation((city \ "@x").text.toInt % width,(city \ "@y").text.toInt % height)
+        var town = new LargeTown(pos,id,townManager) ; id+=1
         createStruct(town,Tile.grass)
         town.setName((city \ "@name").text)
         town.population_=((city \ "@population").text.toInt)
         if (nbFactories>0) {
-          var factory = new Factory(pos.left,id,townManager)
+          var factory = new Factory(pos.left,id,townManager); id+=1
           createStruct(factory,Tile.grass)
           factory.workers_=(nbFactories)
         }
-        ( city \\ "Airport") foreach (i => createStruct(new Airport(pos.left.top,id),Tile.grass))
+        ( city \\ "Airport") foreach (i => {createStruct(new Airport(pos.left.top,id),Tile.grass); id+=1})
       }
 
       map.sprinkleTile(Tile.tree, 3)
       map.sprinkleTile(Tile.rock, 1)
+      for (connection <- (mapXML \\ "Connection")){
+        var upstream = (connection  \ "@upstream").text
+        var downstream = (connection  \ "@downstream").text
+        var town1 = townManager.towns_list(0)
+        var town2 = townManager.towns_list(0)
+        for (town <- townManager.towns_list){
+          if (town.name == upstream) town1 = town
+          if (town.name == downstream) town2 = town
+        }
+        if (Dijkstra.tileGraph(town1,town2,Tile.grass,map)){
+
+        }
+      }
       // map.generateLakes(5, 2000) //SLOW
     }
   }.isSuccess

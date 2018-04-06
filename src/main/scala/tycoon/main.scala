@@ -50,7 +50,6 @@ object Main extends JFXApp {
       switchScreen(gameScreen)
       game.fillNewGame()
       gameScreen.init()
-      game.generateRandomMap()
       game.start()
     }
   })
