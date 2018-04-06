@@ -123,11 +123,13 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
           var i = 0
           while (totalWaiters > population/2) {
             try {
-              println(diedWaiters, i, waiters(i))
-              var newDeads = waiters(i).min(diedWaiters/5)
-              waitersInt(i).set((waiters(i) - newDeads))
-              totalWaiters -= newDeads
-              i += 1
+              if (waiters(i) > 0) {
+                println(diedWaiters, i, waiters(i))
+                var newDeads = waiters(i).min(diedWaiters/5)
+                waitersInt(i).set((waiters(i) - newDeads))
+                totalWaiters -= newDeads
+                i += 1
+              }
             } catch {
               case e: IndexOutOfBoundsException => i = 0
             }

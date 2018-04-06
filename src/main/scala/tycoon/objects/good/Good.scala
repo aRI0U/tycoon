@@ -24,10 +24,10 @@ abstract class Good(val label: String) {
   }
   val liquid = initLiquid()
 
-  def initPackage() : Good = {
-    label match {
-      case _ => new Ore("Iron")
-    }
-  }
-  val packaging = initPackage()
+  // def initPackage() : Good = {
+  //   label match {
+  //     case _ => new Good("Iron")
+  //   }
+  // }
+  // val packaging = initPackage()
 }
