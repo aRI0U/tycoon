@@ -14,7 +14,7 @@ import tycoon.ui.DraggableTiledPane
 
 
 
-class Train(val id: Int, initialTown: Structure, val owner: Player) extends Vehicle(id, initialTown, owner) {
+class Train(val id: Int, initialTown: Structure, val owner: Player) extends TrainElement(id, initialTown, owner) {
 
   // used in display
   // id
@@ -42,99 +42,21 @@ class Train(val id: Int, initialTown: Structure, val owner: Player) extends Vehi
 
   private var _engine: ObjectProperty[Engine] = ObjectProperty(new BasicEngine(owner))
   private var _engineThrust: DoubleProperty = _engine.value.thrust
-  private var _speed = DoubleProperty(0)
-  def speed: DoubleProperty = _speed
   def engineThrust: DoubleProperty = _engineThrust
 
-  var arrived: Boolean = true
+  val tiles = Array(Tile.locomotiveT, Tile.locomotiveR, Tile.locomotiveB, Tile.locomotiveL)
 
 
   def update(dt: Double, dirIndicator: Int) = {
-    move(dt, dirIndicator)
+    //moveTrain(dt, dirIndicator)
+    if (move(dt, dirIndicator))
+      maybeDisplayNewCarriage()
     for (c <- carriageList)
       if (c.visible == true) {
-        moveCarriage(c, dt, dirIndicator)
+        c.move(dt, dirIndicator)
       }
   }
 
-  // train movement
-  def move(dt: Double, dirIndicator: Int) = {
-    currentRail match {
-      case Some(rail) => {
-        if (rail.nextInDir((dirIndicator + 1) % 2) == rail) // first rail
-          rotateTrain(this, dirIndicator)
-        if (rail.nextInDir(dirIndicator) == rail) { // last rail
-          if (gridPos.percentageHeight > 0) {
-            moveTmp(gridPos, North, dt, speed.value, moveNext = false)
-            rotateTrain(this, dirIndicator)
-          }
-          else if (gridPos.percentageWidth > 0) {
-            moveTmp(gridPos, West, dt, speed.value, moveNext = false)
-            rotateTrain(this, dirIndicator)
-          }
-          else
-            arrived = true
-        }
-        else {
-          if (rail.nextInDir(dirIndicator).gridPos.eq(gridPos.right)) {
-            if (gridPos.percentageHeight > 0) {
-              if (moveTmp(gridPos, North, dt, speed.value, moveNext = false)) {
-                rotateTrain(this, dirIndicator)
-                maybeDisplayNewCarriage()
-              }
-            } else {
-              if (moveTmp(gridPos, East, dt, speed.value)) {
-                currentRail = Some(rail.nextInDir(dirIndicator))
-                rotateTrain(this, dirIndicator)
-                maybeDisplayNewCarriage()
-              }
-            }
-          } else if (rail.nextInDir(dirIndicator).gridPos.eq(gridPos.left)) {
-            if (gridPos.percentageHeight > 0) {
-              if (moveTmp(gridPos, North, dt, speed.value, moveNext = false)) {
-                rotateTrain(this, dirIndicator)
-                maybeDisplayNewCarriage()
-              }
-            } else {
-              if (moveTmp(gridPos, West, dt, speed.value)) {
-                currentRail = Some(rail.nextInDir(dirIndicator))
-                maybeDisplayNewCarriage()
-                //carriageMovement(rail.gridPos, Some(rail), carriageList)
-              }
-            }
-          } else if (rail.nextInDir(dirIndicator).gridPos.eq(gridPos.top)) {
-            if (gridPos.percentageWidth > 0) {
-              if (moveTmp(gridPos, West, dt, speed.value, moveNext = false)) {
-                rotateTrain(this, dirIndicator)
-                maybeDisplayNewCarriage()
-              }
-            } else {
-              if (moveTmp(gridPos, North, dt, speed.value)) {
-                currentRail = Some(rail.nextInDir(dirIndicator))
-                maybeDisplayNewCarriage()
-                //carriageMovement(rail.gridPos, Some(rail), carriageList)
-              }
-            }
-          } else if (rail.nextInDir(dirIndicator).gridPos.eq(gridPos.bottom)) {
-            if (gridPos.percentageWidth > 0) {
-              if (moveTmp(gridPos, West, dt, speed.value, moveNext = false)) {
-                rotateTrain(this, dirIndicator)
-                maybeDisplayNewCarriage()
-              }
-            } else {
-              if (moveTmp(gridPos, South, dt, speed.value)) {
-                currentRail = Some(rail.nextInDir(dirIndicator))
-                rotateTrain(this, dirIndicator)
-                maybeDisplayNewCarriage()
-                //carriageMovement(rail.gridPos, Some(rail), carriageList)
-              }
-            }
-          }
-        }
-      }
-      case None => ()
-    }
-  }
 
 // a ne pas appeler si on va north ou west sur le premier rail (ni si on a un virage en premier rail)
 // plus simple regarder qd currentRail du train change et alors afficher un nouveau carriage
@@ -145,6 +67,7 @@ class Train(val id: Int, initialTown: Structure, val owner: Player) extends Vehi
     }
   }
 
+/*
   // train movement
   def moveCarriage(c: Carriage, dt: Double, dirIndicator: Int) = {
     c.currentRail match {
@@ -210,7 +133,7 @@ class Train(val id: Int, initialTown: Structure, val owner: Player) extends Vehi
       }
       case None => ()
     }
-  }
+  }*/
 /*
   def manageTile(entity : Renderable, direction : Int) = {
     val tileList = new ListBuffer[Tile]()
@@ -254,7 +177,6 @@ class Train(val id: Int, initialTown: Structure, val owner: Player) extends Vehi
   tile = Tile.locomotiveT
   var weight = 50
   val cost = 200
-  var currentRail : Option[Rail] = None
   var carriageList = new ListBuffer[Carriage]()
   var from = StringProperty(initialTown.name)
 
@@ -262,7 +184,10 @@ class Train(val id: Int, initialTown: Structure, val owner: Player) extends Vehi
   carriageList foreach (_.visible = false)
   carriageList foreach (_.gridPos = location.gridPos.right)
 
-  def addCarriage(carriage: Carriage): Unit = carriageList += carriage
+  def addCarriage(carriage: Carriage): Unit = {
+    carriageList += carriage
+    carriage.speed <== speed
+  }
 
   def departure(firstRail: Rail) = {
     currentRail = Some(firstRail)
@@ -270,6 +195,7 @@ class Train(val id: Int, initialTown: Structure, val owner: Player) extends Vehi
     arrived = false
     visible = true
     moving.set(true)
+    stabilized = false
 
     for (carr <- carriageList) {
       carr.currentRail = Some(firstRail)

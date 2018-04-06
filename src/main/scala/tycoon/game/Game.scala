@@ -38,6 +38,8 @@ class Game(val map_width : Int, val map_height : Int)
   map.fillBackground(Tile.grass)
 
   def loadMap(filepath: String) : Boolean = {
+    true
+    /*
     Try {
       val xml = XML.loadFile(filepath)
 
@@ -51,7 +53,7 @@ class Game(val map_width : Int, val map_height : Int)
       for (id <- (xml \ "food" \ "special"))
         println((id \ "@id").text)
 
-    }.isSuccess
+    }.isSuccess */
   }
 
   def generateRandomMap() = {

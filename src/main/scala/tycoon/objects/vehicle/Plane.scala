@@ -15,7 +15,7 @@ class Plane(id: Int, airport: Structure, val owner: Player) extends Vehicle(id, 
   var location: Structure = airport
   var onTheRoad = BooleanProperty(false)
   tile = Tile.plane
-  var speed = DoubleProperty(200.0)
+  speed.set(200.0)
   var weight = 50
   val cost = 500
   gridPos = location match {
