@@ -218,6 +218,17 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
   val dietTime = 150
   val starvingTime = 300
 
+  // def displayProducts() {
+  //   for (p <- products) {
+  //     stocksInt += IntegerProperty(0)
+  //     stocksStr += new StringProperty
+  //     stocksStr.last <== stocksInt.last.asString
+  //     printData += new Tuple2(p.label, stocksStr.last)
+  //   }
+  // }
+  //
+  // displayProducts()
+
   // consumption of food
   def updateConsumption() = {
     if (hunger > lunchTime) {

@@ -19,17 +19,17 @@ case class GoodsCarriage(id: Int, initialTown: Structure, _owner: Player) extend
   var merchandises = new ListBuffer[Merchandise]
 
 
-  def determineRequests(stops: ListBuffer[Structure]) : ListBuffer[String] = {
-    var requests = new ListBuffer[String]
+  def determineRequests(stops: ListBuffer[Structure]) : ListBuffer[Good] = {
+    var requests = new ListBuffer[Good]
     for (structure <- stops) {
       structure match {
         case f: Factory => {
-          for (l <- f.initialProductsList) {
+          for (l <- f.recipesList) {
             for (p <- l) requests += p._1
           }
         }
         case t: Town => {
-          for (good <- t.requests) requests += good.label
+          for (good <- t.requests) requests += good
         }
         case _ => ()
       }
@@ -37,7 +37,7 @@ case class GoodsCarriage(id: Int, initialTown: Structure, _owner: Player) extend
     requests
   }
 
-  override def embark(structure: Structure, stops: ListBuffer[Structure]) = {
+  def embark(structure: Structure, stops: ListBuffer[Structure]) = {
     println("GoodsCarriage > embark")
     val requests = determineRequests(stops)
     structure match {
@@ -45,7 +45,9 @@ case class GoodsCarriage(id: Int, initialTown: Structure, _owner: Player) extend
       case f: Facility => {
         for (i <- 0 to f.products.length - 1) {
           val product = f.products(i)
-          if (requests.contains(product.label)) {
+          var requested = 0
+          while (requested < requests.length && !f.areSameGoods(requests(requested), product)) requested += 1
+          if (requested < requests.length) {
             println(product, remainingSpace, f.stocks(i))
             var flag = true
             while (flag && f.datedProducts(i).length > 0) {
@@ -88,7 +90,7 @@ case class GoodsCarriage(id: Int, initialTown: Structure, _owner: Player) extend
     }
   }
 
-  override def debark(structure: Structure) = {
+  def debark(structure: Structure) = {
     println("GoodsCarriage > debark")
     structure match {
       case t: Town => {
