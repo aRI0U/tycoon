@@ -14,6 +14,7 @@ import scalafx.beans.property.IntegerProperty
 
 case class GoodsCarriage(id: Int, initialTown: Structure, _owner: Player) extends Carriage(id, initialTown, _owner) {
   tile = Tile.goodsWagonR
+  val tiles = Array(Tile.goodsWagonT, Tile.goodsWagonR, Tile.goodsWagonB, Tile.goodsWagonL)
   val maxSpace : Double = 100
   var remainingSpace : Double = maxSpace
   var merchandises = new ListBuffer[Merchandise]

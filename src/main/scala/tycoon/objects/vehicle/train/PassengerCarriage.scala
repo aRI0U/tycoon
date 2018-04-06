@@ -10,6 +10,7 @@ import tycoon.ui.Tile
 case class PassengerCarriage(id: Int, initialTown: Structure, _owner: Player) extends Carriage(id, initialTown, _owner) {
   var passengers : ListBuffer[(Structure, Int)] = new ListBuffer
   tile = Tile.passengerWagonR
+  val tiles = Array(Tile.passengerWagonT, Tile.passengerWagonR, Tile.passengerWagonB, Tile.passengerWagonL)
 
   val ticketPrice = 3
   val maxPassengers = 10

@@ -169,6 +169,9 @@ class GameScreen(val game: Game) extends BorderPane
   private val menuPane = new BorderPane {
     id = "menu"
 
+    minWidth = 175
+    maxWidth = 175
+
     bottom = new VBox {
       children = Seq(
         new Separator { orientation = Orientation.Horizontal ; styleClass += "sep" },
