@@ -11,4 +11,5 @@ class Merchandise(val kind: Good, var quantity: Int, val productionDate : Double
   }
 
   var expiryDate : Option[Double] = initExpiryDate()
+  var packed = false
 }

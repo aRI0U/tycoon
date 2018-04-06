@@ -98,6 +98,13 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
       val i = r.nextInt(population)
       jobSeekers += i/100
     }
+    else {
+      if (jobSeekers > population/2) {
+        println("seekers will die")
+        _jobSeekers.set(population/3)
+        println("seekers died")
+      }
+    }
   }
 
   def updateWaiters () = {
@@ -108,6 +115,26 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
         val destination = r.nextInt(waitersInt.length)
         waitersInt(destination).set(waiters(destination) + new_waiters)
       }
+      else {
+        // if people are dying for any reason
+        if (totalWaiters > population/2) {
+          println("waiters will die")
+          val diedWaiters = totalWaiters - population/2
+          var i = 0
+          while (totalWaiters > population/2) {
+            try {
+              println(diedWaiters, i, waiters(i))
+              var newDeads = waiters(i).min(diedWaiters/5)
+              waitersInt(i).set((waiters(i) - newDeads))
+              totalWaiters -= newDeads
+              i += 1
+            } catch {
+              case e: IndexOutOfBoundsException => i = 0
+            }
+          }
+          println("waiters died")
+        }
+      }
     }
     catch {
       case e: Exception => ()
@@ -116,12 +143,16 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
 
   override def update(dt: Double) = {
     intern_time += dt
-    if (intern_time > 2) {
-      intern_time -= 1
+    if (intern_time > 2 && population > 0) {
+      intern_time -= 2
       updatePopulation()
       updateJobSeekers()
       updateWaiters()
       updateConsumption()
+      if (population == 0) {
+        jobSeekers = 0
+        waitersInt.foreach(_.set(0))
+      }
     }
   }
 
@@ -145,12 +176,17 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
   def prices(i: Int) : Int = pricesInt(i).value
 
   def newRequest(good: Good, amount: Int) {
-    requests += good
-    needsInt += IntegerProperty(amount)
-    needsStr += new StringProperty
-    pricesInt += IntegerProperty(1) // will evolve with time using townManager
-    needsStr.last <== needsInt.last.asString.concat(" for $").concat(pricesInt.last.asString).concat(" per unity")
-    printData += new Tuple2(good.label, needsStr.last)
+    var i = 0
+    while (i < requests.length && requests(i).label != good.label) i += 1
+    if (i == requests.length) {
+      requests += good
+      needsInt += IntegerProperty(amount)
+      needsStr += new StringProperty
+      pricesInt += IntegerProperty(1) // will evolve with time using townManager
+      needsStr.last <== needsInt.last.asString.concat(" for $").concat(pricesInt.last.asString).concat(" per unity")
+      printData += new Tuple2(good.label, needsStr.last)
+    }
+    else needsInt(i).set(needs(i)+amount)
   }
 
   def satisfyRequest(good: Good, i: Int, soldQuantity: Int) : Boolean = {
@@ -182,6 +218,17 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
   val dietTime = 150
   val starvingTime = 300
 
+  // def displayProducts() {
+  //   for (p <- products) {
+  //     stocksInt += IntegerProperty(0)
+  //     stocksStr += new StringProperty
+  //     stocksStr.last <== stocksInt.last.asString
+  //     printData += new Tuple2(p.label, stocksStr.last)
+  //   }
+  // }
+  //
+  // displayProducts()
+
   // consumption of food
   def updateConsumption() = {
     if (hunger > lunchTime) {
@@ -194,10 +241,12 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
             while (nutritiousNeeds > 0 && datedProducts(i).length > 0) {
               var m = datedProducts(i)(0)
               m.kind match {
-                case f: Food => nutritiousNeeds -= m.quantity*f.nutritiousness
+                case f: Food => {
+                  nutritiousNeeds -= m.quantity*f.nutritiousness
+                  datedProducts(i) -= m
+                }
                 case _ => println("Town > list products doesn't correspond to list datedProducts: enormous mistake!")
               }
-              datedProducts(i) -= m
             }
           }
           case _ => () // for the moment we consider that people eat only food
@@ -205,12 +254,12 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
       }
       hunger *= nutritiousNeeds/population
       if (hunger > starvingTime) {
-        population = (population-hunger).max(1)
+        population = (population-hunger).max(0)
         hunger += 5
         if (!alreadyStarving) {
           alreadyStarving = true
           newRequest(new Food("Cake"), population)
-          throwEvent("["+name+"] Everyone is starving, nur noch ein Gott kann uns retten...")
+          throwEvent("["+name+"] Everyone is starving, nur noch ein Gott kann sie retten...")
         }
       }
       else {
@@ -220,7 +269,7 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
           if (!alreadyDiet) {
             alreadyDiet = true
             newRequest(new Food("Cake"), nutritiousNeeds/2)
-            throwEvent("["+name+"] People are hungry!")
+            throwEvent("["+name+"] People are hungry! You have to feed them my Lord!")
           }
         }
         else {
