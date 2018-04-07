@@ -29,19 +29,19 @@ case class Mine(pos: GridLocation, id: Int, tManager: TownManager) extends Facil
   products += new Ore("Coal")
   datedProducts += new ListBuffer[Merchandise]
   productionPerPeriod += (10+r.nextInt(10))
-  extractableAmount += 1000
+  extractableAmount += 50000
   allExtracted += false
 
   products += new Ore("Iron")
   datedProducts += new ListBuffer[Merchandise]
   productionPerPeriod += (5+r.nextInt(5))
-  extractableAmount+= (50+r.nextInt(100))
+  extractableAmount+= (500+r.nextInt(1000))
   allExtracted += false
 
   products += new Ore("Gold")
   datedProducts += new ListBuffer[Merchandise]
   productionPerPeriod += r.nextInt(2)
-  extractableAmount += r.nextInt(50)
+  extractableAmount += r.nextInt(100)
   allExtracted += false
 
   displayProducts()

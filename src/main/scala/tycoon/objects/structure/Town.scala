@@ -114,9 +114,9 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
     try {
       if (totalWaiters < population/3) {
         val new_waiters = (r.nextInt(population))/30
-        totalWaiters += new_waiters
         val destination = r.nextInt(waitersInt.length)
         waitersInt(destination).set(waiters(destination) + new_waiters)
+        totalWaiters += new_waiters
       }
       else {
         // if people are dying for any reason
@@ -125,14 +125,21 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
           val diedWaiters = totalWaiters - population/2
           var i = 0
           while (totalWaiters > population/2) {
+            //check (totalWaiters, n-i) strisctement décroissante
+            println("Town > debug infinite loop 1")
+            println("totalWaiters: "+totalWaiters)
+            println("population: "+population)
+            println("waiters")
+            waitersInt.foreach(x => println(x.value))
+            println("diedWaiters: "+diedWaiters)
             try {
               if (waiters(i) > 0) {
                 println(diedWaiters, i, waiters(i))
-                var newDeads = waiters(i).min(diedWaiters/5)
+                var newDeads = waiters(i).min(diedWaiters/5+1)
                 waitersInt(i).set((waiters(i) - newDeads))
                 totalWaiters -= newDeads
-                i += 1
               }
+              i += 1
             } catch {
               case e: IndexOutOfBoundsException => i = 0
             }
@@ -141,22 +148,44 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
         }
       }
     }
+    // only 1 town => no waiting passengers
     catch {
-      case e: Exception => ()
+      case e: IllegalArgumentException => ()
     }
   }
 
+  var alive = true
+
+  def reInit() = {
+    alive = false
+    jobSeekers = minPopulation/2
+    totalWaiters = 0
+    waitersInt.foreach(_.set(0))
+    hunger = 0
+    requests = new ListBuffer[Good]
+    needsInt = new ListBuffer[IntegerProperty]
+    needsStr = new ListBuffer[StringProperty]
+    pricesInt = new ListBuffer[IntegerProperty]
+    for (data <- printData) {
+      // cancel requests (ugly)
+      if (data._2.value.length > 5) printData -= data
+    }
+    throwEvent("["+name+"] Everyone is dead here...")
+  }
+
   override def update(dt: Double) = {
-    intern_time += dt
-    if (intern_time > 2 && population > 0) {
-      intern_time -= 2
-      updatePopulation()
-      updateJobSeekers()
-      updateWaiters()
-      updateConsumption()
-      if (population == 0) {
-        jobSeekers = 0
-        waitersInt.foreach(_.set(0))
+    if (alive) {
+      intern_time += dt
+      if (intern_time > 2 && population > 0) {
+        intern_time -= 2
+        updatePopulation()
+        updateJobSeekers()
+        updateWaiters()
+        updateConsumption()
+      }
+      if (population == minPopulation) {
+        // reinit the whole city
+        reInit()
       }
     }
   }
@@ -166,6 +195,7 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
   def name_= (new_name: String) = _name.set(new_name)
   def waiting_passengers : Int = _waiting_passengers.value
   def waiting_passengers_= (new_wait_pass: Int) = _waiting_passengers.set(new_wait_pass)
+  var minPopulation = 0
   var max_population: Int = 1000
   population = 50 + r.nextInt(50)
   waiting_passengers = 0
@@ -219,9 +249,9 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
   var hunger = 0
   var alreadyDiet = false
   var alreadyStarving = false
-  val lunchTime = 100
-  val dietTime = 150
-  val starvingTime = 300
+  val lunchTime = 50
+  val dietTime = 100
+  val starvingTime = 400
 
   // def displayProducts() {
   //   for (p <- products) {
@@ -241,9 +271,11 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
       var i = 0
       // feed the population
       while (i < products.length && nutritiousNeeds > 0) {
+        println("Town > debug infinite loop 3")
         products(i) match {
           case Food(_) => {
             while (nutritiousNeeds > 0 && datedProducts(i).length > 0) {
+              println("Town > debug infinite loop 4")
               var m = datedProducts(i)(0)
               m.kind match {
                 case f: Food => {
@@ -256,14 +288,15 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
           }
           case _ => () // for the moment we consider that people eat only food
         }
+        i += 1
       }
       hunger *= nutritiousNeeds/population
       if (hunger > starvingTime) {
-        population = (population-hunger).max(0)
+        population = (population-hunger).max(minPopulation)
         hunger += 5
         if (!alreadyStarving) {
           alreadyStarving = true
-          newRequest(new Food("Cake"), population)
+          newRequest(new Food("Cake"), nutritiousNeeds/2)
           throwEvent("["+name+"] Everyone is starving, nur noch ein Gott kann sie retten...")
         }
       }

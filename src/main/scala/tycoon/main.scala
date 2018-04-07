@@ -11,8 +11,8 @@ import scalafx.stage.FileChooser
 import scalafx.stage.FileChooser.ExtensionFilter
 
 object Settings { // to be moved
-  val gameWidth = 500
-  val gameHeight = 500
+  val gameWidth = 200
+  val gameHeight = 200
 }
 
 

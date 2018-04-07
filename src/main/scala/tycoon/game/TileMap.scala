@@ -55,7 +55,6 @@ class TileMap (val width: Int, val height: Int) {
         getBackgroundTile(pos.right),
         getBackgroundTile(pos.bottom),
         getBackgroundTile(pos.left))
-    }
   }
 
   /** add entity (ie train, plane, boat..) to map */

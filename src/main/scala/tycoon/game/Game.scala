@@ -83,6 +83,7 @@ class Game(val map_width : Int, val map_height : Int)
   // var playerInit = new Player
   // playerInit.money.set(Int.MaxValue)
 
+  var mapName = "Tycoon Game random map"
 
   var infoTextTimer: Double = 0
   val informationText = StringProperty("")
@@ -97,7 +98,7 @@ class Game(val map_width : Int, val map_height : Int)
   private def setRandomInfoText() = {
     val r = scala.util.Random
     val randomTexts = Seq(
-      "random texts but i have no inspiration 1",
+      "welcome to the " + mapName,
       "random texts but i have no inspiration 2",
       "random texts but i have no inspiration 3",
       "random texts but i have no inspiration 4",
@@ -457,20 +458,19 @@ class Game(val map_width : Int, val map_height : Int)
       ( goods \\ "Ore" \\ "@name") foreach (i => println(i.text))
 
       //map treatment
-      val mapXML = xml \ "Map"
+      val mapXML = (xml \ "Map")
+      // mapName = ((mapXML \ "@name").text)
       val mapName = (mapXML \ "@name").text
       val width = (mapXML \ "@width").text.toInt
       val height = (mapXML \ "@height").text.toInt
 
-      // map = new TileMap(width, height)
-      // map.fillBackground(Tile.grass)
-
+      //cities and facilities
       var cities = ListBuffer[Array[Any]]()
       var id = 0
       for (city <- (mapXML \\ "City")) {
         var nbFactories = 0
         for (factory <- (city \\ "Factory")) nbFactories+=1
-        var pos = new GridLocation((city \ "@x").text.toInt % width,(city \ "@y").text.toInt % height)
+        var pos = new GridLocation((city \ "@x").text.toInt % map.width,(city \ "@y").text.toInt % map.height)
         var town = new LargeTown(pos,id,townManager) ; id+=1
         createStruct(town,Tile.grass)
         town.setName((city \ "@name").text)
@@ -488,15 +488,56 @@ class Game(val map_width : Int, val map_height : Int)
       for (connection <- (mapXML \\ "Connection")){
         var upstream = (connection  \ "@upstream").text
         var downstream = (connection  \ "@downstream").text
+        println("names of towns", upstream,downstream)
         var town1 = townManager.towns_list(0)
-        var town2 = townManager.towns_list(0)
+        var town2 = townManager.towns_list(1)
         for (town <- townManager.towns_list){
-          if (town.name == upstream) town1 = town
-          if (town.name == downstream) town2 = town
+          // println(town.name)
+          if (town.name == upstream) {
+            town1 = town
+            // println("trouvé un town",town.name,upstream)
+          }
+          if (town.name == downstream) {
+            town2 = town
+          }
         }
-        if (Dijkstra.tileGraph(town1,town2,Tile.grass,map)){
-
-        }
+        var done = false
+        (connection \\ "Rail") foreach (i => {
+          if (!done) {
+            val path = Dijkstra.tileGraph(town1,town2,(Tile.grass),map)
+            for (pos <- path) {
+              var rail = new Rail(pos)
+              railManager.createRail(rail)
+            }
+            if (path.size >0){
+              done = true
+            }
+          }
+        })
+        done = false
+        (connection \\ "Road") foreach (i => {
+          if (!done) {
+            val path = Dijkstra.tileGraph(town1,town2,(Tile.grass ++ Tile.sand),map)
+            for (pos <- path) {
+              map.setBackgroundTile(pos,Tile.sand(0))
+            }
+            if (path.size >0){
+              done = true
+            }
+          }
+        })
+        done = false
+        (connection \\ "Canal") foreach (i => {
+          if (!done) {
+            val path = Dijkstra.tileGraph(town1,town2,(Tile.grass ++ Tile.water),map)
+            for (pos <- path) {
+              map.setBackgroundTile(pos,Tile.water(0))
+            }
+            if (path.size >0){
+              done = true
+            }
+          }
+        })
       }
       // map.generateLakes(5, 2000) //SLOW
     }
