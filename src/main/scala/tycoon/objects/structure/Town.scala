@@ -5,6 +5,7 @@ import scala.Array
 
 import tycoon.game.GridLocation
 import tycoon.game.{Game, TownManager}
+import tycoon.game.PrintableData
 import tycoon.objects.structure._
 import tycoon.objects.good._
 
@@ -37,6 +38,10 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
 
   chooseName()
 
+  printData += new PrintableData(name)
+  printData += new PrintableData("Products")
+  printData += new PrintableData("Waiting passengers")
+
   //Booleans about town facilities
   var hasAirport = false
   var hasDock = false
@@ -48,11 +53,11 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
   protected var _waiting_passengers = IntegerProperty(0)
   protected var _jobSeekers = IntegerProperty(0)
 
-  printData += new Tuple2("Name", _name)
+  //printData += new Tuple2("Name", _name)
 
   private val populationStr = new StringProperty
   populationStr <== _population.asString
-  printData += new Tuple2("Population", populationStr)
+  printData(0).data += new Tuple2("Population", populationStr)
 
   def population : Int = _population.value
   def population_= (new_pop: Int) = _population.set(new_pop)
@@ -60,7 +65,7 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
 
   private val jobSeekersStr = new StringProperty
   jobSeekersStr <== _jobSeekers.asString
-  printData += new Tuple2("Job seekers", jobSeekersStr)
+  printData(0).data += new Tuple2("Job seekers", jobSeekersStr)
 
   def jobSeekers : Int = _jobSeekers.value
   def jobSeekers_= (new_seekers: Int) = _jobSeekers.set(new_seekers)
@@ -73,14 +78,14 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
   var waitersStr = new ListBuffer[StringProperty]
 
   def displayWaiters() {
-    printData += new Tuple2("Waiting passengers", StringProperty(""))
+    //printData += new Tuple2("Waiting passengers", StringProperty(""))
     for (town <- townManager.towns_list) {
       if (town != this) {
         destinations += town
         waitersInt += IntegerProperty(0)
         waitersStr += new StringProperty
         waitersStr.last <== waitersInt.last.asString
-        printData += new Tuple2(town.name, waitersStr.last)
+        printData(2).data += new Tuple2(town.name, waitersStr.last)
       }
     }
   }
@@ -162,22 +167,22 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
     totalWaiters = 0
     waitersInt.foreach(_.set(0))
     hunger = 0
-    requests = new ListBuffer[Good]
-    needsInt = new ListBuffer[IntegerProperty]
-    needsStr = new ListBuffer[StringProperty]
-    pricesInt = new ListBuffer[IntegerProperty]
-    for (data <- printData) {
-      // cancel requests (ugly)
-      if (data._2.value.length > 5) printData -= data
-    }
+    // requests = new ListBuffer[Good]
+    // needsInt = new ListBuffer[IntegerProperty]
+    // needsStr = new ListBuffer[StringProperty]
+    // pricesInt = new ListBuffer[IntegerProperty]
+    // for (data <- printData) {
+    //   // cancel requests (ugly)
+    //   if (data._2.value.length > 5) printData -= data
+    // }
     throwEvent("["+name+"] Everyone is dead here...")
   }
 
-  override def update(dt: Double) = {
+  def update(dt: Double) = {
     if (alive) {
-      intern_time += dt
-      if (intern_time > 2 && population > 0) {
-        intern_time -= 2
+      internTime += dt
+      if (internTime > 2 && population > 0) {
+        internTime -= 2
         updatePopulation()
         updateJobSeekers()
         updateWaiters()
@@ -193,8 +198,11 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
   // def position : GridLocation = pos
   // def name : String = _name.value
   def name_= (new_name: String) = _name.set(new_name)
+
+  // is it still useful ?
   def waiting_passengers : Int = _waiting_passengers.value
   def waiting_passengers_= (new_wait_pass: Int) = _waiting_passengers.set(new_wait_pass)
+
   var minPopulation = 0
   var max_population: Int = 1000
   population = 50 + r.nextInt(50)
@@ -202,56 +210,129 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
 
   // requests of the town
 
-  var requests = new ListBuffer[Good]
-  var needsInt = new ListBuffer[IntegerProperty]
-  var needsStr = new ListBuffer[StringProperty]
-  var pricesInt = new ListBuffer[IntegerProperty]
-
-  def needs(i: Int) : Int = needsInt(i).value
-  def prices(i: Int) : Int = pricesInt(i).value
-
-  def newRequest(good: Good, amount: Int) {
-    var i = 0
-    while (i < requests.length && requests(i).label != good.label) i += 1
-    if (i == requests.length) {
-      requests += good
-      needsInt += IntegerProperty(amount)
-      needsStr += new StringProperty
-      pricesInt += IntegerProperty(1) // will evolve with time using townManager
-      needsStr.last <== needsInt.last.asString.concat(" for $").concat(pricesInt.last.asString).concat(" per unity")
-      printData += new Tuple2(good.label, needsStr.last)
+  def newRequest(good: Good, amount: Int) = {
+    var i = stock.getIndex(good)
+    if (i == -1) {
+      i = stock.productsTypes.length
+      stock.newProduct(good, 0)
     }
-    else needsInt(i).set(needs(i)+amount)
+    stock.addProduction(i, -amount)
   }
 
-  def satisfyRequest(good: Good, i: Int, soldQuantity: Int) : Boolean = {
-    // returns true iff the request is completely satisfied
-    needsInt(i).set(needs(i) - soldQuantity)
-    if (soldQuantity == needs(i)) {
-      // delete the request
-      requests -= requests(i)
-      needsInt -= needsInt(i)
-      needsStr -= needsStr(i)
-      pricesInt -= pricesInt(i)
-
-      val data = printData.find(data => good.label == data._1)
-      data match {
-        case Some(d) => printData -= d
-        case None => println("tycoon > objects > structure > Town : an unexisting request has been discovered")
-      }
-      true
-    }
-    else {
-      false
-    }
-  }
+  // hunger
 
   var hunger = 0
   var alreadyDiet = false
   var alreadyStarving = false
-  val lunchTime = 50
+  val lunchTime = 6
   val dietTime = 100
   val starvingTime = 400
+  val nutritiousNeeds = 1
+
+  def feedPopulation(needs: Double) : Double = {
+    var i = 0
+    var totalNeeds = needs
+    while (totalNeeds > 0 && i < stock.productsTypes.length) {
+      stock.productsTypes(i) match {
+        case f: Food => {
+          while (totalNeeds > 0 && stock.datedProducts(i).length > 0) {
+            var m = stock.datedProducts(i)(0)
+            totalNeeds -= m.quantity*f.nutritiousness
+            stock.datedProducts.remove(0)
+          }
+        }
+        case _ => ()
+      }
+      i += 1
+    }
+    totalNeeds
+  }
+
+  def updateConsumption() = {
+    val needs = population*nutritiousNeeds
+    if (hunger % lunchTime == 0) {
+      val stayingNeeds = feedPopulation(needs)
+      hunger = (hunger*stayingNeeds/needs).toInt
+      if (hunger > dietTime) {
+        // people ask for the food the less quantity they have
+        var lackingFoodIndex = -1
+        var lackingFoodQuantity = 100
+        for (i <- 0 to stock.productsTypes.length-1) {
+          stock.productsTypes(i) match {
+            case f: Food => {
+              if (stock.product(i) < lackingFoodQuantity) {
+                lackingFoodIndex = i
+                lackingFoodQuantity = stock.product(i)
+              }
+            }
+            case _ => ()
+          }
+        }
+        if (lackingFoodIndex == -1) stock.newProduct(Product.Cake, 0)
+        else {
+          stock.productsTypes(lackingFoodIndex) match {
+            case f: Food => newRequest(f, (stayingNeeds/f.nutritiousness).toInt)
+            case _ => println("tycoon > objects > structure > Town : food has been magically transformed into something else")
+          }
+        }
+        if (hunger > starvingTime) {
+          population -= (stayingNeeds/nutritiousNeeds).toInt.max(0)
+          throwEvent("["+name+"] People are starving, nur ein Gott kann sie retten...")
+        }
+      }
+    }
+    hunger += 1
+  }
+  // var requests = new ListBuffer[Good]
+  // var needsInt = new ListBuffer[IntegerProperty]
+  // var needsStr = new ListBuffer[StringProperty]
+  // var pricesInt = new ListBuffer[IntegerProperty]
+
+  // def needs(i: Int) : Int = needsInt(i).value
+  // def prices(i: Int) : Int = pricesInt(i).value
+
+  // def newRequest(good: Good, amount: Int) {
+  //   var i = 0
+  //   while (i < requests.length && requests(i).label != good.label) i += 1
+  //   if (i == requests.length) {
+  //     requests += good
+  //     needsInt += IntegerProperty(amount)
+  //     needsStr += new StringProperty
+  //     pricesInt += IntegerProperty(1) // will evolve with time using townManager
+  //     needsStr.last <== needsInt.last.asString.concat(" for $").concat(pricesInt.last.asString).concat(" per unity")
+  //     printData += new Tuple2(good.label, needsStr.last)
+  //   }
+  //   else needsInt(i).set(needs(i)+amount)
+  // }
+
+  // def satisfyRequest(good: Good, i: Int, soldQuantity: Int) : Boolean = {
+  //   // returns true iff the request is completely satisfied
+  //   needsInt(i).set(needs(i) - soldQuantity)
+  //   if (soldQuantity == needs(i)) {
+  //     // delete the request
+  //     requests -= requests(i)
+  //     needsInt -= needsInt(i)
+  //     needsStr -= needsStr(i)
+  //     pricesInt -= pricesInt(i)
+  //
+  //     val data = printData.find(data => good.label == data._1)
+  //     data match {
+  //       case Some(d) => printData -= d
+  //       case None => println("tycoon > objects > structure > Town : an unexisting request has been discovered")
+  //     }
+  //     true
+  //   }
+  //   else {
+  //     false
+  //   }
+  // }
+
+  // var hunger = 0
+  // var alreadyDiet = false
+  // var alreadyStarving = false
+  // val lunchTime = 50
+  // val dietTime = 100
+  // val starvingTime = 400
 
   // def displayProducts() {
   //   for (p <- products) {
@@ -265,61 +346,61 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
   // displayProducts()
 
   // consumption of food
-  def updateConsumption() = {
-    if (hunger > lunchTime) {
-      var nutritiousNeeds = population
-      var i = 0
-      // feed the population
-      while (i < products.length && nutritiousNeeds > 0) {
-        println("Town > debug infinite loop 3")
-        products(i) match {
-          case Food(_) => {
-            while (nutritiousNeeds > 0 && datedProducts(i).length > 0) {
-              println("Town > debug infinite loop 4")
-              var m = datedProducts(i)(0)
-              m.kind match {
-                case f: Food => {
-                  nutritiousNeeds -= m.quantity*f.nutritiousness
-                  datedProducts(i) -= m
-                }
-                case _ => println("Town > list products doesn't correspond to list datedProducts: enormous mistake!")
-              }
-            }
-          }
-          case _ => () // for the moment we consider that people eat only food
-        }
-        i += 1
-      }
-      hunger *= nutritiousNeeds/population
-      if (hunger > starvingTime) {
-        population = (population-hunger).max(minPopulation)
-        hunger += 5
-        if (!alreadyStarving) {
-          alreadyStarving = true
-          newRequest(new Food("Cake"), nutritiousNeeds/2)
-          throwEvent("["+name+"] Everyone is starving, nur noch ein Gott kann sie retten...")
-        }
-      }
-      else {
-        alreadyStarving = false
-        if (hunger > dietTime) {
-          hunger += 3
-          if (!alreadyDiet) {
-            alreadyDiet = true
-            newRequest(new Food("Cake"), nutritiousNeeds/2)
-            throwEvent("["+name+"] People are hungry! You have to feed them my Lord!")
-          }
-        }
-        else {
-          alreadyDiet = false
-          hunger += 2
-        }
-      }
-    }
-    else {
-      alreadyStarving = false
-      alreadyDiet = false
-      hunger += 1
-    }
-  }
+  // def updateConsumption() = {
+  //   if (hunger > lunchTime) {
+  //     var nutritiousNeeds = population
+  //     var i = 0
+  //     // feed the population
+  //     while (i < products.length && nutritiousNeeds > 0) {
+  //       println("Town > debug infinite loop 3")
+  //       products(i) match {
+  //         case Food(_) => {
+  //           while (nutritiousNeeds > 0 && datedProducts(i).length > 0) {
+  //             println("Town > debug infinite loop 4")
+  //             var m = datedProducts(i)(0)
+  //             m.kind match {
+  //               case f: Food => {
+  //                 nutritiousNeeds -= m.quantity*f.nutritiousness
+  //                 datedProducts(i) -= m
+  //               }
+  //               case _ => println("Town > list products doesn't correspond to list datedProducts: enormous mistake!")
+  //             }
+  //           }
+  //         }
+  //         case _ => () // for the moment we consider that people eat only food
+  //       }
+  //       i += 1
+  //     }
+  //     hunger *= nutritiousNeeds/population
+  //     if (hunger > starvingTime) {
+  //       population = (population-hunger).max(minPopulation)
+  //       hunger += 5
+  //       if (!alreadyStarving) {
+  //         alreadyStarving = true
+  //         newRequest(new Food("Cake"), nutritiousNeeds/2)
+  //         throwEvent("["+name+"] Everyone is starving, nur noch ein Gott kann sie retten...")
+  //       }
+  //     }
+  //     else {
+  //       alreadyStarving = false
+  //       if (hunger > dietTime) {
+  //         hunger += 3
+  //         if (!alreadyDiet) {
+  //           alreadyDiet = true
+  //           newRequest(new Food("Cake"), nutritiousNeeds/2)
+  //           throwEvent("["+name+"] People are hungry! You have to feed them my Lord!")
+  //         }
+  //       }
+  //       else {
+  //         alreadyDiet = false
+  //         hunger += 2
+  //       }
+  //     }
+  //   }
+  //   else {
+  //     alreadyStarving = false
+  //     alreadyDiet = false
+  //     hunger += 1
+  //   }
+  // }
 }

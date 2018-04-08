@@ -35,9 +35,11 @@ object BuyableStruct {
   def newMine(pos: GridLocation, id: Int, townManager: TownManager): Mine = new Mine(pos, id, townManager)
   def newFarm(pos: GridLocation, id: Int, townManager: TownManager): Farm = new Farm(pos, id, townManager)
   def newFactory(pos: GridLocation, id: Int, townManager: TownManager): Factory = new Factory(pos, id, townManager)
+  def newPackingPlant(pos: GridLocation, id: Int, townManager: TownManager) : PackingPlant = new PackingPlant(pos, id, townManager)
   def newAirport(pos: GridLocation, id: Int, townManager: TownManager): Airport = new Airport(pos, id)
   def newField(pos: GridLocation, id: Int, townManager: TownManager): Field = new Field(pos, id)
   def newDock(pos: GridLocation, id: Int, townManager: TownManager): Dock = new Dock(pos, id)
+
 
   val SmallTown = new BuyableStruct("Small Town", 50, Tile.town, newSmallTown)
   val MediumTown = new BuyableStruct("Medium Town", 100, Tile.town, newMediumTown)
@@ -45,6 +47,7 @@ object BuyableStruct {
   val Mine = new BuyableStruct("Mine", 50, Tile.mine, newMine)
   val Farm = new BuyableStruct("Farm", 100, Tile.farm1, newFarm)
   val Factory = new BuyableStruct("Factory", 150, Tile.factory, newFactory)
+  val PackingPlant = new BuyableStruct("PackingPlant", 150, Tile.factory, newPackingPlant)
   val Airport = new BuyableStruct("Airport", 1000, Tile.airport, newAirport)
   val Field = new BuyableStruct("Field", 100, Tile.field1, newField)
   val Dock = new BuyableStruct("Dock", 100, Tile.dock, newDock)

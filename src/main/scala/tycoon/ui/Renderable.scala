@@ -2,6 +2,7 @@ package tycoon.ui
 
 import tycoon.game.GridLocation
 import tycoon.game.GridRectangle
+import tycoon.game.PrintableData
 
 import scalafx.geometry.Rectangle2D
 import scalafx.scene.image.ImageView
@@ -11,7 +12,8 @@ import scalafx.beans.property.StringProperty
 abstract class Renderable(private var pos: GridLocation) {
   private var _tile: Tile = Tile.default
   private var _gridRect: GridRectangle = new GridRectangle(pos, 1, 1)
-  private val _printData: ListBuffer[(String, StringProperty)] = ListBuffer()
+  private val _printData = new ListBuffer[PrintableData]
+  //private val _printData: ListBuffer[(String, StringProperty)] = ListBuffer()
   var visible: Boolean = true
 
   def tile: Tile = _tile
@@ -36,6 +38,4 @@ abstract class Renderable(private var pos: GridLocation) {
 
   def gridWidth: Int = tile.width * Tile.SquareWidth
   def gridHeight: Int = tile.height * Tile.SquareHeight
-
-
 }

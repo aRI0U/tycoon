@@ -10,7 +10,7 @@ import tycoon.ui.Tile
 case class Farm(pos: GridLocation, id: Int, tManager: TownManager) extends Facility(pos, id, tManager) {
   tile = Tile.farm(0)
   var tileType = 0
-  var production_time = 50
+  var productionTime = 50
   var productionCounter = 0
   var haOfField = 1 //Maximum set at 10 ha of field around the farm
 
@@ -23,32 +23,35 @@ case class Farm(pos: GridLocation, id: Int, tManager: TownManager) extends Facil
   // products += new Food("Milk")
   // productionPerPeriod += ()
 
-  products += new Food("Egg")
-  datedProducts += new ListBuffer[Merchandise]
+  stock.newProduct(Product.Egg, 0)
+  // products += new Food("Egg")
+  // datedProducts += new ListBuffer[Merchandise]
   productionPerPeriod += (20)
 
-  products += new Food("Corn")
-  datedProducts += new ListBuffer[Merchandise]
+  stock.newProduct(Product.Corn, 0)
+  // products += new Food("Corn")
+  // datedProducts += new ListBuffer[Merchandise]
   productionPerPeriod += (4)
 
   displayProducts()
 
   // update production
 
-  def update_production(i: Int) = {
-    stocksInt(i).set(stocks(i) + productionPerPeriod(i)*((workers*0.1 + 1).toInt)*haOfField)
+  def updateProduction(i: Int) = {
+    stock.getMerchandiseWIndex(new Merchandise(stock.productsTypes(i), productionPerPeriod(i)*((1+workers/10).toInt)*haOfField, tManager.getTime()), i)
+    // stocksInt(i).set(stocks(i) + productionPerPeriod(i)*((workers*0.1 + 1).toInt)*haOfField)
   }
 
   override def update(dt: Double) = {
     if (workers > 0) {
-      intern_time += dt
+      internTime += dt
       //for daily production
-      if(intern_time > production_time) {
+      if(internTime > productionTime) {
         productionCounter +=1
         //just for Corn, every 4 days
         if (productionCounter == 4) {
           if (tileType == 2) {
-            update_production(1)
+            updateProduction(1)
           }
           productionCounter = 0
           tileType = (tileType +1) % 3
@@ -57,9 +60,9 @@ case class Farm(pos: GridLocation, id: Int, tManager: TownManager) extends Facil
             field.tile = Tile.field(tileType)
           }
         }
-        update_production(0)
-        updateExpiredProducts(townManager.getTime())
-        intern_time -= production_time
+        updateProduction(0)
+        stock.updateExpiredProducts(townManager.getTime())
+        internTime -= productionTime
       }
     }
   }

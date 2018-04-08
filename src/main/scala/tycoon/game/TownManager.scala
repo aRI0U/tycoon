@@ -31,7 +31,7 @@ class TownManager(game: Game) {
 
   def newTown(town: Town) {
     newStructure(town)
-    for (t <- towns_list) t.printData += new Tuple2(town.name, t.waitersStr.last)
+    for (t <- towns_list) t.printData(2).data += new Tuple2(town.name, t.waitersStr.last)
     town.displayWaiters()
     towns_list += town
     last_town += 1

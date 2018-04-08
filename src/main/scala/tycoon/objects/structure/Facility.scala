@@ -14,17 +14,20 @@ abstract class Facility(pos: GridLocation, id: Int, val townManager: TownManager
 
   private val workersStr = new StringProperty
   workersStr <== _workers.asString
-  printData += new Tuple2("Workers", workersStr)
+
+  printData += new PrintableData("")
+  printData += new PrintableData("Products")
+  printData(0).data += new Tuple2("Workers", workersStr)
 
   def workers : Int = _workers.value
   def workers_= (new_workers: Int) = _workers.set(new_workers)
 
   def displayProducts() {
-    for (p <- products) {
-      stocksInt += IntegerProperty(0)
-      stocksStr += new StringProperty
-      stocksStr.last <== stocksInt.last.asString
-      printData += new Tuple2(p.label, stocksStr.last)
-    }
+    // for (p <- products) {
+    //   stocksInt += IntegerProperty(0)
+    //   stocksStr += new StringProperty
+    //   stocksStr.last <== stocksInt.last.asString
+    //   printData += new Tuple2(p.label, stocksStr.last)
+    // }
   }
 }

@@ -15,7 +15,7 @@ import scalafx.beans.property.{IntegerProperty, StringProperty}
 case class Mine(pos: GridLocation, id: Int, tManager: TownManager) extends Facility(pos, id, tManager) {
   tile = Tile.mine
 
-  val production_time = 100
+  val productionTime = 100
 
   // list of available products:
   // for each product, necesary to indicate type, productionPerPeriod and total extractable amount
@@ -26,35 +26,31 @@ case class Mine(pos: GridLocation, id: Int, tManager: TownManager) extends Facil
   var allExtracted = new ListBuffer[Boolean]
 
   // here are added new products
-  products += new Ore("Coal")
-  datedProducts += new ListBuffer[Merchandise]
+  stock.newProduct(Product.Coal, 0)
   productionPerPeriod += (10+r.nextInt(10))
   extractableAmount += 50000
   allExtracted += false
 
-  products += new Ore("Iron")
-  datedProducts += new ListBuffer[Merchandise]
+  stock.newProduct(Product.Iron, 0)
   productionPerPeriod += (5+r.nextInt(5))
   extractableAmount+= (500+r.nextInt(1000))
   allExtracted += false
 
-  products += new Ore("Gold")
-  datedProducts += new ListBuffer[Merchandise]
+  stock.newProduct(Product.Gold, 0)
   productionPerPeriod += r.nextInt(2)
   extractableAmount += r.nextInt(100)
   allExtracted += false
 
-  displayProducts()
-
   // update production
 
-  def update_production(i: Int) = {
+  def updateProduction(i: Int) = {
     if (!allExtracted(i)) {
-      datedProducts(i) += new Merchandise(products(i), productionPerPeriod(i), townManager.getTime())
-      stocksInt(i).set(stocks(i) + productionPerPeriod(i))
-      if (stocks(i) >= extractableAmount(i)) {
+      stock.getMerchandiseWIndex(new Merchandise(stock.productsTypes(i), productionPerPeriod(i), townManager.getTime()), i)
+      // datedProducts(i) += new Merchandise(products(i), productionPerPeriod(i), townManager.getTime())
+      // stocksInt(i).set(stocks(i) + productionPerPeriod(i))
+      if (stock.stocks(i) >= extractableAmount(i)) {
         allExtracted(i) = true
-        throwEvent("[Mine n°"+id+"] "+products(i).label+"s: everything has been extracted in this mine")
+        throwEvent("[Mine n°"+id+"] "+stock.productsTypes(i).label+"s: everything has been extracted in this mine")
       }
     }
   }
@@ -66,10 +62,10 @@ case class Mine(pos: GridLocation, id: Int, tManager: TownManager) extends Facil
         workers = 0
         throwEvent("[Mine n°"+id+"] Rockslide: All diggers died!")
       }
-      intern_time += dt*workers
-      if(intern_time > production_time) {
-        for (i <- 0 to products.length - 1) update_production(i)
-        intern_time -= production_time
+      internTime += dt*workers
+      if(internTime > productionTime) {
+        for (i <- 0 to stock.productsTypes.length - 1) updateProduction(i)
+        internTime -= productionTime
       }
     }
   }

@@ -1,5 +1,7 @@
 package tycoon.objects.good
 
+import scala.collection.mutable.ListBuffer
+
 class Merchandise(val kind: Good, var quantity: Int, val productionDate : Double) {
   var pricePerUnity : Int = 0 // use an economic model
 
@@ -11,5 +13,22 @@ class Merchandise(val kind: Good, var quantity: Int, val productionDate : Double
   }
 
   var expiryDate : Option[Double] = initExpiryDate()
+
   var packed = false
+
+  def trade(giver: ListBuffer[Merchandise], receiver: ListBuffer[Merchandise], limit: Int) : Int = {
+    val tradedQuantity = quantity.min(limit)
+    println("trade: "+tradedQuantity)
+    if (tradedQuantity == quantity) {
+      println("trade: not divide")
+      receiver += this
+      giver -= this
+    }
+    else {
+      println("trade: divide")
+      receiver += new Merchandise(kind, tradedQuantity, productionDate)
+      quantity -= tradedQuantity
+    }
+    tradedQuantity
+  }
 }

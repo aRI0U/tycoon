@@ -46,6 +46,7 @@ class GameScreen(val game: Game) extends BorderPane
   interactionsMenu.addBuyableStruct(BuyableStruct.Mine)
   interactionsMenu.addBuyableStruct(BuyableStruct.Farm)
   interactionsMenu.addBuyableStruct(BuyableStruct.Factory)
+  interactionsMenu.addBuyableStruct(BuyableStruct.PackingPlant)
   interactionsMenu.addBuyableStruct(BuyableStruct.Airport)
   interactionsMenu.addBuyableStruct(BuyableStruct.Field)
   interactionsMenu.addBuyableStruct(BuyableStruct.Dock)
@@ -151,20 +152,44 @@ class GameScreen(val game: Game) extends BorderPane
     println(debugStr)
   }
 
-  def bindPrintData(data: ListBuffer[(String, StringProperty)]) {
+  def bindPrintData(datas: ListBuffer[PrintableData]) {
     val printData = new VBox {
-      for (elt <- data) {
-        val item = new Text {
-          text <== StringProperty(elt._1 + ": ").concat(elt._2)
+      for (content <- datas) {
+        val section = new Text {
+          text <== StringProperty(content.label)
           margin = Insets(5)
         }
-        children.add(item)
+        children.add(section)
+        for (elt <- content.data) {
+          val item = new Text {
+            text <== StringProperty(elt._1 + ": ").concat(elt._2)
+            margin = Insets(8)
+          }
+          children.add(item)
+        }
       }
     }
     menuPane.center = new ScrollPane {
       content = printData
     }
   }
+
+
+
+  // def bindPrintData(data: ListBuffer[(String, StringProperty)]) {
+  //   val printData = new VBox {
+  //     for (elt <- data) {
+  //       val item = new Text {
+  //         text <== StringProperty(elt._1 + ": ").concat(elt._2)
+  //         margin = Insets(5)
+  //       }
+  //       children.add(item)
+  //     }
+  //   }
+  //   menuPane.center = new ScrollPane {
+  //     content = printData
+  //   }
+  // }
 
   private val menuPane = new BorderPane {
     id = "menu"
