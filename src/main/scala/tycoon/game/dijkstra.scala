@@ -2,6 +2,7 @@ package tycoon.game
 
 import scala.collection.mutable.ListBuffer
 import scala.Array._
+import scala.collection.mutable.PriorityQueue
 
 import tycoon.objects.structure._
 import tycoon.objects.railway._
@@ -33,6 +34,15 @@ object Dijkstra {
         }
       }
     }
+    def isTownFacility(pos : GridLocation) : Boolean = {
+      map.maybeGetStructureAt(pos) match {
+        case Some(a : Airport) => true
+        case Some(d : Dock) => true
+        case Some(r : Rail) => true
+        case _ => false
+      }
+    }
+
     def getSurroundingPos(pos : GridLocation) : ListBuffer[GridLocation] = {
       if (pos.col > 0 && pos.row > 0 && pos.row< map.height -2 && pos.col < map.width -2) {
         var neighbors = ListBuffer[GridLocation]()
@@ -47,64 +57,63 @@ object Dijkstra {
       else ListBuffer[GridLocation]()
     }
 
+    var lastPos = struct2.gridPos
     var initPos = struct1.gridPos
-    var distanceTable : Array[Array[Option[Int]]] = Array.fill[Option[Int]](map.width, map.height)(None) //Array.fill[Array[Option[Int]]](map.height)(d)
-    distanceTable(initPos.col)(initPos.row) = Some(0)
+
+    def diff(loc : GridLocation) = Math.abs(lastPos.col-loc.col) + Math.abs(lastPos.row-loc.row)//(Math.sqrt(Math.pow((lastPos.col-loc.col),2) + Math.pow(lastPos.row-loc.row,2)))
+
+    var distanceTable = Array.fill[Option[Int]](map.width, map.height)(None)
+    var heuristicTable : Array[Array[Int]] = Array.fill[Int](map.width, map.height)(0)
+    //unifie
+    for ((col, row) <- new GridRectangle(0, 0, map.width, map.height).iterateTuple) {
+      heuristicTable(col)(row) = diff(new GridLocation(col,row)).toInt + 2000
+    }
     var notVisited : ListBuffer[GridLocation] = new ListBuffer[GridLocation]
-    for ((col, row) <- new GridRectangle(0, 0, map.width, map.height).iterateTuple)
-      if (map.checkBgTile(new GridLocation(col, row),authorizedTile)) {
+    for ((col, row) <- new GridRectangle(0, 0, map.width, map.height).iterateTuple) {
+      if (map.checkBgTile(new GridLocation(col, row),authorizedTile) && !isTownFacility(new GridLocation(col, row))) {
         notVisited += new GridLocation(col, row)
       }
-
+    }
+    heuristicTable(initPos.col)(initPos.row) = diff(new GridLocation(initPos.col,initPos.row)).toInt
+    distanceTable(initPos.col)(initPos.row) = Some(0)
     notVisited -= initPos
-    var previous : Array[Array[Option[GridLocation]]]= Array.fill[Option[GridLocation]](map.width, map.height)(None) //Array.fill[Array[Option[GridLocation]]](map.height)(p)
+    var previous : Array[Array[Option[GridLocation]]]= Array.fill[Option[GridLocation]](map.width, map.height)(None)
 
-    // def sortByDistance(pos1 : GridLocation, pos2 : GridLocation) = {
-    //   optionMin(distanceTable(pos2.col)(pos2.row),distanceTable(pos1.col)(pos1.row))
-    // }
-    // def getDistance(pos : GridLocation) = {
-    //   distanceTable(pos.col)(pos.row)
-    // }
-
-    //Initialisation
     for (pos <- getSurroundingPos(initPos)) {
+      heuristicTable(pos.col)(pos.row) = diff(pos).toInt + 1
       distanceTable(pos.col)(pos.row) = Some(1)
       previous(pos.col)(pos.row) = Some(initPos)
-      notVisited -= pos
-      notVisited += pos
     }
-    // notVisited.sortWith(sortByDistance)
 
     while (notVisited.nonEmpty) {
-      var mini : Option[Int] = None
-      var nextPos : GridLocation = notVisited(notVisited.size -1)
-      // nextPos = notVisited.min(Ordering.by(getDistance(_ : GridLocation)))
-
+      var mini : Int = Int.MaxValue
+      var nextPos : GridLocation = notVisited(0)
       for (pos <- notVisited) {
-        val distance : Option[Int] = distanceTable(pos.col)(pos.row)
-        if (optionMin(distance, mini)) {
-          // println("nouvelle position",pos)
-          mini = distance
-          // println("a distance",mini)
+        val heuristic = heuristicTable(pos.col)(pos.row)
+        if (heuristic < mini) {
+          mini = heuristic
           nextPos = pos
-          if (nextPos == struct2.gridPos) {
-            notVisited = ListBuffer[GridLocation]()
-          }
         }
       }
+      // println (distanceTable(nextPos.col)(nextPos.row),"and",heuristicTable(nextPos.col)(nextPos.row))
       notVisited -= nextPos
 
+      if (nextPos.col == lastPos.col && nextPos.row == lastPos.row) {
+        // println("beatchpoleafse")
+        // return ListBuffer[GridLocation]()
+        notVisited = ListBuffer[GridLocation]()
+      }
+
       for (neighbor <- getSurroundingPos(nextPos)) {
-        val newPath = optionSum(distanceTable(nextPos.col)(nextPos.row), Some(1))
-        if (optionMin(newPath, distanceTable(neighbor.col)(neighbor.row))) {
-          distanceTable(neighbor.col)(neighbor.row) = newPath
+        val newDistance = optionSum(distanceTable(nextPos.col)(nextPos.row),Some(1))
+        if (optionMin(newDistance, distanceTable(neighbor.col)(neighbor.row))) {
+          heuristicTable(neighbor.col)(neighbor.row) = diff(neighbor).toInt + newDistance.get
+          distanceTable(neighbor.col)(neighbor.row) = newDistance
           previous(neighbor.col)(neighbor.row) = Some(nextPos)
         }
       }
-      // notVisited.sortWith(sortByDistance)
     }
     var finalPath = new ListBuffer[GridLocation]
-    var lastPos = struct2.gridPos
     var validity = true
     while (lastPos != initPos) {
       var predecessor = previous(lastPos.col)(lastPos.row)

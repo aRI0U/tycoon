@@ -502,7 +502,7 @@ class Game(val map_width : Int, val map_height : Int)
           }
         }
         var done = false
-        (connection \\ "Rail") foreach (i => {
+        (connection /*\\ "Rail"*/) foreach (i => {
           if (!done) {
             val path = Dijkstra.tileGraph(town1,town2,(Tile.grass),map)
             for (pos <- path) {
@@ -515,29 +515,29 @@ class Game(val map_width : Int, val map_height : Int)
           }
         })
         done = false
-        (connection \\ "Road") foreach (i => {
-          if (!done) {
-            val path = Dijkstra.tileGraph(town1,town2,(Tile.grass ++ Tile.sand),map)
-            for (pos <- path) {
-              map.setBackgroundTile(pos,Tile.sand(0))
-            }
-            if (path.size >0){
-              done = true
-            }
-          }
-        })
-        done = false
-        (connection \\ "Canal") foreach (i => {
-          if (!done) {
-            val path = Dijkstra.tileGraph(town1,town2,(Tile.grass ++ Tile.water),map)
-            for (pos <- path) {
-              map.setBackgroundTile(pos,Tile.water(0))
-            }
-            if (path.size >0){
-              done = true
-            }
-          }
-        })
+        // (connection \\ "Road") foreach (i => {
+        //   if (!done) {
+        //     val path = Dijkstra.tileGraph(town1,town2,(Tile.grass ++ Tile.sand),map)
+        //     for (pos <- path) {
+        //       map.setBackgroundTile(pos,Tile.sand(0))
+        //     }
+        //     if (path.size >0){
+        //       done = true
+        //     }
+        //   }
+        // })
+        // done = false
+        // (connection \\ "Canal") foreach (i => {
+        //   if (!done) {
+        //     val path = Dijkstra.tileGraph(town1,town2,(Tile.grass ++ Tile.water),map)
+        //     for (pos <- path) {
+        //       map.setBackgroundTile(pos,Tile.water(0))
+        //     }
+        //     if (path.size >0){
+        //       done = true
+        //     }
+        //   }
+        // })
       }
       // map.generateLakes(5, 2000) //SLOW
     }
