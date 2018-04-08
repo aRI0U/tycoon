@@ -11,8 +11,8 @@ import scalafx.stage.FileChooser
 import scalafx.stage.FileChooser.ExtensionFilter
 
 object Settings { // to be moved
-  val gameWidth = 500
-  val gameHeight = 500
+  val gameWidth = 200
+  val gameHeight = 200
 }
 
 
@@ -50,7 +50,6 @@ object Main extends JFXApp {
       switchScreen(gameScreen)
       game.fillNewGame()
       gameScreen.init()
-      //game.generateRandomMap()
       game.start()
     }
   })
