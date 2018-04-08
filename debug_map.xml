@@ -108,13 +108,13 @@
     <!-- <Connection upstream="Rock Roach" downstream="The Beetles"> -->
     <Connection upstream="Copper Grass" downstream="The Beetles">
         <Sea/>
-        <Road length="198" maximum_speed="130" lanes="2"/>
+        <Rail length="198" maximum_speed="130" lanes="2"/>
     </Connection>
     <Connection upstream="The Beetles" downstream="Ladybag">
         <Sea/>
         <Rail length="130" maximum_speed="70" lanes="1"/>
     </Connection>
-    <!-- <Connection upstream="Ladybag" downstream="Warm Earth">
+    <Connection upstream="Ladybag" downstream="Warm Earth">
         <Sea/>
         <Road length="216" maximum_speed="70" lanes="1"/>
     </Connection>
@@ -129,8 +129,8 @@
     <Connection upstream="Crater Pillar" downstream="Centipeak">
         <Sea/>
         <Road length="94" maximum_speed="90" lanes="1"/>
-    </Connection> -->
-    <!-- <Connection upstream="Centipeak" downstream="Moosequito Bay">
+    </Connection>
+    <Connection upstream="Centipeak" downstream="Moosequito Bay">
         <Sea/>
         <Road length="237" maximum_speed="90" lanes="1"/>
     </Connection>
@@ -153,8 +153,8 @@
         <Sea/>
         <Rail length="86" maximum_speed="90" tracks="1" electrified="yes"/>
         <Road length="92" maximum_speed="90" lanes="1"/>
-    </Connection> -->
-    <!-- <Connection upstream="Rock Chafer" downstream="Lea">
+    </Connection>
+    <Connection upstream="Rock Chafer" downstream="Lea">
         <Sea/>
         <Road length="101" maximum_speed="70" lanes="1"/>
     </Connection>
@@ -212,6 +212,6 @@
     </Connection>
     <Connection upstream="Loose Head" downstream="Warm Earth">
         <Road length="151" maximum_speed="60" lanes="1"/>
-    </Connection>  -->
+    </Connection>
 </Map>
 </mxfile>
