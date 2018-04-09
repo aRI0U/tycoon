@@ -43,18 +43,18 @@ class Stock(s: Structure) {
         stocksInt += IntegerProperty(0)
         requestsInt += IntegerProperty(-quantity)
       }
-      productsStr += new StringProperty
-      productsStr.last <== (stocksInt.last - requestsInt.last).asString
-      pricesInt += DoubleProperty(0)
+      productsInt += new IntegerProperty
+      productsInt.last <== stocksInt.last - requestsInt.last
+      pricesInt += DoubleProperty(0.0)
       pricesStr += new StringProperty
       pricesStr.last <== pricesInt.last.asString
       s match {
         case t: Town => {
           printablesStr += new StringProperty
-          printablesStr.last <== productsStr.last.concat(" for $").concat(pricesStr.last)
-          s.printData(1).newData(kind.label, printablesStr.last)
+          //printablesStr.last <== productsStr.last.concat(" for $").concat(pricesStr.last)
+          s.printData(1).newTownProduct(kind.label, productsInt.last, pricesInt.last)
         }
-        case _ => s.printData(1).newData(kind.label, productsStr.last)
+        case _ => s.printData(1).newRankedElement(kind.label, productsInt.last)
       }
 
     }

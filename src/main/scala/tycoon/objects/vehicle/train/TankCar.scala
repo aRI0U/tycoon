@@ -8,6 +8,7 @@ import tycoon.objects.structure._
 class TankCar(_id: Int, initialTown: Structure, _owner: Player) extends GoodsCarriage(_id, initialTown, _owner) {
 
   override def embark(structure: Structure, stops: ListBuffer[Structure]) = {
+    println("- tank car -")
     println("merchandises: "+merchandises)
     println("GoodsCarriage > embark from "+structure)
     println("stops: "+stops)
@@ -30,10 +31,12 @@ class TankCar(_id: Int, initialTown: Structure, _owner: Player) extends GoodsCar
         var i = 0
         var flag = true // flag indicates if no product has been embarked yet
         while (flag && i < usefulIndices.length) {
-          val product = f.stock.productsTypes(i)
+          val j = usefulIndices(i)
+          val product = f.stock.productsTypes(j)
+          println("product:"+product)
           val prevRemainingSpace = remainingSpace
-          val quantity = f.stock.stocks(i).min((remainingSpace/product.size).toInt)
-          f.stock.giveMerchandisesWIndex(i, product, merchandises, quantity, m => (m.kind.liquid && !m.packed))
+          val quantity = f.stock.stocks(j).min((remainingSpace/product.size).toInt)
+          f.stock.giveMerchandisesWIndex(j, product, merchandises, quantity, m => (m.kind.liquid && !m.packed))
           remainingSpace -= product.size*quantity
           i+=1
           flag = (remainingSpace == prevRemainingSpace) // flag stays true iff no product has been added

@@ -17,7 +17,7 @@ abstract class Facility(pos: GridLocation, id: Int, val townManager: TownManager
 
   printData += new PrintableData("")
   printData += new PrintableData("Products")
-  printData(0).data += new Tuple3("Workers", workersStr, BooleanProperty(true))
+  printData(0).data += new PrintableElement("Workers", _workers)
 
   def workers : Int = _workers.value
   def workers_= (new_workers: Int) = _workers.set(new_workers)

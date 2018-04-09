@@ -5,7 +5,7 @@ import scala.Array
 
 import tycoon.game.GridLocation
 import tycoon.game.{Game, TownManager}
-import tycoon.game.PrintableData
+import tycoon.game.{PrintableData, PrintableElement}
 import tycoon.objects.structure._
 import tycoon.objects.good._
 
@@ -57,7 +57,7 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
 
   private val populationStr = new StringProperty
   populationStr <== _population.asString
-  printData(0).data += new Tuple3("Population", populationStr, BooleanProperty(true))
+  printData(0).data += new PrintableElement("Population", _population)
 
   def population : Int = _population.value
   def population_= (new_pop: Int) = _population.set(new_pop)
@@ -65,7 +65,7 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
 
   private val jobSeekersStr = new StringProperty
   jobSeekersStr <== _jobSeekers.asString
-  printData(0).newData("Job seekers", jobSeekersStr)
+  printData(0).newElement("Job seekers", _jobSeekers)
 
   def jobSeekers : Int = _jobSeekers.value
   def jobSeekers_= (new_seekers: Int) = _jobSeekers.set(new_seekers)
@@ -85,7 +85,7 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
         waitersInt += IntegerProperty(0)
         waitersStr += new StringProperty
         waitersStr.last <== waitersInt.last.asString
-        printData(2).newData(town.name, waitersStr.last)
+        printData(2).newRankedElement(town.name, waitersInt.last)
       }
     }
   }
