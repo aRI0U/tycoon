@@ -106,7 +106,7 @@ case class Factory(pos: GridLocation, id: Int, tManager: TownManager) extends Fa
   override def update(dt: Double) = {
     if (workers > 0) {
       if (r.nextInt((7000-workers).max(100)) == 0) {
-        val deads = r.nextInt(workers.min(10))
+        val deads = 1+r.nextInt(workers.min(10))
         workers -= deads
         townManager.throwEvent("[Factory n°"+id+"] Industrial accident: "+deads+" workers tragically passed away...")
       }
