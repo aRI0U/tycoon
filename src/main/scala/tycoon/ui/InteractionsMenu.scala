@@ -181,6 +181,14 @@ class InteractionsMenu(val game: Game) extends TabPane
     onMouseClicked = _ => openManageRoutesDialog()
   }
 
+  val upgradeEngineBt = new Button {
+    text = "Upgrade Engine"
+    margin = Insets(10)
+    vgrow = Priority.Always
+    maxHeight = Double.MaxValue
+    onMouseClicked = _ => openEngineUpgradingDialog()
+  }
+
   val buyCarriagesBt = new Button {
     text = "Buy Carriages"
     margin = Insets(10)
@@ -192,6 +200,7 @@ class InteractionsMenu(val game: Game) extends TabPane
   trainsTabContainer.children = Seq(
     showTrainsBt,
     newRouteBt,
+    upgradeEngineBt,
     buyCarriagesBt,
     showRoutesBt
   )
@@ -271,6 +280,59 @@ class InteractionsMenu(val game: Game) extends TabPane
   }
 
 
+
+  def openEngineUpgradingDialog() = {
+    val upgradableTrains: ListBuffer[Train] = game.trains filter (_.engineUpgradeLevel.value < Engine.MaxUpgradeLevel)
+    val upgradableTrainsTable: TableView[Train] = getTrainsTableView(upgradableTrains)
+
+    val costStr = StringProperty("")
+    def updateCostStr() = {
+      val currentTrain = upgradableTrainsTable.selectionModel.value.selectedItem.value
+      if (currentTrain != null) {
+        if (currentTrain.engineUpgradeLevel.value < Engine.MaxUpgradeLevel)
+          costStr.set("Upgrade Cost: $" + Engine.Price(currentTrain.engineUpgradeLevel.value + 1).toString)
+        else
+          costStr.set("This train's engine cannot be upgraded anymore.")
+      }
+    }
+
+    upgradableTrainsTable.selectionModel.value.selectedItem.onChange {
+      updateCostStr()
+    }
+
+    val totalPrice = new Text {
+      text <== costStr
+    }
+
+    val upgradeBt = new Button {
+      text = "Upgrade Engine"
+      onMouseClicked = _ => {
+        val train: Train = upgradableTrainsTable.selectionModel.value.selectedItem.value
+        if (train == null)
+          game.setInfoText("[Train Engine Upgrading] You didn't select any train.")
+        else {
+          if (train.upgradeEngine())
+            game.setInfoText("[Train Engine Upgrading] This train's engine has been upgraded.")
+          else
+            game.setInfoText("[Train Engine Upgrading] This train's engine couldn't be upgraded.")
+        }
+        updateCostStr()
+      }
+    }
+
+    val content = new VBox(10)
+    content.children += upgradableTrainsTable
+    content.children += totalPrice
+    content.children += upgradeBt
+
+    val dialog = new Dialog
+    dialog.title = "Upgrade Train Engine"
+    dialog.dialogPane.value.buttonTypes = Seq(ButtonType.Finish)
+    dialog.dialogPane().content = content
+    dialog.showAndWait()
+  }
+
+
   def getTrainsTableView(trainList: ListBuffer[Train]) : TableView[Train] = {
     val trains = new ObservableBuffer[Train]
     trains ++= trainList
@@ -299,10 +361,14 @@ class InteractionsMenu(val game: Game) extends TabPane
     speedCol.minWidth = 80
     speedCol.cellValueFactory = _.value.speed.asString.concat(" mph")
 
+    val engineLevelCol = new TableColumn[Train, String]("ENGINE LEVEL")
+    engineLevelCol.minWidth = 120
+    engineLevelCol.cellValueFactory = _.value.engineUpgradeLevel.asString
+
     // could add weight, nb of each type of carriages, nb passengers, nb max passengers, goods, profits the train made so far
 
     val table = new TableView(trains)
-    table.columns ++= Seq(idCol, stateCol, locationCol, nextLocationCol, speedCol)
+    table.columns ++= Seq(idCol, stateCol, locationCol, nextLocationCol, speedCol, engineLevelCol)
     table
   }
 

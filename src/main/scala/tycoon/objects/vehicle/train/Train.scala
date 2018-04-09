@@ -40,17 +40,19 @@ class Train(val id: Int, initialTown: Structure, val owner: Player) extends Trai
   def locationName: StringProperty = _locationName
   def nextLocationName: StringProperty = _nextLocationName
 
-  private var _engine: ObjectProperty[Engine] = ObjectProperty(new BasicEngine(owner))
+  private var _engine: ObjectProperty[Engine] = ObjectProperty(new Engine(owner))
   private var _engineThrust: DoubleProperty = _engine.value.thrust
   def engineThrust: DoubleProperty = _engineThrust
+  def engineUpgradeLevel: IntegerProperty = _engine.value.upgradeLevel
+  def upgradeEngine(): Boolean = _engine.value.upgrade()
 
   val tiles = Array(Tile.locomotiveT, Tile.locomotiveR, Tile.locomotiveB, Tile.locomotiveL)
 
 
   def update(dt: Double, dirIndicator: Int) = {
     //moveTrain(dt, dirIndicator)
-    if (move(dt, dirIndicator))
-      maybeDisplayNewCarriage()
+    if (move(dt, dirIndicator)) { println("moved")
+      maybeDisplayNewCarriage() }
     for (c <- carriageList)
       if (c.visible == true) {
         c.move(dt, dirIndicator)
@@ -203,7 +205,7 @@ class Train(val id: Int, initialTown: Structure, val owner: Player) extends Trai
       carr.visible = false
     }
 
-    speed.set(engineThrust.value) // modulo weight of carriages here..
+    speed <== engineThrust // modulo weight of carriages here..
   }
 
   def arrival() = {
@@ -212,7 +214,7 @@ class Train(val id: Int, initialTown: Structure, val owner: Player) extends Trai
       carr.currentRail = None
     }
     moving.set(false)
-    speed.set(0)
+    speed <== DoubleProperty(0)
     _nextLocation.set(None)
   }
 

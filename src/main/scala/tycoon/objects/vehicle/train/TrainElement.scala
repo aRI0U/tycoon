@@ -47,6 +47,7 @@ abstract class TrainElement(id: Int, initialTown: Structure, _owner: Player) ext
       case Some(rail) => {
         if (rail.nextInDir((dirIndicator + 1) % 2) == rail) // first rail
           rotate(dirIndicator)
+
         if (rail.nextInDir(dirIndicator) == rail) { // last rail (can also be first rail)
           if (stabilize(gridPos, dt, speed.value))
             arrived = true
@@ -62,10 +63,11 @@ abstract class TrainElement(id: Int, initialTown: Structure, _owner: Player) ext
           if (!stabilized && stabilize(gridPos, dt, speed.value)) {
             stabilized = true
             rotate(dirIndicator)
+            if (rail.nextInDir((dirIndicator + 1) % 2) != rail)
+              result = true
           }
           if (stabilized) {
             if (super.move(gridPos, dir, dt, speed.value)) {
-              result = true
               stabilized = false
               currentRail = Some(rail.nextInDir(dirIndicator))
             }
