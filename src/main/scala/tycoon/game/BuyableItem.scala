@@ -74,7 +74,11 @@ extends BuyableItem(name, price, tile) {
 object BuyableVehicle {
   def newTrain(id: Int, struct: Structure, player: Player): Train = new Train(id, struct, player)
   def newPlane(id: Int, struct: Structure, player: Player): Plane = new Plane(id, struct, player)
+  def newBoat(id: Int, struct: Structure, player: Player): Boat = new Boat(id, struct, player)
+  def newTruck(id: Int, struct: Structure, player: Player): Truck = new Truck(id, struct, player)
 
   val Train = new BuyableVehicle("Train", 125, Tile.locomotiveB, newTrain)
   val Plane = new BuyableVehicle("Plane", 300, Tile.plane, newPlane)
+  val Boat = new BuyableVehicle("Boat", 500, Tile.boat, newBoat)
+  val Truck = new BuyableVehicle("Truck", 70, Tile.truck, newTruck)
 }
