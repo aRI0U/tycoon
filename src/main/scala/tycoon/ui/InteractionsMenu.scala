@@ -160,6 +160,9 @@ class InteractionsMenu(val game: Game) extends TabPane
 
   private val trainsTabContainer = new HBox()
   trainsTab.setContent(trainsTabContainer)
+  
+  private val routesTabContainer = new HBox()
+  routesTab.setContent(routesTabContainer)
 
   val showTrainsBt = new Button {
     text <== StringProperty("Trains (").concat(game.nbTrains.asString) + " owned)"
@@ -203,16 +206,12 @@ class InteractionsMenu(val game: Game) extends TabPane
 
   trainsTabContainer.children = Seq(
     showTrainsBt,
-    newRouteBt,
     upgradeEngineBt,
     buyCarriagesBt
   )
 
-
-  private val routesTabContainer = new HBox()
-  routesTab.setContent(routesTabContainer)
-
   routesTabContainer.children = Seq(
+    newRouteBt,
     showRoutesBt
   )
 
