@@ -448,7 +448,7 @@ class Game(val map_width : Int, val map_height : Int)
   }
 
   def createTrain (train: Train, town: Town, player: Player): Unit = {
-    town.addTrain(train)
+    town.addVehicle(train)
     trains += train
     map.addEntity(train)
     nbTrains.set(nbTrains.value + 1)
@@ -461,19 +461,19 @@ class Game(val map_width : Int, val map_height : Int)
   }
 
   def createPlane (plane: Plane, airport: Airport, player: Player): Unit = {
-    airport.addPlane(plane)
+    airport.addVehicle(plane)
     planes += plane
     map.addEntity(plane)
   }
 
   def createBoat (boat: Boat, port: Dock, player: Player): Unit = {
-    port.addBoat(boat)
+    port.addVehicle(boat)
     boats += boat
     map.addEntity(boat)
   }
 
   def createTruck (truck: Truck, struct: Structure, player: Player): Unit = {
-    struct.addTruck(truck)
+    struct.addVehicle(truck)
     trucks += truck
     map.addEntity(truck)
   }

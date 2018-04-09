@@ -9,7 +9,7 @@ import tycoon.game.{GridLocation, Player}
 import tycoon.objects.vehicle._
 import scalafx.beans.property._
 
-abstract class Carriage(id: Int, initialTown: Structure, _owner: Player) extends TrainElement(id, initialTown, _owner) {
+abstract class Carriage(_id: Int, initialTown: Structure, _owner: Player) extends TrainElement(_id, initialTown, _owner) {
 
   var stops = new ListBuffer[Structure]
 
@@ -17,6 +17,12 @@ abstract class Carriage(id: Int, initialTown: Structure, _owner: Player) extends
 
   def rotation(v: Int) = { } // ??
 
+
+
+  def update(dt: Double, dirIndicator: Int) = {
+    if (visible)
+      move(dt, dirIndicator)
+  }
 
 
   def embark(structure: Structure, stops: ListBuffer[Structure])

@@ -12,13 +12,11 @@ import tycoon.game.{Game, GridLocation, Player}
 import tycoon.ui.DraggableTiledPane
 
 
-abstract class TrainElement(id: Int, initialTown: Structure, _owner: Player) extends Vehicle(id, initialTown, _owner) {
+abstract class TrainElement(_id: Int, initialTown: Structure, _owner: Player) extends Vehicle(_id, initialTown, _owner) {
 
 
-  var arrived: Boolean = true
   val tiles: Array[Tile]
 
-  var stabilized: Boolean = false
   var currentRail : Option[Rail] = None
 
   def rotate(dirIndicator: Int) = {

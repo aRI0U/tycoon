@@ -12,7 +12,7 @@ import tycoon.objects.railway._
 import scalafx.beans.property.IntegerProperty
 
 
-case class GoodsCarriage(id: Int, initialTown: Structure, _owner: Player) extends Carriage(id, initialTown, _owner) {
+case class GoodsCarriage(_id: Int, initialTown: Structure, _owner: Player) extends Carriage(_id, initialTown, _owner) {
   tile = Tile.goodsWagonR
   val tiles = Array(Tile.goodsWagonT, Tile.goodsWagonR, Tile.goodsWagonB, Tile.goodsWagonL)
   val maxSpace : Double = 100

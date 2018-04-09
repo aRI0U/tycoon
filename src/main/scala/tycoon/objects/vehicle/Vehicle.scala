@@ -6,7 +6,7 @@ import tycoon.objects.structure._
 import tycoon.game.{Player, GridLocation}
 import scalafx.beans.property._
 import tycoon.ui.Tile
-
+import scala.collection.mutable.ListBuffer
 
 
 
@@ -19,9 +19,10 @@ case object West extends Direction
 case object Undefined extends Direction
 
 
-abstract class Vehicle(id: Int, struct: Structure, owner: Player) extends Renderable(new GridLocation(-1, -1)) {
+abstract class Vehicle(_id: Int, struct: Structure, owner: Player) extends Renderable(new GridLocation(-1, -1)) {
   var weight : Double
   val cost : Int
+  def id: Int = _id
 
   protected var _moving = BooleanProperty(false)
   def moving: BooleanProperty = _moving
@@ -39,10 +40,19 @@ abstract class Vehicle(id: Int, struct: Structure, owner: Player) extends Render
     }
   }
 
+  var arrived: Boolean = true
+  var stabilized: Boolean = false
+
   def location: Structure = _location.value
   def location_=(newStruct: Structure) = _location.set(newStruct)
   def locationName: StringProperty = _locationName
   def nextLocationName: StringProperty = _nextLocationName
+
+  protected var _engine: ObjectProperty[Engine] = ObjectProperty(new Engine(owner))
+  protected var _engineThrust: DoubleProperty = _engine.value.thrust
+  def engineThrust: DoubleProperty = _engineThrust
+  def engineUpgradeLevel: IntegerProperty = _engine.value.upgradeLevel
+  def upgradeEngine(): Boolean = _engine.value.upgrade()
 
   protected var _speed = DoubleProperty(0)
   def speed: DoubleProperty = _speed
@@ -60,6 +70,16 @@ abstract class Vehicle(id: Int, struct: Structure, owner: Player) extends Render
     speed <== DoubleProperty(0)
     _nextLocation.set(None)
   }
+
+  def boarding(stops: ListBuffer[Structure]) = {
+    _nextLocation.set(Some(stops(0)))
+  }
+
+  def landing() = {
+
+  }
+
+  def update(dt: Double, dirIndicator: Int): Unit
 
   def stabilize(pos: GridLocation, dt: Double, speed: Double): Boolean = {
     pos.percentageWidth = Math.max(pos.percentageWidth - dt * speed, 0)

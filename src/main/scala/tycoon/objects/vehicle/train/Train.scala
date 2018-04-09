@@ -14,30 +14,22 @@ import tycoon.ui.DraggableTiledPane
 
 
 
-class Train(val id: Int, initialTown: Structure, val owner: Player) extends TrainElement(id, initialTown, owner) {
+class Train(_id: Int, initialTown: Structure, val owner: Player) extends TrainElement(_id, initialTown, owner) {
 
   // used in display
   // id
 
   // current structure if moving is false, origin structure otherwise
 
-  private var _engine: ObjectProperty[Engine] = ObjectProperty(new Engine(owner))
-  private var _engineThrust: DoubleProperty = _engine.value.thrust
-  def engineThrust: DoubleProperty = _engineThrust
-  def engineUpgradeLevel: IntegerProperty = _engine.value.upgradeLevel
-  def upgradeEngine(): Boolean = _engine.value.upgrade()
 
   val tiles = Array(Tile.locomotiveT, Tile.locomotiveR, Tile.locomotiveB, Tile.locomotiveL)
 
 
   def update(dt: Double, dirIndicator: Int) = {
-    //moveTrain(dt, dirIndicator)
-    if (move(dt, dirIndicator)) { println("moved")
-      maybeDisplayNewCarriage() }
+    if (move(dt, dirIndicator))
+      maybeDisplayNewCarriage()
     for (c <- carriageList)
-      if (c.visible == true) {
-        c.move(dt, dirIndicator)
-      }
+      c.update(dt, dirIndicator)
   }
 
 
@@ -193,12 +185,13 @@ class Train(val id: Int, initialTown: Structure, val owner: Player) extends Trai
     super.arrival()
   }
 
-  def boarding(stops: ListBuffer[Structure]) = {
+  override def boarding(stops: ListBuffer[Structure]) = {
     carriageList foreach (_.embark(location, stops))
-    _nextLocation.set(Some(stops(0)))
+    super.boarding(stops)
   }
 
-  def landing() = {
+  override def landing() = {
     carriageList.foreach(_.debark(location))
+    super.landing()
   }
 }

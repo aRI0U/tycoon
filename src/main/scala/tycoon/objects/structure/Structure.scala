@@ -19,6 +19,25 @@ abstract class Structure(pos: GridLocation, id: Int) extends Renderable(pos) {
   var boatList = new ListBuffer[Boat]()
   var truckList = new ListBuffer[Truck]()
 
+  def addVehicle(v: Vehicle): Unit = {
+    v match {
+      case train: Train => trainList += train
+      case plane: Plane => planeList += plane
+      case boat: Boat => boatList += boat
+      case truck: Truck => truckList += truck
+      case _ => ()
+    }
+  }
+  def removeVehicle(v: Vehicle): Unit = {
+    v match {
+      case train: Train => trainList -= train
+      case plane: Plane => planeList -= plane
+      case boat: Boat => boatList -= boat
+      case truck: Truck => truckList -= truck
+      case _ => ()
+    }
+  }
+
   protected val r = scala.util.Random
 
   protected val _name = StringProperty("")
@@ -27,14 +46,6 @@ abstract class Structure(pos: GridLocation, id: Int) extends Renderable(pos) {
 
   var internTime: Double = 0
   def update(dt: Double)
-
-  def addTrain(train: Train) = trainList += train
-  def addPlane(plane: Plane) = planeList += plane
-  def addBoat(boat: Boat) = boatList += boat
-  def addTruck(truck: Truck) = truckList += truck
-  def removeTrain(train: Train) = trainList -= train
-  def getTrain: Option[Train] = trainList.lastOption
-  def getPlane: Option[Plane] = planeList.lastOption
 
   val stock = new Stock(this)
 }

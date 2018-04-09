@@ -7,7 +7,7 @@ import tycoon.objects.railway._
 import tycoon.game.{GridLocation, Player}
 import tycoon.ui.Tile
 
-case class PassengerCarriage(id: Int, initialTown: Structure, _owner: Player) extends Carriage(id, initialTown, _owner) {
+case class PassengerCarriage(_id: Int, initialTown: Structure, _owner: Player) extends Carriage(_id, initialTown, _owner) {
   var passengers : ListBuffer[(Structure, Int)] = new ListBuffer
   tile = Tile.passengerWagonR
   val tiles = Array(Tile.passengerWagonT, Tile.passengerWagonR, Tile.passengerWagonB, Tile.passengerWagonL)

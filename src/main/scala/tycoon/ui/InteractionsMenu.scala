@@ -10,6 +10,7 @@ import scalafx.scene.layout.{HBox, VBox, Priority}
 import scalafx.beans.property._
 import scalafx.scene.text.Text
 import tycoon.objects.vehicle.train._
+import tycoon.objects.vehicle._
 import scalafx.collections.ObservableBuffer
 import scalafx.scene.control.TableColumn._
 import scala.collection.mutable.ListBuffer
@@ -30,16 +31,19 @@ class InteractionsMenu(val game: Game) extends TabPane
   private val roadsTab = new Tab()
   private val vehiclesTab = new Tab()
   private val trainsTab = new Tab()
+  private val routesTab = new Tab()
 
   structuresTab.text = "Build Structures"
   roadsTab.text = "Build Roads"
   vehiclesTab.text = "Buy Vehicles"
   trainsTab.text = "Manage Trains"
+  routesTab.text = "Manage Routes"
 
   this += structuresTab
   this += roadsTab
   this += vehiclesTab
   this += trainsTab
+  this += routesTab
 
   private var currentTemporaryTab: Option[Tab] = None
 
@@ -201,7 +205,14 @@ class InteractionsMenu(val game: Game) extends TabPane
     showTrainsBt,
     newRouteBt,
     upgradeEngineBt,
-    buyCarriagesBt,
+    buyCarriagesBt
+  )
+
+
+  private val routesTabContainer = new HBox()
+  routesTab.setContent(routesTabContainer)
+
+  routesTabContainer.children = Seq(
     showRoutesBt
   )
 
@@ -379,7 +390,7 @@ class InteractionsMenu(val game: Game) extends TabPane
 
     val idCol = new TableColumn[Route, String]("TRAIN ID")
     idCol.minWidth = 30
-    idCol.cellValueFactory = { cell => IntegerProperty(cell.value.train.id).asString }
+    idCol.cellValueFactory = { cell => IntegerProperty(cell.value.vehicle.id).asString }
 
     val stopsCol = new TableColumn[Route, String]("STOPS")
     stopsCol.minWidth = 300

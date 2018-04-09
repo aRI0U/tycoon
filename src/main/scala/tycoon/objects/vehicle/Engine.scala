@@ -1,4 +1,4 @@
-package tycoon.objects.vehicle.train
+package tycoon.objects.vehicle
 
 
 import scala.collection.mutable.ListBuffer
