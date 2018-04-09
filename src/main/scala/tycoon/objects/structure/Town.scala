@@ -168,7 +168,7 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
     totalWaiters = 0
     waitersInt.foreach(_.set(0))
     hunger = 0
-    for (i <- 0 to stock.requestsInt.length-1) requestsInt.set(0)
+    for (i <- 0 to stock.requestsInt.length-1) stock.requestsInt(i).set(0)
     // requests = new ListBuffer[Good]
     // needsInt = new ListBuffer[IntegerProperty]
     // needsStr = new ListBuffer[StringProperty]
@@ -275,7 +275,8 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
         // }
         if (hunger > starvingTime) {
           population -= hunger
-          townManager.throwEvent("["+name+"] People are starving, nur ein Gott kann sie retten...")
+          if (!alreadyStarving) townManager.throwEvent("["+name+"] People are starving, nur ein Gott kann sie retten...")
+          alreadyStarving = true
         }
       }
     }
