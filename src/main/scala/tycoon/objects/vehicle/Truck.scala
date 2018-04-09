@@ -11,10 +11,10 @@ import tycoon.game.{Game, GridLocation, Player}
 import tycoon.ui.DraggableTiledPane
 
 
-class Plane(id: Int, airport: Structure, val owner: Player) extends Vehicle(id, airport, owner) {
-  var location: Structure = airport
+class Truck(id: Int, initialStruct: Structure, val owner: Player) extends Vehicle(id, initialStruct, owner) {
+  var location: Structure = initialStruct
   var onTheRoad = BooleanProperty(false)
-  tile = Tile.plane
+  tile = Tile.truck
   speed.set(200.0)
   var weight = 50
   val cost = 500

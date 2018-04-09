@@ -55,6 +55,8 @@ class GameScreen(val game: Game) extends BorderPane
 
   interactionsMenu.addBuyableVehicle(BuyableVehicle.Train)
   interactionsMenu.addBuyableVehicle(BuyableVehicle.Plane)
+  interactionsMenu.addBuyableVehicle(BuyableVehicle.Boat)
+  interactionsMenu.addBuyableVehicle(BuyableVehicle.Truck)
 
   private val informationPane = new BorderPane {
     id = "informationPane"

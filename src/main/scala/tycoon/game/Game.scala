@@ -101,7 +101,7 @@ class Game(val map_width : Int, val map_height : Int)
       "Welcome to the " + mapName,
       "Tip: Food can be preserved longer when packed",
       "For a more global vision, use A and E to zoom",
-      "You can move the map by dragging it with the mouse or with Q S D Z",
+      "You can move the map by dragging it with the mouse or with Z Q S D",
       "random texts but i have no inspiration 5",
       "random texts but i have no inspiration 6",
       "random texts but i have no inspiration 7",
@@ -144,6 +144,8 @@ class Game(val map_width : Int, val map_height : Int)
   var towns = new ListBuffer[Town]()
   var trains = new ListBuffer[Train]()
   var planes = new ListBuffer[Plane]()
+  var trucks = new ListBuffer[Truck]()
+  var boats = new ListBuffer[Boat]()
   var routes = new ListBuffer[Route]()
   var carriages = new ListBuffer[Carriage]()
 
@@ -377,6 +379,18 @@ class Game(val map_width : Int, val map_height : Int)
                   bought = true
                 case _ => ()
               }
+              case boat: Boat => struct match {
+                case dock: Dock =>
+                  createBoat(boat, dock, player)
+                  bought = true
+                case _ => ()
+              }
+              case truck: Truck => struct match {
+                case town: Town =>
+                  createTruck(truck, town, player)
+                  bought = true
+                case _ => ()
+              }
               case _ => ()
             }
           }
@@ -438,6 +452,18 @@ class Game(val map_width : Int, val map_height : Int)
     airport.addPlane(plane)
     planes += plane
     map.addEntity(plane)
+  }
+
+  def createBoat (boat: Boat, port: Dock, player: Player): Unit = {
+    port.addBoat(boat)
+    boats += boat
+    map.addEntity(boat)
+  }
+
+  def createTruck (truck: Truck, struct: Structure, player: Player): Unit = {
+    struct.addTruck(truck)
+    trucks += truck
+    map.addEntity(truck)
   }
 
   def createFly (departure: Structure, arrival: Structure, plane : Plane) {

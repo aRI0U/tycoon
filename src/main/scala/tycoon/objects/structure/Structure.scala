@@ -16,6 +16,8 @@ abstract class Structure(pos: GridLocation, id: Int) extends Renderable(pos) {
   val structureId = id
   var trainList = new ListBuffer[Train]()
   var planeList = new ListBuffer[Plane]()
+  var boatList = new ListBuffer[Boat]()
+  var truckList = new ListBuffer[Truck]()
 
   protected val r = scala.util.Random
 
@@ -28,6 +30,8 @@ abstract class Structure(pos: GridLocation, id: Int) extends Renderable(pos) {
 
   def addTrain(train: Train) = trainList += train
   def addPlane(plane: Plane) = planeList += plane
+  def addBoat(boat: Boat) = boatList += boat
+  def addTruck(truck: Truck) = truckList += truck
   def removeTrain(train: Train) = trainList -= train
   def getTrain: Option[Train] = trainList.lastOption
   def getPlane: Option[Plane] = planeList.lastOption
