@@ -54,6 +54,7 @@ object Tile {
   val town = new Tile("town", 4, 1, width = 2)
   val mine = new Tile("mine", 4, 3)
   val factory = new Tile("factory", 5, 1)
+  val packingPlant = new Tile("packing plant", 5, 1)
   val farm1 = new Tile("farm1", 2, 7, width = 2)
   val farm2 = new Tile("farm2", 1, 7, width = 2)
   val farm3 = new Tile("farm3", 3, 7, width = 2)

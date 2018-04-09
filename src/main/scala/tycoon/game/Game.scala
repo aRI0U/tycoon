@@ -282,7 +282,7 @@ class Game(val map_width : Int, val map_height : Int)
         case factory: Factory => bought = createStruct(factory, Tile.grass)
         case packingPlant: PackingPlant => bought = createStruct(packingPlant, Tile.grass)
         case airport: Airport => {
-          //Airport is a Town facilitie, has to be contained in a town.
+          //Airport is a Town facility, has to be contained in a town.
           val around = map.getSurroundingStructures(pos,1)
           for (neighbor <- around) {
             neighbor match {
@@ -431,6 +431,12 @@ class Game(val map_width : Int, val map_height : Int)
   def buyGoodsCarriage(train: Train): Boolean = {
     if (!train.moving.value && player.pay(GoodsCarriage.Price)) {
       addCarriage(new GoodsCarriage(nbVehicles, train.location, _player), train)
+      true
+    } else false
+  }
+  def buyTankCar(train: Train): Boolean = {
+    if (!train.moving.value && player.pay(TankCar.Price)) {
+      addCarriage(new TankCar(nbVehicles, train.location, _player), train)
       true
     } else false
   }
