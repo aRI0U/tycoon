@@ -5,7 +5,7 @@ import scala.collection.mutable.ListBuffer
 import tycoon.game.Player
 import tycoon.objects.structure._
 
-class TankCar(id: Int, initialTown: Structure, _owner: Player) extends GoodsCarriage(id, initialTown, _owner) {
+class TankCar(_id: Int, initialTown: Structure, _owner: Player) extends GoodsCarriage(_id, initialTown, _owner) {
 
   override def embark(structure: Structure, stops: ListBuffer[Structure]) = {
     println("merchandises: "+merchandises)

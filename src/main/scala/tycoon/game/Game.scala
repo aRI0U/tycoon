@@ -279,8 +279,8 @@ class Game(val map_width : Int, val map_height : Int)
         case town: Town => bought = createStruct(town, Tile.grass)
         case mine: Mine => bought = createStruct(mine, Array(Tile.rock))
         case farm: Farm => bought = createStruct(farm, Tile.grass)
-        case factory: Factory => bought = createStruct(factory, Tile.grass)
         case packingPlant: PackingPlant => bought = createStruct(packingPlant, Tile.grass)
+        case factory: Factory => bought = createStruct(factory, Tile.grass)
         case airport: Airport => {
           //Airport is a Town facility, has to be contained in a town.
           val around = map.getSurroundingStructures(pos,1)
@@ -346,15 +346,27 @@ class Game(val map_width : Int, val map_height : Int)
     bought
   }
 
-  def buyRail(rail: BuyableRoad, pos: GridLocation, player: Player = _player): Boolean = {
+  def buyRoad(road: BuyableRoad, pos: GridLocation, player: Player = _player): Boolean = {
     var bought: Boolean = false
-    if (player.money.value >= rail.price) {
-      rail.newInstance(pos) match {
+    if (player.money.value >= road.price) {
+      road.newInstance(pos) match {
         case rail: Rail => bought = railManager.createRail(rail)
+        case asphalt: Asphalt => {
+          if (map.isUnused(pos) && map.checkBgTile(pos, Tile.grass)) {
+            map.setBackgroundTile(pos, road.tile)
+            bought = true
+          }
+        }
+        case grass: Grass => {
+          if (map.isUnused(pos) && map.checkBgTile(pos, Array(Tile.asphalt, Tile.tree))) {
+            map.setBackgroundTile(pos, road.tile)
+            bought = true
+          }
+        }
         case _ => ()
       }
     }
-    if (bought) player.pay(rail.price)
+    if (bought) player.pay(road.price)
     bought
   }
 
@@ -442,7 +454,7 @@ class Game(val map_width : Int, val map_height : Int)
   }
 
   def createTrain (train: Train, town: Town, player: Player): Unit = {
-    town.addTrain(train)
+    town.addVehicle(train)
     trains += train
     map.addEntity(train)
     nbTrains.set(nbTrains.value + 1)
@@ -455,19 +467,19 @@ class Game(val map_width : Int, val map_height : Int)
   }
 
   def createPlane (plane: Plane, airport: Airport, player: Player): Unit = {
-    airport.addPlane(plane)
+    airport.addVehicle(plane)
     planes += plane
     map.addEntity(plane)
   }
 
   def createBoat (boat: Boat, port: Dock, player: Player): Unit = {
-    port.addBoat(boat)
+    port.addVehicle(boat)
     boats += boat
     map.addEntity(boat)
   }
 
   def createTruck (truck: Truck, struct: Structure, player: Player): Unit = {
-    struct.addTruck(truck)
+    struct.addVehicle(truck)
     trucks += truck
     map.addEntity(truck)
   }

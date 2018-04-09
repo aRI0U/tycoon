@@ -11,12 +11,19 @@ import tycoon.game.{Game, GridLocation, Player}
 import tycoon.ui.DraggableTiledPane
 
 
-class Boat(id: Int, dock: Structure, val owner: Player) extends Vehicle(id, dock, owner) {
-  var location: Structure = dock
+class Boat(_id: Int, dock: Structure, val owner: Player) extends Vehicle(_id, dock, owner) {
+
   var onTheRoad = BooleanProperty(false)
   tile = Tile.boat
   speed.set(200.0)
   var weight = 50
   val cost = 500
   gridPos = location.gridPos
+
+
+
+  def update(dt: Double, dirIndicator: Int) = {
+    
+  }
+
 }
