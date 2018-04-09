@@ -98,10 +98,10 @@ class Game(val map_width : Int, val map_height : Int)
   private def setRandomInfoText() = {
     val r = scala.util.Random
     val randomTexts = Seq(
-      "welcome to the " + mapName,
-      "random texts but i have no inspiration 2",
-      "random texts but i have no inspiration 3",
-      "random texts but i have no inspiration 4",
+      "Welcome to the " + mapName,
+      "Tip: Food can be preserved longer when packed",
+      "For a more global vision, use A and E to zoom",
+      "You can move the map by dragging it with the mouse or with Q S D Z",
       "random texts but i have no inspiration 5",
       "random texts but i have no inspiration 6",
       "random texts but i have no inspiration 7",
@@ -212,11 +212,7 @@ class Game(val map_width : Int, val map_height : Int)
     routes foreach { _.update(dt * speedMultiplier.value) }
     // delete routes that are not active anymore
     routes = routes filter { r: Route => r.active || r.repeated }
-    try {
-      structures foreach { _.update(dt * speedMultiplier.value)}
-    } catch {
-      case e: EventException => setInfoText(e.s, 3)
-    }
+    structures foreach { _.update(dt * speedMultiplier.value)}
 
     tiledPane.render()
 

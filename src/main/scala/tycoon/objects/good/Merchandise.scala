@@ -16,8 +16,12 @@ class Merchandise(val kind: Good, var quantity: Int, val productionDate : Double
 
   var packed = false
 
-  def trade(giver: ListBuffer[Merchandise], receiver: ListBuffer[Merchandise], limit: Int) : Int = {
-    val tradedQuantity = quantity.min(limit)
+  def trade(giver: ListBuffer[Merchandise], receiver: ListBuffer[Merchandise], limit: Option[Int]) : Int = {
+    var tradedQuantity = quantity
+    limit match {
+      case Some(l) => if (l < quantity) tradedQuantity = l
+      case None => ()
+    }
     println("trade: "+tradedQuantity)
     if (tradedQuantity == quantity) {
       println("trade: not divide")

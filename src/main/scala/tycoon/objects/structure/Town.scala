@@ -25,8 +25,8 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
       townManager.unchosen_names.remove(i)*/
       val nameId = r.nextInt(townManager.townNames.length)
       val name = townManager.townNames(nameId)
-      _name.set(name)
-      townManager.unchosenNames -= name
+      setName(townManager.townNames(nameId))
+      townManager.townNames -= name
     }
     catch {
       case e: Exception => {
@@ -162,11 +162,13 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
   var alive = true
 
   def reInit() = {
+    population = minPopulation
     alive = false
     jobSeekers = minPopulation/2
     totalWaiters = 0
     waitersInt.foreach(_.set(0))
     hunger = 0
+    for (i <- 0 to stock.requestsInt.length-1) requestsInt.set(0)
     // requests = new ListBuffer[Good]
     // needsInt = new ListBuffer[IntegerProperty]
     // needsStr = new ListBuffer[StringProperty]
@@ -175,7 +177,7 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
     //   // cancel requests (ugly)
     //   if (data._2.value.length > 5) printData -= data
     // }
-    throwEvent("["+name+"] Everyone is dead here...")
+    townManager.throwEvent("["+name+"] Everyone is dead here...")
   }
 
   def update(dt: Double) = {
@@ -188,7 +190,7 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
         updateWaiters()
         updateConsumption()
       }
-      if (population == minPopulation) {
+      if (population <= minPopulation) {
         // reinit the whole city
         reInit()
       }
@@ -197,7 +199,7 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
 
   // def position : GridLocation = pos
   // def name : String = _name.value
-  def name_= (new_name: String) = _name.set(new_name)
+  // def name_= (new_name: String) = _name.set(new_name)
 
   // is it still useful ?
   def waiting_passengers : Int = _waiting_passengers.value
@@ -211,12 +213,7 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
   // requests of the town
 
   def newRequest(good: Good, amount: Int) = {
-    var i = stock.getIndex(good)
-    if (i == -1) {
-      i = stock.productsTypes.length
-      stock.newProduct(good, 0)
-    }
-    stock.addProduction(i, -amount)
+    stock.newProduct(good, -amount)
   }
 
   // hunger
@@ -224,7 +221,7 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
   var hunger = 0
   var alreadyDiet = false
   var alreadyStarving = false
-  val lunchTime = 6
+  val lunchTime = 25
   val dietTime = 100
   val starvingTime = 400
   val nutritiousNeeds = 1
@@ -232,13 +229,13 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
   def feedPopulation(needs: Double) : Double = {
     var i = 0
     var totalNeeds = needs
-    while (totalNeeds > 0 && i < stock.productsTypes.length) {
+    while (totalNeeds > 0 && i < stock.datedProducts.length) {
       stock.productsTypes(i) match {
         case f: Food => {
           while (totalNeeds > 0 && stock.datedProducts(i).length > 0) {
             var m = stock.datedProducts(i)(0)
             totalNeeds -= m.quantity*f.nutritiousness
-            stock.datedProducts.remove(0)
+            stock.datedProducts(i).remove(0)
           }
         }
         case _ => ()
@@ -254,30 +251,31 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
       val stayingNeeds = feedPopulation(needs)
       hunger = (hunger*stayingNeeds/needs).toInt
       if (hunger > dietTime) {
-        // people ask for the food the less quantity they have
-        var lackingFoodIndex = -1
-        var lackingFoodQuantity = 100
-        for (i <- 0 to stock.productsTypes.length-1) {
-          stock.productsTypes(i) match {
-            case f: Food => {
-              if (stock.product(i) < lackingFoodQuantity) {
-                lackingFoodIndex = i
-                lackingFoodQuantity = stock.product(i)
-              }
-            }
-            case _ => ()
-          }
-        }
-        if (lackingFoodIndex == -1) stock.newProduct(Product.Cake, 0)
-        else {
-          stock.productsTypes(lackingFoodIndex) match {
-            case f: Food => newRequest(f, (stayingNeeds/f.nutritiousness).toInt)
-            case _ => println("tycoon > objects > structure > Town : food has been magically transformed into something else")
-          }
-        }
+        // // people ask for the food the less quantity they have
+        // var lackingFoodIndex = -1
+        // var lackingFoodQuantity = 100
+        // for (i <- 0 to stock.productsTypes.length-1) {
+        //   stock.productsTypes(i) match {
+        //     case f: Food => {
+        //       if (stock.product(i) < lackingFoodQuantity) {
+        //         lackingFoodIndex = i
+        //         lackingFoodQuantity = stock.product(i)
+        //       }
+        //     }
+        //     case _ => ()
+        //   }
+        // }
+        // PROVISOIRE
+        newRequest(Product.Cake, ((stayingNeeds/Product.Cake.nutritiousness).toInt))
+        // else {
+        //   stock.productsTypes(lackingFoodIndex) match {
+        //     case f: Food => newRequest(f, (stayingNeeds/f.nutritiousness).toInt)
+        //     case _ => println("tycoon > objects > structure > Town : food has been magically transformed into something else")
+        //   }
+        // }
         if (hunger > starvingTime) {
-          population -= (stayingNeeds/nutritiousNeeds).toInt.max(0)
-          throwEvent("["+name+"] People are starving, nur ein Gott kann sie retten...")
+          population -= hunger
+          townManager.throwEvent("["+name+"] People are starving, nur ein Gott kann sie retten...")
         }
       }
     }
@@ -378,7 +376,7 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
   //       if (!alreadyStarving) {
   //         alreadyStarving = true
   //         newRequest(new Food("Cake"), nutritiousNeeds/2)
-  //         throwEvent("["+name+"] Everyone is starving, nur noch ein Gott kann sie retten...")
+  //         townManager.throwEvent("["+name+"] Everyone is starving, nur noch ein Gott kann sie retten...")
   //       }
   //     }
   //     else {
@@ -388,7 +386,7 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
   //         if (!alreadyDiet) {
   //           alreadyDiet = true
   //           newRequest(new Food("Cake"), nutritiousNeeds/2)
-  //           throwEvent("["+name+"] People are hungry! You have to feed them my Lord!")
+  //           townManager.throwEvent("["+name+"] People are hungry! You have to feed them my Lord!")
   //         }
   //       }
   //       else {

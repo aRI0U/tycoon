@@ -22,7 +22,8 @@ case class GoodsCarriage(id: Int, initialTown: Structure, _owner: Player) extend
   val planning = new DeliveryPlanning()
 
   def embark(structure: Structure, stops: ListBuffer[Structure]) = {
-    println("GoodsCarriage > embark")
+    println("merchandises: "+merchandises)
+    println("GoodsCarriage > embark from "+structure)
     println("stops: "+stops)
     stops.foreach(s => planning.addStop(s))
     //println("planning:"+ planning.flattenedRequests)
@@ -32,7 +33,9 @@ case class GoodsCarriage(id: Int, initialTown: Structure, _owner: Player) extend
         // determine pertinent products to embark
         var usefulIndices = new ListBuffer[Int]
         for (i <- 0 to planning.requests.length - 1) {
-          for (p <- planning.requests(i)) usefulIndices += f.stock.getIndex(p)
+          for (p <- planning.requests(i)._2) {
+            if (planning.notVisited(i)) usefulIndices += f.stock.getIndex(p)
+          }
         }
         usefulIndices = usefulIndices.filter(_ != -1)
         println("usefulIndices: "+usefulIndices)
@@ -46,19 +49,26 @@ case class GoodsCarriage(id: Int, initialTown: Structure, _owner: Player) extend
         }
       }
     }
-    planning.distribute(merchandises)
-    merchandises = new ListBuffer[Merchandise]
+    println("merchandises: "+merchandises)
+    println("quit structure"+structure)
   }
 
   def debark(structure: Structure) = {
+    println("merchandises: "+merchandises)
     println("GoodsCarriage > debark")
-    val i = planning.stops.indexOf(structure)
-    for (m <- planning.distribution(i)) structure.stock.getMerchandise(m)
-    planning.removeStop(structure)
+    val i = planning.stops.indexOf(structure)    // for (m <- planning.distribution(i)) structure.stock.getMerchandise(m)
+    // planning.removeStop(structure)
+    planning.distribute(merchandises, structure)
+    // update remainingSpace
+    remainingSpace = maxSpace
+    merchandises.foreach(m => remainingSpace -= m.quantity*m.kind.size)
+    // for (m <- planning.distribution(i)) structure.stock.getMerchandise(m)
+    // planning.removeStop(structure)
     structure match {
       case t: Town => ()
       case _ => ()
     }
+    planning.notVisited(i) = false
   }
 }
 
@@ -124,55 +134,56 @@ case class GoodsCarriage(id: Int, initialTown: Structure, _owner: Player) extend
 class DeliveryPlanning() {
 
   var stops = new ListBuffer[Structure]
-  var requests = new ListBuffer[ListBuffer[Good]]
+  var notVisited = new ListBuffer[Boolean]
+  var requests = new ListBuffer[(Structure, ListBuffer[Good])]
   // var flattenedRequests = new ListBuffer[Good]
-  var distribution = new ListBuffer[ListBuffer[Merchandise]]
+  var currentStopIndex = 0
 
   def addStop(s: Structure) = {
-    if (stops.indexOf(s) == -1) {
+    val i = stops.indexOf(s)
+    if (i == -1) {
       println("just added a stop:"+s)
       stops += s
-      requests += determineRequests(s)
+      notVisited += true
+      requests += new Tuple2(s, determineRequests(s))
       // val req = determineRequests(s)
       // requests += req
       // req.foreach(p => if (flattenedRequests.indexOf(p) == -1) flattenedRequests += p)
-      distribution += new ListBuffer[Merchandise]
+      //distribution += new ListBuffer[Merchandise]
     }
-  }
-
-  def removeStop(s: Structure) = {
-    val i = stops.indexOf(s)
-    val m = distribution(i)
-    stops.remove(i)
-    distribute(m)
+    else {
+      notVisited(i) = true
+      requests(i) = new Tuple2(s, determineRequests(s))
+    }
   }
 
   def determineRequests(structure: Structure) : ListBuffer[Good] = {
-    var req = new ListBuffer[Good]
+    var request = new ListBuffer[Good]
     structure match {
       case f: Factory => {
         for (l <- f.recipesList) {
-          for (p <- l) req += p._1
+          for (p <- l) request += p._1
         }
       }
       case t: Town => {
-        //for (good <- t.requests) requests += good
+        for (i <- 0 to t.stock.requestsInt.length - 1) {
+          if (t.stock.requests(i) > 0) request += t.stock.productsTypes(i)
+        }
       }
       case _ => ()
     }
-    req
+    println(structure+" needs "+request)
+    request
   }
 
-  def distribute(merchandises: ListBuffer[Merchandise]) = {
+  def distribute(merchandises: ListBuffer[Merchandise], s: Structure) = {
     // basic
-    for (m <- merchandises) {
-      var i = 0
-      while (requests(i).indexOf(m.kind) == -1) i += 1
-      distribution(i) += m
-      println("distribute > merch quantity: "+m.quantity+" to "+i)
+    var i = 0
+    while (requests(i)._1 != s) i+=1
+    println("distributing to "+requests(i))
+    for (good <- requests(i)._2) s.stock.receiveMerchandises(good, merchandises, None)
     }
   }
-}
 
 object GoodsCarriage {
   val Price: Int = 30

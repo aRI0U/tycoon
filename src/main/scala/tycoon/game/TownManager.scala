@@ -12,7 +12,6 @@ class TownManager(game: Game) {
   // names
   var townNames = new ListBuffer[String]
   townNames += ("Paris", "Lyon", "Toulouse", "Saclay", "Nice", "Strasbourg", "Mulhouse", "Aulnay-sous-Bois", "Cachan", "Hamburg", "Berlin", "Brno", "Caderousse","Stuttgart", "Wien", "Köln")
-  var unchosenNames = townNames
 
   // information about towns
   var towns_list = new ListBuffer[Town]
@@ -38,4 +37,6 @@ class TownManager(game: Game) {
   }
 
   def getTime() : Double = game.totalElapsedTime
+
+  def throwEvent(s: String) = game.setInfoText(s, 3)
 }

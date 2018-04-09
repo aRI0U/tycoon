@@ -37,7 +37,7 @@ case class Mine(pos: GridLocation, id: Int, tManager: TownManager) extends Facil
   allExtracted += false
 
   stock.newProduct(Product.Gold, 0)
-  productionPerPeriod += r.nextInt(2)
+  productionPerPeriod += r.nextInt(3)
   extractableAmount += r.nextInt(100)
   allExtracted += false
 
@@ -50,7 +50,7 @@ case class Mine(pos: GridLocation, id: Int, tManager: TownManager) extends Facil
       // stocksInt(i).set(stocks(i) + productionPerPeriod(i))
       if (stock.stocks(i) >= extractableAmount(i)) {
         allExtracted(i) = true
-        throwEvent("[Mine n°"+id+"] "+stock.productsTypes(i).label+"s: everything has been extracted in this mine")
+        townManager.throwEvent("[Mine n°"+id+"] "+stock.productsTypes(i).label+"s: everything has been extracted in this mine")
       }
     }
   }
@@ -60,7 +60,7 @@ case class Mine(pos: GridLocation, id: Int, tManager: TownManager) extends Facil
       // random rockslides can kill workers
       if (r.nextInt(10000) == 0) {
         workers = 0
-        throwEvent("[Mine n°"+id+"] Rockslide: All diggers died!")
+        townManager.throwEvent("[Mine n°"+id+"] Rockslide: All diggers died!")
       }
       internTime += dt*workers
       if(internTime > productionTime) {
