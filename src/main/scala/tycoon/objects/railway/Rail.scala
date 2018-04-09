@@ -7,7 +7,7 @@ import tycoon.ui.Tile
 import tycoon.ui.Renderable
 import scalafx.beans.property.{IntegerProperty, StringProperty}
 
-case class Rail(pos: GridLocation) extends Renderable(pos) {
+case class Rail(pos: GridLocation) extends RoadItem(pos) {
 
   var road = new Road
   road.length = 1

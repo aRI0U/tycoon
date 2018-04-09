@@ -538,7 +538,7 @@ class InteractionsMenu(val game: Game) extends TabPane
                 quantityBought.set(quantityBought.value + 1)
             }
             case rail: BuyableRoad => {
-              if(game.buyRail(rail, pos))
+              if(game.buyRoad(rail, pos))
                 quantityBought.set(quantityBought.value + 1)
             }
             case vehicle: BuyableVehicle => {

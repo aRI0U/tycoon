@@ -54,15 +54,19 @@ object BuyableStruct {
 }
 
 
-case class BuyableRoad(override val name: String, override val price: Int, override val tile: Tile, val newInstance: GridLocation => Rail)
+case class BuyableRoad(override val name: String, override val price: Int, override val tile: Tile, val newInstance: GridLocation => RoadItem)
 extends BuyableItem(name, price, tile) {
   createByDragging = true
 }
 
 object BuyableRoad {
   def newRail(pos: GridLocation): Rail = new Rail(pos)
+  def newAsphalt(pos: GridLocation): Asphalt = new Asphalt(pos)
+  def newGrass(pos: GridLocation): Grass = new Grass(pos)
 
-  val Rail = new BuyableRoad("Rail", 5, Tile.straightRailBT, newRail)
+  val Rail = new BuyableRoad("Rail", 10, Tile.straightRailBT, newRail)
+  val Asphalt = new BuyableRoad("Asphalt", 5, Tile.asphalt, newAsphalt)
+  val Grass = new BuyableRoad("Grass", 30, Tile.grass(0), newGrass)
 }
 
 

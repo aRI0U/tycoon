@@ -12,7 +12,8 @@ import tycoon.ui.DraggableTiledPane
 
 
 class Truck(id: Int, initialStruct: Structure, val owner: Player) extends Vehicle(id, initialStruct, owner) {
-  var location: Structure = initialStruct
+
+
   var onTheRoad = BooleanProperty(false)
   tile = Tile.truck
   speed.set(200.0)

@@ -346,15 +346,27 @@ class Game(val map_width : Int, val map_height : Int)
     bought
   }
 
-  def buyRail(rail: BuyableRoad, pos: GridLocation, player: Player = _player): Boolean = {
+  def buyRoad(road: BuyableRoad, pos: GridLocation, player: Player = _player): Boolean = {
     var bought: Boolean = false
-    if (player.money.value >= rail.price) {
-      rail.newInstance(pos) match {
+    if (player.money.value >= road.price) {
+      road.newInstance(pos) match {
         case rail: Rail => bought = railManager.createRail(rail)
+        case asphalt: Asphalt => {
+          if (map.isUnused(pos) && map.checkBgTile(pos, Tile.grass)) {
+            map.setBackgroundTile(pos, road.tile)
+            bought = true
+          }
+        }
+        case grass: Grass => {
+          if (map.isUnused(pos) && map.checkBgTile(pos, Array(Tile.asphalt, Tile.tree))) {
+            map.setBackgroundTile(pos, road.tile)
+            bought = true
+          }
+        }
         case _ => ()
       }
     }
-    if (bought) player.pay(rail.price)
+    if (bought) player.pay(road.price)
     bought
   }
 

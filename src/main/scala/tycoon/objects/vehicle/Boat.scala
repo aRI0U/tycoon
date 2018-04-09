@@ -12,7 +12,7 @@ import tycoon.ui.DraggableTiledPane
 
 
 class Boat(id: Int, dock: Structure, val owner: Player) extends Vehicle(id, dock, owner) {
-  var location: Structure = dock
+
   var onTheRoad = BooleanProperty(false)
   tile = Tile.boat
   speed.set(200.0)

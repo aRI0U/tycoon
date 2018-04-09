@@ -18,27 +18,8 @@ class Train(val id: Int, initialTown: Structure, val owner: Player) extends Trai
 
   // used in display
   // id
-  private var _moving = BooleanProperty(false)
-  def moving: BooleanProperty = _moving
 
   // current structure if moving is false, origin structure otherwise
-  private var _location: ObjectProperty[Structure] = ObjectProperty(initialTown)
-  private var _locationName = StringProperty(initialTown.name)
-  _location.onChange { _locationName.set(_location.value.name) }
-
-  private var _nextLocation: ObjectProperty[Option[Structure]] = ObjectProperty(None)
-  private var _nextLocationName = StringProperty("-")
-  _nextLocation.onChange {
-    _nextLocation.value match {
-      case Some(struct) => _nextLocationName.set(struct.name)
-      case None => _nextLocationName.set("-")
-    }
-  }
-
-  def location: Structure = _location.value
-  def location_=(newStruct: Structure) = _location.set(newStruct)
-  def locationName: StringProperty = _locationName
-  def nextLocationName: StringProperty = _nextLocationName
 
   private var _engine: ObjectProperty[Engine] = ObjectProperty(new Engine(owner))
   private var _engineThrust: DoubleProperty = _engine.value.thrust
@@ -194,10 +175,6 @@ class Train(val id: Int, initialTown: Structure, val owner: Player) extends Trai
   def departure(firstRail: Rail) = {
     currentRail = Some(firstRail)
     gridPos = firstRail.gridPos.clone()
-    arrived = false
-    visible = true
-    moving.set(true)
-    stabilized = false
 
     for (carr <- carriageList) {
       carr.currentRail = Some(firstRail)
@@ -205,17 +182,15 @@ class Train(val id: Int, initialTown: Structure, val owner: Player) extends Trai
       carr.visible = false
     }
 
-    speed <== engineThrust // modulo weight of carriages here..
+    super.departure()
   }
 
-  def arrival() = {
+  override def arrival() = {
     for (carr <- carriageList) {
       carr.visible = false
       carr.currentRail = None
     }
-    moving.set(false)
-    speed <== DoubleProperty(0)
-    _nextLocation.set(None)
+    super.arrival()
   }
 
   def boarding(stops: ListBuffer[Structure]) = {

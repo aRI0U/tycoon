@@ -12,7 +12,7 @@ import tycoon.ui.DraggableTiledPane
 
 
 class Plane(id: Int, airport: Structure, val owner: Player) extends Vehicle(id, airport, owner) {
-  var location: Structure = airport
+
   var onTheRoad = BooleanProperty(false)
   tile = Tile.plane
   speed.set(200.0)
