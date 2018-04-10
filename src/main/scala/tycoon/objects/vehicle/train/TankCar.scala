@@ -48,7 +48,3 @@ class TankCar(_id: Int, initialTown: Structure, _owner: Player) extends GoodsCar
   //   println("quit structure"+structure)
   // }
 }
-
-object TankCar {
-  val Price = 30
-}

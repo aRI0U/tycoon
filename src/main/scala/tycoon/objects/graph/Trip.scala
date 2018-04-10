@@ -8,7 +8,7 @@ import tycoon.objects.vehicle.train._
 import tycoon.objects.railway._
 import tycoon.objects.structure._
 import tycoon.objects.vehicle._
-import tycoon.game.Game
+import tycoon.game._
 import tycoon.game.GridLocation
 
 

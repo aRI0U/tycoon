@@ -6,15 +6,14 @@ import tycoon.objects.structure._
 import tycoon.objects.railway._
 import tycoon.game.{GridLocation, Player}
 import tycoon.ui.Tile
+import tycoon.game.Settings
 
 case class PassengerCarriage(_id: Int, initialTown: Structure, _owner: Player) extends Carriage(_id, initialTown, _owner) {
   var passengers : ListBuffer[(Structure, Int)] = new ListBuffer
-  tile = Tile.passengerWagonR
-  val tiles = Array(Tile.passengerWagonT, Tile.passengerWagonR, Tile.passengerWagonB, Tile.passengerWagonL)
+  tile = Tile.PassengerWagonR
+  val tiles = Array(Tile.PassengerWagonT, Tile.PassengerWagonR, Tile.PassengerWagonB, Tile.PassengerWagonL)
 
-  val ticketPrice = 3
-  val maxPassengers = 10
-  var remainingPlaces: Int = maxPassengers
+  var remainingPlaces: Int = Settings.TrainMaxPassengers
 
   def embark(departureStruct: Structure, stops: ListBuffer[Structure]) : Unit = {
     departureStruct match {
@@ -38,7 +37,7 @@ case class PassengerCarriage(_id: Int, initialTown: Structure, _owner: Player) e
             departureTown.population -= newPassengers
             passengers += new Tuple2(stop, newPassengers)
             remainingPlaces -= newPassengers
-            owner.earn(newPassengers * ticketPrice)
+            owner.earn(newPassengers * Settings.TrainTicketPrice)
           }
         }
       }
@@ -62,8 +61,4 @@ case class PassengerCarriage(_id: Int, initialTown: Structure, _owner: Player) e
     }
   }
 
-}
-
-object PassengerCarriage {
-  val Price: Int = 30
 }

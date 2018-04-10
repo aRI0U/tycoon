@@ -6,22 +6,17 @@ import tycoon.objects.structure._
 import tycoon.game.{Player, GridLocation}
 import scalafx.beans.property._
 import tycoon.ui.Tile
+import tycoon.game._
 import scala.collection.mutable.ListBuffer
 
 
 
 
-sealed abstract class Direction
-case object North extends Direction
-case object East extends Direction
-case object South extends Direction
-case object West extends Direction
-case object Undefined extends Direction
 
 
 abstract class Vehicle(_id: Int, struct: Structure, owner: Player) extends Renderable(new GridLocation(-1, -1)) {
   var weight : Double
-  val cost : Int
+
   def id: Int = _id
 
   protected var _moving = BooleanProperty(false)

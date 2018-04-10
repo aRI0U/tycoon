@@ -1,6 +1,6 @@
-package tycoon
+package tycoon //#
 
-import tycoon.game.Game
+import tycoon.game.{Game, Settings}
 import tycoon.ui.{CreditsScreen, GameScreen, StartScreen}
 
 import scalafx.application.JFXApp
@@ -10,15 +10,9 @@ import scalafx.scene.layout.{Pane, StackPane}
 import scalafx.stage.FileChooser
 import scalafx.stage.FileChooser.ExtensionFilter
 
-object Settings { // to be moved
-  val gameWidth = 200
-  val gameHeight = 200
-}
-
-
 
 object Main extends JFXApp {
-  val game = new Game(Settings.gameWidth, Settings.gameHeight)
+  val game = new Game(Settings.GameWidth, Settings.GameHeight)
 
   val startScreen = new StartScreen()
   val gameScreen = new GameScreen(game)
@@ -28,11 +22,11 @@ object Main extends JFXApp {
   val appScene = new Scene(new StackPane(content))
 
   val appStage = new PrimaryStage {
-    title = "Tycoon Game"
+    title = Settings.GameTitle
     resizable = true
-    // maximized = true
-    minWidth = 800
-    minHeight = 600
+    maximized = Settings.ScreenMaximized
+    minWidth = Settings.ScreenMinWidth
+    minHeight = Settings.ScreenMinHeight
     scene = appScene
   }
   stage = appStage
@@ -70,7 +64,7 @@ object Main extends JFXApp {
             selectedFile = null
           }
           else {
-            println("Game backup couldn't be opened or read. ")
+            println("Game backup couldn't be opened or read.")
             selectedFile = fileChooser.showOpenDialog(stage)
           }
         } catch {

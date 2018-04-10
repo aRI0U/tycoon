@@ -8,6 +8,8 @@ import scalafx.scene.input.MouseEvent
 import scalafx.scene.layout.{BorderPane, HBox, VBox}
 import scalafx.scene.text.Text
 
+import tycoon.game.Settings
+
 
 class StartScreen extends BorderPane
 {
@@ -24,7 +26,7 @@ class StartScreen extends BorderPane
 
   private val gameNameText = new Text {
     id = "gameName"
-    text = "Tycoon Game"
+    text = Settings.GameTitle
     margin = Insets(50)
   }
 
