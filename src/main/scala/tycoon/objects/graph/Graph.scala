@@ -65,12 +65,22 @@ class Graph {
   }
 
   // returns true iff m < n (None means infinity)
-  def optionMin(m: Option[Int], n: Option[Int]) : Boolean = {
+  def optionInf(m: Option[Int], n: Option[Int]) : Boolean = {
     m match {
       case None => false
       case Some(x) => n match {
         case None => true
         case Some(y) => (x < y)
+      }
+    }
+  }
+
+  def optionMin(m: Option[Int], n: Option[Int]) : Option[Int] = {
+    m match {
+      case None => n
+      case Some(x) => n match {
+        case None => m
+        case Some(y) => Some(x.min(y))
       }
     }
   }
@@ -103,7 +113,7 @@ class Graph {
       var next_stop : Vertex = notVisited(0)
       for (s <- notVisited) {
         val distance : Option[Int] = d(s.origin)
-        if (optionMin(distance, mini)) {
+        if (optionInf(distance, mini)) {
           mini = distance
           next_stop = s
         }
@@ -114,7 +124,7 @@ class Graph {
         val id = neighbor._1
         val road = neighbor._2
         val new_path = optionSum(d(next_stop.origin), Some(road.length))
-        if (optionMin(new_path, d(id))) {
+        if (optionInf(new_path, d(id))) {
           d(id) = new_path
           previous(id) = Some((next_stop.origin, road))
         }

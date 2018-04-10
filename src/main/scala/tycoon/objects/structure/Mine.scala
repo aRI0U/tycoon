@@ -78,5 +78,4 @@ case class Mine(pos: GridLocation, id: Int, townManager: TownManager) extends Fa
       }
     }
   }
-  //val price = game.mine_price //To choose
 }
