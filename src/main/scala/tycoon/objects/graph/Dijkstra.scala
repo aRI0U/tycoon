@@ -13,7 +13,7 @@ import scala.collection.mutable.Set
 
 object Dijkstra {
   def tileGraph(struct1 : Structure ,struct2 : Structure ,authorizedTile : Array[Tile],map : TileMap) : ListBuffer[GridLocation] = {
-    // type Track = ListBuffer[GridLocation]
+
     def optionMin(m: Option[Int], n: Option[Int]) : Boolean = {
       m match {
         case None => false
@@ -104,12 +104,9 @@ object Dijkstra {
           nextPos = pos
         }
       }
-      // println (distanceTable(nextPos.col)(nextPos.row),"and",heuristicTable(nextPos.col)(nextPos.row))
       notVisited -= nextPos
 
       if (nextPos.col == lastPos.col && nextPos.row == lastPos.row) {
-        // println("beatchpoleafse")
-        // return ListBuffer[GridLocation]()
         notVisited = ListBuffer[GridLocation]()
       }
 
@@ -137,7 +134,7 @@ object Dijkstra {
         }
       }
     }
-    println("Tycoon > objects > graph > Dijkstra > validity of the path:",validity)
+    println("Tycoon > objects > graph > Dijkstra > validity of the path:", validity)
     if (validity) finalPath.reverse
     else new ListBuffer[GridLocation]()
   }

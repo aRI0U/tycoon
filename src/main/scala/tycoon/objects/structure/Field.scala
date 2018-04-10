@@ -11,5 +11,6 @@ case class Field(pos: GridLocation, id: Int) extends Structure(pos, id) {
   var tileType = 0
   var dependanceFarm : Option[Farm] = None
   def update(dt: Double) = {
+    
   }
 }

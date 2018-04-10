@@ -8,11 +8,8 @@ import tycoon.objects.good._
 import scalafx.beans.property.{DoubleProperty, IntegerProperty}
 
 abstract class EconomicAgent(pos: GridLocation, id: Int, townManager: TownManager) extends Structure(pos, id) {
-
   val stock = new Stock(this)
-
   var weightings = new ListBuffer[Weighting]
-
   var goods = new ListBuffer[(EconomicGood, DoubleProperty)]
 
   def report(good: Good, stocks: IntegerProperty, requests: IntegerProperty) = townManager.getReport(this, good, stocks, requests)
@@ -45,19 +42,14 @@ abstract class EconomicAgent(pos: GridLocation, id: Int, townManager: TownManage
     var totalStocks = 8.0
     for (p <- goodData._1.totalProducts) {
       val coeff = getWeighting(p._1).coeff
-      //println("debug > btotalStocks: "+totalStocks)
       totalStocks += p._2.value*coeff
-      //println("debug > etotalStocks: "+totalStocks)
-      //("debug > brequests: "+totalRequests)
       totalRequests += p._3.value*coeff
-      //println("debug > erequests: "+totalRequests)
     }
     if (totalStocks > 0) {
       val newMultiplier = (0.5*(prevMultiplier + totalRequests/totalStocks)).max(10.0)
       goodData._2.set(newMultiplier)
     }
     else goodData._2.set(10.0)
-    //println("goodData: "+goodData._2)
   }
 
   def updateMultiplier(good: EconomicGood) = {
@@ -66,7 +58,6 @@ abstract class EconomicAgent(pos: GridLocation, id: Int, townManager: TownManage
   }
 
   def initWeightings(structuresList: ListBuffer[Structure]) = {
-    // PROVISOIRE : we consider there is no influence between cities
     structuresList.foreach(newWeighting)
   }
 
@@ -103,6 +94,10 @@ abstract class EconomicAgent(pos: GridLocation, id: Int, townManager: TownManage
   def getMultiplier(good: Good) = getGoodData(townManager.getEconomicGood(good))._2
 
   def updateEconomy() = {
+<<<<<<< HEAD
+=======
+    val e = townManager.getEconomicGood(Product.Milk)
+>>>>>>> 92de8b5bb7e6ff50fbce57f9fdaa7d0a2091d600
     goods.foreach(computeMultiplier)
     updateWeightings()
   }

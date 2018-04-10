@@ -18,20 +18,10 @@ case class Farm(pos: GridLocation, id: Int, townManager: TownManager) extends Fa
   var fields = new ListBuffer[Field]
   var productionPerPeriod = new ListBuffer[Int]
 
-  // here are added new product
-
-  /*In case of liquidWagon */
-  // products += new Food("Milk")
-  // productionPerPeriod += ()
-
   stock.newProduct(Product.Egg, 0)
-  // products += new Food("Egg")
-  // datedProducts += new ListBuffer[Merchandise]
   productionPerPeriod += (20)
 
   stock.newProduct(Product.Corn, 0)
-  // products += new Food("Corn")
-  // datedProducts += new ListBuffer[Merchandise]
   productionPerPeriod += (4)
 
   stock.newProduct(Product.Leather, 0)
@@ -47,7 +37,6 @@ case class Farm(pos: GridLocation, id: Int, townManager: TownManager) extends Fa
 
   def updateProduction(i: Int) = {
     stock.getMerchandiseWIndex(new Merchandise(stock.productsTypes(i), productionPerPeriod(i)*((1+workers/10).toInt)*haOfField, townManager.getTime()), i)
-    // stocksInt(i).set(stocks(i) + productionPerPeriod(i)*((workers*0.1 + 1).toInt)*haOfField)
   }
 
   override def update(dt: Double) = {

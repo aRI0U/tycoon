@@ -10,25 +10,16 @@ import tycoon.objects.vehicle._
 import scalafx.beans.property._
 
 abstract class Carriage(_id: Int, initialTown: Structure, _owner: Player) extends TrainElement(_id, initialTown, _owner) {
-
   var stops = new ListBuffer[Structure]
-
   def owner: Player = _owner
-
-  def rotation(v: Int) = { } // ??
-
-
 
   def update(dt: Double, dirIndicator: Int) = {
     if (visible)
       move(dt, dirIndicator)
   }
 
-
   def embark(structure: Structure, stops: ListBuffer[Structure])
   def debark(s: Structure)
 
   var weight: Double = 200
-
-
 }

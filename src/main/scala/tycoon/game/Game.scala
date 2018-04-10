@@ -6,22 +6,17 @@ import tycoon.objects.vehicle.train._
 import tycoon.objects.vehicle._
 import tycoon.objects.graph._
 import tycoon.game._
-import tycoon.ui.Tile
-import scalafx.beans.property._
 import tycoon.ui.{Tile, Renderable, DraggableTiledPane}
 
+import scalafx.beans.property._
 import javafx.animation.AnimationTimer
 import scalafx.collections.ObservableBuffer
 import scalafx.collections.ObservableBuffer._
 import scalafx.scene.image.Image
 import scala.collection.mutable.{HashMap, ListBuffer}
-
-
 import scalafx.Includes._
 import scalafx.beans.property.{StringProperty, IntegerProperty}
 import scalafx.beans.binding.Bindings
-
-
 import scala.xml.XML
 import scala.io.Source
 import java.io.{FileNotFoundException, IOException}
@@ -29,61 +24,9 @@ import scala.util.Try
 import scalafx.util.converter.{DateStringConverter, DateTimeStringConverter}
 
 
-
-
 class Game(val map_width : Int, val map_height : Int)
 {
-
-  // def loadMap(filepath: String) : Boolean = {
-  //   Try {
-  //     val xml = XML.loadFile(filepath)
-  //
-  //     //please do somwhere else than
-  //     println("All foods:")
-  //     val goods = xml \ "Goods"
-  //     ( xml \\ "Food" \\ "@name") foreach (i => println(i.text))
-  //     ( goods \\ "Ore" \\ "@name") foreach (i => println(i.text))
-  //
-  //     //map treatment
-  //     val mapXML = xml \ "Map"
-  //     val mapName = mapXML \ "@name"
-  //     val width = mapXML \ "@width"
-  //     val height = mapXML \ "@height"
-  //
-  //     var cities = ListBuffer[Array[Any]]()
-  //     for (city <- (mapXML \\ "City")) {
-  //       var nbFactories = 0
-  //       for (factory <- (city \\ "Factory")) nbFactories+=1
-  //       buyStruct(new LargeTown(new GridLocation(city(1),city(2))), new GridLocation(city(1),city(2)),player)
-  //       // cities += Array (
-  //       //   city \ "@name",
-  //       //   city \ "@x",
-  //       //   city \ "@y",
-  //       //   city \ "@population",
-  //       //   nbFactories
-  //       // )
-  //     }
-
-      // for (city <-  cities){
-      //   buyStruct(new LargeTown, new GridLocation(city(1),city(2)),player)
-      // }
-
-
-
-      // println("\nSpecials:")
-      // for (food <- (xml \\ "Food"))
-      //   if ((food \ "special").length > 0)
-      //     println((food \ "special" \ "@id").text)
-      // println("\nSpecials again:")
-      // for (id <- (xml \ "food" \ "special"))
-      //   println((id \ "@id").text)
-
-  //   }.isSuccess
-  // }
-  // var playerInit = new Player
-  // playerInit.money.set(Int.MaxValue)
-
-  var mapName = Settings.GameTitle + " random map"
+  var mapName = Settings.GameTitle + " Map"
 
   var infoTextTimer: Double = 0
   val informationText = StringProperty("")
@@ -526,7 +469,7 @@ class Game(val map_width : Int, val map_height : Int)
       var id = 0
       for (city <- (mapXML \\ "City")) {
         var nbFactories = 0
-        for (factory <- (city \\ "Factory")) nbFactories+=1
+        for (factory <- (city \\ "Factory")) nbFactories += 1
         var pos = new GridLocation((city \ "@x").text.toInt % map.width,(city \ "@y").text.toInt % map.height)
         var town = new LargeTown(pos,id,townManager) ; id+=1
         createStruct(town,Tile.Grass)

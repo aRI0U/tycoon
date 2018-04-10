@@ -25,7 +25,7 @@ case class Rail(pos: GridLocation) extends RoadItem(pos) {
     else previous
   }
 
-  tile = Tile.StraightRailBT // sgives_tile(tile_type)
+  tile = Tile.StraightRailBT 
 
   val max_speed = 50
   val max_weight = 1000

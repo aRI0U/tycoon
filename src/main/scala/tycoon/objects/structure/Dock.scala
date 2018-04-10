@@ -10,5 +10,6 @@ case class Dock(pos: GridLocation, id: Int) extends Structure(pos, id) {
   var dependanceTown : Option[Town]= None
   setName("Dock " + id.toString)
   def update(dt: Double) = {
+    
   }
 }

@@ -14,18 +14,17 @@ import tycoon.game.Settings
 
 
 class Truck(_id: Int, initialStruct: Structure, val owner: Player) extends Vehicle(_id, initialStruct, owner) with Container {
-
   val maxSpace : Double = 100
+  var weight = 50
   var remainingSpace : Double = maxSpace
   val merchandises = new ListBuffer[Merchandise]
-
   val mManager = new MerchandisesManager
 
   var onTheRoad = BooleanProperty(false)
   tile = Tile.Truck
   speed.set(Settings.SpeedTruck)
-  var weight = 50
   gridPos = location.gridPos.clone()
+<<<<<<< HEAD
 
   override def boarding(stops: ListBuffer[Structure]) = {
     super.boarding(stops)
@@ -37,6 +36,9 @@ class Truck(_id: Int, initialStruct: Structure, val owner: Player) extends Vehic
     debark(location)
   }
 
+=======
+  
+>>>>>>> 92de8b5bb7e6ff50fbce57f9fdaa7d0a2091d600
   def update(dt: Double, dirIndicator: Int) = {
 
   }
