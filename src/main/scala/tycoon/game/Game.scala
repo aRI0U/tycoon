@@ -83,7 +83,7 @@ class Game(val map_width : Int, val map_height : Int)
   // var playerInit = new Player
   // playerInit.money.set(Int.MaxValue)
 
-  var mapName = "Tycoon Game random map"
+  var mapName = Settings.GameTitle + " random map"
 
   var infoTextTimer: Double = 0
   val informationText = StringProperty("")
@@ -97,19 +97,8 @@ class Game(val map_width : Int, val map_height : Int)
   }
   private def setRandomInfoText() = {
     val r = scala.util.Random
-    val randomTexts = Seq(
-      "Welcome to the " + mapName,
-      "Tip: Food can be preserved longer when packed",
-      "For a more global vision, use A and E to zoom",
-      "You can move the map by dragging it with the mouse or with Z Q S D",
-      "random texts but i have no inspiration 5",
-      "random texts but i have no inspiration 6",
-      "random texts but i have no inspiration 7",
-      "random texts but i have no inspiration 8",
-      "random texts but i have no inspiration 9",
-      "random texts but i have no inspiration 10"
-    )
-    setInfoText(randomTexts(r.nextInt(randomTexts.length)), 10.0)
+    val randomTexts = Dialogues.RandomInfoTexts
+    setInfoText(randomTexts(r.nextInt(randomTexts.length)), Dialogues.DefaultInfoTextDuration)
   }
   setRandomInfoText()
 
@@ -117,12 +106,12 @@ class Game(val map_width : Int, val map_height : Int)
   // game map
   var game_graph = new Graph
   var map = new TileMap(map_width, map_height)
-  map.fillBackground(Tile.grass)
+  map.fillBackground(Tile.Grass)
 
   def fillNewGame() {
     map.sprinkleTile(Tile.tree, 5)
     map.sprinkleTile(Tile.rock, 1)
-    map.generateLakes(2, 500) //SLOW
+    map.generateLakes(4, 500) //SLOW
   }
 
   val tiledPane = new DraggableTiledPane(map)
@@ -281,19 +270,19 @@ class Game(val map_width : Int, val map_height : Int)
     var bought: Boolean = false
     if (player.money.value >= struct.price) {
       struct.newInstance(pos, nb_structures, townManager) match {
-        case town: Town => bought = createStruct(town, Tile.grass)
-        case mine: Mine => bought = createStruct(mine, Array(Tile.rock))
-        case farm: Farm => bought = createStruct(farm, Tile.grass)
-        case packingPlant: PackingPlant => bought = createStruct(packingPlant, Tile.grass)
-        case factory: Factory => bought = createStruct(factory, Tile.grass)
+        case town: Town => bought = createStruct(town, Tile.Grass)
+        case mine: Mine => bought = createStruct(mine, Array(Tile.Rock))
+        case farm: Farm => bought = createStruct(farm, Tile.Grass)
+        case packingPlant: PackingPlant => bought = createStruct(packingPlant, Tile.Grass)
+        case factory: Factory => bought = createStruct(factory, Tile.Grass)
         case airport: Airport => {
           //Airport is a Town facility, has to be contained in a town.
           val around = map.getSurroundingStructures(pos,1)
           for (neighbor <- around) {
             neighbor match {
               case town: Town => {
-                if (!town.hasAirport && createStruct(airport, Tile.grass)) {
-                  bought = false
+                if (!town.hasAirport && createStruct(airport, Tile.Grass)) {
+                  bought = true
                   town.hasAirport = true
                   airport.dependanceTown = Some(town)
                   town.airport = Some(airport)
@@ -304,11 +293,11 @@ class Game(val map_width : Int, val map_height : Int)
           }
         }
         case dock: Dock => {
-          val around = map.getSurroundingStructures(pos,1)
+          val around = map.getSurroundingStructures(pos, 1)
           for (neighbor <- around) {
             neighbor match {
               case town: Town => {
-                if (!town.hasDock && createStruct(dock, Tile.sand ++ Tile.water)) {
+                if (!town.hasDock && createStruct(dock, Tile.Sand ++ Tile.Water)) {
                   bought = true
                   town.hasDock = true
                   dock.dependanceTown = Some(town)
@@ -320,11 +309,11 @@ class Game(val map_width : Int, val map_height : Int)
           }
         }
         case field: Field => {
-          val around = map.getSurroundingStructures(pos,0)
+          val around = map.getSurroundingStructures(pos, 0)
           for (neighbor <- around) {
             neighbor match {
               case farm: Farm => {
-                if ((farm.haOfField < 10) && createStruct(field, Tile.grass)) {
+                if ((farm.haOfField < 10) && createStruct(field, Tile.Grass)) {
                   bought = true
                   farm.haOfField += 1
                   farm.fields +=  field
@@ -333,7 +322,7 @@ class Game(val map_width : Int, val map_height : Int)
                 }
               }
               case fieldBis : Field => {
-                if ((fieldBis.dependanceFarm.get.haOfField < 10) && createStruct(field, Tile.grass)) {
+                if ((fieldBis.dependanceFarm.get.haOfField < 10) && createStruct(field, Tile.Grass)) {
                   bought = true
                   fieldBis.dependanceFarm.get.haOfField += 1
                   fieldBis.dependanceFarm.get.fields += field
@@ -357,19 +346,19 @@ class Game(val map_width : Int, val map_height : Int)
       road.newInstance(pos) match {
         case rail: Rail => bought = railManager.createRail(rail)
         case asphalt: Asphalt => {
-          if (map.isUnused(pos) && map.checkBgTile(pos, Tile.grass)) {
+          if (map.isUnused(pos) && map.checkBgTile(pos, Tile.Grass)) {
             map.setBackgroundTile(pos, road.tile)
             bought = true
           }
         }
         case grass: Grass => {
-          if (map.isUnused(pos) && map.checkBgTile(pos, Array(Tile.asphalt, Tile.tree) ++ Tile.sand ++ Tile.water)) {
+          if (map.isUnused(pos) && map.checkBgTile(pos, Array(Tile.Asphalt, Tile.Tree) ++ Tile.Sand ++ Tile.Water)) {
             map.setBackgroundTile(pos, road.tile)
             bought = true
           }
         }
         case water: Water => {
-          if (map.isUnused(pos) && map.checkBgTile(pos, Tile.grass ++ Tile.sand)) {
+          if (map.isUnused(pos) && map.checkBgTile(pos, Tile.Grass ++ Tile.Sand)) {
             map.setBackgroundTile(pos, road.tile)
             bought = true
           }
@@ -441,10 +430,10 @@ class Game(val map_width : Int, val map_height : Int)
 
     veh match {
       case _: Truck =>
-        trip.roadPositions = Dijkstra.tileGraph(origin, destination, Array(Tile.asphalt), map)
+        trip.roadPositions = Dijkstra.tileGraph(origin, destination, Array(Tile.Asphalt), map)
         isDijkstra = true
       case _: Boat =>
-        trip.roadPositions = Dijkstra.tileGraph(origin, destination, Tile.water, map)
+        trip.roadPositions = Dijkstra.tileGraph(origin, destination, Tile.Water, map)
         isDijkstra = true
       case _ => ()
     }
@@ -468,19 +457,19 @@ class Game(val map_width : Int, val map_height : Int)
     nbVehicles += 1
   }
   def buyPassengerCarriage(train: Train): Boolean = {
-    if (!train.moving.value && player.pay(PassengerCarriage.Price)) {
+    if (!train.moving.value && player.pay(Settings.CostPassengerCarriage)) {
       addCarriage(new PassengerCarriage(nbVehicles, train.location, _player), train)
       true
     } else false
   }
   def buyGoodsCarriage(train: Train): Boolean = {
-    if (!train.moving.value && player.pay(GoodsCarriage.Price)) {
+    if (!train.moving.value && player.pay(Settings.CostGoodsCarriage)) {
       addCarriage(new GoodsCarriage(nbVehicles, train.location, _player), train)
       true
     } else false
   }
   def buyTankCar(train: Train): Boolean = {
-    if (!train.moving.value && player.pay(TankCar.Price)) {
+    if (!train.moving.value && player.pay(Settings.CostTankCar)) {
       addCarriage(new TankCar(nbVehicles, train.location, _player), train)
       true
     } else false
@@ -491,12 +480,6 @@ class Game(val map_width : Int, val map_height : Int)
     trains += train
     map.addEntity(train)
     nbTrains.set(nbTrains.value + 1)
-
-    for (carriage <- train.carriageList) { // TEMP, todo: interface pour créer train avec carriages et faire payer avant dans buyVehicle
-      playerMoney.set(playerMoney.value - carriage.cost)
-      map.addEntity(carriage)
-      carriages += carriage
-    }
   }
 
   def createPlane (plane: Plane, airport: Airport, player: Player): Unit = {
@@ -546,7 +529,7 @@ class Game(val map_width : Int, val map_height : Int)
         for (factory <- (city \\ "Factory")) nbFactories+=1
         var pos = new GridLocation((city \ "@x").text.toInt % map.width,(city \ "@y").text.toInt % map.height)
         var town = new LargeTown(pos,id,townManager) ; id+=1
-        createStruct(town,Tile.grass)
+        createStruct(town,Tile.Grass)
         town.setName((city \ "@name").text)
         town.population_=((city \ "@population").text.toInt)
         if (nbFactories>0) {

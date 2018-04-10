@@ -22,7 +22,7 @@ class Train(_id: Int, initialTown: Structure, val owner: Player) extends TrainEl
   // current structure if moving is false, origin structure otherwise
 
 
-  val tiles = Array(Tile.locomotiveT, Tile.locomotiveR, Tile.locomotiveB, Tile.locomotiveL)
+  val tiles = Array(Tile.LocomotiveT, Tile.LocomotiveR, Tile.LocomotiveB, Tile.LocomotiveL)
 
 
   def update(dt: Double, dirIndicator: Int) = {
@@ -42,87 +42,6 @@ class Train(_id: Int, initialTown: Structure, val owner: Player) extends TrainEl
     }
   }
 
-/*
-  // train movement
-  def moveCarriage(c: Carriage, dt: Double, dirIndicator: Int) = {
-    c.currentRail match {
-      case Some(rail) => {
-        if (rail.nextInDir((dirIndicator + 1) % 2) == rail) // first rail
-          {}//rotateTrain(c, dirIndicator)
-        if (rail.nextInDir(dirIndicator) == rail) { // last rail
-          if (c.gridPos.percentageHeight > 0) {
-            moveTmp(c.gridPos, North, dt, speed.value, moveNext = false)
-            //rotateTrain(c, dirIndicator)
-          }
-          else if (c.gridPos.percentageWidth > 0) {
-            moveTmp(c.gridPos, West, dt, speed.value, moveNext = false)
-            //rotateTrain(c, dirIndicator)
-          }
-          else
-            arrived = true
-        }
-        else {
-          if (rail.nextInDir(dirIndicator).gridPos.eq(c.gridPos.right)) {
-            if (c.gridPos.percentageHeight > 0) {
-              if (moveTmp(c.gridPos, North, dt, speed.value, moveNext = false))
-                {}//rotateTrain(c, dirIndicator)
-            } else {
-              if (moveTmp(c.gridPos, East, dt, speed.value)) {
-                c.currentRail = Some(rail.nextInDir(dirIndicator))
-                //rotateTrain(c, dirIndicator)
-              }
-            }
-          } else if (rail.nextInDir(dirIndicator).gridPos.eq(c.gridPos.left)) {
-            if (c.gridPos.percentageHeight > 0) {
-              if (moveTmp(c.gridPos, North, dt, speed.value, moveNext = false))
-                {}//rotateTrain(c, dirIndicator)
-            } else {
-              if (moveTmp(c.gridPos, West, dt, speed.value)) {
-                c.currentRail = Some(rail.nextInDir(dirIndicator))
-                //carriageMovement(rail.gridPos, Some(rail), carriageList)
-              }
-            }
-          } else if (rail.nextInDir(dirIndicator).gridPos.eq(c.gridPos.top)) {
-            if (c.gridPos.percentageWidth > 0) {
-              if (moveTmp(c.gridPos, West, dt, speed.value, moveNext = false))
-                {}//rotateTrain(c, dirIndicator)
-            } else {
-              if (moveTmp(c.gridPos, North, dt, speed.value)) {
-                c.currentRail = Some(rail.nextInDir(dirIndicator))
-                //carriageMovement(rail.gridPos, Some(rail), carriageList)
-              }
-            }
-          } else if (rail.nextInDir(dirIndicator).gridPos.eq(c.gridPos.bottom)) {
-            if (c.gridPos.percentageWidth > 0) {
-              if (moveTmp(c.gridPos, West, dt, speed.value, moveNext = false))
-                {}//rotateTrain(c, dirIndicator)
-            } else {
-              if (moveTmp(c.gridPos, South, dt, speed.value)) {
-                c.currentRail = Some(rail.nextInDir(dirIndicator))
-                //rotateTrain(c, dirIndicator)
-                //carriageMovement(rail.gridPos, Some(rail), carriageList)
-              }
-            }
-          }
-        }
-      }
-      case None => ()
-    }
-  }*/
-/*
-  def manageTile(entity : Renderable, direction : Int) = {
-    val tileList = new ListBuffer[Tile]()
-    tileList += (Tile.passengerWagonB, Tile.passengerWagonR, Tile.passengerWagonT, Tile.passengerWagonL,
-                 Tile.goodsWagonB, Tile.goodsWagonR, Tile.goodsWagonT, Tile.goodsWagonL,
-                 Tile.locomotiveB, Tile.locomotiveR, Tile.locomotiveT, Tile.locomotiveL)
-    var entityType = 1
-    entity match {
-      case train : Train => entityType = 2
-      case p : PassengerCarriage => entityType = 0
-      case _ => ;
-    }
-    entity.tile = tileList(direction + 4 * entityType)
-  }*/
 
   def rotateTrain(v: Vehicle, dirIndicator: Int) = {
     v match {
@@ -139,7 +58,7 @@ class Train(_id: Int, initialTown: Structure, val owner: Player) extends TrainEl
             else if (nextRail.gridPos.eq(rail.gridPos.left)) direction = 3
             direction = (direction + 2 * changeDir) % 4
 
-            val tiles = Array(Tile.locomotiveT, Tile.locomotiveR, Tile.locomotiveB, Tile.locomotiveL)
+            val tiles = Array(Tile.LocomotiveT, Tile.LocomotiveR, Tile.LocomotiveB, Tile.LocomotiveL)
             train.tile = tiles(direction)
           }
           case None => ()
@@ -149,9 +68,8 @@ class Train(_id: Int, initialTown: Structure, val owner: Player) extends TrainEl
     }
   }
 
-  tile = Tile.locomotiveT
+  tile = Tile.LocomotiveT
   var weight = 50
-  val cost = 200
   var carriageList = new ListBuffer[Carriage]()
   var from = StringProperty(initialTown.name)
 

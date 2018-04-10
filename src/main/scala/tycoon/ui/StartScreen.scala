@@ -1,4 +1,6 @@
-package tycoon.ui
+package tycoon.ui // #
+
+import tycoon.game.Settings
 
 import scalafx.Includes._
 import scalafx.application.Platform
@@ -24,7 +26,7 @@ class StartScreen extends BorderPane
 
   private val gameNameText = new Text {
     id = "gameName"
-    text = "Tycoon Game"
+    text = Settings.GameTitle
     margin = Insets(50)
   }
 

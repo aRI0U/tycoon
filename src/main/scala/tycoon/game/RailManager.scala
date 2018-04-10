@@ -19,7 +19,7 @@ class RailManager(map: TileMap, gameGraph: Graph) {
   def createRail(rail: Rail) : Boolean = {
     val pos: GridLocation = rail.gridPos
     var created = false
-    if (map.gridContains(rail.gridRect) && map.isUnused(rail.gridRect) && map.checkBgTile(pos, Tile.grass)) {
+    if (map.gridContains(rail.gridRect) && map.isUnused(rail.gridRect) && map.checkBgTile(pos, Tile.Grass)) {
       nbNeighborRails = 0
 
       val neighbors = Array (
@@ -88,13 +88,13 @@ class RailManager(map: TileMap, gameGraph: Graph) {
 
         // apply correct rotation to rails
         if (rail.previous == rail && !rail.road.finished) { // first rail next to a struct
-          if (firstDir == 0 || firstDir == 2) rail.tile = Tile.straightRailBT
-          else if (firstDir == 1 || firstDir == 3) rail.tile = Tile.straightRailLR
+          if (firstDir == 0 || firstDir == 2) rail.tile = Tile.StraightRailBT
+          else if (firstDir == 1 || firstDir == 3) rail.tile = Tile.StraightRailLR
           rail.previousDir = firstDir
         }
         else if (rail.next == rail && !rail.road.finished) { // non-terminal rail after an other rail
-          if (firstDir == 0 || firstDir == 2) rail.tile = Tile.straightRailBT
-          else if (firstDir == 1 || firstDir == 3) rail.tile = Tile.straightRailLR
+          if (firstDir == 0 || firstDir == 2) rail.tile = Tile.StraightRailBT
+          else if (firstDir == 1 || firstDir == 3) rail.tile = Tile.StraightRailLR
           rail.previousDir = firstDir
           rail.previous.nextDir = (firstDir + 2) % 4
           correctRotation(rail.previous)
@@ -132,18 +132,18 @@ class RailManager(map: TileMap, gameGraph: Graph) {
   // set the good correction of a rail GIVEN its previousDir and nextDir are defined
   def correctRotation(rail: Rail) {
     if (rail.previousDir != -1 && rail.nextDir != -1) {
-      if (rail.previousDir == 0 && rail.nextDir == 1) rail.tile = Tile.turningRailTR
-      else if (rail.previousDir == 0 && rail.nextDir == 2) rail.tile = Tile.straightRailBT
-      else if (rail.previousDir == 0 && rail.nextDir == 3) rail.tile = Tile.turningRailTL
-      else if (rail.previousDir == 1 && rail.nextDir == 0) rail.tile = Tile.turningRailTR
-      else if (rail.previousDir == 1 && rail.nextDir == 2) rail.tile = Tile.turningRailBR
-      else if (rail.previousDir == 1 && rail.nextDir == 3) rail.tile = Tile.straightRailLR
-      else if (rail.previousDir == 2 && rail.nextDir == 0) rail.tile = Tile.straightRailBT
-      else if (rail.previousDir == 2 && rail.nextDir == 1) rail.tile = Tile.turningRailBR
-      else if (rail.previousDir == 2 && rail.nextDir == 3) rail.tile = Tile.turningRailBL
-      else if (rail.previousDir == 3 && rail.nextDir == 0) rail.tile = Tile.turningRailTL
-      else if (rail.previousDir == 3 && rail.nextDir == 1) rail.tile = Tile.straightRailLR
-      else if (rail.previousDir == 3 && rail.nextDir == 2) rail.tile = Tile.turningRailBL
+      if (rail.previousDir == 0 && rail.nextDir == 1) rail.tile = Tile.TurningRailTR
+      else if (rail.previousDir == 0 && rail.nextDir == 2) rail.tile = Tile.StraightRailBT
+      else if (rail.previousDir == 0 && rail.nextDir == 3) rail.tile = Tile.TurningRailTL
+      else if (rail.previousDir == 1 && rail.nextDir == 0) rail.tile = Tile.TurningRailTR
+      else if (rail.previousDir == 1 && rail.nextDir == 2) rail.tile = Tile.TurningRailBR
+      else if (rail.previousDir == 1 && rail.nextDir == 3) rail.tile = Tile.StraightRailLR
+      else if (rail.previousDir == 2 && rail.nextDir == 0) rail.tile = Tile.StraightRailBT
+      else if (rail.previousDir == 2 && rail.nextDir == 1) rail.tile = Tile.TurningRailBR
+      else if (rail.previousDir == 2 && rail.nextDir == 3) rail.tile = Tile.TurningRailBL
+      else if (rail.previousDir == 3 && rail.nextDir == 0) rail.tile = Tile.TurningRailTL
+      else if (rail.previousDir == 3 && rail.nextDir == 1) rail.tile = Tile.StraightRailLR
+      else if (rail.previousDir == 3 && rail.nextDir == 2) rail.tile = Tile.TurningRailBL
     }
   }
 

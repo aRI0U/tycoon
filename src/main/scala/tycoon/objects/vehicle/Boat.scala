@@ -10,6 +10,7 @@ import scalafx.beans.property._
 import tycoon.ui.Tile
 import tycoon.game.{Game, GridLocation, Player}
 import tycoon.ui.DraggableTiledPane
+import tycoon.game.Settings
 
 
 class Boat(_id: Int, dock: Structure, val owner: Player) extends Vehicle(_id, dock, owner) with Container {
@@ -21,10 +22,9 @@ class Boat(_id: Int, dock: Structure, val owner: Player) extends Vehicle(_id, do
   val mManager = new MerchandisesManager
 
   var onTheRoad = BooleanProperty(false)
-  tile = Tile.boat
-  speed.set(200.0)
+  tile = Tile.Boat
+  speed.set(Settings.SpeedBoat)
   var weight = 50
-  val cost = 500
   gridPos = location.gridPos.clone()
 
 

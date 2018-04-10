@@ -1,32 +1,12 @@
-package tycoon.ui
-
-
+package tycoon.ui // #
 
 import scalafx.Includes._
-import scalafx.scene.Scene
-import scalafx.beans.property._
 import scalafx.application.Platform
-import scalafx.scene.paint.Color._
-import scalafx.scene.paint.{Stops, LinearGradient}
-import scalafx.scene.layout.{BorderPane, VBox, StackPane, Pane}
-import scalafx.scene.text.Text
-import scalafx.geometry.{Pos, HPos, VPos, Insets, Rectangle2D, Orientation}
-import scalafx.geometry.Orientation._
-import scalafx.scene.control.{Button, Separator, ButtonType, Alert, TextArea, Label}
-import scalafx.scene.image.{Image, ImageView}
-import scalafx.scene.input.{MouseEvent, KeyEvent}
-
-import scala.collection.mutable.{HashMap, HashSet}
-import scalafx.collections.ObservableBuffer
-import scalafx.collections.ObservableBuffer._ // Add, Remove, Reorder, Update
-
-import scalafx.scene.control.{TextField, Button}
+import scalafx.geometry.{Insets, Pos}
+import scalafx.scene.control.{Alert, Button, ButtonType}
 import scalafx.scene.input.MouseEvent
-import scalafx.scene.layout.{BorderPane, HBox, VBox, GridPane, Priority}
-
-import scalafx.beans.property.{StringProperty, IntegerProperty}
-import scalafx.beans.binding.Bindings
-import scala.collection.mutable.ListBuffer
+import scalafx.scene.layout.{HBox, VBox}
+import scalafx.scene.text.Text
 
 
 class QuitButton extends VBox
@@ -35,7 +15,6 @@ class QuitButton extends VBox
 
   children = new HBox {
     children = Seq(
-
       new Button {
         text = "Quit Game"
         margin = Insets(5)

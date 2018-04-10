@@ -1,18 +1,19 @@
-package tycoon.ui
+package tycoon.ui // #
 
-import tycoon.game.GridLocation
-import tycoon.game.GridRectangle
+import scala.collection.mutable.ListBuffer
 
+import tycoon.game.{GridLocation, GridRectangle}
+
+import scalafx.beans.property.StringProperty
 import scalafx.geometry.Rectangle2D
 import scalafx.scene.image.ImageView
-import scala.collection.mutable.ListBuffer
-import scalafx.beans.property.StringProperty
+
 
 abstract class Renderable(private var pos: GridLocation) {
-  private var _tile: Tile = Tile.default
+  private var _tile: Tile = Tile.Default
   private var _gridRect: GridRectangle = new GridRectangle(pos, 1, 1)
   private val _printData = new ListBuffer[PrintableData]
-  //private val _printData: ListBuffer[(String, StringProperty)] = ListBuffer()
+
   var visible: Boolean = true
 
   def tile: Tile = _tile
@@ -30,8 +31,6 @@ abstract class Renderable(private var pos: GridLocation) {
   def gridIntersects(other: Renderable): Boolean = gridRect.intersects(other.gridRect)
   def gridContains(pos: GridLocation): Boolean = gridRect.contains(pos)
 
-
-  // size in pixels ;; nécessaire ?
   def width: Int = tile.width
   def height: Int = tile.height
 
