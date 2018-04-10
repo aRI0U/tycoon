@@ -49,6 +49,12 @@ class MerchandisesManager {
           case None => ()
         }
       }
+      case d: Dock => {
+        d.dependanceTown match {
+          case Some(t) => determineRequests(t)
+          case None => ()
+        }
+      }
     }
     println(structure+" needs "+request)
     request

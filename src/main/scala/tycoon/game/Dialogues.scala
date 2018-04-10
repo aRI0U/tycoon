@@ -20,6 +20,4 @@ object Dialogues {
   val DefaultInfoTextDuration = 10.0
 
 
-
-
 }
