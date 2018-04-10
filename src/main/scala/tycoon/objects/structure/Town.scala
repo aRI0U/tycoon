@@ -187,7 +187,7 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
         updateJobSeekers()
         updateWaiters()
         updateConsumption()
-        stock.updateExpiredProducts(townManager.getTime())
+         if (stock.updateExpiredProducts(townManager.getTime())) townManager.throwEvent("["+name+"] Be careful! Some of your food is expiring!")
         updateEconomy()
       }
       if (population <= minPopulation) {
@@ -217,8 +217,6 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
   }
 
   // hunger
-
-  newRequest(Product.Milk, 50)
 
   var hunger = 0
   var alreadyDiet = false
@@ -268,7 +266,7 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
         //   }
         // }
         // PROVISOIRE
-        newRequest(Product.Cake, ((stayingNeeds/Product.Cake.nutritiousness).toInt))
+        newRequest(Product.Cake, ((stayingNeeds/(5*Product.Cake.nutritiousness)).toInt))
         // else {
         //   stock.productsTypes(lackingFoodIndex) match {
         //     case f: Food => newRequest(f, (stayingNeeds/f.nutritiousness).toInt)

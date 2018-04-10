@@ -113,7 +113,7 @@ case class Factory(pos: GridLocation, id: Int, townManager: TownManager) extends
       internTime += dt
       if (internTime > productionTime) {
         updateProduction()
-        stock.updateExpiredProducts(townManager.getTime())
+        if (stock.updateExpiredProducts(townManager.getTime())) townManager.throwEvent("["+name+"] Be careful! Some of your food is expiring!")
         internTime -= productionTime
       }
     }

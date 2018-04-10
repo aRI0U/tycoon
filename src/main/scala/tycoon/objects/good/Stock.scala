@@ -152,12 +152,16 @@ class Stock(s: EconomicAgent) {
     updateStocksWIndex(i)
   }
 
-  def updateExpiredProducts(currentTime: Double) = {
+  def updateExpiredProducts(currentTime: Double) : Boolean = {
+    var someExpired = false
     for (merchList <- datedProducts) {
       for (m <- merchList) {
         m.expiryDate match {
           case Some(time) => {
-            if (currentTime > time) merchList -= m
+            if (currentTime > time) {
+              merchList -= m
+              someExpired = true
+            }
           }
           case None => ()
         }
@@ -165,6 +169,7 @@ class Stock(s: EconomicAgent) {
     }
     debugStocks("updateExpiredProducts")
     updateStocks()
+    someExpired
   }
 
   def updateStocksWIndex(i: Int) = {

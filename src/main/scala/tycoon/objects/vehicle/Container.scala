@@ -13,9 +13,9 @@ trait Container {
   val mManager : MerchandisesManager
 
   def embark(structure: Structure, stops: ListBuffer[Structure]) = {
-    println("merchandises: "+merchandises)
-    println("GoodsCarriage > embark from "+structure)
-    println("stops: "+stops)
+    // println("merchandises: "+merchandises)
+    // println("GoodsCarriage > embark from "+structure)
+    // println("stops: "+stops)
     stops.foreach(s => mManager.addStop(s))
     //println("planning:"+ mManager.flattenedRequests)
     structure match {
@@ -29,7 +29,7 @@ trait Container {
           }
         }
         usefulIndices = usefulIndices.filter(_ != -1)
-        println("usefulIndices: "+usefulIndices)
+        //println("usefulIndices: "+usefulIndices)
 
         // embark selected products
         for (i <- usefulIndices) {
@@ -40,13 +40,13 @@ trait Container {
         }
       }
     }
-    println("merchandises: "+merchandises)
-    println("quit structure"+structure)
+    // println("merchandises: "+merchandises)
+    // println("quit structure"+structure)
   }
 
   def debark(structure: Structure) = {
-    println("merchandises: "+merchandises)
-    println("GoodsCarriage > debark")
+    // println("merchandises: "+merchandises)
+    // println("GoodsCarriage > debark")
     val i = mManager.stops.indexOf(structure)    // for (m <- mManager.distribution(i)) structure.stock.getMerchandise(m)
     // mManager.removeStop(structure)
     mManager.distribute(merchandises, structure)

@@ -39,25 +39,25 @@ abstract class EconomicAgent(pos: GridLocation, id: Int, townManager: TownManage
   }
 
   def computeMultiplier(goodData: (EconomicGood, DoubleProperty)) = {
-    println("debug > computeMultiplier")
+    //println("debug > computeMultiplier")
     val prevMultiplier = goodData._2.value
     var totalRequests = 0.0
     var totalStocks = 8.0
     for (p <- goodData._1.totalProducts) {
       val coeff = getWeighting(p._1).coeff
-      println("debug > btotalStocks: "+totalStocks)
+      //println("debug > btotalStocks: "+totalStocks)
       totalStocks += p._2.value*coeff
-      println("debug > etotalStocks: "+totalStocks)
-      println("debug > brequests: "+totalRequests)
+      //println("debug > etotalStocks: "+totalStocks)
+      //("debug > brequests: "+totalRequests)
       totalRequests += p._3.value*coeff
-      println("debug > erequests: "+totalRequests)
+      //println("debug > erequests: "+totalRequests)
     }
     if (totalStocks > 0) {
-      val newMultiplier = (0.5*(prevMultiplier + totalRequests/totalStocks))//.max(10.0)
+      val newMultiplier = (0.5*(prevMultiplier + totalRequests/totalStocks)).min(10.0)
       goodData._2.set(newMultiplier)
     }
     else goodData._2.set(10.0)
-    println("goodData: "+goodData._2)
+    //println("goodData: "+goodData._2)
   }
 
   def updateMultiplier(good: EconomicGood) = {
@@ -89,6 +89,13 @@ abstract class EconomicAgent(pos: GridLocation, id: Int, townManager: TownManage
   def getMultiplier(good: Good) = getGoodData(townManager.getEconomicGood(good))._2
 
   def updateEconomy() = {
+    val e = townManager.getEconomicGood(Product.Milk)
+    //println("update economy")
+    for (t <- e.totalProducts) {
+      //println("structure: "+t._1)
+      //println("stops: "+t._2)
+      //println("requests: "+t._3)
+    }
     goods.foreach(computeMultiplier)
     updateWeightings()
   }
@@ -101,7 +108,13 @@ class EconomicGood(val kind: Good) {
   def newEmergence(structure: Structure, stocks: IntegerProperty, requests: IntegerProperty) = {
     var i = 0
     while (i < totalProducts.length && totalProducts(i)._1 != structure) i += 1
-    if (i == totalProducts.length) totalProducts += new Tuple3(structure, stocks, requests)
+    if (i == totalProducts.length) {
+      val stockSaved = new IntegerProperty
+      stockSaved <== stocks
+      val requestSaved = new IntegerProperty
+      requestSaved <== requests
+      totalProducts += new Tuple3(structure, stockSaved, requestSaved)
+    }
   }
 }
 
