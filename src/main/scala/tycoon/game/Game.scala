@@ -435,15 +435,19 @@ class Game(val map_width : Int, val map_height : Int)
     println("from " + origin.name + " to " + destination.name + " with " + veh + " (repeated: " + repeatTrip + ")")
     val trip = new Trip(origin, destination, veh, repeatTrip)
 
+    var isDijkstra: Boolean = false
+
     veh match {
       case _: Truck =>
         trip.roadPositions = Dijkstra.tileGraph(origin, destination, Array(Tile.asphalt), map)
+        isDijkstra = true
       case _: Boat =>
         trip.roadPositions = Dijkstra.tileGraph(origin, destination, Tile.water, map)
+        isDijkstra = true
       case _ => ()
     }
 
-    if (trip.roadPositions.nonEmpty) {
+    if (trip.roadPositions.nonEmpty || !isDijkstra) {
       trip.start()
       trips += trip
     }
