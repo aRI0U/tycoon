@@ -187,7 +187,7 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
         updateJobSeekers()
         updateWaiters()
         updateConsumption()
-         if (stock.updateExpiredProducts(townManager.getTime())) townManager.throwEvent("["+name+"] Be careful! Some of your food is expiring!")
+        if (stock.updateExpiredProducts(townManager.getTime())) townManager.throwEvent("["+name+"] Be careful! Some of your food is expiring!")
         updateEconomy()
       }
       if (population <= minPopulation) {

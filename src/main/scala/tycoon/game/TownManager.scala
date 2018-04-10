@@ -66,17 +66,26 @@ class TownManager(game: Game) {
       Some(distance)
     }
     else {
-        notVisited.remove(i)
-        var optDistance : Option[Int] = None
-        for (link <- vertex.links) {
-          val i = notVisited.indexOf(link._1)
-          determineVertex(link._1, graph) match {
-            case Some(v) => optDistance = graph.optionMin(optDistance, explore(v, graph, notVisited, stack.push(link._2), arrival))
-            case None => ()
+      println("notVisited"+notVisited)
+      notVisited -= vertex
+      println("notVisited"+notVisited)
+      var optDistance : Option[Int] = None
+      for (link <- vertex.links) {
+        determineVertex(link._1, graph) match {
+          case Some(v) => {
+            val i = notVisited.indexOf(determineVertex(link._1, graph).get)
+            println("new vertex: "+i)
+            if (i != -1) {
+              determineVertex(link._1, graph) match {
+                case Some(v) => optDistance = graph.optionMin(optDistance, explore(v, graph, notVisited, stack.push(link._2), arrival))
+                case None => ()
+              }
+            }
           }
+          case None => ()
         }
-        optDistance
       }
+      optDistance
     }
   }
 
@@ -84,7 +93,8 @@ class TownManager(game: Game) {
     // DFS
     var stack = new Stack[Road]
     val graph = game.game_graph
-    var notVisited = graph.content
+    graph.printGraph
+    var notVisited = graph.content.clone()
     var distance : Option[Int] = None
     determineVertex(s1.structureId, graph) match {
       case Some(vertex) => {
@@ -96,6 +106,19 @@ class TownManager(game: Game) {
       case None => None
     }
   }
+
+  def determineEuclidianDistance(s1: Structure, s2: Structure) : Int =
+    Math.sqrt((Math.pow(s1.gridPos.col - s2.gridPos.col, 2) + Math.pow(s1.gridPos.row - s2.gridPos.row, 2))).toInt
+
+
+  // def debugDistances() = {
+  //   for (s <- structuresList) {
+  //     for (s1 <- structuresList) {
+  //       println("Distance between "+s.structureId+" and "+s1.structureId)
+  //       println(determineRailwayDistance(s,s1))
+  //     }
+  //   }
+  // }
 
   def getTime() : Double = game.totalElapsedTime
 

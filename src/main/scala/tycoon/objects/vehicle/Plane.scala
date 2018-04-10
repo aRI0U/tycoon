@@ -34,8 +34,8 @@ class Plane(_id: Int, airport: Structure, val owner: Player) extends Vehicle(_id
   }
 
   override def landing() = {
-    debark(location)
     super.landing
+    debark(location)
   }
 
   def update(dt: Double, dirIndicator: Int) = {

@@ -40,7 +40,7 @@ class Graph {
         }
       }
     }
-    print_graph()
+    printGraph()
   }
 
   def removeStructure(s: Structure) = {
@@ -55,11 +55,11 @@ class Graph {
     }
   }
 
-  def print_graph() {
+  def printGraph() {
     for (vertex <- content) {
-      println("tycoon > objects > graph > Graph.scala > print_graph: Vertex " + vertex.origin + ":")
+      println("tycoon > objects > graph > Graph.scala > printGraph: Vertex " + vertex.origin + ":")
       for (link <- vertex.links) {
-        println("tycoon > objects > graph > Graph.scala > print_graph: |--> connected to " + link._1)
+        println("tycoon > objects > graph > Graph.scala > printGraph: |--> connected to " + link._1)
       }
     }
   }

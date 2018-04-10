@@ -15,7 +15,7 @@ class PackingPlant(pos: GridLocation, id: Int, townManager: TownManager) extends
   override protected val _recipesList : ListBuffer[List[(Good, Int)]] = new ListBuffer[List[(Good,Int)]]
 
   override def initProducts() = { }
-  
+
 
   override def convertedInto(recipeId: Int) : List[(Good,Int)] = List(recipesList(recipeId)(0))
 
@@ -58,9 +58,5 @@ class PackingPlant(pos: GridLocation, id: Int, townManager: TownManager) extends
       }
       else notPacked -= lastPacked.quantity
     }
-  }
-
-  def updateProducts() = {
-
   }
 }
