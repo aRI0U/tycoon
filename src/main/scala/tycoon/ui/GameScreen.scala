@@ -166,7 +166,16 @@ class GameScreen(val game: Game) extends BorderPane
         children.add(section)
         for (elt <- content.data) {
           val item = new Text {
-            text <== when (elt._3) choose (StringProperty(elt._1 + ": ").concat(elt._2)) otherwise (StringProperty(""))
+            elt match {
+              case rankedElt: PrintableRankedElement => {
+                text <== when (rankedElt.visible) choose (StringProperty(elt.name + ": ").concat(elt.valueStr)) otherwise (StringProperty(""))
+                rankedElt match {
+                  case p: PrintableTownProduct => fill <== when (p.valueInt > 0) choose Green otherwise Red
+                  case _ => ()
+                }
+              }
+              case _ => text <== StringProperty(elt.name + ": ").concat(elt.valueStr)
+            }
             margin = Insets(8)
           }
           children.add(item)

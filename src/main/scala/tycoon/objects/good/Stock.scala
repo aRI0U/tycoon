@@ -6,16 +6,16 @@ import tycoon.objects.structure._
 
 import scalafx.beans.property.{IntegerProperty, DoubleProperty, StringProperty}
 
-class Stock(s: Structure) {
+class Stock(s: EconomicAgent) {
   var productsTypes = new ListBuffer[Good]
   var datedProducts = new ListBuffer[ListBuffer[Merchandise]]
   var stocksInt = new ListBuffer[IntegerProperty]
   var requestsInt = new ListBuffer[IntegerProperty]
   var productsInt = new ListBuffer[IntegerProperty]
-  var productsStr = new ListBuffer[StringProperty]
+  // var productsStr = new ListBuffer[StringProperty]
   var pricesInt = new ListBuffer[DoubleProperty]
-  var pricesStr = new ListBuffer[StringProperty]
-  var printablesStr = new ListBuffer[StringProperty]
+  // var pricesStr = new ListBuffer[StringProperty]
+  // var printablesStr = new ListBuffer[StringProperty]
 
   // usual methods
   def stocks(i: Int) : Int = stocksInt(i).value
@@ -43,20 +43,26 @@ class Stock(s: Structure) {
         stocksInt += IntegerProperty(0)
         requestsInt += IntegerProperty(-quantity)
       }
-      productsStr += new StringProperty
-      productsStr.last <== (stocksInt.last - requestsInt.last).asString
-      pricesInt += DoubleProperty(0)
-      pricesStr += new StringProperty
-      pricesStr.last <== pricesInt.last.asString
+      productsInt += new IntegerProperty
+      productsInt.last <== stocksInt.last - requestsInt.last
+      pricesInt += new DoubleProperty
+      pricesInt.last <== DoubleProperty(kind.price) * s.getMultiplier(kind)
+      // pricesStr += new StringProperty
+      // pricesStr.last <== pricesInt.last.asString
       s match {
         case t: Town => {
-          printablesStr += new StringProperty
-          printablesStr.last <== productsStr.last.concat(" for $").concat(pricesStr.last)
-          s.printData(1).newData(kind.label, printablesStr.last)
+          // printablesStr += new StringProperty
+          //printablesStr.last <== productsStr.last.concat(" for $").concat(pricesStr.last)
+          t.printData(1).newTownProduct(kind.label, productsInt.last, pricesInt.last)
+          t.report(kind, stocksInt.last, requestsInt.last)
         }
-        case _ => s.printData(1).newData(kind.label, productsStr.last)
+        case f: Facility => {
+          f.printData(1).newRankedElement(kind.label, productsInt.last)
+          f.report(kind, stocksInt.last, requestsInt.last)
+        }
+        case _ => ()
       }
-
+      s.report(kind, stocksInt.last, requestsInt.last)
     }
     else {
       if (quantity >= 0) setStocks(i, stocks(i)+quantity)
@@ -146,12 +152,16 @@ class Stock(s: Structure) {
     updateStocksWIndex(i)
   }
 
-  def updateExpiredProducts(currentTime: Double) = {
+  def updateExpiredProducts(currentTime: Double) : Boolean = {
+    var someExpired = false
     for (merchList <- datedProducts) {
       for (m <- merchList) {
         m.expiryDate match {
           case Some(time) => {
-            if (currentTime > time) merchList -= m
+            if (currentTime > time) {
+              merchList -= m
+              someExpired = true
+            }
           }
           case None => ()
         }
@@ -159,6 +169,7 @@ class Stock(s: Structure) {
     }
     debugStocks("updateExpiredProducts")
     updateStocks()
+    someExpired
   }
 
   def updateStocksWIndex(i: Int) = {

@@ -3,16 +3,17 @@ package tycoon.objects.structure
 import scala.collection.mutable.ListBuffer
 import scala.util.Random
 
+import tycoon.game.GridLocation
 import tycoon.objects.vehicle._
 import tycoon.objects.vehicle.train._
 import tycoon.objects.good._
 import tycoon.ui.Renderable
-import tycoon.game.GridLocation
 
 import scalafx.beans.property.{IntegerProperty, StringProperty}
 
 
 abstract class Structure(pos: GridLocation, id: Int) extends Renderable(pos) {
+
   val structureId = id
   var trainList = new ListBuffer[Train]()
   var planeList = new ListBuffer[Vehicle]()
@@ -46,6 +47,4 @@ abstract class Structure(pos: GridLocation, id: Int) extends Renderable(pos) {
 
   var internTime: Double = 0
   def update(dt: Double)
-
-  val stock = new Stock(this)
 }

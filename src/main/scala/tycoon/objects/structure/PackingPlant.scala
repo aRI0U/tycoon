@@ -6,7 +6,7 @@ import scala.collection.mutable.ListBuffer
 import tycoon.game._
 import tycoon.objects.good._
 
-class PackingPlant(pos: GridLocation, id: Int, tManager: TownManager) extends Factory(pos, id, tManager) {
+class PackingPlant(pos: GridLocation, id: Int, townManager: TownManager) extends Factory(pos, id, townManager) {
 
 
   override val recipesList = new ListBuffer[List[(Good,Int)]]
