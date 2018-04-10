@@ -66,12 +66,10 @@ class TownManager(game: Game) {
       Some(distance)
     }
     else {
-      var i = notVisited.indexOf(vertex)
-      if (i == -1) None
-      else {
         notVisited.remove(i)
         var optDistance : Option[Int] = None
         for (link <- vertex.links) {
+          val i = notVisited.indexOf(link._1)
           determineVertex(link._1, graph) match {
             case Some(v) => optDistance = graph.optionMin(optDistance, explore(v, graph, notVisited, stack.push(link._2), arrival))
             case None => ()
