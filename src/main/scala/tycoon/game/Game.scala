@@ -431,9 +431,9 @@ class Game(val map_width : Int, val map_height : Int)
 
     veh match {
       case _: Truck =>
-        trip.roadPositions = Dijkstra.tileGraph(origin, destination, Array(Tile.asphalt), map)
+        trip.roadPositions = Dijkstra.tileGraph(origin, destination, Array(Tile.asphalt), map).reverse
       case _: Boat =>
-        trip.roadPositions = Dijkstra.tileGraph(origin, destination, Tile.water, map)
+        trip.roadPositions = Dijkstra.tileGraph(origin, destination, Tile.water, map).reverse
       case _ => ()
     }
 

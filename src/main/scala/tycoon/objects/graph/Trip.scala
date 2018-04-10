@@ -22,6 +22,8 @@ class Trip(var origin: Structure, var destination: Structure, val veh: Vehicle, 
 
   def start() = {
     origin.removeVehicle(veh)
+    for (p <- roadPositions)
+    println(p.col, p.row)
     i = 0
   }
 
