@@ -1,4 +1,4 @@
-package tycoon.ui
+package tycoon.ui // #
 
 import tycoon.game.GridLocation
 
@@ -26,6 +26,8 @@ object Tile {
     img.viewport = new Rectangle2D(t.sx, t.sy, t.sw, t.sh)
     img
   }
+
+  /** TILES */
 
   val Default = new Tile("default", 0, 0)
 

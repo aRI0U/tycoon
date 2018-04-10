@@ -1,4 +1,4 @@
-package tycoon //#
+package tycoon // #
 
 import tycoon.game.{Game, Settings}
 import tycoon.ui.{CreditsScreen, GameScreen, StartScreen}

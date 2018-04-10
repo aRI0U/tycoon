@@ -1,4 +1,6 @@
-package tycoon.ui
+package tycoon.ui // #
+
+import tycoon.game.Settings
 
 import scalafx.Includes._
 import scalafx.application.Platform
@@ -7,8 +9,6 @@ import scalafx.scene.control.Button
 import scalafx.scene.input.MouseEvent
 import scalafx.scene.layout.{BorderPane, HBox, VBox}
 import scalafx.scene.text.Text
-
-import tycoon.game.Settings
 
 
 class StartScreen extends BorderPane
