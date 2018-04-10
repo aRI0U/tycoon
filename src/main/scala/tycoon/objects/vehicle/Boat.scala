@@ -20,7 +20,7 @@ class Boat(_id: Int, dock: Structure, val owner: Player) extends Vehicle(_id, do
   val merchandises = new ListBuffer[Merchandise]
 
   val mManager = new MerchandisesManager
-
+  
   var onTheRoad = BooleanProperty(false)
   tile = Tile.Boat
   speed.set(Settings.SpeedBoat)
