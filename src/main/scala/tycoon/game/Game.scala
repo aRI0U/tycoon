@@ -122,7 +122,7 @@ class Game(val map_width : Int, val map_height : Int)
   def fillNewGame() {
     map.sprinkleTile(Tile.tree, 3)
     map.sprinkleTile(Tile.rock, 1)
-    map.generateLakes(5, 2000) //SLOW
+    map.generateLakes(5, 2000)
   }
 
   val tiledPane = new DraggableTiledPane(map)
@@ -545,56 +545,44 @@ class Game(val map_width : Int, val map_height : Int)
       for (connection <- (mapXML \\ "Connection")){
         var upstream = (connection  \ "@upstream").text
         var downstream = (connection  \ "@downstream").text
-        println("names of towns", upstream,downstream)
+        println("tycoon > game > loadMap > names of towns in connection:", upstream,downstream)
         var town1 = townManager.townsList(0)
         var town2 = townManager.townsList(1)
         for (town <- townManager.townsList){
-          // println(town.name)
           if (town.name == upstream) {
             town1 = town
-            // println("trouvé un town",town.name,upstream)
           }
           if (town.name == downstream) {
             town2 = town
           }
         }
-        var done = false
-        (connection \\ "Rail") foreach (i => {
-          if (!done) {
-            val path = Dijkstra.tileGraph(town1,town2,(Tile.grass),map)
-            for (pos <- path) {
-              var rail = new Rail(pos)
-              railManager.createRail(rail)
-            }
-            if (path.size >0){
-              done = true
-            }
+        var is = false
+        (connection \\ "Rail") foreach (i => is = true)
+        if (is) {
+          val path = Dijkstra.tileGraph(town1,town2,(Tile.grass),map)
+          for (pos <- path) {
+            var rail = new Rail(pos)
+            railManager.createRail(rail)
           }
-        })
-        done = false
-        (connection \\ "Road") foreach (i => {
-          if (!done) {
-            val path = Dijkstra.tileGraph(town1,town2,(Tile.grass ++ Tile.sand),map)
-            for (pos <- path) {
+        }
+        is = false
+        (connection \\ "Road") foreach (i => is = true)
+        if (is) {
+          val path = Dijkstra.tileGraph(town1,town2,(Tile.grass ++ Array(Tile.asphalt)),map)
+          for (pos <- path) {
+            if (!(pos == town1.gridRect.pos || pos == town2.gridRect.pos))
               map.setBackgroundTile(pos,Tile.asphalt)
-            }
-            if (path.size >0){
-              done = true
-            }
           }
-        })
-        done = false
-        (connection \\ "Canal") foreach (i => {
-          if (!done) {
-            val path = Dijkstra.tileGraph(town1,town2,(Tile.grass ++ Tile.water),map)
-            for (pos <- path) {
+        }
+        is = false
+        (connection \\ "Canal") foreach (i => is = true)
+        if (is) {
+          val path = Dijkstra.tileGraph(town1,town2,(Tile.grass ++ Tile.water),map)
+          for (pos <- path) {
+            if (!(pos == town1.gridRect.pos || pos == town2.gridRect.pos))
               map.setBackgroundTile(pos,Tile.water(0))
-            }
-            if (path.size >0){
-              done = true
-            }
           }
-        })
+        }
       }
       // map.generateLakes(5, 2000) //SLOW
     }
