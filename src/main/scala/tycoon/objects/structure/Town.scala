@@ -5,10 +5,10 @@ import scala.Array
 
 import tycoon.game.GridLocation
 import tycoon.game.{Game, TownManager}
-import tycoon.game.{PrintableData, PrintableElement}
 import tycoon.objects.structure._
 import tycoon.objects.good._
 
+import tycoon.ui.{PrintableData, PrintableElement}
 import tycoon.ui.Tile
 
 import scalafx.beans.property.{BooleanProperty, DoubleProperty, IntegerProperty, StringProperty}

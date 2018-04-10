@@ -2,8 +2,9 @@ package tycoon.objects.structure
 
 import scala.collection.mutable.ListBuffer
 
-import tycoon.objects.good._
 import tycoon.game._
+import tycoon.objects.good._
+import tycoon.ui.{PrintableData, PrintableElement}
 
 import scalafx.beans.property.{BooleanProperty, DoubleProperty, IntegerProperty, StringProperty}
 

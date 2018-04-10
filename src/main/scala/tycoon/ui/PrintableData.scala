@@ -1,4 +1,4 @@
-package tycoon.game
+package tycoon.ui
 
 import scala.collection.mutable.ListBuffer
 
@@ -45,7 +45,13 @@ class PrintableRankedElement(override val name: String, override val valueInt: I
 }
 
 class PrintableTownProduct(override val name: String, override val valueInt: IntegerProperty, val price: DoubleProperty) extends PrintableRankedElement(name, valueInt) {
-  valueStr <== valueInt.asString.concat(" for $").concat(price.asString)}
+  valueStr <== valueInt.asString.concat(" for $").concat(price.asString)
+
+  // def truncate(property: DoubleProperty) : DoubleProperty = {
+  //   val truncated = new DoubleProperty
+  //   truncated <== ((property * 100).asInt)/100
+  // }
+}
 
 class PrintableData(s: String) {
   val label = s

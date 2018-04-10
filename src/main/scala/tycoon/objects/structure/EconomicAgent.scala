@@ -39,19 +39,25 @@ abstract class EconomicAgent(pos: GridLocation, id: Int, townManager: TownManage
   }
 
   def computeMultiplier(goodData: (EconomicGood, DoubleProperty)) = {
+    println("debug > computeMultiplier")
     val prevMultiplier = goodData._2.value
     var totalRequests = 0.0
-    var totalStocks = 0.0
+    var totalStocks = 8.0
     for (p <- goodData._1.totalProducts) {
       val coeff = getWeighting(p._1).coeff
+      println("debug > btotalStocks: "+totalStocks)
       totalStocks += p._2.value*coeff
+      println("debug > etotalStocks: "+totalStocks)
+      println("debug > brequests: "+totalRequests)
       totalRequests += p._3.value*coeff
+      println("debug > erequests: "+totalRequests)
     }
     if (totalStocks > 0) {
       val newMultiplier = (0.5*(prevMultiplier + totalRequests/totalStocks))//.max(10.0)
       goodData._2.set(newMultiplier)
     }
     else goodData._2.set(10.0)
+    println("goodData: "+goodData._2)
   }
 
   def updateMultiplier(good: EconomicGood) = {
@@ -84,7 +90,7 @@ abstract class EconomicAgent(pos: GridLocation, id: Int, townManager: TownManage
 
   def updateEconomy() = {
     goods.foreach(computeMultiplier)
-    updateWeightings
+    updateWeightings()
   }
 }
 
