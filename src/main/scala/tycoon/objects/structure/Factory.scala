@@ -13,7 +13,18 @@ case class Factory(pos: GridLocation, id: Int, townManager: TownManager) extends
 
   val productionTime = 5
 
-  protected val _recipesList : ListBuffer[List[(Good, Int)]] = ListBuffer(List((Product.Coal,3)))
+  //Cake
+
+  protected val _recipesList : ListBuffer[List[(Good, Int)]] = ListBuffer(
+    List((Product.Egg,1),(Product.Corn,5)),
+    List((Product.Iron,50)),
+    List((Product.Iron,1),(Product.Milk,20)),
+    List((Product.Lether,5)),
+    List((Product.Sand,50)),
+    List((Product.Oil,50)),
+    List((Product.Iron,20),(Product.Gold,5),(Product.Lether,1)),
+    List((Product.Corn,12))
+  )
 
   def recipesList = _recipesList
   setName("Factory " + id.toString)
@@ -45,6 +56,13 @@ case class Factory(pos: GridLocation, id: Int, townManager: TownManager) extends
     // possible conversions are hardcoded here
     recipeId match {
       case 0 => List((Product.Cake,1))
+      case 1 => List((Product.Revolver,1))
+      case 2 => List((Product.Cheese,1))
+      case 3 => List((Product.Hat,1))
+      case 4 => List((Product.Glass,1))
+      case 5 => List((Product.Plastic,1))
+      case 6 => List((Product.Ring,1))
+      case 7 => List((Product.PopCorn,10))
       case _ => throw new IndexOutOfBoundsException
     }
   }

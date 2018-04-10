@@ -1,42 +1,36 @@
-package tycoon.ui
+package tycoon.ui // #
+
+import scala.collection.mutable.ListBuffer
 
 import tycoon.game._
-import tycoon.objects.vehicle.train._
-import tycoon.objects.vehicle.Vehicle
 import tycoon.objects.railway._
 import tycoon.objects.structure._
+import tycoon.objects.vehicle.Vehicle
+import tycoon.objects.vehicle.train._
 
 import scalafx.Includes._
-import scalafx.scene.Scene
-import scalafx.beans.property._
 import scalafx.application.Platform
-import scalafx.scene.paint.Color._
-import scalafx.scene.paint.{Stops, LinearGradient}
-import scalafx.scene.layout.{BorderPane, VBox, StackPane, Pane}
-import scalafx.scene.text.Text
-import scalafx.geometry.{Pos, HPos, VPos, Insets, Rectangle2D, Orientation}
-import scalafx.geometry.Orientation._
-import scalafx.scene.control.{Button, Separator, ButtonType, Alert, TextArea, Label, Slider, Tab, TabPane}
-import scalafx.scene.image.{Image, ImageView}
-import scalafx.scene.input.{MouseEvent, KeyEvent}
-
-import scala.collection.mutable.{HashMap, HashSet}
-import scalafx.collections.ObservableBuffer
-import scalafx.collections.ObservableBuffer._ // Add, Remove, Reorder, Update
-
-import scalafx.scene.control.{TextField, Button, ScrollPane}
-import scalafx.scene.input.MouseEvent
-import scalafx.scene.layout.{BorderPane, HBox, VBox, GridPane, Priority}
-
 import scalafx.beans.property.{StringProperty, IntegerProperty, BooleanProperty}
 import scalafx.beans.binding.Bindings
-import scala.collection.mutable.ListBuffer
+import scalafx.collections.ObservableBuffer
+import scalafx.collections.ObservableBuffer._
+import scalafx.geometry._
+import scalafx.geometry.Orientation._
+import scalafx.scene.Scene
+import scalafx.scene.control._
+import scalafx.scene.input.{MouseEvent, KeyEvent}
+import scalafx.scene.layout._
+import scalafx.scene.paint.Color._
+import scalafx.scene.text.Text
 
 
 class GameScreen(val game: Game) extends BorderPane
 {
   stylesheets += "style/gamescreen.css"
   id = "body"
+
+
+  /** Interaction Menu (Bottom) */
 
   private val interactionsMenu = new InteractionsMenu(game)
 
@@ -60,6 +54,9 @@ class GameScreen(val game: Game) extends BorderPane
   interactionsMenu.addBuyableVehicle(BuyableVehicle.Plane)
   interactionsMenu.addBuyableVehicle(BuyableVehicle.Boat)
   interactionsMenu.addBuyableVehicle(BuyableVehicle.Truck)
+
+
+  /** Information Pane (Top) */
 
   private val informationPane = new BorderPane {
     id = "informationPane"
@@ -94,6 +91,9 @@ class GameScreen(val game: Game) extends BorderPane
     }
   }
 
+
+  /** Game Pane (Center) */
+
   private val gamePane = new BorderPane {
     private var mouseAnchorX: Double = 0
     private var mouseAnchorY: Double = 0
@@ -122,7 +122,6 @@ class GameScreen(val game: Game) extends BorderPane
       specialDragging = false
 
       if (Math.abs(e.x - mouseAnchorX) <= 5 && Math.abs(e.y - mouseAnchorY) <= 5) {
-
         val pos = game.tiledPane.screenPxToGridLoc(e.x, e.y)
         interactionsMenu.mousePressed(pos)
         mousePressed(pos)
@@ -130,80 +129,8 @@ class GameScreen(val game: Game) extends BorderPane
     }
   }
 
-  def mousePressed(pos: GridLocation): Unit = {
-    var debugStr = "tycoon > ui > GameScreen.scala > mousePressed: "
-    debugStr += "pos(" + pos.col.toString + ", " + pos.row.toString + ")"
-    debugStr += ", background(" + game.map.getBackgroundTile(pos).name + ")"
-    debugStr += ", structure("
 
-    game.map.maybeGetStructureAt(pos) match {
-      case None => ()
-      case Some(e) => {
-        debugStr += e.tile.name
-        bindPrintData(e.printData)
-        e match {
-          case struct: Structure => interactionsMenu.structureClicked(struct)
-          case _ => () // rail
-        }
-      }
-    }
-
-    debugStr += "), entities("
-
-    game.map.getEntitiesAt(pos) foreach { e => debugStr += e.tile.name + ", " }
-    if (debugStr.takeRight(1) != "(") debugStr = debugStr.dropRight(2)
-
-    debugStr += ")"
-    println(debugStr)
-  }
-
-  def bindPrintData(datas: ListBuffer[PrintableData]) {
-    val printData = new VBox {
-      for (content <- datas) {
-        val section = new Text {
-          text <== StringProperty(content.label)
-          margin = Insets(5)
-        }
-        children.add(section)
-        for (elt <- content.data) {
-          val item = new Text {
-            elt match {
-              case rankedElt: PrintableRankedElement => {
-                text <== when (rankedElt.visible) choose (StringProperty(elt.name + ": ").concat(elt.valueStr)) otherwise (StringProperty(""))
-                rankedElt match {
-                  case p: PrintableTownProduct => fill <== when (p.valueInt > 0) choose Green otherwise Red
-                  case _ => ()
-                }
-              }
-              case _ => text <== StringProperty(elt.name + ": ").concat(elt.valueStr)
-            }
-            margin = Insets(8)
-          }
-          children.add(item)
-        }
-      }
-    }
-    menuPane.center = new ScrollPane {
-      content = printData
-    }
-  }
-
-
-
-  // def bindPrintData(data: ListBuffer[(String, StringProperty)]) {
-  //   val printData = new VBox {
-  //     for (elt <- data) {
-  //       val item = new Text {
-  //         text <== StringProperty(elt._1 + ": ").concat(elt._2)
-  //         margin = Insets(5)
-  //       }
-  //       children.add(item)
-  //     }
-  //   }
-  //   menuPane.center = new ScrollPane {
-  //     content = printData
-  //   }
-  // }
+  /** Menu Pane (Left) */
 
   private val menuPane = new BorderPane {
     id = "menu"
@@ -239,5 +166,65 @@ class GameScreen(val game: Game) extends BorderPane
   top = informationPane
   center = gamePane
 
+  // init map
   def init(): Unit = gamePane.center = game.tiledPane
+
+
+  /** Print data in menuPane using bindPrintData & Communicate with interactions menu */
+
+  def mousePressed(pos: GridLocation): Unit = {
+    var debugStr = "tycoon > ui > GameScreen.scala > mousePressed: "
+    debugStr += "pos(" + pos.col.toString + ", " + pos.row.toString + ")"
+    debugStr += ", background(" + game.map.getBackgroundTile(pos).name + ")"
+    debugStr += ", structure("
+
+    game.map.maybeGetStructureAt(pos) match {
+      case None => ()
+      case Some(e) => {
+        debugStr += e.tile.name
+        bindPrintData(e.printData)
+        e match {
+          case struct: Structure => interactionsMenu.structureClicked(struct)
+          case _ => ()
+        }
+      }
+    }
+
+    debugStr += "), entities("
+
+    game.map.getEntitiesAt(pos) foreach { e => debugStr += e.tile.name + ", " }
+    if (debugStr.takeRight(1) != "(") debugStr = debugStr.dropRight(2)
+
+    debugStr += ")"
+    println(debugStr)
+  }
+
+  def bindPrintData(datas: ListBuffer[PrintableData]) {
+    val printData = new VBox {
+      datas foreach { content =>
+        val txt = new Text {
+          text <== StringProperty(content.label)
+          margin = Insets(5)
+        }
+        children.add(txt)
+        content.data foreach { elt =>
+          val item = new Text {
+            elt match {
+              case rankedElt: PrintableRankedElement => {
+                text <== when (rankedElt.visible) choose (StringProperty(elt.name + ": ").concat(elt.valueStr)) otherwise (StringProperty(""))
+                rankedElt match {
+                  case p: PrintableTownProduct => fill <== when (p.valueInt > 0) choose Green otherwise Red
+                  case _ => ()
+                }
+              }
+              case _ => text <== StringProperty(elt.name + ": ").concat(elt.valueStr)
+            }
+            margin = Insets(8)
+          }
+          children.add(item)
+        }
+      }
+    }
+    menuPane.center = new ScrollPane { content = printData }
+  }
 }

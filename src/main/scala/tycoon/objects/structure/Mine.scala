@@ -44,10 +44,14 @@ case class Mine(pos: GridLocation, id: Int, townManager: TownManager) extends Fa
   extractableAmount += r.nextInt(100)
   allExtracted += false
 
-  // only to test tank cars
-  stock.newProduct(Product.Milk, 0)
-  productionPerPeriod += (10)
-  extractableAmount += 4000
+  stock.newProduct(Product.Sand, 0)
+  productionPerPeriod += 5+r.nextInt(3)
+  extractableAmount += 50000
+  allExtracted += false
+
+  stock.newProduct(Product.Oil, 0)
+  productionPerPeriod += 5+r.nextInt(3)
+  extractableAmount += 50000
   allExtracted += false
 
   // update production

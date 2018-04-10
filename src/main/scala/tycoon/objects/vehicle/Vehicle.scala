@@ -72,6 +72,7 @@ abstract class Vehicle(_id: Int, struct: Structure, owner: Player) extends Rende
   def arrival() = {
     moving.set(false)
     speed <== DoubleProperty(0)
+    _location.set(nextLocation.value)
     _nextLocation.set(None)
   }
 

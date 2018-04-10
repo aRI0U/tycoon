@@ -1,23 +1,25 @@
-package tycoon.ui
+package tycoon.ui // #
+
+import scala.collection.mutable.ListBuffer
 
 import tycoon.game._
-
-import scalafx.Includes._
-import scalafx.geometry.{Pos, Insets}
-import scalafx.scene.control._
-import scalafx.scene.input.MouseEvent
-import scalafx.scene.layout.{HBox, VBox, Priority}
-import scalafx.beans.property._
-import scalafx.scene.text.Text
+import tycoon.objects.graph._
+import tycoon.objects.railway._
+import tycoon.objects.structure._
 import tycoon.objects.vehicle.train._
 import tycoon.objects.vehicle._
+
+import scalafx.Includes._
+import scalafx.beans.property._
 import scalafx.collections.ObservableBuffer
+import scalafx.geometry.{Pos, Insets}
+import scalafx.scene.control._
 import scalafx.scene.control.TableColumn._
-import scala.collection.mutable.ListBuffer
-import tycoon.objects.structure._
-import tycoon.objects.railway._
+import scalafx.scene.input.MouseEvent
+import scalafx.scene.layout.{HBox, VBox, Priority}
 import scalafx.scene.paint.Color
-import tycoon.objects.graph.Route
+import scalafx.scene.text.Text
+
 
 class InteractionsMenu(val game: Game) extends TabPane
 {
@@ -26,6 +28,11 @@ class InteractionsMenu(val game: Game) extends TabPane
   tabClosingPolicy = TabPane.TabClosingPolicy.Unavailable
 
   private val formatter = java.text.NumberFormat.getIntegerInstance
+
+
+
+
+  /** Create all tabs */
 
   private val structuresTab = new Tab()
   private val roadsTab = new Tab()
@@ -47,8 +54,39 @@ class InteractionsMenu(val game: Game) extends TabPane
 
   private var currentTemporaryTab: Option[Tab] = None
 
+  private def removeTemporaryTab() = {
+    currentTemporaryTab match {
+      case Some(tab) =>
+        this.tabs -= tab
+        tabPaneRequestFocus()
+        currentTemporaryTab = None
+      case None => ()
+    }
+  }
+
+  this.selectionModel.value.selectedItem.onChange {
+    // quit current action when switching tab
+    currentTemporaryTab match {
+      case Some(tab) =>
+        if (!tab.selected.value) {
+          stopBuilding()
+          stopCreatingRoute()
+        }
+      case None => ()
+    }
+  }
+
+  private def selectFirstTab() = this.selectionModel.value.selectFirst()
+  private def tabPaneRequestFocus() = this.requestFocus()
+
+
+
+
+
+
+
   /**
-   TABS FOR BUYING PHYSICAL OBJECTS (STRUCTURES, RAILS...)
+    TABS FOR BUYING AND BUILDING (STRUCTURES, ROADS, VEHICLES...)
   */
 
   private val buildingTabContainer = new Array[HBox](3)
@@ -60,7 +98,6 @@ class InteractionsMenu(val game: Game) extends TabPane
   vehiclesTab.content = new ScrollPane { content = buildingTabContainer(2) }
 
   private var selectedBuyableItem: Option[BuyableItem] = None
-
   private val quantityBought = IntegerProperty(0)
 
   def addBuyableItem(item: BuyableItem, tabId: Int) = {
@@ -113,20 +150,6 @@ class InteractionsMenu(val game: Game) extends TabPane
       text <== StringProperty("Total Cost: $").concat((quantityBought * item.price).asString)
     }
 
-    val removeLastBt = new Button { /* TODO */
-      text = "Resell Last"
-      margin = Insets(10)
-      vgrow = Priority.Always
-      maxHeight = Double.MaxValue
-      visible <== quantityBought > 0
-      onMouseClicked = _ => {
-        if(true) {
-          quantityBought.set(quantityBought.value - 1)
-          tabPaneRequestFocus()
-        }
-      }
-    }
-
     val imgContainer = new VBox {
       children = Tile.getImageView(item.tile)
       alignment = Pos.Center
@@ -140,18 +163,46 @@ class InteractionsMenu(val game: Game) extends TabPane
 
     val container = new HBox(20.0)
     container.children += closeTabBt
-    // container.children += removeLastBt /* button is not functional yet */
     container.children += imgContainer
     container.children += buyingDataContainer
 
     itemTab.setContent(container)
   }
 
-
   private def stopBuilding() = {
     removeTemporaryTab()
     selectedBuyableItem = None
   }
+
+  // handle building physical objects (structures, rails..) and buying vehicles
+  def mousePressed(pos: GridLocation, dragging: Boolean = false): Unit = {
+    selectedBuyableItem match {
+      case Some(item) => {
+        if(!dragging || item.createByDragging) {
+          item match {
+            case struct: BuyableStruct => {
+              if(game.buyStruct(struct, pos))
+                quantityBought.set(quantityBought.value + 1)
+            }
+            case rail: BuyableRoad => {
+              if(game.buyRoad(rail, pos))
+                quantityBought.set(quantityBought.value + 1)
+            }
+            case vehicle: BuyableVehicle => {
+              if(game.buyVehicle(vehicle, pos))
+                quantityBought.set(quantityBought.value + 1)
+            }
+          }
+        }
+      }
+      case None => ()
+    }
+  }
+
+
+
+
+
 
 
   /**
@@ -212,6 +263,14 @@ class InteractionsMenu(val game: Game) extends TabPane
     onMouseClicked = _ => openManageRoutesDialog()
   }
 
+  val showTripsBt = new Button {
+    text = "Manage Trips"
+    margin = Insets(10)
+    vgrow = Priority.Always
+    maxHeight = Double.MaxValue
+    onMouseClicked = _ => openManageTripsDialog()
+  }
+
   val upgradeEngineBt = new Button {
     text = "Upgrade Engine"
     margin = Insets(10)
@@ -237,11 +296,11 @@ class InteractionsMenu(val game: Game) extends TabPane
   routesTabContainer.children = Seq(
     newRouteBt,
     showRoutesBt,
+    showTripsBt,
     newPlaneTripBt,
     newBoatTripBt,
     newTruckTripBt
   )
-
 
   def openCarriagesBuyingDialog() = {
     val stoppedTrains: ListBuffer[Train] = game.trains filter (!_.moving.value)
@@ -319,14 +378,11 @@ class InteractionsMenu(val game: Game) extends TabPane
             game.setInfoText("[Carriages Buying] The carriages have been bought.")
           else
             game.setInfoText("[Carriages Buying] All the carriages couldn't be bought. You reached the limit or didn't have enough money.")
-
         }
       }
       case _ => ()
     }
   }
-
-
 
   def openEngineUpgradingDialog() = {
     val upgradableTrains: ListBuffer[Train] = game.trains filter (_.engineUpgradeLevel.value < Engine.MaxUpgradeLevel)
@@ -449,7 +505,6 @@ class InteractionsMenu(val game: Game) extends TabPane
     table
   }
 
-
   def getRoutesTableView(routeList: ListBuffer[Route]) : TableView[Route] = {
     val routes = new ObservableBuffer[Route]
     routes ++= routeList
@@ -506,6 +561,62 @@ class InteractionsMenu(val game: Game) extends TabPane
     dialog.showAndWait()
   }
 
+  def getTripsTableView(tripList: ListBuffer[Trip]) : TableView[Trip] = {
+    val trips = new ObservableBuffer[Trip]
+    trips ++= tripList
+
+    val idCol = new TableColumn[Trip, String]("ID")
+    idCol.minWidth = 30
+    idCol.cellValueFactory = { cell => IntegerProperty(cell.value.veh.id).asString }
+
+    val typeCol = new TableColumn[Trip, String]("TYPE")
+    typeCol.minWidth = 50
+    typeCol.cellValueFactory = { cell => cell.value.veh match {
+      case _: Train => StringProperty("Train")
+      case _: Boat => StringProperty("Boat")
+      case _: Plane => StringProperty("Plane")
+      case _: Truck => StringProperty("Truck")
+      case _ => StringProperty("-")
+    } }
+
+    val stopsCol = new TableColumn[Trip, String]("STOPS")
+    stopsCol.minWidth = 150
+    stopsCol.cellValueFactory = { cell =>
+      StringProperty(cell.value.origin.name + ", " + cell.value.destination.name) }
+
+    val table = new TableView(trips)
+    table.minWidth = 400
+    table.columns ++= Seq(idCol, typeCol, stopsCol)
+    table
+  }
+
+  def openManageTripsDialog() = {
+    val trips = getTripsTableView(game.trips filter (_.repeated))
+
+    val removeBt = new Button {
+      text = "Remove Trip"
+      onMouseClicked = _ => {
+        val trip: Trip = trips.selectionModel.value.selectedItem.value
+        if (trip == null)
+          game.setInfoText("You didn't select any trip.")
+        else {
+          trip.repeated = false
+          game.setInfoText("Trip will be removed once the vehicle reach its final stop.")
+        }
+      }
+    }
+
+    val content = new VBox(10)
+    content.children.add(trips)
+    content.children.add(removeBt)
+
+    val dialog = new Dialog
+    dialog.title = "Your Trips (only showing repeated trips)"
+    dialog.dialogPane.value.buttonTypes = Seq(ButtonType.Close)
+    dialog.dialogPane().content = content
+    dialog.showAndWait()
+  }
+
   def openTrainsDataDialog() = {
     val dialog = new Dialog
     dialog.title = "Your Trains"
@@ -513,6 +624,30 @@ class InteractionsMenu(val game: Game) extends TabPane
     dialog.dialogPane().content = getTrainsTableView(game.trains)
     dialog.showAndWait()
   }
+
+
+
+
+
+
+
+
+
+  /**
+    ROUTE AND TRIP CREATION
+  */
+
+
+  private val routeStops = new ListBuffer[Structure]()
+  private val routeRoads = new ListBuffer[Road]()
+  private var creatingTrainRoute = false
+  private var creatingPlaneTrip = false
+  private var creatingBoatTrip = false
+  private var creatingTruckTrip = false
+  private var routeMaxSize = 0
+
+  private var originStruct: Option[Structure] = None
+  private var destinationStruct: Option[Structure] = None
 
   def startTrainRouteCreation() = {
     val trainRouteTab = new Tab()
@@ -550,19 +685,7 @@ class InteractionsMenu(val game: Game) extends TabPane
     routeRoads.clear()
     creatingTrainRoute = true
     routeMaxSize = 10
-
   }
-
-  private val routeStops = new ListBuffer[Structure]()
-  private val routeRoads = new ListBuffer[Road]()
-  private var creatingTrainRoute = false
-  private var creatingPlaneTrip = false
-  private var creatingBoatTrip = false
-  private var creatingTruckTrip = false
-  private var routeMaxSize = 0
-
-  private var originStruct: Option[Structure] = None
-  private var destinationStruct: Option[Structure] = None
 
   def addTripStruct(struct: Structure): Unit = {
     if (originStruct == None) {
@@ -696,36 +819,6 @@ class InteractionsMenu(val game: Game) extends TabPane
     game.clearInfoText(force = false)
   }
 
-
-
-  private def selectFirstTab() = this.selectionModel.value.selectFirst()
-  private def tabPaneRequestFocus() = this.requestFocus()
-
-  def mousePressed(pos: GridLocation, dragging: Boolean = false): Unit = {
-    // buying physical objects (structures, rails..)
-    selectedBuyableItem match {
-      case Some(item) => {
-        if(!dragging || item.createByDragging) {
-          item match {
-            case struct: BuyableStruct => {
-              if(game.buyStruct(struct, pos))
-                quantityBought.set(quantityBought.value + 1)
-            }
-            case rail: BuyableRoad => {
-              if(game.buyRoad(rail, pos))
-                quantityBought.set(quantityBought.value + 1)
-            }
-            case vehicle: BuyableVehicle => {
-              if(game.buyVehicle(vehicle, pos))
-                quantityBought.set(quantityBought.value + 1)
-            }
-          }
-        }
-      }
-      case None => ()
-    }
-  }
-
   def structureClicked(struct: Structure) {
     if (creatingTruckTrip)
       addTripStruct(struct)
@@ -778,28 +871,6 @@ class InteractionsMenu(val game: Game) extends TabPane
         if (creatingBoatTrip)
           addTripStruct(dock)
       case _ => ()
-    }
-  }
-
-  private def removeTemporaryTab() = {
-    currentTemporaryTab match {
-      case Some(tab) =>
-        this.tabs -= tab
-        tabPaneRequestFocus()
-        currentTemporaryTab = None
-      case None => ()
-    }
-  }
-
-  this.selectionModel.value.selectedItem.onChange {
-    // quit building when changing tab
-    currentTemporaryTab match {
-      case Some(tab) =>
-        if (!tab.selected.value) {
-          stopBuilding()
-          stopCreatingRoute()
-        }
-      case None => ()
     }
   }
 }

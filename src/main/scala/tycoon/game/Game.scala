@@ -109,9 +109,9 @@ class Game(val map_width : Int, val map_height : Int)
   map.fillBackground(Tile.Grass)
 
   def fillNewGame() {
-    map.sprinkleTile(Tile.Tree, 3)
-    map.sprinkleTile(Tile.Rock, 1)
-    map.generateLakes(5, 20) //SLOW
+    map.sprinkleTile(Tile.tree, 5)
+    map.sprinkleTile(Tile.rock, 1)
+    map.generateLakes(4, 500) //SLOW
   }
 
   val tiledPane = new DraggableTiledPane(map)
@@ -240,6 +240,7 @@ class Game(val map_width : Int, val map_height : Int)
   /* KEEEEP BEGIN */
 
   def createStruct(struct: Structure, tilesAllowed: Array[Tile]): Boolean = {
+    var resultBool = false
     if (map.gridContains(struct.gridRect)
         && map.isUnused(struct.gridRect)
         && map.checkBgTiles(struct.gridRect, tilesAllowed)) {
@@ -249,7 +250,7 @@ class Game(val map_width : Int, val map_height : Int)
       game_graph.newStructure(struct)
 
       struct match {
-        case town: Town => townManager.newTown(town)
+        case town: Town => {townManager.newTown(town)}
         case mine: Mine => { mines += mine ; townManager.newStructure(mine) }
         case _ => townManager.newStructure(_)
       }
@@ -258,6 +259,7 @@ class Game(val map_width : Int, val map_height : Int)
     else {
       struct match {
         case m: Mine => setInfoText("You can create mines only on deposits!", 2)
+        case m: Dock => setInfoText("You can create Docks only on Water and Sand!", 2)
         case _ => ()
       }
       false
@@ -532,67 +534,65 @@ class Game(val map_width : Int, val map_height : Int)
         town.population_=((city \ "@population").text.toInt)
         if (nbFactories>0) {
           var factory = new Factory(pos.left,id,townManager); id+=1
-          createStruct(factory,Tile.Grass)
-          factory.workers_=(nbFactories)
+          createStruct(factory,Tile.grass)
+          factory.workers_=(nbFactories*100)
+          railManager.createRail(new Rail(pos.left.bottom))
+          railManager.createRail(new Rail(pos.bottom))
+
         }
-        ( city \\ "Airport") foreach (i => {createStruct(new Airport(pos.left.top,id),Tile.Grass); id+=1})
+        ( city \\ "Airport") foreach (i => {createStruct(new Airport(pos.left.top,id),Tile.grass)/*; id+=1*/ ; town.hasAirport = true })
       }
 
-      map.sprinkleTile(Tile.Tree, 3)
-      map.sprinkleTile(Tile.Rock, 1)
+      map.sprinkleTile(Tile.tree, 5)
+      map.sprinkleTile(Tile.rock, 1)
       for (connection <- (mapXML \\ "Connection")){
         var upstream = (connection  \ "@upstream").text
         var downstream = (connection  \ "@downstream").text
-        println("names of towns", upstream,downstream)
+        println("tycoon > game > loadMap > names of towns in connection:", upstream,downstream)
         var town1 = townManager.townsList(0)
         var town2 = townManager.townsList(1)
         for (town <- townManager.townsList){
-          // println(town.name)
           if (town.name == upstream) {
             town1 = town
-            // println("trouvé un town",town.name,upstream)
           }
           if (town.name == downstream) {
             town2 = town
           }
         }
-        var done = false
-        (connection \\ "Rail") foreach (i => {
-          if (!done) {
-            val path = Dijkstra.tileGraph(town1,town2,(Tile.Grass),map)
-            for (pos <- path) {
-              var rail = new Rail(pos)
-              railManager.createRail(rail)
+        var is = false
+        (connection \\ "Rail") foreach (i => is = true)
+        if (is) {
+          val path = Dijkstra.tileGraph(town1,town2,(Tile.grass),map)
+          for (pos <- path) {
+            //in order to counter some priority cases with the factories
+            if (pos == town1.gridPos.left.left.top || pos == town1.gridPos.left.left.bottom ) {
+              railManager.createRail(new Rail(town1.gridPos.left.left))
             }
-            if (path.size >0){
-              done = true
+            if (pos == town2.gridPos.left.left.bottom || pos == town2.gridPos.left.left.top) {
+              railManager.createRail(new Rail(town2.gridPos.left.left))
             }
+            var rail = new Rail(pos)
+            railManager.createRail(rail)
           }
-        })
-        done = false
-        (connection \\ "Road") foreach (i => {
-          if (!done) {
-            val path = Dijkstra.tileGraph(town1,town2,(Tile.Grass ++ Tile.Sand),map)
-            for (pos <- path) {
-              map.setBackgroundTile(pos,Tile.Asphalt)
-            }
-            if (path.size >0){
-              done = true
-            }
+        }
+        is = false
+        (connection \\ "Road") foreach (i => is = true)
+        if (is) {
+          val path = Dijkstra.tileGraph(town1,town2,(Tile.grass ++ Array(Tile.asphalt)),map)
+          for (pos <- path) {
+            if (!(pos == town1.gridRect.pos || pos == town2.gridRect.pos))
+              map.setBackgroundTile(pos,Tile.asphalt)
           }
-        })
-        done = false
-        (connection \\ "Canal") foreach (i => {
-          if (!done) {
-            val path = Dijkstra.tileGraph(town1,town2,(Tile.Grass ++ Tile.Water),map)
-            for (pos <- path) {
-              map.setBackgroundTile(pos,Tile.Water(0))
-            }
-            if (path.size >0){
-              done = true
-            }
+        }
+        is = false
+        (connection \\ "Canal") foreach (i => is = true)
+        if (is) {
+          val path = Dijkstra.tileGraph(town1,town2,(Tile.grass ++ Tile.water),map)
+          for (pos <- path) {
+            if (!(pos == town1.gridRect.pos || pos == town2.gridRect.pos))
+              map.setBackgroundTile(pos,Tile.water(0))
           }
-        })
+        }
       }
       // map.generateLakes(5, 2000) //SLOW
     }

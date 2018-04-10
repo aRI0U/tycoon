@@ -8,8 +8,8 @@ object Settings {
   val GameWidth = 200
   val GameHeight = 200
   val ScreenMaximized = false
-  val ScreenMinWidth = 800
-  val ScreenMinHeight = 600
+  val ScreenMinWidth = 1000
+  val ScreenMinHeight = 800
 
   // Structures Costs
   val CostSmallTown = 1

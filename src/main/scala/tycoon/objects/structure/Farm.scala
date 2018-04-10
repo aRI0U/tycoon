@@ -34,6 +34,15 @@ case class Farm(pos: GridLocation, id: Int, townManager: TownManager) extends Fa
   // datedProducts += new ListBuffer[Merchandise]
   productionPerPeriod += (4)
 
+  stock.newProduct(Product.Lether, 0)
+  productionPerPeriod += (1)
+
+  stock.newProduct(Product.Milk, 0)
+  productionPerPeriod += (10)
+
+  stock.newProduct(Product.RabbitFoot, 0)
+  productionPerPeriod += (1)
+
   // update production
 
   def updateProduction(i: Int) = {
@@ -50,7 +59,7 @@ case class Farm(pos: GridLocation, id: Int, townManager: TownManager) extends Fa
         //just for Corn, every 4 days
         if (productionCounter == 4) {
           if (tileType == 2) {
-            updateProduction(1)
+            updateProduction(1) //Corn
           }
           productionCounter = 0
           tileType = (tileType +1) % 3
@@ -59,7 +68,9 @@ case class Farm(pos: GridLocation, id: Int, townManager: TownManager) extends Fa
             field.tile = Tile.Field(tileType)
           }
         }
-        updateProduction(0)
+        updateProduction(0) //Eggs
+        updateProduction(2) //Lether
+        updateProduction(3) //Milk
         stock.updateExpiredProducts(townManager.getTime())
         internTime -= productionTime
       }

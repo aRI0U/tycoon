@@ -173,10 +173,10 @@ class Stock(s: EconomicAgent) {
   }
 
   def updateStocksWIndex(i: Int) = {
-    println("US > initial stock:"+stocks(i))
+    // println("US > initial stock:"+stocks(i))
     var sum = 0
     datedProducts(i).foreach(m => sum += m.quantity)
-    println("US > sum: "+sum)
+    // println("US > sum: "+sum)
     setStocks(i, sum)
     debugStocks("updateStocksWIndex")
   }

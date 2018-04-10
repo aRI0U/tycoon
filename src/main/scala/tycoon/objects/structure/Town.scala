@@ -25,9 +25,9 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
       _name.set(townManager.unchosen_names(i))
       townManager.unchosen_names.remove(i)*/
       val nameId = r.nextInt(townManager.townNames.length)
-      val name = townManager.townNames(nameId)
+      val name = StringProperty(townManager.townNames(nameId))
       setName(townManager.townNames(nameId))
-      townManager.townNames -= name
+      townManager.townNames -= townManager.townNames(nameId)
     }
     catch {
       case e: Exception => {
@@ -95,7 +95,7 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
   def updatePopulation () = {
     if (population < max_population) {
       val i = r.nextInt(population)
-      population += i/50
+      population += i/80
     }
   }
 
@@ -244,10 +244,22 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
     }
     totalNeeds
   }
-
+  def newRandomRequest(i : Int) {
+    if (i == 0) {
+      val food = Product.foods(scala.util.Random.nextInt(Product.foods.size))
+      newRequest(food, ((feedPopulation(population*nutritiousNeeds)/(5*food.nutritiousness)).toInt))
+    }
+    if (i == 1) {
+      val purchase = Product.purchases(scala.util.Random.nextInt(Product.purchases.size))
+      newRequest(purchase,(population/(purchase.price)).toInt)
+    }
+  }
+  newRandomRequest(1)
   def updateConsumption() = {
     val needs = population*nutritiousNeeds
-    if (hunger % lunchTime == 0) {
+    if (scala.util.Random.nextInt(50) == 1 && (needs > (dietTime/6))) newRandomRequest(0)
+    if (scala.util.Random.nextInt(70) == 1) newRandomRequest(1)
+    // if (hunger % lunchTime == 0) {
       val stayingNeeds = feedPopulation(needs)
       hunger = (hunger*stayingNeeds/needs).toInt
       if (hunger > dietTime) {
@@ -266,7 +278,6 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
         //   }
         // }
         // PROVISOIRE
-        newRequest(Product.Cake, ((stayingNeeds/(5*Product.Cake.nutritiousness)).toInt))
         // else {
         //   stock.productsTypes(lackingFoodIndex) match {
         //     case f: Food => newRequest(f, (stayingNeeds/f.nutritiousness).toInt)
@@ -274,12 +285,15 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
         //   }
         // }
         if (hunger > starvingTime) {
-          population -= hunger
-          if (!alreadyStarving) townManager.throwEvent("["+name+"] People are starving, nur ein Gott kann sie retten...")
+          population -= hunger*2
+          if (!alreadyStarving) {
+            townManager.throwEvent("["+name+"] People are starving, nur ein Gott kann sie retten...")
+            newRequest(Product.Corn, ((stayingNeeds/(5*Product.Corn.nutritiousness)).toInt))
+          }
           alreadyStarving = true
         }
       }
-    }
+    // }
     hunger += 1
   }
 

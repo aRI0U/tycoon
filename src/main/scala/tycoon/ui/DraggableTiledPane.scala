@@ -1,27 +1,19 @@
-package tycoon.ui
-
+package tycoon.ui // #
 
 import tycoon.game.{GridLocation, GridRectangle, TileMap}
 
 import scalafx.Includes._
-import scalafx.scene.Scene
+import scalafx.animation.{Interpolator, Timeline}
 import scalafx.beans.property._
-
-import scalafx.scene.paint.Color._
-import scalafx.scene.paint.{Stops, LinearGradient}
-import scalafx.scene.layout.{BorderPane, VBox, StackPane, Pane}
-import scalafx.scene.text.Text
 import scalafx.geometry.{Pos, HPos, VPos, Insets, Rectangle2D}
+import scalafx.scene.layout.{BorderPane, VBox, StackPane, Pane}
+import scalafx.scene.canvas.Canvas
 import scalafx.scene.control.Button
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.input.{MouseEvent, KeyEvent}
-
-import scalafx.animation.{Timeline, Interpolator}
-import scala.collection.mutable.{HashMap, ListBuffer}
-import scalafx.scene.canvas.Canvas
-import scalafx.scene.paint.{Color}
-import scalafx.scene.transform.Affine
-
+import scalafx.scene.paint.{Stops, Color, LinearGradient}
+import scalafx.scene.paint.Color._
+import scalafx.scene.text.Text
 
 
 class DraggableTiledPane(val tm: TileMap) extends BorderPane {
