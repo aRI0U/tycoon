@@ -22,7 +22,7 @@ object Product {
   val Sand = new RawMaterial("Sand", 1, 1, false)
   val Oil = new RawMaterial("Oil", 10, 1, true)
   val Wood = new RawMaterial("Wood", 1, 1, false)
-  val Lether = new RawMaterial("Lether", 5, 1, false)
+  val Leather = new RawMaterial("Leather", 5, 1, false)
 
   // PreciousMetal
   val Gold = new RawMaterial("Gold", 25, 1, false)
@@ -30,10 +30,10 @@ object Product {
   // ProcessedGood
   val Cardboard = new ProcessedGood("Cardboard", 1, 1, false)
   val Glass = new ProcessedGood("Glass", 5, 1, false)
-  val Plastic = new ProcessedGood("Plastic", 5, 1, false)
-  val Revolver = new ProcessedGood("Revolver",100,5,false)
   val Hat = new ProcessedGood("Hat",50,5,false)
+  val Plastic = new ProcessedGood("Plastic", 5, 1, false)
   val RabbitFoot = new ProcessedGood("rabbitFoot",10,1,false)
+  val Revolver = new ProcessedGood("Revolver",100,5,false)
   val Ring = new ProcessedGood("Ring",1000,1,false)
 
   // Food

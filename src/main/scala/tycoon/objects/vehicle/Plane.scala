@@ -28,7 +28,6 @@ class Plane(_id: Int, airport: Structure, val owner: Player) extends Vehicle(_id
   gridPos = location.gridPos.clone()
 
   override def boarding(stops: ListBuffer[Structure]) = {
-    println("navion")
     super.boarding(stops)
     embark(location, stops)
   }

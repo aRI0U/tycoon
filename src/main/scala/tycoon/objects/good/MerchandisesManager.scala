@@ -55,6 +55,7 @@ class MerchandisesManager {
           case None => ()
         }
       }
+      case _ => ()
     }
     println(structure+" needs "+request)
     request
@@ -66,27 +67,32 @@ class MerchandisesManager {
     println("s: "+s)
     println("stops: "+stops)
     println("requests: "+requests)
-    // s match {
-    //   case a: Airport => {
-    //     a.dependanceTown match {
-    //       case Some(t) => owner = t
-    //       case None => ()
-    //     }
-    //   }
-    //   case d: Dock => {
-    //     d.dependanceTown match {
-    //       case Some(t) => owner = t
-    //       case None => ()
-    //     }
-    //   }
-    //   case _ => ()
-    // }
     var i = 0
     while (i < requests.length && requests(i)._1 != s) i+=1
-    for (good <- requests(i)._2)
     s match {
-      case agent: EconomicAgent => agent.stock.receiveMerchandises(good, merchandises, None)
-      case airport: Airport => println("success")
+      case agent: EconomicAgent => {
+        for (good <- requests(i)._2)
+        agent.stock.receiveMerchandises(good, merchandises, None)
+      }
+      case airport: Airport => {
+        airport.dependanceTown match {
+          case Some(t) => {
+            for (good <- determineRequests(t))
+            t.stock.receiveMerchandises(good, merchandises, None)
+          }
+          case None => ()
+        }
+      }
+      case dock: Dock => {
+        println("detected dock")
+        dock.dependanceTown match {
+          case Some(t) => {
+            for (good <- determineRequests(t))
+            t.stock.receiveMerchandises(good, merchandises, None)
+          }
+          case None => ()
+        }
+      }
       case _ => ()
     }
   }

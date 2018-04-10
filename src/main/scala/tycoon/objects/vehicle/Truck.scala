@@ -27,7 +27,15 @@ class Truck(_id: Int, initialStruct: Structure, val owner: Player) extends Vehic
   var weight = 50
   gridPos = location.gridPos.clone()
 
+  override def boarding(stops: ListBuffer[Structure]) = {
+    super.boarding(stops)
+    embark(location, stops)
+  }
 
+  override def landing() = {
+    super.landing
+    debark(location)
+  }
 
   def update(dt: Double, dirIndicator: Int) = {
 

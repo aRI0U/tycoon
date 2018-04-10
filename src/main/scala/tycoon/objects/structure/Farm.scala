@@ -34,7 +34,7 @@ case class Farm(pos: GridLocation, id: Int, townManager: TownManager) extends Fa
   // datedProducts += new ListBuffer[Merchandise]
   productionPerPeriod += (4)
 
-  stock.newProduct(Product.Lether, 0)
+  stock.newProduct(Product.Leather, 0)
   productionPerPeriod += (1)
 
   stock.newProduct(Product.Milk, 0)
@@ -69,7 +69,7 @@ case class Farm(pos: GridLocation, id: Int, townManager: TownManager) extends Fa
           }
         }
         updateProduction(0) //Eggs
-        updateProduction(2) //Lether
+        updateProduction(2) //Leather
         updateProduction(3) //Milk
         stock.updateExpiredProducts(townManager.getTime())
         internTime -= productionTime

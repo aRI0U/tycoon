@@ -19,10 +19,10 @@ case class Factory(pos: GridLocation, id: Int, townManager: TownManager) extends
     List((Product.Egg,1),(Product.Corn,5)),
     List((Product.Iron,50)),
     List((Product.Iron,1),(Product.Milk,20)),
-    List((Product.Lether,5)),
+    List((Product.Leather,5)),
     List((Product.Sand,50)),
     List((Product.Oil,50)),
-    List((Product.Iron,20),(Product.Gold,5),(Product.Lether,1)),
+    List((Product.Iron,20),(Product.Gold,5),(Product.Leather,1)),
     List((Product.Corn,12))
   )
 

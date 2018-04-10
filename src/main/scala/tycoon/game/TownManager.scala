@@ -66,15 +66,12 @@ class TownManager(game: Game) {
       Some(distance)
     }
     else {
-      println("notVisited"+notVisited)
       notVisited -= vertex
-      println("notVisited"+notVisited)
       var optDistance : Option[Int] = None
       for (link <- vertex.links) {
         determineVertex(link._1, graph) match {
           case Some(v) => {
             val i = notVisited.indexOf(determineVertex(link._1, graph).get)
-            println("new vertex: "+i)
             if (i != -1) {
               determineVertex(link._1, graph) match {
                 case Some(v) => optDistance = graph.optionMin(optDistance, explore(v, graph, notVisited, stack.push(link._2), arrival))

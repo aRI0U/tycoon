@@ -40,7 +40,6 @@ class Graph {
         }
       }
     }
-    printGraph()
   }
 
   def removeStructure(s: Structure) = {

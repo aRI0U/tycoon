@@ -20,14 +20,22 @@ class Boat(_id: Int, dock: Structure, val owner: Player) extends Vehicle(_id, do
   val merchandises = new ListBuffer[Merchandise]
 
   val mManager = new MerchandisesManager
-  
+
   var onTheRoad = BooleanProperty(false)
   tile = Tile.Boat
   speed.set(Settings.SpeedBoat)
   var weight = 50
   gridPos = location.gridPos.clone()
 
+  override def boarding(stops: ListBuffer[Structure]) = {
+    super.boarding(stops)
+    embark(location, stops)
+  }
 
+  override def landing() = {
+    super.landing
+    debark(location)
+  }
 
   def update(dt: Double, dirIndicator: Int) = {
 
