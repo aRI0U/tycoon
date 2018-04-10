@@ -253,7 +253,7 @@ class InteractionsMenu(val game: Game) extends TabPane
     val goodsCarriagesSpinner = new Spinner[Integer](0, 5, 0)
     goodsCarriagesSpinner.maxWidth = 60
     val tankCarsSpinner = new Spinner[Integer](0, 5, 0)
-    goodsCarriagesSpinner.maxWidth = 60
+    tankCarsSpinner.maxWidth = 60
 
     val passengerCarriageContent = new HBox(10)
     passengerCarriageContent.alignment = Pos.CenterLeft

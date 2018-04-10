@@ -22,8 +22,6 @@ class Trip(var origin: Structure, var destination: Structure, val veh: Vehicle, 
 
   def start() = {
     origin.removeVehicle(veh)
-    for (p <- roadPositions)
-    println(p.col, p.row)
     i = 0
   }
 
@@ -51,14 +49,46 @@ class Trip(var origin: Structure, var destination: Structure, val veh: Vehicle, 
         }
 
         case truck: Truck => {
-          val dir = truck.getDirs(truck.gridPos, roadPositions(i + 1))(0)
-          if (!truck.gridPos.eq(destination.gridPos)) {
-            if (truck.move(truck.gridPos, dir, dt, truck.speed.value))
+          if (i+1 < roadPositions.length && !truck.gridPos.eq(roadPositions(i+1))) {
+            val dirs = truck.getDirs(truck.gridPos, roadPositions(i+1))
+            if (dirs.length == 2) {
+              val hSpeed: Double = truck.speed.value / Math.sqrt(1 + Math.pow(truck.gridPos.adjustedRow - roadPositions(i+1).row, 2) / Math.pow(truck.gridPos.adjustedCol - roadPositions(i+1).col, 2))
+              val vSpeed: Double = truck.speed.value / Math.sqrt(1 + Math.pow(truck.gridPos.adjustedCol - roadPositions(i+1).col, 2) / Math.pow(truck.gridPos.adjustedRow - roadPositions(i+1).row, 2))
+              dirs foreach { dir: Direction => dir match {
+                case East | West => truck.move(truck.gridPos, dir, dt, hSpeed)
+                case South | North => truck.move(truck.gridPos, dir, dt, vSpeed)
+                case Undefined => ()
+              }}
+            } else if (dirs.length == 1) {
+              truck.move(truck.gridPos, dirs(0), dt, truck.speed.value)
+            }
+          } else {
+            if (truck.stabilize(truck.gridPos, dt, truck.speed.value))
               i += 1
           }
-          else
-            truck.stabilize(truck.gridPos, dt, truck.speed.value)
         }
+
+        case boat: Boat => {
+          if (i+1 < roadPositions.length && !boat.gridPos.eq(roadPositions(i+1))) {
+            val dirs = boat.getDirs(boat.gridPos, roadPositions(i+1))
+            if (dirs.length == 2) {
+              val hSpeed: Double = boat.speed.value / Math.sqrt(1 + Math.pow(boat.gridPos.adjustedRow - roadPositions(i+1).row, 2) / Math.pow(boat.gridPos.adjustedCol - roadPositions(i+1).col, 2))
+              val vSpeed: Double = boat.speed.value / Math.sqrt(1 + Math.pow(boat.gridPos.adjustedCol - roadPositions(i+1).col, 2) / Math.pow(boat.gridPos.adjustedRow - roadPositions(i+1).row, 2))
+              dirs foreach { dir: Direction => dir match {
+                case East | West => boat.move(boat.gridPos, dir, dt, hSpeed)
+                case South | North => boat.move(boat.gridPos, dir, dt, vSpeed)
+                case Undefined => ()
+              }}
+            } else if (dirs.length == 1) {
+              boat.move(boat.gridPos, dirs(0), dt, boat.speed.value)
+            }
+          } else {
+            if (boat.stabilize(boat.gridPos, dt, boat.speed.value))
+              i += 1
+          }
+        }
+
+        case _ => ()
       }
 
       if (!active) {
@@ -68,6 +98,8 @@ class Trip(var origin: Structure, var destination: Structure, val veh: Vehicle, 
           origin = destination
           destination = tmp
           origin.removeVehicle(veh)
+          i = 0
+          roadPositions = roadPositions.reverse
         }
       }
     }
