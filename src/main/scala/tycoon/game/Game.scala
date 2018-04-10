@@ -426,16 +426,19 @@ class Game(val map_width : Int, val map_height : Int)
   }
 
   def createTrip(origin: Structure, destination: Structure, veh: Vehicle, repeatTrip: Boolean) = {
-    println("------")
     println("from " + origin.name + " to " + destination.name + " with " + veh + " (repeated: " + repeatTrip + ")")
     val trip = new Trip(origin, destination, veh, repeatTrip)
+
+    veh match {
+      case _: Truck =>
+        trip.roadPositions = Dijkstra.tileGraph(origin, destination, Array(Tile.asphalt), map).reverse
+      case _: Boat =>
+        trip.roadPositions = Dijkstra.tileGraph(origin, destination, Tile.water, map).reverse
+      case _ => ()
+    }
+
     trip.start()
     trips += trip
-
-    println("trying to create trip on asphalt only")
-    val result = Dijkstra.tileGraph(origin, destination, Array(Tile.asphalt), map)
-    for (pos <- result) println(pos.col, pos.row)
-    println("------")
   }
 
   /* KEEEEP END */
