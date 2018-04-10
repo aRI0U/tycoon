@@ -45,8 +45,7 @@ class PrintableRankedElement(override val name: String, override val valueInt: I
 }
 
 class PrintableTownProduct(override val name: String, override val valueInt: IntegerProperty, val price: DoubleProperty) extends PrintableRankedElement(name, valueInt) {
-
-}
+  valueStr <== valueInt.asString.concat(" for $").concat(price.asString)}
 
 class PrintableData(s: String) {
   val label = s

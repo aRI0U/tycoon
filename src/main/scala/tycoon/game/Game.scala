@@ -530,9 +530,9 @@ class Game(val map_width : Int, val map_height : Int)
         var upstream = (connection  \ "@upstream").text
         var downstream = (connection  \ "@downstream").text
         println("names of towns", upstream,downstream)
-        var town1 = townManager.towns_list(0)
-        var town2 = townManager.towns_list(1)
-        for (town <- townManager.towns_list){
+        var town1 = townManager.townsList(0)
+        var town2 = townManager.townsList(1)
+        for (town <- townManager.townsList){
           // println(town.name)
           if (town.name == upstream) {
             town1 = town

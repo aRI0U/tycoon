@@ -6,16 +6,16 @@ import tycoon.objects.structure._
 
 import scalafx.beans.property.{IntegerProperty, DoubleProperty, StringProperty}
 
-class Stock(s: Structure) {
+class Stock(s: EconomicAgent) {
   var productsTypes = new ListBuffer[Good]
   var datedProducts = new ListBuffer[ListBuffer[Merchandise]]
   var stocksInt = new ListBuffer[IntegerProperty]
   var requestsInt = new ListBuffer[IntegerProperty]
   var productsInt = new ListBuffer[IntegerProperty]
-  var productsStr = new ListBuffer[StringProperty]
+  // var productsStr = new ListBuffer[StringProperty]
   var pricesInt = new ListBuffer[DoubleProperty]
-  var pricesStr = new ListBuffer[StringProperty]
-  var printablesStr = new ListBuffer[StringProperty]
+  // var pricesStr = new ListBuffer[StringProperty]
+  // var printablesStr = new ListBuffer[StringProperty]
 
   // usual methods
   def stocks(i: Int) : Int = stocksInt(i).value
@@ -45,18 +45,24 @@ class Stock(s: Structure) {
       }
       productsInt += new IntegerProperty
       productsInt.last <== stocksInt.last - requestsInt.last
-      pricesInt += DoubleProperty(0.0)
-      pricesStr += new StringProperty
-      pricesStr.last <== pricesInt.last.asString
+      pricesInt += new DoubleProperty
+      pricesInt.last <== DoubleProperty(kind.price) * s.getMultiplier(kind)
+      // pricesStr += new StringProperty
+      // pricesStr.last <== pricesInt.last.asString
       s match {
         case t: Town => {
-          printablesStr += new StringProperty
+          // printablesStr += new StringProperty
           //printablesStr.last <== productsStr.last.concat(" for $").concat(pricesStr.last)
-          s.printData(1).newTownProduct(kind.label, productsInt.last, pricesInt.last)
+          t.printData(1).newTownProduct(kind.label, productsInt.last, pricesInt.last)
+          t.report(kind, stocksInt.last, requestsInt.last)
         }
-        case _ => s.printData(1).newRankedElement(kind.label, productsInt.last)
+        case f: Facility => {
+          f.printData(1).newRankedElement(kind.label, productsInt.last)
+          f.report(kind, stocksInt.last, requestsInt.last)
+        }
+        case _ => ()
       }
-
+      s.report(kind, stocksInt.last, requestsInt.last)
     }
     else {
       if (quantity >= 0) setStocks(i, stocks(i)+quantity)

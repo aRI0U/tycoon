@@ -8,7 +8,7 @@ import tycoon.game._
 import tycoon.ui.Tile
 import tycoon.objects.good._
 
-case class Factory(pos: GridLocation, id: Int, tManager: TownManager) extends Facility(pos, id, tManager) {
+case class Factory(pos: GridLocation, id: Int, townManager: TownManager) extends Facility(pos, id, townManager) {
   tile = Tile.factory
 
   val productionTime = 5
@@ -35,8 +35,6 @@ case class Factory(pos: GridLocation, id: Int, tManager: TownManager) extends Fa
     recipesList.foreach(r => addRecipeProducts(r))
 
     for (i <- 0 to recipesList.length-1)    addRecipeProducts(convertedInto(i))
-
-    displayProducts()
   }
 
   initProducts()

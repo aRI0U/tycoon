@@ -54,6 +54,10 @@ class MerchandisesManager {
     var i = 0
     while (requests(i)._1 != s) i+=1
     println("distributing to "+requests(i))
-    for (good <- requests(i)._2) s.stock.receiveMerchandises(good, merchandises, None)
+    for (good <- requests(i)._2)
+    s match {
+      case a: EconomicAgent => a.stock.receiveMerchandises(good, merchandises, None)
+      case _ => ()
     }
   }
+}

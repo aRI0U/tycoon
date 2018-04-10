@@ -7,7 +7,7 @@ import tycoon.objects.good._
 import tycoon.game._
 import tycoon.ui.Tile
 
-case class Farm(pos: GridLocation, id: Int, tManager: TownManager) extends Facility(pos, id, tManager) {
+case class Farm(pos: GridLocation, id: Int, townManager: TownManager) extends Facility(pos, id, townManager) {
   tile = Tile.farm(0)
   var tileType = 0
   var productionTime = 50
@@ -33,12 +33,10 @@ case class Farm(pos: GridLocation, id: Int, tManager: TownManager) extends Facil
   // datedProducts += new ListBuffer[Merchandise]
   productionPerPeriod += (4)
 
-  displayProducts()
-
   // update production
 
   def updateProduction(i: Int) = {
-    stock.getMerchandiseWIndex(new Merchandise(stock.productsTypes(i), productionPerPeriod(i)*((1+workers/10).toInt)*haOfField, tManager.getTime()), i)
+    stock.getMerchandiseWIndex(new Merchandise(stock.productsTypes(i), productionPerPeriod(i)*((1+workers/10).toInt)*haOfField, townManager.getTime()), i)
     // stocksInt(i).set(stocks(i) + productionPerPeriod(i)*((workers*0.1 + 1).toInt)*haOfField)
   }
 
