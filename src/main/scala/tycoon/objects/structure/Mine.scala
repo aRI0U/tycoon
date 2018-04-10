@@ -18,6 +18,7 @@ case class Mine(pos: GridLocation, id: Int, townManager: TownManager) extends Fa
   setName("Mine n°"+id)
 
   val productionTime = 100
+  setName("Mine " + id.toString)
 
   // list of available products:
   // for each product, necesary to indicate type, productionPerPeriod and total extractable amount

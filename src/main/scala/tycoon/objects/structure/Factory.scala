@@ -16,6 +16,8 @@ case class Factory(pos: GridLocation, id: Int, townManager: TownManager) extends
   protected val _recipesList : ListBuffer[List[(Good, Int)]] = ListBuffer(List((Product.Coal,3)))
 
   def recipesList = _recipesList
+  setName("Factory " + id.toString)
+
 
   // disponible products
 

@@ -7,6 +7,7 @@ import tycoon.ui.Tile
 
 case class Field(pos: GridLocation, id: Int) extends Structure(pos, id) {
   tile = Tile.field1
+  setName("Field " + id.toString)
   var tileType = 0
   var dependanceFarm : Option[Farm] = None
   def update(dt: Double) = {

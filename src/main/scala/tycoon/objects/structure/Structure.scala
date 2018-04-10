@@ -16,9 +16,9 @@ abstract class Structure(pos: GridLocation, id: Int) extends Renderable(pos) {
 
   val structureId = id
   var trainList = new ListBuffer[Train]()
-  var planeList = new ListBuffer[Plane]()
-  var boatList = new ListBuffer[Boat]()
-  var truckList = new ListBuffer[Truck]()
+  var planeList = new ListBuffer[Vehicle]()
+  var boatList = new ListBuffer[Vehicle]()
+  var truckList = new ListBuffer[Vehicle]()
 
   def addVehicle(v: Vehicle): Unit = {
     v match {

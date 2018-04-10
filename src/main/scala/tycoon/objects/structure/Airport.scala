@@ -12,7 +12,8 @@ import tycoon.ui.Tile
 
 case class Airport(pos: GridLocation, id: Int) extends Structure(pos, id) {
   tile = Tile.airport
-  var dependanceTown : Option [Town] = None
+  var dependanceTown : Option[Town] = None
+  setName("Airport " + id.toString)
   def update(dt: Double) = {
   }
 }
