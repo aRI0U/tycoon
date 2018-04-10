@@ -11,7 +11,7 @@ import tycoon.objects.good._
 
 import tycoon.ui.Tile
 
-import scalafx.beans.property.{IntegerProperty, StringProperty}
+import scalafx.beans.property.{BooleanProperty, IntegerProperty, StringProperty}
 
 
 abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extends Structure(pos, id) {
@@ -57,7 +57,7 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
 
   private val populationStr = new StringProperty
   populationStr <== _population.asString
-  printData(0).data += new Tuple2("Population", populationStr)
+  printData(0).data += new Tuple3("Population", populationStr, BooleanProperty(true))
 
   def population : Int = _population.value
   def population_= (new_pop: Int) = _population.set(new_pop)
@@ -65,7 +65,7 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
 
   private val jobSeekersStr = new StringProperty
   jobSeekersStr <== _jobSeekers.asString
-  printData(0).data += new Tuple2("Job seekers", jobSeekersStr)
+  printData(0).newData("Job seekers", jobSeekersStr)
 
   def jobSeekers : Int = _jobSeekers.value
   def jobSeekers_= (new_seekers: Int) = _jobSeekers.set(new_seekers)
@@ -85,7 +85,7 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
         waitersInt += IntegerProperty(0)
         waitersStr += new StringProperty
         waitersStr.last <== waitersInt.last.asString
-        printData(2).data += new Tuple2(town.name, waitersStr.last)
+        printData(2).newData(town.name, waitersStr.last)
       }
     }
   }
@@ -217,6 +217,8 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
   }
 
   // hunger
+
+  newRequest(Product.Milk, 50)
 
   var hunger = 0
   var alreadyDiet = false

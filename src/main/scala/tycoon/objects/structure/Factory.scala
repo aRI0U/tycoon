@@ -13,6 +13,9 @@ case class Factory(pos: GridLocation, id: Int, tManager: TownManager) extends Fa
 
   val productionTime = 5
 
+  protected val _recipesList : ListBuffer[List[(Good, Int)]] = ListBuffer(List((Product.Coal,3)))
+
+  def recipesList = _recipesList
   setName("Factory " + id.toString)
 
   val recipesList : ListBuffer[List[(Good, Int)]] = ListBuffer(List((Product.Coal,3)))
@@ -31,11 +34,15 @@ case class Factory(pos: GridLocation, id: Int, tManager: TownManager) extends Fa
     }
   }
 
-  recipesList.foreach(r => addRecipeProducts(r))
+  def initProducts() = {
+    recipesList.foreach(r => addRecipeProducts(r))
 
-  for (i <- 0 to recipesList.length-1)    addRecipeProducts(convertedInto(i))
+    for (i <- 0 to recipesList.length-1)    addRecipeProducts(convertedInto(i))
 
-  displayProducts()
+    displayProducts()
+  }
+
+  initProducts()
 
   def convertedInto(recipeId: Int) : List[(Good,Int)] = {
     // possible conversions are hardcoded here

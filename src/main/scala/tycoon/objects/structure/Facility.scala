@@ -5,7 +5,7 @@ import scala.collection.mutable.ListBuffer
 import tycoon.objects.good._
 import tycoon.game._
 
-import scalafx.beans.property.{IntegerProperty, StringProperty}
+import scalafx.beans.property.{BooleanProperty, IntegerProperty, StringProperty}
 
 abstract class Facility(pos: GridLocation, id: Int, val townManager: TownManager) extends Structure(pos, id) {
 
@@ -17,7 +17,7 @@ abstract class Facility(pos: GridLocation, id: Int, val townManager: TownManager
 
   printData += new PrintableData("")
   printData += new PrintableData("Products")
-  printData(0).data += new Tuple2("Workers", workersStr)
+  printData(0).data += new Tuple3("Workers", workersStr, BooleanProperty(true))
 
   def workers : Int = _workers.value
   def workers_= (new_workers: Int) = _workers.set(new_workers)

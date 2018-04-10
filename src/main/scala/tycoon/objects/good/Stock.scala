@@ -52,9 +52,9 @@ class Stock(s: Structure) {
         case t: Town => {
           printablesStr += new StringProperty
           printablesStr.last <== productsStr.last.concat(" for $").concat(pricesStr.last)
-          s.printData(1).data += new Tuple2(kind.label, printablesStr.last)
+          s.printData(1).newData(kind.label, printablesStr.last)
         }
-        case _ => s.printData(1).data += new Tuple2(kind.label, productsStr.last)
+        case _ => s.printData(1).newData(kind.label, productsStr.last)
       }
 
     }
@@ -179,11 +179,6 @@ class Stock(s: Structure) {
       println(s)
       println("datedProducts: "+datedProducts)
       println("productsTypes: "+productsTypes)
-
-
-
-
-
       throw new IllegalArgumentException
     }
   }

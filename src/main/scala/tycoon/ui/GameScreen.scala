@@ -166,7 +166,7 @@ class GameScreen(val game: Game) extends BorderPane
         children.add(section)
         for (elt <- content.data) {
           val item = new Text {
-            text <== StringProperty(elt._1 + ": ").concat(elt._2)
+            text <== when (elt._3) choose (StringProperty(elt._1 + ": ").concat(elt._2)) otherwise (StringProperty(""))
             margin = Insets(8)
           }
           children.add(item)

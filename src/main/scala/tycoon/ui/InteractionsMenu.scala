@@ -252,6 +252,8 @@ class InteractionsMenu(val game: Game) extends TabPane
     passengerCarriagesSpinner.maxWidth = 60
     val goodsCarriagesSpinner = new Spinner[Integer](0, 5, 0)
     goodsCarriagesSpinner.maxWidth = 60
+    val tankCarsSpinner = new Spinner[Integer](0, 5, 0)
+    goodsCarriagesSpinner.maxWidth = 60
 
     val passengerCarriageContent = new HBox(10)
     passengerCarriageContent.alignment = Pos.CenterLeft
@@ -265,16 +267,30 @@ class InteractionsMenu(val game: Game) extends TabPane
     goodsCarriageContent.children += goodsCarriagesSpinner
     goodsCarriageContent.children += new Label("Goods Carriages (unit price: $" + GoodsCarriage.Price + ")")
 
+    val tankCarContent = new HBox(10)
+    tankCarContent.alignment = Pos.CenterLeft
+    tankCarContent.children += new Label("Add")
+    tankCarContent.children += tankCarsSpinner
+    tankCarContent.children += new Label("Tank Cars (unit price: $" + TankCar.Price + ")")
+
     var totalCost: Int = 0
     val totalCostStr = StringProperty("0")
     passengerCarriagesSpinner.value.onChange {
       totalCost = (passengerCarriagesSpinner.value.value * PassengerCarriage.Price
-                  + goodsCarriagesSpinner.value.value * GoodsCarriage.Price)
+                  + goodsCarriagesSpinner.value.value * GoodsCarriage.Price
+                + tankCarsSpinner.value.value * TankCar.Price)
       totalCostStr.set(formatter.format(totalCost))
     }
     goodsCarriagesSpinner.value.onChange {
       totalCost = (passengerCarriagesSpinner.value.value * PassengerCarriage.Price
-                  + goodsCarriagesSpinner.value.value * GoodsCarriage.Price)
+                  + goodsCarriagesSpinner.value.value * GoodsCarriage.Price
+                + tankCarsSpinner.value.value * TankCar.Price)
+      totalCostStr.set(formatter.format(totalCost))
+    }
+    tankCarsSpinner.value.onChange {
+      totalCost = (passengerCarriagesSpinner.value.value * PassengerCarriage.Price
+                  + goodsCarriagesSpinner.value.value * GoodsCarriage.Price
+                + tankCarsSpinner.value.value * TankCar.Price)
       totalCostStr.set(formatter.format(totalCost))
     }
 
@@ -286,6 +302,7 @@ class InteractionsMenu(val game: Game) extends TabPane
     val content = new VBox(10)
     content.children += passengerCarriageContent
     content.children += goodsCarriageContent
+    content.children += tankCarContent
     content.children += new Label("To This Train:")
     content.children += stoppedTrainsTable
     content.children += totalPrice
@@ -305,6 +322,7 @@ class InteractionsMenu(val game: Game) extends TabPane
           var bought: Boolean = true
           (1 to passengerCarriagesSpinner.value.value) foreach { _ => bought = bought && game.buyPassengerCarriage(train) }
           (1 to goodsCarriagesSpinner.value.value) foreach { _ => bought = bought && game.buyGoodsCarriage(train) }
+          (1 to tankCarsSpinner.value.value) foreach { _ => bought = bought && game.buyTankCar(train) }
           if (bought)
             game.setInfoText("[Carriages Buying] The carriages have been bought.")
           else

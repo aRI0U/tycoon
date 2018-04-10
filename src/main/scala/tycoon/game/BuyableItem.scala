@@ -47,7 +47,7 @@ object BuyableStruct {
   val Mine = new BuyableStruct("Mine", 50, Tile.mine, newMine)
   val Farm = new BuyableStruct("Farm", 100, Tile.farm1, newFarm)
   val Factory = new BuyableStruct("Factory", 150, Tile.factory, newFactory)
-  val PackingPlant = new BuyableStruct("Packing Plant", 150, Tile.factory, newPackingPlant)
+  val PackingPlant = new BuyableStruct("Packing Plant", 170, Tile.factory, newPackingPlant)
   val Airport = new BuyableStruct("Airport", 1000, Tile.airport, newAirport)
   val Field = new BuyableStruct("Field", 100, Tile.field1, newField)
   val Dock = new BuyableStruct("Dock", 100, Tile.dock, newDock)

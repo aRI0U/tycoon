@@ -15,6 +15,8 @@ import scalafx.beans.property.{IntegerProperty, StringProperty}
 case class Mine(pos: GridLocation, id: Int, tManager: TownManager) extends Facility(pos, id, tManager) {
   tile = Tile.mine
 
+  setName("Mine n°"+id)
+
   val productionTime = 100
   setName("Mine " + id.toString)
 
@@ -40,6 +42,12 @@ case class Mine(pos: GridLocation, id: Int, tManager: TownManager) extends Facil
   stock.newProduct(Product.Gold, 0)
   productionPerPeriod += r.nextInt(3)
   extractableAmount += r.nextInt(100)
+  allExtracted += false
+
+  // only to test tank cars
+  stock.newProduct(Product.Milk, 0)
+  productionPerPeriod += (10)
+  extractableAmount += 4000
   allExtracted += false
 
   // update production
