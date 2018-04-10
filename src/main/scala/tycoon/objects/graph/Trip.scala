@@ -22,6 +22,7 @@ class Trip(var origin: Structure, var destination: Structure, val veh: Vehicle, 
 
   def start() = {
     veh.boarding(ListBuffer[Structure](destination))
+    veh.location = origin
     origin.removeVehicle(veh)
     i = 0
   }
@@ -94,6 +95,7 @@ class Trip(var origin: Structure, var destination: Structure, val veh: Vehicle, 
 
       if (!active) {
         destination.addVehicle(veh)
+        veh.location = destination
         veh.landing()
         if (repeated) {
           val tmp: Structure = origin

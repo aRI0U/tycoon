@@ -10,13 +10,9 @@ import tycoon.game._
 import scala.collection.mutable.ListBuffer
 
 
-
-
-
-
 abstract class Vehicle(_id: Int, struct: Structure, owner: Player) extends Renderable(new GridLocation(-1, -1)) {
-  var weight : Double
-  var consuption = 10
+  var weight: Double
+  var consumption = 10
 
   def id: Int = _id
 
@@ -38,15 +34,6 @@ abstract class Vehicle(_id: Int, struct: Structure, owner: Player) extends Rende
 
   var arrived: Boolean = true
   var stabilized: Boolean = false
-
-  def getDirs(origin: GridLocation, destination: GridLocation): ListBuffer[Direction] = {
-    val dirs = new ListBuffer[Direction]()
-    if (destination.row < origin.row || (destination.row == origin.row && origin.percentageHeight > 0)) dirs += North
-    if (destination.col > origin.col) dirs += East
-    if (destination.row > origin.row) dirs += South
-    if (destination.col < origin.col || (destination.col == origin.col && origin.percentageWidth > 0)) dirs += West
-    dirs
-  }
 
   def location: Structure = _location.value
   def location_=(newStruct: Structure) = _location.set(newStruct)
@@ -86,6 +73,15 @@ abstract class Vehicle(_id: Int, struct: Structure, owner: Player) extends Rende
 
   def update(dt: Double, dirIndicator: Int): Unit
 
+  def getDirs(origin: GridLocation, destination: GridLocation): ListBuffer[Direction] = {
+    val dirs = new ListBuffer[Direction]()
+    if (destination.row < origin.row || (destination.row == origin.row && origin.percentageHeight > 0)) dirs += North
+    if (destination.col > origin.col) dirs += East
+    if (destination.row > origin.row) dirs += South
+    if (destination.col < origin.col || (destination.col == origin.col && origin.percentageWidth > 0)) dirs += West
+    dirs
+  }
+
   def stabilize(pos: GridLocation, dt: Double, speed: Double): Boolean = {
     pos.percentageWidth = Math.max(pos.percentageWidth - dt * speed, 0)
     pos.percentageHeight = Math.max(pos.percentageHeight - dt * speed, 0)
@@ -96,8 +92,7 @@ abstract class Vehicle(_id: Int, struct: Structure, owner: Player) extends Rende
   // returns true iff the move lead to a change of case (ie percentage outbounds 0/100)
   def move(pos: GridLocation, dir: Direction, dt: Double, speed: Double): Boolean = {
     var changedSquare: Boolean = false
-    owner.pay((weight*consuption).toInt)
-    println("déplacement")
+    owner.pay((weight * consumption).toInt)
     dir match {
       case North =>
         pos.percentageHeight -= dt * speed

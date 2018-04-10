@@ -6,22 +6,17 @@ import tycoon.objects.vehicle.train._
 import tycoon.objects.vehicle._
 import tycoon.objects.graph._
 import tycoon.game._
-import tycoon.ui.Tile
-import scalafx.beans.property._
 import tycoon.ui.{Tile, Renderable, DraggableTiledPane}
 
+import scalafx.beans.property._
 import javafx.animation.AnimationTimer
 import scalafx.collections.ObservableBuffer
 import scalafx.collections.ObservableBuffer._
 import scalafx.scene.image.Image
 import scala.collection.mutable.{HashMap, ListBuffer}
-
-
 import scalafx.Includes._
 import scalafx.beans.property.{StringProperty, IntegerProperty}
 import scalafx.beans.binding.Bindings
-
-
 import scala.xml.XML
 import scala.io.Source
 import java.io.{FileNotFoundException, IOException}
@@ -29,61 +24,9 @@ import scala.util.Try
 import scalafx.util.converter.{DateStringConverter, DateTimeStringConverter}
 
 
-
-
 class Game(val map_width : Int, val map_height : Int)
 {
-
-  // def loadMap(filepath: String) : Boolean = {
-  //   Try {
-  //     val xml = XML.loadFile(filepath)
-  //
-  //     //please do somwhere else than
-  //     println("All foods:")
-  //     val goods = xml \ "Goods"
-  //     ( xml \\ "Food" \\ "@name") foreach (i => println(i.text))
-  //     ( goods \\ "Ore" \\ "@name") foreach (i => println(i.text))
-  //
-  //     //map treatment
-  //     val mapXML = xml \ "Map"
-  //     val mapName = mapXML \ "@name"
-  //     val width = mapXML \ "@width"
-  //     val height = mapXML \ "@height"
-  //
-  //     var cities = ListBuffer[Array[Any]]()
-  //     for (city <- (mapXML \\ "City")) {
-  //       var nbFactories = 0
-  //       for (factory <- (city \\ "Factory")) nbFactories+=1
-  //       buyStruct(new LargeTown(new GridLocation(city(1),city(2))), new GridLocation(city(1),city(2)),player)
-  //       // cities += Array (
-  //       //   city \ "@name",
-  //       //   city \ "@x",
-  //       //   city \ "@y",
-  //       //   city \ "@population",
-  //       //   nbFactories
-  //       // )
-  //     }
-
-      // for (city <-  cities){
-      //   buyStruct(new LargeTown, new GridLocation(city(1),city(2)),player)
-      // }
-
-
-
-      // println("\nSpecials:")
-      // for (food <- (xml \\ "Food"))
-      //   if ((food \ "special").length > 0)
-      //     println((food \ "special" \ "@id").text)
-      // println("\nSpecials again:")
-      // for (id <- (xml \ "food" \ "special"))
-      //   println((id \ "@id").text)
-
-  //   }.isSuccess
-  // }
-  // var playerInit = new Player
-  // playerInit.money.set(Int.MaxValue)
-
-  var mapName = Settings.GameTitle + " random map"
+  var mapName = Settings.GameTitle + " Map"
 
   var infoTextTimer: Double = 0
   val informationText = StringProperty("")
@@ -110,7 +53,7 @@ class Game(val map_width : Int, val map_height : Int)
 
   def fillNewGame() {
     map.sprinkleTile(Tile.Tree, 5)
-    map.sprinkleTile(Tile.rock, 1)
+    map.sprinkleTile(Tile.Rock, 1)
     map.generateLakes(4, 500) //SLOW
   }
 
@@ -526,7 +469,7 @@ class Game(val map_width : Int, val map_height : Int)
       var id = 0
       for (city <- (mapXML \\ "City")) {
         var nbFactories = 0
-        for (factory <- (city \\ "Factory")) nbFactories+=1
+        for (factory <- (city \\ "Factory")) nbFactories += 1
         var pos = new GridLocation((city \ "@x").text.toInt % map.width,(city \ "@y").text.toInt % map.height)
         var town = new LargeTown(pos,id,townManager) ; id+=1
         createStruct(town,Tile.Grass)
@@ -534,17 +477,17 @@ class Game(val map_width : Int, val map_height : Int)
         town.population_=((city \ "@population").text.toInt)
         if (nbFactories>0) {
           var factory = new Factory(pos.left,id,townManager); id+=1
-          createStruct(factory,Tile.grass)
+          createStruct(factory,Tile.Grass)
           factory.workers_=(nbFactories*100)
           railManager.createRail(new Rail(pos.left.bottom))
           railManager.createRail(new Rail(pos.bottom))
 
         }
-        ( city \\ "Airport") foreach (i => {createStruct(new Airport(pos.left.top,id),Tile.grass)/*; id+=1*/ ; town.hasAirport = true })
+        ( city \\ "Airport") foreach (i => {createStruct(new Airport(pos.left.top,id),Tile.Grass)/*; id+=1*/ ; town.hasAirport = true })
       }
 
-      map.sprinkleTile(Tile.tree, 5)
-      map.sprinkleTile(Tile.rock, 1)
+      map.sprinkleTile(Tile.Tree, 5)
+      map.sprinkleTile(Tile.Rock, 1)
       for (connection <- (mapXML \\ "Connection")){
         var upstream = (connection  \ "@upstream").text
         var downstream = (connection  \ "@downstream").text
@@ -562,7 +505,7 @@ class Game(val map_width : Int, val map_height : Int)
         var is = false
         (connection \\ "Rail") foreach (i => is = true)
         if (is) {
-          val path = Dijkstra.tileGraph(town1,town2,(Tile.grass),map)
+          val path = Dijkstra.tileGraph(town1,town2,(Tile.Grass),map)
           for (pos <- path) {
             //in order to counter some priority cases with the factories
             if (pos == town1.gridPos.left.left.top || pos == town1.gridPos.left.left.bottom ) {
@@ -578,19 +521,19 @@ class Game(val map_width : Int, val map_height : Int)
         is = false
         (connection \\ "Road") foreach (i => is = true)
         if (is) {
-          val path = Dijkstra.tileGraph(town1,town2,(Tile.grass ++ Array(Tile.asphalt)),map)
+          val path = Dijkstra.tileGraph(town1,town2,(Tile.Grass ++ Array(Tile.Asphalt)),map)
           for (pos <- path) {
             if (!(pos == town1.gridRect.pos || pos == town2.gridRect.pos))
-              map.setBackgroundTile(pos,Tile.asphalt)
+              map.setBackgroundTile(pos,Tile.Asphalt)
           }
         }
         is = false
         (connection \\ "Canal") foreach (i => is = true)
         if (is) {
-          val path = Dijkstra.tileGraph(town1,town2,(Tile.grass ++ Tile.water),map)
+          val path = Dijkstra.tileGraph(town1,town2,(Tile.Grass ++ Tile.Water),map)
           for (pos <- path) {
             if (!(pos == town1.gridRect.pos || pos == town2.gridRect.pos))
-              map.setBackgroundTile(pos,Tile.water(0))
+              map.setBackgroundTile(pos,Tile.Water(0))
           }
         }
       }

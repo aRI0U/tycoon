@@ -15,15 +15,16 @@ import tycoon.ui.DraggableTiledPane
 
 
 class Train(_id: Int, initialTown: Structure, val owner: Player) extends TrainElement(_id, initialTown, owner) {
-
-  // used in display
-  // id
-
-  // current structure if moving is false, origin structure otherwise
-
-
   val tiles = Array(Tile.LocomotiveT, Tile.LocomotiveR, Tile.LocomotiveB, Tile.LocomotiveL)
 
+  tile = Tile.LocomotiveT
+  var weight = 50
+  var carriageList = new ListBuffer[Carriage]()
+  var from = StringProperty(initialTown.name)
+
+  gridPos = location.gridPos.right
+  carriageList foreach (_.visible = false)
+  carriageList foreach (_.gridPos = location.gridPos.right)
 
   def update(dt: Double, dirIndicator: Int) = {
     if (move(dt, dirIndicator))
@@ -32,16 +33,11 @@ class Train(_id: Int, initialTown: Structure, val owner: Player) extends TrainEl
       c.update(dt, dirIndicator)
   }
 
-
-// a ne pas appeler si on va north ou west sur le premier rail (ni si on a un virage en premier rail)
-// plus simple regarder qd currentRail du train change et alors afficher un nouveau carriage
-// pas suffisant -> regarder si le train est 0/0% ?
   def maybeDisplayNewCarriage() = {
     if (carriageList.filter(_.visible == false).nonEmpty) {
       carriageList.filter(_.visible == false)(0).visible = true
     }
   }
-
 
   def rotateTrain(v: Vehicle, dirIndicator: Int) = {
     v match {
@@ -67,15 +63,6 @@ class Train(_id: Int, initialTown: Structure, val owner: Player) extends TrainEl
       case _ => ()
     }
   }
-
-  tile = Tile.LocomotiveT
-  var weight = 50
-  var carriageList = new ListBuffer[Carriage]()
-  var from = StringProperty(initialTown.name)
-
-  gridPos = location.gridPos.right
-  carriageList foreach (_.visible = false)
-  carriageList foreach (_.gridPos = location.gridPos.right)
 
   def addCarriage(carriage: Carriage): Unit = {
     carriageList += carriage

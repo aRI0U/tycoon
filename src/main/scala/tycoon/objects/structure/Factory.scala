@@ -35,12 +35,6 @@ case class Factory(pos: GridLocation, id: Int, townManager: TownManager) extends
   def addRecipeProducts(recipe: List[(Good, Int)]) = {
     for (p <- recipe) {
       stock.newProduct(p._1, 0)
-      // var i = 0
-      // while (i < products.length && !areSameGoods(products(i), p._1)) i += 1
-      // if (i == products.length) {
-      //   products += p._1
-      //   datedProducts += new ListBuffer[Merchandise]
-      // }
     }
   }
 
@@ -72,9 +66,6 @@ case class Factory(pos: GridLocation, id: Int, townManager: TownManager) extends
     var usefulIndices = new ListBuffer[Int]
     for (product <- initialProducts) {
       usefulIndices += stock.getIndex(product._1)
-      // for (i <- 0 to stock.productsTypes.length-1) {
-      //   if (product._1 == stock.productsTypes(i)) usefulIndices += i
-      // }
     }
     usefulIndices = usefulIndices.filter(_ != -1)
 
@@ -91,28 +82,12 @@ case class Factory(pos: GridLocation, id: Int, townManager: TownManager) extends
       var consumedQuantity = producedQuantity * initialProducts(j)._2
       var trash = new ListBuffer[Merchandise]
       stock.giveMerchandisesWIndex(i, stock.productsTypes(i), trash, consumedQuantity)
-      // while (consumedQuantity > 0 && datedProducts(i).length > 0) {
-      //   val m = datedProducts(i)(0)
-      //   datedProducts(i) -= m
-      //   // eventually "cut" the merchandises
-      //   if (m.quantity > consumedQuantity) {
-      //     datedProducts(i) += new Merchandise(m.kind, m.quantity - consumedQuantity, m.productionDate)
-      //   }
-      //   consumedQuantity -= m.quantity
-      // }
     }
     // create the final products
 
     for (p <- finalProducts) {
       stock.getMerchandise(new Merchandise(p._1, producedQuantity*p._2, townManager.getTime()))
     }
-    // for (i <- 0 to products.length-1) {
-    //   for (product <- finalProducts) {
-    //     if (areSameGoods(products(i), product._1)) {
-    //       datedProducts(i) += new Merchandise(products(i), producedQuantity*product._2, townManager.getTime())
-    //     }
-    //   }
-    // }
   }
 
   def updateProduction() = {

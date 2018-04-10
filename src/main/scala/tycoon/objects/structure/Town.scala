@@ -21,9 +21,6 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
   // choose town name
   def chooseName() {
     try {
-      /*val i = r.nextInt(townManager.unchosen_names.length)
-      _name.set(townManager.unchosen_names(i))
-      townManager.unchosen_names.remove(i)*/
       val nameId = r.nextInt(townManager.townNames.length)
       val name = StringProperty(townManager.townNames(nameId))
       setName(townManager.townNames(nameId))
@@ -32,7 +29,7 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
     catch {
       case e: Exception => {
         _name.set("random name")
-        println("you've created too many towns")
+        println("Town.scala:you've created too many towns")
       }
     }
   }
@@ -43,18 +40,14 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
   printData += new PrintableData("Products")
   printData += new PrintableData("Waiting passengers")
 
-  //Booleans about town facilities
   var hasAirport = false
   var hasDock = false
   var airport : Option[Airport]= None
   var dock : Option[Dock]= None
 
-   // _name = StringProperty(city_names(id))
   protected var _population = IntegerProperty(0)
   protected var _waiting_passengers = IntegerProperty(0)
   protected var _jobSeekers = IntegerProperty(0)
-
-  //printData += new Tuple2("Name", _name)
 
   private val populationStr = new StringProperty
   populationStr <== _population.asString
@@ -78,7 +71,6 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
   var waitersInt = new ListBuffer[IntegerProperty]
 
   def displayWaiters() {
-    //printData += new Tuple2("Waiting passengers", StringProperty(""))
     for (town <- townManager.townsList) {
       if (town != this) {
         destinations += town
@@ -89,8 +81,6 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
   }
 
   def waiters(i: Int) : Int = waitersInt(i).value
-
-  // updates
 
   def updatePopulation () = {
     if (population < max_population) {
@@ -106,9 +96,7 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
     }
     else {
       if (jobSeekers > population/2) {
-        println("seekers will die")
         _jobSeekers.set(population/3)
-        println("seekers died")
       }
     }
   }
@@ -124,17 +112,9 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
       else {
         // if people are dying for any reason
         if (totalWaiters > population/2) {
-          println("waiters will die")
           val diedWaiters = totalWaiters - population/2
           var i = 0
           while (totalWaiters > population/2) {
-            //check (totalWaiters, n-i) strisctement décroissante
-            println("Town > debug infinite loop 1")
-            println("totalWaiters: "+totalWaiters)
-            println("population: "+population)
-            println("waiters")
-            waitersInt.foreach(x => println(x.value))
-            println("diedWaiters: "+diedWaiters)
             try {
               if (waiters(i) > 0) {
                 println(diedWaiters, i, waiters(i))
@@ -147,11 +127,9 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
               case e: IndexOutOfBoundsException => i = 0
             }
           }
-          println("waiters died")
         }
       }
     }
-    // only 1 town => no waiting passengers
     catch {
       case e: IllegalArgumentException => ()
     }
@@ -167,14 +145,6 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
     waitersInt.foreach(_.set(0))
     hunger = 0
     for (i <- 0 to stock.requestsInt.length-1) stock.requestsInt(i).set(0)
-    // requests = new ListBuffer[Good]
-    // needsInt = new ListBuffer[IntegerProperty]
-    // needsStr = new ListBuffer[StringProperty]
-    // pricesInt = new ListBuffer[IntegerProperty]
-    // for (data <- printData) {
-    //   // cancel requests (ugly)
-    //   if (data._2.value.length > 5) printData -= data
-    // }
     townManager.throwEvent("["+name+"] Everyone is dead here...")
   }
 
@@ -187,21 +157,15 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
         updateJobSeekers()
         updateWaiters()
         updateConsumption()
-         if (stock.updateExpiredProducts(townManager.getTime())) townManager.throwEvent("["+name+"] Be careful! Some of your food is expiring!")
+        if (stock.updateExpiredProducts(townManager.getTime())) townManager.throwEvent("["+name+"] Be careful! Some of your food is expiring!")
         updateEconomy()
       }
       if (population <= minPopulation) {
-        // reinit the whole city
         reInit()
       }
     }
   }
 
-  // def position : GridLocation = pos
-  // def name : String = _name.value
-  // def name_= (new_name: String) = _name.set(new_name)
-
-  // is it still useful ?
   def waiting_passengers : Int = _waiting_passengers.value
   def waiting_passengers_= (new_wait_pass: Int) = _waiting_passengers.set(new_wait_pass)
 
@@ -259,41 +223,18 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
     val needs = population*nutritiousNeeds
     if (scala.util.Random.nextInt(50) == 1 && (needs > (dietTime/6))) newRandomRequest(0)
     if (scala.util.Random.nextInt(70) == 1) newRandomRequest(1)
-    // if (hunger % lunchTime == 0) {
-      val stayingNeeds = feedPopulation(needs)
-      hunger = (hunger*stayingNeeds/needs).toInt
-      if (hunger > dietTime) {
-        // // people ask for the food the less quantity they have
-        // var lackingFoodIndex = -1
-        // var lackingFoodQuantity = 100
-        // for (i <- 0 to stock.productsTypes.length-1) {
-        //   stock.productsTypes(i) match {
-        //     case f: Food => {
-        //       if (stock.product(i) < lackingFoodQuantity) {
-        //         lackingFoodIndex = i
-        //         lackingFoodQuantity = stock.product(i)
-        //       }
-        //     }
-        //     case _ => ()
-        //   }
-        // }
-        // PROVISOIRE
-        // else {
-        //   stock.productsTypes(lackingFoodIndex) match {
-        //     case f: Food => newRequest(f, (stayingNeeds/f.nutritiousness).toInt)
-        //     case _ => println("tycoon > objects > structure > Town : food has been magically transformed into something else")
-        //   }
-        // }
-        if (hunger > starvingTime) {
-          population -= hunger*2
-          if (!alreadyStarving) {
-            townManager.throwEvent("["+name+"] People are starving, nur ein Gott kann sie retten...")
-            newRequest(Product.Corn, ((stayingNeeds/(5*Product.Corn.nutritiousness)).toInt))
-          }
-          alreadyStarving = true
+    val stayingNeeds = feedPopulation(needs)
+    hunger = (hunger*stayingNeeds/needs).toInt
+    if (hunger > dietTime) {
+      if (hunger > starvingTime) {
+        population -= hunger*2
+        if (!alreadyStarving) {
+          townManager.throwEvent("["+name+"] People are starving, nur ein Gott kann sie retten...")
+          newRequest(Product.Corn, ((stayingNeeds/(5*Product.Corn.nutritiousness)).toInt))
         }
+        alreadyStarving = true
       }
-    // }
+    }
     hunger += 1
   }
 

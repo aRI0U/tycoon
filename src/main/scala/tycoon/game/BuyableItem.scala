@@ -1,16 +1,16 @@
 package tycoon.game
 
+import tycoon.objects.structure._
+import tycoon.objects.railway._
+import tycoon.ui.Tile
+import tycoon.objects.vehicle._
+import tycoon.objects.vehicle.train._
 
 import scalafx.Includes._
 import scalafx.geometry.Pos
 import scalafx.scene.control.{Label, Tab, TabPane}
 import scalafx.scene.input.MouseEvent
 import scalafx.scene.layout.{HBox, VBox, Priority}
-import tycoon.objects.structure._
-import tycoon.objects.railway._
-import tycoon.ui.Tile
-import tycoon.objects.vehicle._
-import tycoon.objects.vehicle.train._
 
 
 sealed abstract class BuyableItem(val name: String, val price: Int, val tile: Tile) {
@@ -24,9 +24,8 @@ sealed abstract class BuyableItem(val name: String, val price: Int, val tile: Ti
 
 case class BuyableStruct(override val name: String, override val price: Int, override val tile: Tile, val newInstance: (GridLocation, Int, TownManager) => Structure)
 extends BuyableItem(name, price, tile) {
-
+  createByDragging = false
 }
-
 
 object BuyableStruct {
   def newSmallTown(pos: GridLocation, id: Int, townManager: TownManager): SmallTown = new SmallTown(pos, id, townManager)

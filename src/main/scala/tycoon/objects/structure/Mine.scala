@@ -11,7 +11,6 @@ import scalafx.beans.property.{IntegerProperty, StringProperty}
 
 // once built, a mine can produce a limited quantity of iron (iron_amount), the quantity of extracted iron depends on the number of diggers and on the quantity that has already been extracted (it is harder and harder to find iron)
 
-
 case class Mine(pos: GridLocation, id: Int, townManager: TownManager) extends Facility(pos, id, townManager) {
   tile = Tile.Mine
 
@@ -59,8 +58,7 @@ case class Mine(pos: GridLocation, id: Int, townManager: TownManager) extends Fa
   def updateProduction(i: Int) = {
     if (!allExtracted(i)) {
       stock.getMerchandiseWIndex(new Merchandise(stock.productsTypes(i), productionPerPeriod(i), townManager.getTime()), i)
-      // datedProducts(i) += new Merchandise(products(i), productionPerPeriod(i), townManager.getTime())
-      // stocksInt(i).set(stocks(i) + productionPerPeriod(i))
+
       if (stock.stocks(i) >= extractableAmount(i)) {
         allExtracted(i) = true
         townManager.throwEvent("[Mine n°"+id+"] "+stock.productsTypes(i).label+"s: everything has been extracted in this mine")
@@ -82,5 +80,4 @@ case class Mine(pos: GridLocation, id: Int, townManager: TownManager) extends Fa
       }
     }
   }
-  //val price = game.mine_price //To choose
 }

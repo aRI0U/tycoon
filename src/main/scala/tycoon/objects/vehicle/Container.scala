@@ -12,14 +12,14 @@ trait Container {
   val merchandises : ListBuffer[Merchandise]
   val mManager : MerchandisesManager
 
-  def embark(structure: Structure, stops: ListBuffer[Structure]) = {
+  def embark(structure: Structure, stops: ListBuffer[Structure]) : Unit = {
     // println("merchandises: "+merchandises)
     // println("GoodsCarriage > embark from "+structure)
     // println("stops: "+stops)
     stops.foreach(s => mManager.addStop(s))
     //println("planning:"+ mManager.flattenedRequests)
     structure match {
-      case t: Town => () // must be modified to include requests from towns on stops
+      case t: Town => includeRequests(t) // must be modified to include requests from towns on stops
       case f: Facility => {
         // determine pertinent products to embark
         var usefulIndices = new ListBuffer[Int]
@@ -38,6 +38,10 @@ trait Container {
           f.stock.giveMerchandisesWIndex(i, product, merchandises, quantity, m => (!m.kind.liquid || m.packed))
           remainingSpace -= product.size*quantity
         }
+      }
+      case a: Airport => a.dependanceTown match {
+        case Some(town) => includeRequests(town)
+        case None => ()
       }
     }
     // println("merchandises: "+merchandises)
@@ -60,5 +64,10 @@ trait Container {
       case _ => ()
     }
     mManager.notVisited(i) = false
+  }
+
+  def includeRequests(town: Town) = {
+    // test
+    merchandises += new Merchandise(Product.Cake, 100, 0)
   }
 }

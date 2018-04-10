@@ -15,5 +15,6 @@ case class Airport(pos: GridLocation, id: Int) extends Structure(pos, id) {
   var dependanceTown : Option[Town] = None
   setName("Airport " + id.toString)
   def update(dt: Double) = {
+    
   }
 }

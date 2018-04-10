@@ -11,11 +11,9 @@ import scalafx.beans.property._
 
 
 
-
 class Engine(_owner: Player) extends Renderable(new GridLocation(-1, -1)) {
   var currentRail: Option[Rail] = None
   def owner: Player = _owner
-
 
   val _thrust = DoubleProperty(200.0)
   def thrust: DoubleProperty = _thrust
@@ -32,7 +30,6 @@ class Engine(_owner: Player) extends Renderable(new GridLocation(-1, -1)) {
     }
     else false
   }
-
 }
 
 

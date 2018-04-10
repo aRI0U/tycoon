@@ -12,10 +12,7 @@ class Stock(s: EconomicAgent) {
   var stocksInt = new ListBuffer[IntegerProperty]
   var requestsInt = new ListBuffer[IntegerProperty]
   var productsInt = new ListBuffer[IntegerProperty]
-  // var productsStr = new ListBuffer[StringProperty]
   var pricesInt = new ListBuffer[DoubleProperty]
-  // var pricesStr = new ListBuffer[StringProperty]
-  // var printablesStr = new ListBuffer[StringProperty]
 
   // usual methods
   def stocks(i: Int) : Int = stocksInt(i).value
@@ -47,12 +44,8 @@ class Stock(s: EconomicAgent) {
       productsInt.last <== stocksInt.last - requestsInt.last
       pricesInt += new DoubleProperty
       pricesInt.last <== DoubleProperty(kind.price) * s.getMultiplier(kind)
-      // pricesStr += new StringProperty
-      // pricesStr.last <== pricesInt.last.asString
       s match {
         case t: Town => {
-          // printablesStr += new StringProperty
-          //printablesStr.last <== productsStr.last.concat(" for $").concat(pricesStr.last)
           t.printData(1).newTownProduct(kind.label, productsInt.last, pricesInt.last)
           t.report(kind, stocksInt.last, requestsInt.last)
         }
@@ -68,7 +61,6 @@ class Stock(s: EconomicAgent) {
       if (quantity >= 0) setStocks(i, stocks(i)+quantity)
       else setRequests(i, requests(i)-quantity)
     }
-    debugStocks("newProduct")
   }
 
   def getIndex(good: Good) : Int = productsTypes.indexOf(good)
@@ -76,7 +68,6 @@ class Stock(s: EconomicAgent) {
   def getMerchandiseWIndex(m: Merchandise, i: Int) = {
     datedProducts(i) += m
     setStocks(i, stocks(i)+m.quantity)
-    debugStocks("getMerchandise")
   }
 
   def getMerchandise(m: Merchandise) = {
@@ -91,7 +82,6 @@ class Stock(s: EconomicAgent) {
   def removeMerchandise(m: Merchandise, i: Int) = {
     datedProducts(i) -= m
     setStocks(i, stocks(i)-m.quantity)
-    debugStocks("removeMerchandise")
   }
 
   def receiveMerchandises(kind: Good, giver: ListBuffer[Merchandise], quantity: Option[Int]) = {
@@ -100,8 +90,6 @@ class Stock(s: EconomicAgent) {
       i = productsTypes.length
       newProduct(kind, 0)
     }
-    println("breceive > stocks: "+stocks(i))
-    println("datedProducts: "+datedProducts)
     quantity match {
       case Some(q) => {
         var notReceived = q
@@ -120,25 +108,18 @@ class Stock(s: EconomicAgent) {
         }
       }
     }
-    debugStocks("receiveMerchandises")
     updateStocksWIndex(i)
-    println("ereceive > stocks: "+stocks(i))
   }
 
   def giveMerchandisesWIndex(i: Int, kind: Good, receiver: ListBuffer[Merchandise], quantity: Int, condition: (Merchandise => Boolean) = (_ => true)) = {
-    println("bgive > stocks: "+stocks(i))
     var notGiven = quantity
-    println("quantity to trade: " + quantity)
     for (m <- datedProducts(i)) {
       if (notGiven > 0 && m.kind == kind && condition(m)) {
         println(notGiven)
         notGiven -= m.trade(datedProducts(i), receiver, Some(notGiven))
-        println("just took "+notGiven+" on "+stocks(i))
       }
     }
-    debugStocks("giveMerchandisesWIndex")
     updateStocksWIndex(i)
-    println("egive > stocks: "+stocks(i))
   }
 
   def giveMerchandises(kind: Good, receiver: ListBuffer[Merchandise], quantity: Int) = {
@@ -167,30 +148,17 @@ class Stock(s: EconomicAgent) {
         }
       }
     }
-    debugStocks("updateExpiredProducts")
     updateStocks()
     someExpired
   }
 
   def updateStocksWIndex(i: Int) = {
-    // println("US > initial stock:"+stocks(i))
     var sum = 0
     datedProducts(i).foreach(m => sum += m.quantity)
-    // println("US > sum: "+sum)
     setStocks(i, sum)
-    debugStocks("updateStocksWIndex")
   }
 
   def updateStocks() = {
     for (i <- 0 to stocksInt.length-1) updateStocksWIndex(i)
-  }
-
-  def debugStocks(s: String) {
-    if (productsTypes.length != datedProducts.length) {
-      println(s)
-      println("datedProducts: "+datedProducts)
-      println("productsTypes: "+productsTypes)
-      throw new IllegalArgumentException
-    }
   }
 }

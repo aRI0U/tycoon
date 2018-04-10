@@ -43,7 +43,18 @@ class MerchandisesManager {
           if (t.stock.requests(i) > 0) request += t.stock.productsTypes(i)
         }
       }
-      case _ => ()
+      case a: Airport => {
+        a.dependanceTown match {
+          case Some(t) => determineRequests(t)
+          case None => ()
+        }
+      }
+      case d: Dock => {
+        d.dependanceTown match {
+          case Some(t) => determineRequests(t)
+          case None => ()
+        }
+      }
     }
     println(structure+" needs "+request)
     request
@@ -51,12 +62,31 @@ class MerchandisesManager {
 
   def distribute(merchandises: ListBuffer[Merchandise], s: Structure) = {
     // basic
+    var owner = s
+    println("s: "+s)
+    println("stops: "+stops)
+    println("requests: "+requests)
+    // s match {
+    //   case a: Airport => {
+    //     a.dependanceTown match {
+    //       case Some(t) => owner = t
+    //       case None => ()
+    //     }
+    //   }
+    //   case d: Dock => {
+    //     d.dependanceTown match {
+    //       case Some(t) => owner = t
+    //       case None => ()
+    //     }
+    //   }
+    //   case _ => ()
+    // }
     var i = 0
-    while (requests(i)._1 != s) i+=1
-    println("distributing to "+requests(i))
+    while (i < requests.length && requests(i)._1 != s) i+=1
     for (good <- requests(i)._2)
     s match {
-      case a: EconomicAgent => a.stock.receiveMerchandises(good, merchandises, None)
+      case agent: EconomicAgent => agent.stock.receiveMerchandises(good, merchandises, None)
+      case airport: Airport => println("success")
       case _ => ()
     }
   }

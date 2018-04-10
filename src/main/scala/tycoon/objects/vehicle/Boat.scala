@@ -14,11 +14,9 @@ import tycoon.game.Settings
 
 
 class Boat(_id: Int, dock: Structure, val owner: Player) extends Vehicle(_id, dock, owner) with Container {
-
   val maxSpace : Double = 100
   var remainingSpace : Double = maxSpace
   val merchandises = new ListBuffer[Merchandise]
-
   val mManager = new MerchandisesManager
 
   var onTheRoad = BooleanProperty(false)
@@ -27,10 +25,7 @@ class Boat(_id: Int, dock: Structure, val owner: Player) extends Vehicle(_id, do
   var weight = 50
   gridPos = location.gridPos.clone()
 
-
-
   def update(dt: Double, dirIndicator: Int) = {
 
   }
-
 }

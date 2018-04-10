@@ -1,8 +1,11 @@
 package tycoon.game
 
 import scala.collection.mutable.ListBuffer
+import scala.collection.mutable.Stack
 
 import tycoon.objects.good.Good
+import tycoon.objects.graph._
+import tycoon.objects.railway._
 import tycoon.objects.structure._
 
 import scalafx.beans.property.{IntegerProperty, StringProperty}
@@ -41,6 +44,81 @@ class TownManager(game: Game) {
     town.displayWaiters()
     townsList += town
   }
+
+
+  // DETERMINE DISTANCES
+
+  // economy of the different cities take into account the economy of cities around it
+
+  /// to determine distances by train, we use the graph of rails and stations generated previously
+
+  def determineVertex(index: Int, graph: Graph) : Option[Vertex] = {
+    var i = 0
+    while (i < graph.content.length && graph.content(i).origin != index) i += 1
+    if (i < graph.content.length) Some(graph.content(i))
+    else None
+  }
+
+  def explore(vertex: Vertex, graph: Graph, notVisited: ListBuffer[Vertex], stack: Stack[Road], arrival: Vertex) : Option[Int] = {
+    if (vertex == arrival) {
+      var distance = 0
+      while (!stack.isEmpty) distance += stack.pop().length
+      Some(distance)
+    }
+    else {
+      println("notVisited"+notVisited)
+      notVisited -= vertex
+      println("notVisited"+notVisited)
+      var optDistance : Option[Int] = None
+      for (link <- vertex.links) {
+        determineVertex(link._1, graph) match {
+          case Some(v) => {
+            val i = notVisited.indexOf(determineVertex(link._1, graph).get)
+            println("new vertex: "+i)
+            if (i != -1) {
+              determineVertex(link._1, graph) match {
+                case Some(v) => optDistance = graph.optionMin(optDistance, explore(v, graph, notVisited, stack.push(link._2), arrival))
+                case None => ()
+              }
+            }
+          }
+          case None => ()
+        }
+      }
+      optDistance
+    }
+  }
+
+  def determineRailwayDistance(s1: Structure, s2: Structure) : Option[Int] = {
+    // DFS
+    var stack = new Stack[Road]
+    val graph = game.game_graph
+    graph.printGraph
+    var notVisited = graph.content.clone()
+    var distance : Option[Int] = None
+    determineVertex(s1.structureId, graph) match {
+      case Some(vertex) => {
+        determineVertex(s2.structureId, graph) match {
+          case Some(arrival) => explore(vertex, graph, notVisited, stack, arrival)
+          case None => None
+        }
+      }
+      case None => None
+    }
+  }
+
+  def determineEuclidianDistance(s1: Structure, s2: Structure) : Int =
+    Math.sqrt((Math.pow(s1.gridPos.col - s2.gridPos.col, 2) + Math.pow(s1.gridPos.row - s2.gridPos.row, 2))).toInt
+
+
+  // def debugDistances() = {
+  //   for (s <- structuresList) {
+  //     for (s1 <- structuresList) {
+  //       println("Distance between "+s.structureId+" and "+s1.structureId)
+  //       println(determineRailwayDistance(s,s1))
+  //     }
+  //   }
+  // }
 
   def getTime() : Double = game.totalElapsedTime
 
