@@ -34,11 +34,14 @@ object Dijkstra {
         }
       }
     }
-    def isTownFacility(pos : GridLocation) : Boolean = {
+    def isFacility(pos : GridLocation) : Boolean = {
       map.maybeGetStructureAt(pos) match {
         case Some(a : Airport) => true
         case Some(d : Dock) => true
         case Some(r : Rail) => true
+        case Some(f : Factory) => true
+        case Some(f : Farm) => true
+        case Some(f : Field) => true
         case _ => false
       }
     }
@@ -76,7 +79,7 @@ object Dijkstra {
     }
     var notVisited : ListBuffer[GridLocation] = new ListBuffer[GridLocation]
     for ((col, row) <- new GridRectangle(0, 0, map.width, map.height).iterateTuple) {
-      if ((map.checkBgTile(new GridLocation(col, row),authorizedTile) && !isTownFacility(new GridLocation(col, row))) || isStruct(new GridLocation(col, row))) {
+      if ((map.checkBgTile(new GridLocation(col, row),authorizedTile) && !isFacility(new GridLocation(col, row))) || isStruct(new GridLocation(col, row))) {
         notVisited += new GridLocation(col, row)
       }
     }
@@ -119,7 +122,7 @@ object Dijkstra {
         }
       }
     }
-    var finalPath = new ListBuffer[GridLocation]
+    var finalPath = ListBuffer[GridLocation](lastPos)
     var validity = true
     while (lastPos != initPos) {
       var predecessor = previous(lastPos.col)(lastPos.row)
@@ -134,8 +137,8 @@ object Dijkstra {
         }
       }
     }
-    println("validity of the path",validity)
-    if (validity) finalPath
+    println("Tycoon > objects > graph > Dijkstra > validity of the path:",validity)
+    if (validity) finalPath.reverse
     else new ListBuffer[GridLocation]()
   }
 }

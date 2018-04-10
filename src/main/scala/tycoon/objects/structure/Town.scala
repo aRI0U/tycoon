@@ -25,9 +25,9 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
       _name.set(townManager.unchosen_names(i))
       townManager.unchosen_names.remove(i)*/
       val nameId = r.nextInt(townManager.townNames.length)
-      val name = townManager.townNames(nameId)
+      val name = StringProperty(townManager.townNames(nameId))
       setName(townManager.townNames(nameId))
-      townManager.townNames -= name
+      townManager.townNames -= townManager.townNames(nameId)
     }
     catch {
       case e: Exception => {

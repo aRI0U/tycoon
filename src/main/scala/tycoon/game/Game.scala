@@ -122,7 +122,7 @@ class Game(val map_width : Int, val map_height : Int)
   def fillNewGame() {
     map.sprinkleTile(Tile.tree, 3)
     map.sprinkleTile(Tile.rock, 1)
-    map.generateLakes(5, 2000)
+    map.generateLakes(4, 50)
   }
 
   val tiledPane = new DraggableTiledPane(map)
@@ -251,6 +251,7 @@ class Game(val map_width : Int, val map_height : Int)
   /* KEEEEP BEGIN */
 
   def createStruct(struct: Structure, tilesAllowed: Array[Tile]): Boolean = {
+    var resultBool = false
     if (map.gridContains(struct.gridRect)
         && map.isUnused(struct.gridRect)
         && map.checkBgTiles(struct.gridRect, tilesAllowed)) {
@@ -260,7 +261,7 @@ class Game(val map_width : Int, val map_height : Int)
       game_graph.newStructure(struct)
 
       struct match {
-        case town: Town => townManager.newTown(town)
+        case town: Town => {townManager.newTown(town)}
         case mine: Mine => { mines += mine ; townManager.newStructure(mine) }
         case _ => townManager.newStructure(_)
       }
