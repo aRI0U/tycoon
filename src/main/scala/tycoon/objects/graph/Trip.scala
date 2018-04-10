@@ -18,7 +18,10 @@ class Trip(var origin: Structure, var destination: Structure, val vehicle: Vehic
   def active: Boolean = true // tmp
 
   def start() = {
-    
+    vehicle match {
+      case truck: Truck => {
+      }
+    }
   }
 
   def update (dt: Double) {
