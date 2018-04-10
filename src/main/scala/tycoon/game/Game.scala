@@ -120,9 +120,9 @@ class Game(val map_width : Int, val map_height : Int)
   map.fillBackground(Tile.grass)
 
   def fillNewGame() {
-    map.sprinkleTile(Tile.tree, 3)
+    map.sprinkleTile(Tile.tree, 5)
     map.sprinkleTile(Tile.rock, 1)
-    map.generateLakes(5, 20) //SLOW
+    map.generateLakes(2, 500) //SLOW
   }
 
   val tiledPane = new DraggableTiledPane(map)
@@ -270,6 +270,7 @@ class Game(val map_width : Int, val map_height : Int)
     else {
       struct match {
         case m: Mine => setInfoText("You can create mines only on deposits!", 2)
+        case m: Dock => setInfoText("You can create Docks only on Water and Sand!", 2)
         case _ => ()
       }
       false
@@ -292,7 +293,7 @@ class Game(val map_width : Int, val map_height : Int)
             neighbor match {
               case town: Town => {
                 if (!town.hasAirport && createStruct(airport, Tile.grass)) {
-                  bought = true
+                  bought = false
                   town.hasAirport = true
                   airport.dependanceTown = Some(town)
                   town.airport = Some(airport)
@@ -551,12 +552,15 @@ class Game(val map_width : Int, val map_height : Int)
         if (nbFactories>0) {
           var factory = new Factory(pos.left,id,townManager); id+=1
           createStruct(factory,Tile.grass)
-          factory.workers_=(nbFactories)
+          factory.workers_=(nbFactories*100)
+          railManager.createRail(new Rail(pos.left.bottom))
+          railManager.createRail(new Rail(pos.bottom))
+
         }
-        ( city \\ "Airport") foreach (i => {createStruct(new Airport(pos.left.top,id),Tile.grass); id+=1})
+        ( city \\ "Airport") foreach (i => {createStruct(new Airport(pos.left.top,id),Tile.grass)/*; id+=1*/ ; town.hasAirport = true })
       }
 
-      map.sprinkleTile(Tile.tree, 3)
+      map.sprinkleTile(Tile.tree, 5)
       map.sprinkleTile(Tile.rock, 1)
       for (connection <- (mapXML \\ "Connection")){
         var upstream = (connection  \ "@upstream").text
@@ -577,6 +581,13 @@ class Game(val map_width : Int, val map_height : Int)
         if (is) {
           val path = Dijkstra.tileGraph(town1,town2,(Tile.grass),map)
           for (pos <- path) {
+            //in order to counter some priority cases with the factories
+            if (pos == town1.gridPos.left.left.top || pos == town1.gridPos.left.left.bottom ) {
+              railManager.createRail(new Rail(town1.gridPos.left.left))
+            }
+            if (pos == town2.gridPos.left.left.bottom || pos == town2.gridPos.left.left.top) {
+              railManager.createRail(new Rail(town2.gridPos.left.left))
+            }
             var rail = new Rail(pos)
             railManager.createRail(rail)
           }
