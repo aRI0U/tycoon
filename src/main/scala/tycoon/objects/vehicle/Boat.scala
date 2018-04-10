@@ -25,7 +25,7 @@ class Boat(_id: Int, dock: Structure, val owner: Player) extends Vehicle(_id, do
   speed.set(200.0)
   var weight = 50
   val cost = 500
-  gridPos = location.gridPos
+  gridPos = location.gridPos.clone()
 
 
 

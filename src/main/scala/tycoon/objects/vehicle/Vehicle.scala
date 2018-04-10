@@ -43,6 +43,15 @@ abstract class Vehicle(_id: Int, struct: Structure, owner: Player) extends Rende
   var arrived: Boolean = true
   var stabilized: Boolean = false
 
+  def getDirs(origin: GridLocation, destination: GridLocation): ListBuffer[Direction] = {
+    val dirs = new ListBuffer[Direction]()
+    if (destination.row < origin.row || (destination.row == origin.row && origin.percentageHeight > 0)) dirs += North
+    if (destination.col > origin.col) dirs += East
+    if (destination.row > origin.row) dirs += South
+    if (destination.col < origin.col || (destination.col == origin.col && origin.percentageWidth > 0)) dirs += West
+    dirs
+  }
+
   def location: Structure = _location.value
   def location_=(newStruct: Structure) = _location.set(newStruct)
   def locationName: StringProperty = _locationName
