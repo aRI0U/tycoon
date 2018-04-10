@@ -47,7 +47,6 @@ class TileMap (val width: Int, val height: Int) {
           .filter(gridContains)
           .map(maybeGetStructureAt)
           .flatten
-
     }
   }
   def getSurroundingTiles(pos: GridLocation) : Array[Tile] = {

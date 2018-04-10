@@ -22,10 +22,10 @@ class Plane(_id: Int, airport: Structure, val owner: Player) extends Vehicle(_id
 
   var onTheRoad = BooleanProperty(false)
   tile = Tile.plane
-  speed.set(200.0)
+  speed.set(400.0)
   var weight = 50
   val cost = 500
-  gridPos = location.gridPos
+  gridPos = location.gridPos.clone()
 
   def update(dt: Double, dirIndicator: Int) = {
 

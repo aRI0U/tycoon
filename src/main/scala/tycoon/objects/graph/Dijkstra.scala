@@ -42,13 +42,19 @@ object Dijkstra {
         case _ => false
       }
     }
+    def isStruct(pos : GridLocation) : Boolean = {
+      map.maybeGetStructureAt(pos) match {
+        case Some(s) => (s == struct1 || s == struct2)
+        case _ => false
+      }
+    }
 
     def getSurroundingPos(pos : GridLocation) : ListBuffer[GridLocation] = {
       if (pos.col > 0 && pos.row > 0 && pos.row< map.height -2 && pos.col < map.width -2) {
         var neighbors = ListBuffer[GridLocation]()
         var potential = ListBuffer[GridLocation](pos.top,pos.right,pos.bottom,pos.left)
         for (po <- potential) {
-          if (map.checkBgTile(po,authorizedTile)) {
+          if (map.checkBgTile(po,authorizedTile) || isStruct(po)) {
             neighbors += po
           }
         }
@@ -70,7 +76,7 @@ object Dijkstra {
     }
     var notVisited : ListBuffer[GridLocation] = new ListBuffer[GridLocation]
     for ((col, row) <- new GridRectangle(0, 0, map.width, map.height).iterateTuple) {
-      if (map.checkBgTile(new GridLocation(col, row),authorizedTile) && !isTownFacility(new GridLocation(col, row))) {
+      if ((map.checkBgTile(new GridLocation(col, row),authorizedTile) && !isTownFacility(new GridLocation(col, row))) || isStruct(new GridLocation(col, row))) {
         notVisited += new GridLocation(col, row)
       }
     }
