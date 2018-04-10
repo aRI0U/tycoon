@@ -28,7 +28,6 @@ abstract class Carriage(_id: Int, initialTown: Structure, _owner: Player) extend
   def embark(structure: Structure, stops: ListBuffer[Structure])
   def debark(s: Structure)
 
-  val cost = 20
   var weight: Double = 200
 
 

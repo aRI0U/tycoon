@@ -40,17 +40,16 @@ object BuyableStruct {
   def newField(pos: GridLocation, id: Int, townManager: TownManager): Field = new Field(pos, id)
   def newDock(pos: GridLocation, id: Int, townManager: TownManager): Dock = new Dock(pos, id)
 
-
-  val SmallTown = new BuyableStruct("Small Town", 50, Tile.town, newSmallTown)
-  val MediumTown = new BuyableStruct("Medium Town", 100, Tile.town, newMediumTown)
-  val LargeTown = new BuyableStruct("Large Town", 200, Tile.town, newLargeTown)
-  val Mine = new BuyableStruct("Mine", 50, Tile.mine, newMine)
-  val Farm = new BuyableStruct("Farm", 100, Tile.farm1, newFarm)
-  val Factory = new BuyableStruct("Factory", 150, Tile.factory, newFactory)
-  val PackingPlant = new BuyableStruct("Packing Plant", 170, Tile.factory, newPackingPlant)
-  val Airport = new BuyableStruct("Airport", 1000, Tile.airport, newAirport)
-  val Field = new BuyableStruct("Field", 100, Tile.field1, newField)
-  val Dock = new BuyableStruct("Dock", 100, Tile.dock, newDock)
+  val SmallTown = new BuyableStruct("Small Town", Settings.CostSmallTown, Tile.Town, newSmallTown)
+  val MediumTown = new BuyableStruct("Medium Town", Settings.CostMediumTown, Tile.Town, newMediumTown)
+  val LargeTown = new BuyableStruct("Large Town", Settings.CostLargeTown, Tile.Town, newLargeTown)
+  val Mine = new BuyableStruct("Mine", Settings.CostMine, Tile.Mine, newMine)
+  val Farm = new BuyableStruct("Farm", Settings.CostFarm, Tile.Farm(0), newFarm)
+  val Factory = new BuyableStruct("Factory", Settings.CostFactory, Tile.Factory, newFactory)
+  val PackingPlant = new BuyableStruct("Packing Plant", Settings.CostPackingPlant, Tile.Factory, newPackingPlant)
+  val Airport = new BuyableStruct("Airport", Settings.CostAirport, Tile.Airport, newAirport)
+  val Field = new BuyableStruct("Field", Settings.CostField, Tile.Field(0), newField)
+  val Dock = new BuyableStruct("Dock", Settings.CostDock, Tile.Dock, newDock)
 }
 
 
@@ -63,10 +62,12 @@ object BuyableRoad {
   def newRail(pos: GridLocation): Rail = new Rail(pos)
   def newAsphalt(pos: GridLocation): Asphalt = new Asphalt(pos)
   def newGrass(pos: GridLocation): Grass = new Grass(pos)
+  def newWater(pos: GridLocation): Water = new Water(pos)
 
-  val Rail = new BuyableRoad("Rail", 10, Tile.straightRailBT, newRail)
-  val Asphalt = new BuyableRoad("Asphalt", 5, Tile.asphalt, newAsphalt)
-  val Grass = new BuyableRoad("Grass", 30, Tile.grass(0), newGrass)
+  val Rail = new BuyableRoad("Rail", Settings.CostRail, Tile.StraightRailBT, newRail)
+  val Asphalt = new BuyableRoad("Asphalt", Settings.CostAsphalt, Tile.Asphalt, newAsphalt)
+  val Grass = new BuyableRoad("Grass", Settings.CostGrass, Tile.Grass(0), newGrass)
+  val Water = new BuyableRoad("Water", Settings.CostWater, Tile.Water(0), newWater)
 }
 
 
@@ -81,8 +82,8 @@ object BuyableVehicle {
   def newBoat(id: Int, struct: Structure, player: Player): Boat = new Boat(id, struct, player)
   def newTruck(id: Int, struct: Structure, player: Player): Truck = new Truck(id, struct, player)
 
-  val Train = new BuyableVehicle("Train", 125, Tile.locomotiveB, newTrain)
-  val Plane = new BuyableVehicle("Plane", 300, Tile.plane, newPlane)
-  val Boat = new BuyableVehicle("Boat", 500, Tile.boat, newBoat)
-  val Truck = new BuyableVehicle("Truck", 70, Tile.truck, newTruck)
+  val Train = new BuyableVehicle("Train", Settings.CostTrain, Tile.LocomotiveB, newTrain)
+  val Plane = new BuyableVehicle("Plane", Settings.CostPlane, Tile.Plane, newPlane)
+  val Boat = new BuyableVehicle("Boat", Settings.CostBoat, Tile.Boat, newBoat)
+  val Truck = new BuyableVehicle("Truck", Settings.CostTruck, Tile.Truck, newTruck)
 }

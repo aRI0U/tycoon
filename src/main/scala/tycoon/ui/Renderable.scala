@@ -9,7 +9,7 @@ import scala.collection.mutable.ListBuffer
 import scalafx.beans.property.StringProperty
 
 abstract class Renderable(private var pos: GridLocation) {
-  private var _tile: Tile = Tile.default
+  private var _tile: Tile = Tile.Default
   private var _gridRect: GridRectangle = new GridRectangle(pos, 1, 1)
   private val _printData = new ListBuffer[PrintableData]
   //private val _printData: ListBuffer[(String, StringProperty)] = ListBuffer()

@@ -9,9 +9,8 @@ import scalafx.beans.property.{IntegerProperty, StringProperty}
 
 case class Asphalt(pos: GridLocation) extends RoadItem(pos) {
 
-  tile = Tile.asphalt // sgives_tile(tile_type)
+  tile = Tile.Asphalt // sgives_tile(tile_type)
 
-  val cost = 10
   val max_speed = 50
   val max_weight = 1000
 }

@@ -8,7 +8,7 @@ import tycoon.game._
 import tycoon.ui.Tile
 
 case class Farm(pos: GridLocation, id: Int, townManager: TownManager) extends Facility(pos, id, townManager) {
-  tile = Tile.farm(0)
+  tile = Tile.Farm(0)
   setName("Farm " + id.toString)
   var tileType = 0
   var productionTime = 50
@@ -54,9 +54,9 @@ case class Farm(pos: GridLocation, id: Int, townManager: TownManager) extends Fa
           }
           productionCounter = 0
           tileType = (tileType +1) % 3
-          tile = Tile.farm(tileType)
+          tile = Tile.Farm(tileType)
           for (field <- fields) {
-            field.tile = Tile.field(tileType)
+            field.tile = Tile.Field(tileType)
           }
         }
         updateProduction(0)

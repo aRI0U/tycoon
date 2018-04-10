@@ -119,7 +119,7 @@ object Dijkstra {
         }
       }
     }
-    var finalPath = new ListBuffer[GridLocation]
+    var finalPath = ListBuffer[GridLocation](lastPos)
     var validity = true
     while (lastPos != initPos) {
       var predecessor = previous(lastPos.col)(lastPos.row)
@@ -135,7 +135,7 @@ object Dijkstra {
       }
     }
     println("validity of the path",validity)
-    if (validity) finalPath
+    if (validity) finalPath.reverse
     else new ListBuffer[GridLocation]()
   }
 }

@@ -16,7 +16,7 @@ import scalafx.beans.property.{BooleanProperty, DoubleProperty, IntegerProperty,
 
 abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extends EconomicAgent(pos, id, townManager) {
 
-  tile = Tile.town
+  tile = Tile.Town
 
   // choose town name
   def chooseName() {

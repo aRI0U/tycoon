@@ -13,7 +13,7 @@ import scalafx.beans.property.{IntegerProperty, StringProperty}
 
 
 case class Mine(pos: GridLocation, id: Int, townManager: TownManager) extends Facility(pos, id, townManager) {
-  tile = Tile.mine
+  tile = Tile.Mine
 
   setName("Mine n°"+id)
 

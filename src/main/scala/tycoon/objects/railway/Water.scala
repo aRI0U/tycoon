@@ -7,9 +7,9 @@ import tycoon.ui.Tile
 import tycoon.ui.Renderable
 import scalafx.beans.property.{IntegerProperty, StringProperty}
 
-case class Grass(pos: GridLocation) extends RoadItem(pos) {
+case class Water(pos: GridLocation) extends RoadItem(pos) {
 
-  tile = Tile.Grass(0) // sgives_tile(tile_type)
+  tile = Tile.Water(0) // sgives_tile(tile_type)
 
   val max_speed = 50
   val max_weight = 1000

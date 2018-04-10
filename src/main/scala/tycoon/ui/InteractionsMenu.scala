@@ -253,46 +253,38 @@ class InteractionsMenu(val game: Game) extends TabPane
     val goodsCarriagesSpinner = new Spinner[Integer](0, 5, 0)
     goodsCarriagesSpinner.maxWidth = 60
     val tankCarsSpinner = new Spinner[Integer](0, 5, 0)
-    goodsCarriagesSpinner.maxWidth = 60
+    tankCarsSpinner.maxWidth = 60
 
     val passengerCarriageContent = new HBox(10)
     passengerCarriageContent.alignment = Pos.CenterLeft
     passengerCarriageContent.children += new Label("Add")
     passengerCarriageContent.children += passengerCarriagesSpinner
-    passengerCarriageContent.children += new Label("Passenger Carriages (unit price: $" + PassengerCarriage.Price + ")")
+    passengerCarriageContent.children += new Label("Passenger Carriages (unit price: $" + Settings.CostPassengerCarriage + ")")
 
     val goodsCarriageContent = new HBox(10)
     goodsCarriageContent.alignment = Pos.CenterLeft
     goodsCarriageContent.children += new Label("Add")
     goodsCarriageContent.children += goodsCarriagesSpinner
-    goodsCarriageContent.children += new Label("Goods Carriages (unit price: $" + GoodsCarriage.Price + ")")
+    goodsCarriageContent.children += new Label("Goods Carriages (unit price: $" + Settings.CostGoodsCarriage + ")")
 
     val tankCarContent = new HBox(10)
     tankCarContent.alignment = Pos.CenterLeft
     tankCarContent.children += new Label("Add")
     tankCarContent.children += tankCarsSpinner
-    tankCarContent.children += new Label("Tank Cars (unit price: $" + TankCar.Price + ")")
+    tankCarContent.children += new Label("Tank Cars (unit price: $" + Settings.CostTankCar + ")")
 
     var totalCost: Int = 0
     val totalCostStr = StringProperty("0")
-    passengerCarriagesSpinner.value.onChange {
-      totalCost = (passengerCarriagesSpinner.value.value * PassengerCarriage.Price
-                  + goodsCarriagesSpinner.value.value * GoodsCarriage.Price
-                + tankCarsSpinner.value.value * TankCar.Price)
+    def computeTotalCost() = {
+      totalCost = (passengerCarriagesSpinner.value.value * Settings.CostPassengerCarriage
+                  + goodsCarriagesSpinner.value.value * Settings.CostGoodsCarriage
+                + tankCarsSpinner.value.value * Settings.CostTankCar)
       totalCostStr.set(formatter.format(totalCost))
     }
-    goodsCarriagesSpinner.value.onChange {
-      totalCost = (passengerCarriagesSpinner.value.value * PassengerCarriage.Price
-                  + goodsCarriagesSpinner.value.value * GoodsCarriage.Price
-                + tankCarsSpinner.value.value * TankCar.Price)
-      totalCostStr.set(formatter.format(totalCost))
-    }
-    tankCarsSpinner.value.onChange {
-      totalCost = (passengerCarriagesSpinner.value.value * PassengerCarriage.Price
-                  + goodsCarriagesSpinner.value.value * GoodsCarriage.Price
-                + tankCarsSpinner.value.value * TankCar.Price)
-      totalCostStr.set(formatter.format(totalCost))
-    }
+
+    passengerCarriagesSpinner.value.onChange { computeTotalCost() }
+    goodsCarriagesSpinner.value.onChange { computeTotalCost() }
+    tankCarsSpinner.value.onChange { computeTotalCost() }
 
     val totalPrice = new Text {
       text <== StringProperty("Total Cost: $").concat(totalCostStr)
