@@ -69,12 +69,6 @@ trait Container {
   }
 
   def includeRequests(town: Town) = {
-    // test
-    merchandises += new Merchandise(Product.Cake, 100, 0)
-    merchandises += new Merchandise(Product.Cardboard, 100, 0)
-    merchandises += new Merchandise(Product.Hat, 100, 0)
-    merchandises += new Merchandise(Product.RabbitFoot, 100, 0)
-    merchandises += new Merchandise(Product.Ring, 100, 0)
-    merchandises += new Merchandise(Product.Corn, 100, 0)
+
   }
 }

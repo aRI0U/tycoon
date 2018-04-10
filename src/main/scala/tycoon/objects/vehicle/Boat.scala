@@ -25,7 +25,6 @@ class Boat(_id: Int, dock: Structure, val owner: Player) extends Vehicle(_id, do
   var weight = 50
   gridPos = location.gridPos.clone()
 
-<<<<<<< HEAD
   override def boarding(stops: ListBuffer[Structure]) = {
     super.boarding(stops)
     embark(location, stops)
@@ -36,8 +35,6 @@ class Boat(_id: Int, dock: Structure, val owner: Player) extends Vehicle(_id, do
     debark(location)
   }
 
-=======
->>>>>>> 92de8b5bb7e6ff50fbce57f9fdaa7d0a2091d600
   def update(dt: Double, dirIndicator: Int) = {
 
   }

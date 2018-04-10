@@ -24,7 +24,6 @@ class Truck(_id: Int, initialStruct: Structure, val owner: Player) extends Vehic
   tile = Tile.Truck
   speed.set(Settings.SpeedTruck)
   gridPos = location.gridPos.clone()
-<<<<<<< HEAD
 
   override def boarding(stops: ListBuffer[Structure]) = {
     super.boarding(stops)
@@ -36,9 +35,6 @@ class Truck(_id: Int, initialStruct: Structure, val owner: Player) extends Vehic
     debark(location)
   }
 
-=======
-  
->>>>>>> 92de8b5bb7e6ff50fbce57f9fdaa7d0a2091d600
   def update(dt: Double, dirIndicator: Int) = {
 
   }
