@@ -16,6 +16,7 @@ import scala.collection.mutable.ListBuffer
 
 abstract class Vehicle(_id: Int, struct: Structure, owner: Player) extends Renderable(new GridLocation(-1, -1)) {
   var weight : Double
+  var consuption = 10
 
   def id: Int = _id
 
@@ -95,6 +96,8 @@ abstract class Vehicle(_id: Int, struct: Structure, owner: Player) extends Rende
   // returns true iff the move lead to a change of case (ie percentage outbounds 0/100)
   def move(pos: GridLocation, dir: Direction, dt: Double, speed: Double): Boolean = {
     var changedSquare: Boolean = false
+    owner.pay((weight*consuption).toInt)
+    println("déplacement")
     dir match {
       case North =>
         pos.percentageHeight -= dt * speed

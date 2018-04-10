@@ -109,7 +109,7 @@ class Game(val map_width : Int, val map_height : Int)
   map.fillBackground(Tile.Grass)
 
   def fillNewGame() {
-    map.sprinkleTile(Tile.tree, 5)
+    map.sprinkleTile(Tile.Tree, 5)
     map.sprinkleTile(Tile.rock, 1)
     map.generateLakes(4, 500) //SLOW
   }
