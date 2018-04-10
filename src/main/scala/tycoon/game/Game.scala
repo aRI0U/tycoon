@@ -122,7 +122,7 @@ class Game(val map_width : Int, val map_height : Int)
   def fillNewGame() {
     map.sprinkleTile(Tile.tree, 3)
     map.sprinkleTile(Tile.rock, 1)
-    map.generateLakes(4, 50)
+    map.generateLakes(5, 20) //SLOW
   }
 
   val tiledPane = new DraggableTiledPane(map)
@@ -362,7 +362,13 @@ class Game(val map_width : Int, val map_height : Int)
           }
         }
         case grass: Grass => {
-          if (map.isUnused(pos) && map.checkBgTile(pos, Array(Tile.asphalt, Tile.tree))) {
+          if (map.isUnused(pos) && map.checkBgTile(pos, Array(Tile.asphalt, Tile.tree) ++ Tile.sand ++ Tile.water)) {
+            map.setBackgroundTile(pos, road.tile)
+            bought = true
+          }
+        }
+        case water: Water => {
+          if (map.isUnused(pos) && map.checkBgTile(pos, Tile.grass ++ Tile.sand)) {
             map.setBackgroundTile(pos, road.tile)
             bought = true
           }
@@ -432,14 +438,16 @@ class Game(val map_width : Int, val map_height : Int)
 
     veh match {
       case _: Truck =>
-        trip.roadPositions = Dijkstra.tileGraph(origin, destination, Array(Tile.asphalt), map).reverse
+        trip.roadPositions = Dijkstra.tileGraph(origin, destination, Array(Tile.asphalt), map)
       case _: Boat =>
-        trip.roadPositions = Dijkstra.tileGraph(origin, destination, Tile.water, map).reverse
+        trip.roadPositions = Dijkstra.tileGraph(origin, destination, Tile.water, map)
       case _ => ()
     }
 
-    trip.start()
-    trips += trip
+    if (trip.roadPositions.nonEmpty) {
+      trip.start()
+      trips += trip
+    }
   }
 
   /* KEEEEP END */

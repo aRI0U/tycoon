@@ -25,7 +25,7 @@ class TileMap (val width: Int, val height: Int) {
       structuresLayer(col)(row) = Some(e)
   }
   /** test whether there is a structure at pos/in rect */
-  def isUnused(pos: GridLocation): Boolean = structuresLayer(pos.col)(pos.row) == None
+  def isUnused(pos: GridLocation): Boolean = gridContains(pos) && structuresLayer(pos.col)(pos.row) == None
   def isUnused(rect: GridRectangle): Boolean = rect.iterate.forall(isUnused)
   /** get structure at location if there is one */
   def maybeGetStructureAt(pos: GridLocation): Option[Renderable] = maybeGetStructureAt(pos.col, pos.row)

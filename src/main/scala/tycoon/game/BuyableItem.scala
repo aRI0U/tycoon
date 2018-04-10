@@ -63,10 +63,12 @@ object BuyableRoad {
   def newRail(pos: GridLocation): Rail = new Rail(pos)
   def newAsphalt(pos: GridLocation): Asphalt = new Asphalt(pos)
   def newGrass(pos: GridLocation): Grass = new Grass(pos)
+  def newWater(pos: GridLocation): Water = new Water(pos)
 
   val Rail = new BuyableRoad("Rail", 10, Tile.straightRailBT, newRail)
   val Asphalt = new BuyableRoad("Asphalt", 5, Tile.asphalt, newAsphalt)
   val Grass = new BuyableRoad("Grass", 30, Tile.grass(0), newGrass)
+  val Water = new BuyableRoad("Water", 100, Tile.water(0), newWater)
 }
 
 

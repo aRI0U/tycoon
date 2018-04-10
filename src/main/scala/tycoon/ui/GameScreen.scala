@@ -54,6 +54,7 @@ class GameScreen(val game: Game) extends BorderPane
   interactionsMenu.addBuyableRoad(BuyableRoad.Rail)
   interactionsMenu.addBuyableRoad(BuyableRoad.Asphalt)
   interactionsMenu.addBuyableRoad(BuyableRoad.Grass)
+  interactionsMenu.addBuyableRoad(BuyableRoad.Water)
 
   interactionsMenu.addBuyableVehicle(BuyableVehicle.Train)
   interactionsMenu.addBuyableVehicle(BuyableVehicle.Plane)
