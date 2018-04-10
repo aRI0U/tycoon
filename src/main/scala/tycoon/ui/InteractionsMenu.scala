@@ -3,7 +3,7 @@ package tycoon.ui // #
 import scala.collection.mutable.ListBuffer
 
 import tycoon.game._
-import tycoon.objects.graph.Route
+import tycoon.objects.graph._
 import tycoon.objects.railway._
 import tycoon.objects.structure._
 import tycoon.objects.vehicle.train._
@@ -263,6 +263,14 @@ class InteractionsMenu(val game: Game) extends TabPane
     onMouseClicked = _ => openManageRoutesDialog()
   }
 
+  val showTripsBt = new Button {
+    text = "Manage Trips"
+    margin = Insets(10)
+    vgrow = Priority.Always
+    maxHeight = Double.MaxValue
+    onMouseClicked = _ => openManageTripsDialog()
+  }
+
   val upgradeEngineBt = new Button {
     text = "Upgrade Engine"
     margin = Insets(10)
@@ -288,6 +296,7 @@ class InteractionsMenu(val game: Game) extends TabPane
   routesTabContainer.children = Seq(
     newRouteBt,
     showRoutesBt,
+    showTripsBt,
     newPlaneTripBt,
     newBoatTripBt,
     newTruckTripBt
@@ -547,6 +556,62 @@ class InteractionsMenu(val game: Game) extends TabPane
 
     val dialog = new Dialog
     dialog.title = "Your Routes (only showing repeated routes)"
+    dialog.dialogPane.value.buttonTypes = Seq(ButtonType.Close)
+    dialog.dialogPane().content = content
+    dialog.showAndWait()
+  }
+
+  def getTripsTableView(tripList: ListBuffer[Trip]) : TableView[Trip] = {
+    val trips = new ObservableBuffer[Trip]
+    trips ++= tripList
+
+    val idCol = new TableColumn[Trip, String]("ID")
+    idCol.minWidth = 30
+    idCol.cellValueFactory = { cell => IntegerProperty(cell.value.veh.id).asString }
+
+    val typeCol = new TableColumn[Trip, String]("TYPE")
+    typeCol.minWidth = 50
+    typeCol.cellValueFactory = { cell => cell.value.veh match {
+      case _: Train => StringProperty("Train")
+      case _: Boat => StringProperty("Boat")
+      case _: Plane => StringProperty("Plane")
+      case _: Truck => StringProperty("Truck")
+      case _ => StringProperty("-")
+    } }
+
+    val stopsCol = new TableColumn[Trip, String]("STOPS")
+    stopsCol.minWidth = 150
+    stopsCol.cellValueFactory = { cell =>
+      StringProperty(cell.value.origin.name + ", " + cell.value.destination.name) }
+
+    val table = new TableView(trips)
+    table.minWidth = 400
+    table.columns ++= Seq(idCol, typeCol, stopsCol)
+    table
+  }
+
+  def openManageTripsDialog() = {
+    val trips = getTripsTableView(game.trips filter (_.repeated))
+
+    val removeBt = new Button {
+      text = "Remove Trip"
+      onMouseClicked = _ => {
+        val trip: Trip = trips.selectionModel.value.selectedItem.value
+        if (trip == null)
+          game.setInfoText("You didn't select any trip.")
+        else {
+          trip.repeated = false
+          game.setInfoText("Trip will be removed once the vehicle reach its final stop.")
+        }
+      }
+    }
+
+    val content = new VBox(10)
+    content.children.add(trips)
+    content.children.add(removeBt)
+
+    val dialog = new Dialog
+    dialog.title = "Your Trips (only showing repeated trips)"
     dialog.dialogPane.value.buttonTypes = Seq(ButtonType.Close)
     dialog.dialogPane().content = content
     dialog.showAndWait()
