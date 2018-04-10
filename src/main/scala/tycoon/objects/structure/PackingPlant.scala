@@ -9,6 +9,7 @@ import tycoon.objects.good._
 class PackingPlant(pos: GridLocation, id: Int, tManager: TownManager) extends Factory(pos, id, tManager) {
 
   override val recipesList = new ListBuffer[List[(Good,Int)]]
+  setName("Packing Plant " + id.toString)
 
   override def convertedInto(recipeId: Int) : List[(Good,Int)] = List(recipesList(recipeId)(0))
 

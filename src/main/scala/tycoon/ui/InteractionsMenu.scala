@@ -160,7 +160,7 @@ class InteractionsMenu(val game: Game) extends TabPane
 
   private val trainsTabContainer = new HBox()
   trainsTab.setContent(trainsTabContainer)
-  
+
   private val routesTabContainer = new HBox()
   routesTab.setContent(routesTabContainer)
 
@@ -173,11 +173,35 @@ class InteractionsMenu(val game: Game) extends TabPane
   }
 
   val newRouteBt = new Button {
-    text = "New Route"
+    text = "New Train Route"
     margin = Insets(10)
     vgrow = Priority.Always
     maxHeight = Double.MaxValue
     onMouseClicked = _ => startTrainRouteCreation()
+  }
+
+  val newPlaneTripBt = new Button {
+    text = "Create Plane Trip"
+    margin = Insets(10)
+    vgrow = Priority.Always
+    maxHeight = Double.MaxValue
+    onMouseClicked = _ => startPlaneTripCreation()
+  }
+
+  val newBoatTripBt = new Button {
+    text = "Create Boat Trip"
+    margin = Insets(10)
+    vgrow = Priority.Always
+    maxHeight = Double.MaxValue
+    onMouseClicked = _ => startBoatTripCreation()
+  }
+
+  val newTruckTripBt = new Button {
+    text = "Create Truck Trip"
+    margin = Insets(10)
+    vgrow = Priority.Always
+    maxHeight = Double.MaxValue
+    onMouseClicked = _ => startTruckTripCreation()
   }
 
   val showRoutesBt = new Button {
@@ -212,7 +236,10 @@ class InteractionsMenu(val game: Game) extends TabPane
 
   routesTabContainer.children = Seq(
     newRouteBt,
-    showRoutesBt
+    showRoutesBt,
+    newPlaneTripBt,
+    newBoatTripBt,
+    newTruckTripBt
   )
 
 
@@ -342,6 +369,38 @@ class InteractionsMenu(val game: Game) extends TabPane
     dialog.showAndWait()
   }
 
+  def getVehiclesTableView(vehList: ListBuffer[Vehicle]) : TableView[Vehicle] = {
+    val vehicles = new ObservableBuffer[Vehicle]
+    vehicles ++= vehList
+
+    val idCol = new TableColumn[Vehicle, String]("ID")
+    idCol.minWidth = 30
+    idCol.cellValueFactory = { cell => IntegerProperty(cell.value.id).asString }
+
+    val stateCol = new TableColumn[Vehicle, String]("STATE")
+    stateCol.minWidth = 80
+    stateCol.cellValueFactory = { cell => {
+      val stateStr = StringProperty("")
+      stateStr <== when (cell.value.moving) choose "Moving" otherwise "Stationary"
+      stateStr
+    }}
+
+    val locationCol = new TableColumn[Vehicle, String]("IN/FROM")
+    locationCol.minWidth = 100
+    locationCol.cellValueFactory = _.value.locationName
+
+    val nextLocationCol = new TableColumn[Vehicle, String]("GOING TO")
+    nextLocationCol.minWidth = 100
+    nextLocationCol.cellValueFactory = _.value.nextLocationName
+
+    val speedCol = new TableColumn[Vehicle, String]("SPEED")
+    speedCol.minWidth = 80
+    speedCol.cellValueFactory = _.value.speed.asString.concat(" mph")
+
+    val table = new TableView(vehicles)
+    table.columns ++= Seq(idCol, stateCol, locationCol, nextLocationCol, speedCol)
+    table
+  }
 
   def getTrainsTableView(trainList: ListBuffer[Train]) : TableView[Train] = {
     val trains = new ObservableBuffer[Train]
@@ -375,8 +434,6 @@ class InteractionsMenu(val game: Game) extends TabPane
     engineLevelCol.minWidth = 120
     engineLevelCol.cellValueFactory = _.value.engineUpgradeLevel.asString
 
-    // could add weight, nb of each type of carriages, nb passengers, nb max passengers, goods, profits the train made so far
-
     val table = new TableView(trains)
     table.columns ++= Seq(idCol, stateCol, locationCol, nextLocationCol, speedCol, engineLevelCol)
     table
@@ -387,9 +444,19 @@ class InteractionsMenu(val game: Game) extends TabPane
     val routes = new ObservableBuffer[Route]
     routes ++= routeList
 
-    val idCol = new TableColumn[Route, String]("TRAIN ID")
+    val idCol = new TableColumn[Route, String]("ID")
     idCol.minWidth = 30
     idCol.cellValueFactory = { cell => IntegerProperty(cell.value.vehicle.id).asString }
+
+    val typeCol = new TableColumn[Route, String]("TYPE")
+    typeCol.minWidth = 50
+    typeCol.cellValueFactory = { cell => cell.value.vehicle match {
+      case _: Train => StringProperty("Train")
+      case _: Boat => StringProperty("Boat")
+      case _: Plane => StringProperty("Plane")
+      case _: Truck => StringProperty("Truck")
+      case _ => StringProperty("-")
+    } }
 
     val stopsCol = new TableColumn[Route, String]("STOPS")
     stopsCol.minWidth = 300
@@ -397,8 +464,8 @@ class InteractionsMenu(val game: Game) extends TabPane
       StringProperty(cell.value.stops map { struct: Structure => struct.name } mkString ", ") }
 
     val table = new TableView(routes)
-    table.minWidth = 400
-    table.columns ++= Seq(idCol, stopsCol)
+    table.minWidth = 500
+    table.columns ++= Seq(idCol, typeCol, stopsCol)
     table
   }
 
@@ -451,7 +518,7 @@ class InteractionsMenu(val game: Game) extends TabPane
       maxHeight = Double.MaxValue
       onMouseClicked = _ => {
         selectFirstTab()
-        stopBuilding()
+        stopCreatingRoute()
       }
     }
 
@@ -479,7 +546,99 @@ class InteractionsMenu(val game: Game) extends TabPane
   private val routeStops = new ListBuffer[Structure]()
   private val routeRoads = new ListBuffer[Road]()
   private var creatingTrainRoute = false
+  private var creatingPlaneTrip = false
+  private var creatingBoatTrip = false
+  private var creatingTruckTrip = false
   private var routeMaxSize = 0
+
+  private var originStruct: Option[Structure] = None
+  private var destinationStruct: Option[Structure] = None
+
+  def addTripStruct(struct: Structure): Unit = {
+    if (originStruct == None) {
+      originStruct = Some(struct)
+      game.setInfoText("[Trip Creation] Now select the destination of the trip.")
+    } else if (struct != originStruct.get) {
+      destinationStruct = Some(struct)
+      endVehicleTripCreation()
+    }
+  }
+
+  def startPlaneTripCreation(): Unit = {
+    creatingPlaneTrip = true
+    startVehicleTripCreation("Plane", "Airport")
+  }
+  def startBoatTripCreation(): Unit = {
+    creatingBoatTrip = true
+    startVehicleTripCreation("Boat", "Dock")
+  }
+  def startTruckTripCreation(): Unit = {
+    creatingTruckTrip = true
+    startVehicleTripCreation("Truck", "Structure")
+  }
+
+  def startVehicleTripCreation(vehName: String, structName: String) = {
+    val tripTab = new Tab()
+    tripTab.text = vehName + " Trip Creation"
+    this += tripTab
+    this.selectionModel.value.selectLast()
+    currentTemporaryTab = Some(tripTab)
+
+    val closeTabBt = new Button {
+      text = "Cancel Creation"
+      margin = Insets(10)
+      vgrow = Priority.Always
+      maxHeight = Double.MaxValue
+      onMouseClicked = _ => {
+        selectFirstTab()
+        stopCreatingRoute()
+      }
+    }
+
+    val container = new HBox
+    container.children += closeTabBt
+    tripTab.setContent(container)
+
+    game.setInfoText("[" + vehName + " Trip Creation] Select the origin " + structName + ".", -1)
+    originStruct = None
+    destinationStruct = None
+  }
+
+  private def endVehicleTripCreation() = {
+    val vehicles: ListBuffer[Vehicle] = {
+      if (creatingPlaneTrip) originStruct.get.planeList
+      else if (creatingBoatTrip) originStruct.get.boatList
+      else if (creatingTruckTrip) originStruct.get.truckList
+      else new ListBuffer[Vehicle]() }
+    if (vehicles.isEmpty)
+      game.setInfoText("[Trip Creation] No vehicle found for this trip.")
+    else {
+      val vehTable: TableView[Vehicle] = getVehiclesTableView(vehicles)
+      vehTable.selectionModel.value.selectFirst()
+      val repeatTripCb = new CheckBox("Repeat Route Indefinitely")
+      repeatTripCb.selected = false
+      val content = new VBox(10)
+      content.children ++= Seq(vehTable, repeatTripCb)
+      val dialog = new Dialog
+      dialog.title = "Select a vehicle for the trip"
+      dialog.dialogPane.value.buttonTypes = Seq(ButtonType.Finish, ButtonType.Cancel)
+      dialog.dialogPane().content = content
+
+      val tripVeh: Vehicle = dialog.showAndWait() match {
+        case Some(ButtonType.Finish) =>
+          vehTable.selectionModel.value.selectedItem.value
+        case _ => null
+      }
+      if (tripVeh == null)
+        game.setInfoText("[Trip Creation] You didn't select any vehicle.")
+      else {
+        game.createTrip(originStruct.get, destinationStruct.get, tripVeh, repeatTripCb.selected.value)
+        game.setInfoText("[Trip Creation] The trip has been created!")
+      }
+    }
+
+    stopCreatingRoute()
+  }
 
   private def finishTrainRouteCreation() = {
     if (routeStops.length <= 1)
@@ -521,18 +680,13 @@ class InteractionsMenu(val game: Game) extends TabPane
     routeStops.clear()
     routeRoads.clear()
     creatingTrainRoute = false
+    creatingPlaneTrip = false
+    creatingBoatTrip = false
+    creatingTruckTrip = false
     game.clearInfoText(force = false)
   }
 
 
-
-
-  /* TODO  new Label("Nb of trains + others stats on them, button to see list of
-   all trains with all their features (current trajet, nb passagers, engine, carriages..),
-    bouton pour acheter nouveau train (locomotive), bouton pour acheter carriage, bouton pour gérer trains (carriages") */
-
-
-  /* FUNCTIONS USED BY ALL TABS */
 
   private def selectFirstTab() = this.selectionModel.value.selectFirst()
   private def tabPaneRequestFocus() = this.requestFocus()
@@ -563,6 +717,8 @@ class InteractionsMenu(val game: Game) extends TabPane
   }
 
   def structureClicked(struct: Structure) {
+    if (creatingTruckTrip)
+      addTripStruct(struct)
     struct match {
       case town: Town => {
         if (creatingTrainRoute) {
@@ -605,6 +761,12 @@ class InteractionsMenu(val game: Game) extends TabPane
           }
         }
       }
+      case airport: Airport =>
+        if (creatingPlaneTrip)
+          addTripStruct(airport)
+      case dock: Dock =>
+        if (creatingBoatTrip)
+          addTripStruct(dock)
       case _ => ()
     }
   }

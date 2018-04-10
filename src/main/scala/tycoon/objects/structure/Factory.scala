@@ -13,6 +13,8 @@ case class Factory(pos: GridLocation, id: Int, tManager: TownManager) extends Fa
 
   val productionTime = 5
 
+  setName("Factory " + id.toString)
+
   val recipesList : ListBuffer[List[(Good, Int)]] = ListBuffer(List((Product.Coal,3)))
 
   // disponible products

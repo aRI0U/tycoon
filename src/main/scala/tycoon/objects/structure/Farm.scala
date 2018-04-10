@@ -9,6 +9,7 @@ import tycoon.ui.Tile
 
 case class Farm(pos: GridLocation, id: Int, tManager: TownManager) extends Facility(pos, id, tManager) {
   tile = Tile.farm(0)
+  setName("Farm " + id.toString)
   var tileType = 0
   var productionTime = 50
   var productionCounter = 0

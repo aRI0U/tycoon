@@ -147,6 +147,7 @@ class Game(val map_width : Int, val map_height : Int)
   var trucks = new ListBuffer[Truck]()
   var boats = new ListBuffer[Boat]()
   var routes = new ListBuffer[Route]()
+  var trips = new ListBuffer[Trip]()
   var carriages = new ListBuffer[Carriage]()
 
   private val _player = new Player
@@ -212,8 +213,10 @@ class Game(val map_width : Int, val map_height : Int)
     //update trains position here ?
 
     routes foreach { _.update(dt * speedMultiplier.value) }
+    trips foreach { _.update(dt * speedMultiplier.value) }
     // delete routes that are not active anymore
     routes = routes filter { r: Route => r.active || r.repeated }
+    trips = trips filter { t: Trip => t.active || t.repeated }
     structures foreach { _.update(dt * speedMultiplier.value)}
 
     tiledPane.render()
@@ -420,6 +423,13 @@ class Game(val map_width : Int, val map_height : Int)
     val route = new Route(roads, stops, train, repeatRoute)
     route.start()
     routes += route
+  }
+
+  def createTrip(origin: Structure, destination: Structure, veh: Vehicle, repeatTrip: Boolean) = {
+    println("from " + origin.name + " to " + destination.name + " with " + veh + " (repeated: " + repeatTrip + ")")
+    val trip = new Trip(origin, destination, veh, repeatTrip)
+    trip.start()
+    trips += trip
   }
 
   /* KEEEEP END */

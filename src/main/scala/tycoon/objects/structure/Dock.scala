@@ -8,6 +8,7 @@ import tycoon.ui.Tile
 case class Dock(pos: GridLocation, id: Int) extends Structure(pos, id) {
   tile = Tile.dock
   var dependanceTown : Option[Town]= None
+  setName("Dock " + id.toString)
   def update(dt: Double) = {
   }
 }
