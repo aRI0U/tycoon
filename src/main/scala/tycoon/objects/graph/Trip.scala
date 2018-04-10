@@ -21,6 +21,7 @@ class Trip(var origin: Structure, var destination: Structure, val veh: Vehicle, 
   var roadPositions = new ListBuffer[GridLocation]()
 
   def start() = {
+    veh.boarding(ListBuffer[Structure](destination))
     origin.removeVehicle(veh)
     i = 0
   }
@@ -93,6 +94,7 @@ class Trip(var origin: Structure, var destination: Structure, val veh: Vehicle, 
 
       if (!active) {
         destination.addVehicle(veh)
+        veh.landing()
         if (repeated) {
           val tmp: Structure = origin
           origin = destination
@@ -100,6 +102,7 @@ class Trip(var origin: Structure, var destination: Structure, val veh: Vehicle, 
           origin.removeVehicle(veh)
           i = 0
           roadPositions = roadPositions.reverse
+          veh.boarding(ListBuffer[Structure](destination))
         }
       }
     }
