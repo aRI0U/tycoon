@@ -64,9 +64,6 @@ class MerchandisesManager {
   def distribute(merchandises: ListBuffer[Merchandise], s: Structure) = {
     // basic
     var owner = s
-    println("s: "+s)
-    println("stops: "+stops)
-    println("requests: "+requests)
     var i = 0
     while (i < requests.length && requests(i)._1 != s) i+=1
     s match {

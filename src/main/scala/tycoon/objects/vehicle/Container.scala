@@ -69,6 +69,18 @@ trait Container {
   }
 
   def includeRequests(town: Town) = {
-
+    for (i <- 0 to town.stock.productsTypes.length - 1) {
+      if (town.stock.stocks(i) > 2*town.stock.requests(i)) {
+        for (r <- mManager.requests) {
+          for (good <- r._2) {
+            if (good == town.stock.productsTypes(i)) {
+              val quantity = town.stock.stocks(i).min((remainingSpace/good.size).toInt)
+              town.stock.giveMerchandisesWIndex(i, good, merchandises, quantity, m => (!m.kind.liquid || m.packed))
+              remainingSpace -= good.size*quantity
+            }
+          }
+        }
+      }
+    }
   }
 }

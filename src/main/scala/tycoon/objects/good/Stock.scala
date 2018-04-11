@@ -115,7 +115,6 @@ class Stock(s: EconomicAgent) {
     var notGiven = quantity
     for (m <- datedProducts(i)) {
       if (notGiven > 0 && m.kind == kind && condition(m)) {
-        println(notGiven)
         notGiven -= m.trade(datedProducts(i), receiver, Some(notGiven))
       }
     }

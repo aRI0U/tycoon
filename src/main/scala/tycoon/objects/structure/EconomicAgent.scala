@@ -69,12 +69,16 @@ abstract class EconomicAgent(pos: GridLocation, id: Int, townManager: TownManage
     for (w <- weightings) {
       if (w.structure == this) w.coeff = 1.0
       else {
-        townManager.determineRailwayDistance(this, w.structure) match {
-          case Some(i) => w.coeff = 1/i
-          case None => {
-            val d = townManager.determineEuclidianDistance(this, w.structure)
-            w.coeff = 1/(Math.pow(d,2))
+        try {
+          townManager.determineRailwayDistance(this, w.structure) match {
+            case Some(i) => w.coeff = 1/i
+            case None => {
+              val d = townManager.determineEuclidianDistance(this, w.structure)
+              w.coeff = 1/(Math.pow(d,2))
+            }
           }
+        } catch {
+          case e: Exception => w.coeff = 0
         }
       }
     }
