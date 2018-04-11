@@ -94,10 +94,7 @@ abstract class EconomicAgent(pos: GridLocation, id: Int, townManager: TownManage
   def getMultiplier(good: Good) = getGoodData(townManager.getEconomicGood(good))._2
 
   def updateEconomy() = {
-<<<<<<< HEAD
-=======
     val e = townManager.getEconomicGood(Product.Milk)
->>>>>>> 92de8b5bb7e6ff50fbce57f9fdaa7d0a2091d600
     goods.foreach(computeMultiplier)
     updateWeightings()
   }

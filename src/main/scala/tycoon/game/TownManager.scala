@@ -90,7 +90,7 @@ class TownManager(game: Game) {
     // DFS
     var stack = new Stack[Road]
     val graph = game.game_graph
-    graph.printGraph
+    // graph.printGraph
     var notVisited = graph.content.clone()
     var distance : Option[Int] = None
     determineVertex(s1.structureId, graph) match {

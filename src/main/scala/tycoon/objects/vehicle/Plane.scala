@@ -23,6 +23,7 @@ class Plane(_id: Int, airport: Structure, val owner: Player) extends Vehicle(_id
   tile = Tile.Plane
   speed.set(Settings.SpeedPlane)
   var weight = 50
+  var consumption = 2
   gridPos = location.gridPos.clone()
 
   override def boarding(stops: ListBuffer[Structure]) = {
