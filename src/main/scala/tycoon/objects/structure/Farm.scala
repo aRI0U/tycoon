@@ -11,7 +11,7 @@ case class Farm(pos: GridLocation, id: Int, townManager: TownManager) extends Fa
   tile = Tile.Farm(0)
   setName("Farm " + id.toString)
   var tileType = 0
-  var productionTime = 50
+  var productionTime = 40
   var productionCounter = 0
   var haOfField = 1 //Maximum set at 10 ha of field around the farm
 

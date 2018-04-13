@@ -15,7 +15,6 @@ class MerchandisesManager {
   def addStop(s: Structure) = {
     val i = stops.indexOf(s)
     if (i == -1) {
-      println("just added a stop:"+s)
       stops += s
       notVisited += true
       requests += new Tuple2(s, determineRequests(s))
@@ -57,7 +56,6 @@ class MerchandisesManager {
       }
       case _ => ()
     }
-    println(structure+" needs "+request)
     request
   }
 
@@ -81,7 +79,6 @@ class MerchandisesManager {
         }
       }
       case dock: Dock => {
-        println("detected dock")
         dock.dependanceTown match {
           case Some(t) => {
             for (good <- determineRequests(t))

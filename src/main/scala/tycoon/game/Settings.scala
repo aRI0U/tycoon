@@ -1,8 +1,6 @@
 package tycoon.game
 
 
-
-
 object Settings {
   val GameTitle = "Tycoon Game"
   val GameWidth = 200
@@ -12,32 +10,32 @@ object Settings {
   val ScreenMinHeight = 600
 
   // Structures Costs
-  val CostSmallTown = 1
-  val CostMediumTown = 1
-  val CostLargeTown = 1
-  val CostMine = 1
-  val CostFarm = 1
-  val CostFactory = 1
-  val CostPackingPlant = 1
-  val CostAirport = 1
-  val CostField = 1
-  val CostDock = 1
+  val CostSmallTown = 200
+  val CostMediumTown = 1000
+  val CostLargeTown = 10000
+  val CostMine = 100
+  val CostFarm = 100
+  val CostFactory = 150
+  val CostPackingPlant = 80
+  val CostAirport = 1000
+  val CostField = 40
+  val CostDock = 70
 
   // Roads Costs
-  val CostRail= 1
-  val CostAsphalt = 1
+  val CostRail= 8
+  val CostAsphalt = 3
   val CostGrass = 1
-  val CostWater = 1
+  val CostWater = 8
 
   // Vehicle Costs
-  val CostTrain = 1
-  val CostPlane = 1
-  val CostBoat = 1
-  val CostTruck = 1
+  val CostTrain = 150
+  val CostPlane = 500
+  val CostBoat = 400
+  val CostTruck = 80
 
-  val CostGoodsCarriage = 1
-  val CostPassengerCarriage = 1
-  val CostTankCar = 1
+  val CostGoodsCarriage = 40
+  val CostPassengerCarriage = 40
+  val CostTankCar = 35
 
   // Vehicle Speeds
   val SpeedTruck = 200.0
@@ -47,10 +45,5 @@ object Settings {
   // Trains
   val TrainTicketPrice = 20
   val TrainMaxPassengers = 100
-
-
-
-
-
 
 }

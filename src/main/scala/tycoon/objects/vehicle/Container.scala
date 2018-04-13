@@ -13,13 +13,9 @@ trait Container {
   val mManager : MerchandisesManager
 
   def embark(structure: Structure, stops: ListBuffer[Structure]) : Unit = {
-    // println("merchandises: "+merchandises)
-    // println("GoodsCarriage > embark from "+structure)
-    // println("stops: "+stops)
     stops.foreach(s => mManager.addStop(s))
-    //println("planning:"+ mManager.flattenedRequests)
     structure match {
-      case t: Town => includeRequests(t) // must be modified to include requests from towns on stops
+      case t: Town => includeRequests(t)
       case f: Facility => {
         // determine pertinent products to embark
         var usefulIndices = new ListBuffer[Int]
@@ -29,8 +25,6 @@ trait Container {
           }
         }
         usefulIndices = usefulIndices.filter(_ != -1)
-        //println("usefulIndices: "+usefulIndices)
-
         // embark selected products
         for (i <- usefulIndices) {
           val product = f.stock.productsTypes(i)
@@ -51,16 +45,11 @@ trait Container {
   }
 
   def debark(structure: Structure) = {
-    // println("merchandises: "+merchandises)
-    // println("GoodsCarriage > debark")
-    val i = mManager.stops.indexOf(structure)    // for (m <- mManager.distribution(i)) structure.stock.getMerchandise(m)
-    // mManager.removeStop(structure)
+    val i = mManager.stops.indexOf(structure)
     mManager.distribute(merchandises, structure)
     // update remainingSpace
     remainingSpace = maxSpace
     merchandises.foreach(m => remainingSpace -= m.quantity*m.kind.size)
-    // for (m <- mManager.distribution(i)) structure.stock.getMerchandise(m)
-    // mManager.removeStop(structure)
     structure match {
       case t: Town => ()
       case _ => ()

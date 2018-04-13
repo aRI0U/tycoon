@@ -36,7 +36,6 @@ abstract class EconomicAgent(pos: GridLocation, id: Int, townManager: TownManage
   }
 
   def computeMultiplier(goodData: (EconomicGood, DoubleProperty)) = {
-    //println("debug > computeMultiplier")
     val prevMultiplier = goodData._2.value
     var totalRequests = 0.0
     var totalStocks = 8.0

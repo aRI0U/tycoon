@@ -22,14 +22,11 @@ class Merchandise(val kind: Good, var quantity: Int, val productionDate : Double
       case Some(l) => if (l < quantity) tradedQuantity = l
       case None => ()
     }
-    println("trade: "+tradedQuantity)
     if (tradedQuantity == quantity) {
-      println("trade: not divide")
       receiver += this
       giver -= this
     }
     else {
-      println("trade: divide")
       receiver += new Merchandise(kind, tradedQuantity, productionDate)
       quantity -= tradedQuantity
     }

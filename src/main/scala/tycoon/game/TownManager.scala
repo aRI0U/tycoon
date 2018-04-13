@@ -1,7 +1,7 @@
 package tycoon.game
 
 import scala.collection.mutable.ListBuffer
-import scala.collection.mutable.Stack
+import scala.collection.immutable.List
 
 import tycoon.objects.good.Good
 import tycoon.objects.graph._
@@ -59,10 +59,14 @@ class TownManager(game: Game) {
     else None
   }
 
-  def explore(vertex: Vertex, graph: Graph, notVisited: ListBuffer[Vertex], stack: Stack[Road], arrival: Vertex) : Option[Int] = {
+  def explore(vertex: Vertex, graph: Graph, notVisited: ListBuffer[Vertex], stack: List[Road], arrival: Vertex) : Option[Int] = {
     if (vertex == arrival) {
       var distance = 0
-      while (!stack.isEmpty) distance += stack.pop().length
+      var stackCopy = stack
+      while (!stack.isEmpty) {
+        distance += stackCopy.head.length
+        stackCopy = stackCopy.tail
+      }
       Some(distance)
     }
     else {
@@ -74,7 +78,7 @@ class TownManager(game: Game) {
             val i = notVisited.indexOf(determineVertex(link._1, graph).get)
             if (i != -1) {
               determineVertex(link._1, graph) match {
-                case Some(v) => optDistance = graph.optionMin(optDistance, explore(v, graph, notVisited, stack.push(link._2), arrival))
+                case Some(v) => optDistance = graph.optionMin(optDistance, explore(v, graph, notVisited, link._2 :: stack, arrival))
                 case None => ()
               }
             }
@@ -88,7 +92,7 @@ class TownManager(game: Game) {
 
   def determineRailwayDistance(s1: Structure, s2: Structure) : Option[Int] = {
     // DFS
-    var stack = new Stack[Road]
+    var stack : List[Road] = List()
     val graph = game.game_graph
     var notVisited = graph.content.clone()
     var distance : Option[Int] = None
@@ -105,16 +109,6 @@ class TownManager(game: Game) {
 
   def determineEuclidianDistance(s1: Structure, s2: Structure) : Int =
     Math.sqrt((Math.pow(s1.gridPos.col - s2.gridPos.col, 2) + Math.pow(s1.gridPos.row - s2.gridPos.row, 2))).toInt
-
-
-  // def debugDistances() = {
-  //   for (s <- structuresList) {
-  //     for (s1 <- structuresList) {
-  //       println("Distance between "+s.structureId+" and "+s1.structureId)
-  //       println(determineRailwayDistance(s,s1))
-  //     }
-  //   }
-  // }
 
   def getTime() : Double = game.totalElapsedTime
 
@@ -139,9 +133,7 @@ class TownManager(game: Game) {
     good.newEmergence(s, stocks, requests)
     s match {
       case t: Town => {
-        println("debug > town matched")
         t.newEconomicGood(good)
-        println("debug > ok")
       }
       case f: Facility => f.newEconomicGood(good)
       case _ => ()
