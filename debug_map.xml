@@ -109,6 +109,7 @@
     <Connection upstream="Copper Grass" downstream="The Beetles">
         <Sea/>
         <Rail length="198" maximum_speed="130" lanes="2"/>
+        <Canal/>
     </Connection>
     <Connection upstream="The Beetles" downstream="Ladybag">
         <Sea/>
@@ -120,8 +121,8 @@
     </Connection>
     <Connection upstream="Warm Earth" downstream="Water Striker">
         <Sea/>
-        <Road length="132" maximum_speed="90" lanes="1"/>
-    </Connection>
+        <Rail length="132" maximum_speed="90" lanes="1"/>
+    </Connection> 
     <Connection upstream="Water Striker" downstream="Crater Pillar">
         <Sea/>
         <Road length="141" maximum_speed="90" lanes="1"/>
@@ -170,7 +171,7 @@
         <Rail length="112" maximum_speed="90" tracks="1" electrified="yes"/>
         <Road length="118" maximum_speed="90" lanes="1"/>
     </Connection>
-    <Connection upstream="Loose Head" downstream="End Hill">
+    <!-- <Connection upstream="Loose Head" downstream="End Hill">
         <River length="227" beam_clearance="10"/>
         <Road length="204" maximum_speed="70" lanes="1"/>
     </Connection>
@@ -212,6 +213,6 @@
     </Connection>
     <Connection upstream="Loose Head" downstream="Warm Earth">
         <Road length="151" maximum_speed="60" lanes="1"/>
-    </Connection>
+    </Connection> -->
 </Map>
 </mxfile>
