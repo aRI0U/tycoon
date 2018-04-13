@@ -19,6 +19,7 @@ class Train(_id: Int, initialTown: Structure, val owner: Player) extends TrainEl
 
   tile = Tile.LocomotiveT
   var weight = 50
+  var consumption = 1
   var carriageList = new ListBuffer[Carriage]()
   var from = StringProperty(initialTown.name)
 

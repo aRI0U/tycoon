@@ -22,4 +22,5 @@ abstract class Carriage(_id: Int, initialTown: Structure, _owner: Player) extend
   def debark(s: Structure)
 
   var weight: Double = 200
+  var consumption = 0
 }

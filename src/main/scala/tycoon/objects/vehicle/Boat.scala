@@ -23,6 +23,7 @@ class Boat(_id: Int, dock: Structure, val owner: Player) extends Vehicle(_id, do
   tile = Tile.Boat
   speed.set(Settings.SpeedBoat)
   var weight = 50
+  var consumption = 0.1
   gridPos = location.gridPos.clone()
 
   override def boarding(stops: ListBuffer[Structure]) = {
