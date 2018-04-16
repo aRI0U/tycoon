@@ -16,7 +16,7 @@ case class Factory(pos: GridLocation, id: Int, townManager: TownManager) extends
   //Cake
 
   protected val _recipesList : ListBuffer[List[(Good, Int)]] = ListBuffer(
-    List((Product.Egg,1),(Product.Corn,5)),
+    List((Product.Corn,1),(Product.Egg,2), (Product.Milk, 2)),
     List((Product.Iron,50)),
     List((Product.Iron,1),(Product.Milk,20)),
     List((Product.Leather,5)),

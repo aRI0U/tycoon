@@ -47,11 +47,9 @@ class Stock(s: EconomicAgent) {
       s match {
         case t: Town => {
           t.printData(1).newTownProduct(kind.label, productsInt.last, pricesInt.last)
-          t.report(kind, stocksInt.last, requestsInt.last)
         }
         case f: Facility => {
           f.printData(1).newRankedElement(kind.label, productsInt.last)
-          f.report(kind, stocksInt.last, requestsInt.last)
         }
         case _ => ()
       }

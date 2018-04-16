@@ -38,7 +38,7 @@ abstract class EconomicAgent(pos: GridLocation, id: Int, townManager: TownManage
   def computeMultiplier(goodData: (EconomicGood, DoubleProperty)) = {
     val prevMultiplier = goodData._2.value
     var totalRequests = 0.0
-    var totalStocks = 8.0
+    var totalStocks = 0.0
     for (p <- goodData._1.totalProducts) {
       val coeff = getWeighting(p._1).coeff
       totalStocks += p._2.value*coeff
@@ -48,7 +48,7 @@ abstract class EconomicAgent(pos: GridLocation, id: Int, townManager: TownManage
       val newMultiplier = (0.5*(prevMultiplier + totalRequests/totalStocks)).max(10.0)
       goodData._2.set(newMultiplier)
     }
-    else goodData._2.set(10.0)
+    else goodData._2.set(1.0)
   }
 
   def updateMultiplier(good: EconomicGood) = {
@@ -68,16 +68,12 @@ abstract class EconomicAgent(pos: GridLocation, id: Int, townManager: TownManage
     for (w <- weightings) {
       if (w.structure == this) w.coeff = 1.0
       else {
-        try {
-          townManager.determineRailwayDistance(this, w.structure) match {
-            case Some(i) => w.coeff = 1/i
-            case None => {
-              val d = townManager.determineEuclidianDistance(this, w.structure)
-              w.coeff = 1/(Math.pow(d,2))
-            }
+        townManager.determineRailwayDistance(this, w.structure) match {
+          case Some(i) => w.coeff = 1/i
+          case None => {
+            val d = townManager.determineEuclidianDistance(this, w.structure)
+            w.coeff = 1/(Math.pow(d,2))
           }
-        } catch {
-          case e: Exception => w.coeff = 0
         }
       }
     }
@@ -100,6 +96,11 @@ abstract class EconomicAgent(pos: GridLocation, id: Int, townManager: TownManage
     val e = townManager.getEconomicGood(Product.Milk)
     goods.foreach(computeMultiplier)
     updateWeightings()
+    for (g <- goods) {
+      println(g._1.kind)
+      println("stocks = "+g._1.totalProducts(0)._2.value)
+      println("requests = "+g._1.totalProducts(0)._3.value)
+    }
   }
 }
 

@@ -63,7 +63,7 @@ class TownManager(game: Game) {
     if (vertex == arrival) {
       var distance = 0
       var stackCopy = stack
-      while (!stack.isEmpty) {
+      while (!stackCopy.isEmpty) {
         distance += stackCopy.head.length
         stackCopy = stackCopy.tail
       }

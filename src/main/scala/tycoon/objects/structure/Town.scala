@@ -214,7 +214,7 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
       newRequest(food, ((feedPopulation(population*nutritiousNeeds)/(5*food.nutritiousness)).toInt))
     }
     if (i == 1) {
-      val purchase = Product.purchases(scala.util.Random.nextInt(Product.purchases.size))
+      val purchase = Product.purchases(0)//scala.util.Random.nextInt(Product.purchases.size))
       newRequest(purchase,(population/(purchase.price)).toInt)
     }
   }
