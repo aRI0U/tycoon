@@ -28,14 +28,24 @@ class TownManager(game: Game) {
         t.destinations += structure
       t.waitersInt += IntegerProperty(0)
     }
-    for (s <- structuresList) {
-      s match {
-        case t: Town => t.newWeighting(s)
-        case f: Facility => f.newWeighting(s)
-        case _ => ()
-      }
-    }
+
     structuresList += structure
+
+    // add to every agent the new structure's weighting and to the new structure every agent's weighting
+    structure match {
+      case agent: EconomicAgent => {
+        for (s <- structuresList) {
+          s match {
+            case a: EconomicAgent => {
+              agent.newWeighting(a)
+              a.newWeighting(agent)
+            }
+            case _ => ()
+          }
+        }
+      }
+      case _ => ()
+    }
   }
 
   def newTown(town: Town) {
@@ -117,26 +127,14 @@ class TownManager(game: Game) {
 
   // ECONOMY
 
-  val economicGoods = new ListBuffer[EconomicGood]
-
-  def getEconomicGood(good: Good) : EconomicGood = {
-    var i = 0
-    while (i < economicGoods.length && economicGoods(i).kind != good) i += 1
-    if (i == economicGoods.length) {
-      economicGoods += new EconomicGood(good)
-    }
-    economicGoods(i)
-  }
-
-  def getReport(s: Structure, kind: Good, stocks: IntegerProperty, requests: IntegerProperty) = {
-    val good = getEconomicGood(kind)
-    good.newEmergence(s, stocks, requests)
-    s match {
-      case t: Town => {
-        t.newEconomicGood(good)
-      }
-      case f: Facility => f.newEconomicGood(good)
-      case _ => ()
-    }
-  }
+  // val economicGoods = new ListBuffer[EconomicGood]
+  //
+  // def getEconomicGood(good: Good) : EconomicGood = {
+  //   var i = 0
+  //   while (i < economicGoods.length && economicGoods(i).kind != good) i += 1
+  //   if (i == economicGoods.length) {
+  //     economicGoods += new EconomicGood(good)
+  //   }
+  //   economicGoods(i)
+  // }
 }

@@ -43,7 +43,7 @@ class Stock(s: EconomicAgent) {
       productsInt += new IntegerProperty
       productsInt.last <== stocksInt.last - requestsInt.last
       pricesInt += new DoubleProperty
-      pricesInt.last <== DoubleProperty(kind.price) * s.getMultiplier(kind)
+      pricesInt.last <== kind.price * s.getMultiplier(kind)
       s match {
         case t: Town => {
           t.printData(1).newTownProduct(kind.label, productsInt.last, pricesInt.last)

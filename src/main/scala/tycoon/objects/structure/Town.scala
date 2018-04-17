@@ -159,6 +159,7 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
         updateConsumption()
         if (stock.updateExpiredProducts(townManager.getTime())) townManager.throwEvent("["+name+"] Be careful! Some of your food is expiring!")
         updateEconomy()
+        newRandomRequest(4)
       }
       if (population <= minPopulation) {
         reInit()
@@ -208,17 +209,19 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
     }
     totalNeeds
   }
+
   def newRandomRequest(i : Int) {
-    if (i == 0) {
-      val food = Product.foods(scala.util.Random.nextInt(Product.foods.size))
-      newRequest(food, ((feedPopulation(population*nutritiousNeeds)/(5*food.nutritiousness)).toInt))
-    }
-    if (i == 1) {
-      val purchase = Product.purchases(0)//scala.util.Random.nextInt(Product.purchases.size))
-      newRequest(purchase,(population/(purchase.price)).toInt)
-    }
+    newRequest(Product.Iron, 5)
+  //   if (i == 0) {
+  //     val food = Product.foods(scala.util.Random.nextInt(Product.foods.size))
+  //     newRequest(food, ((feedPopulation(population*nutritiousNeeds)/(5*food.nutritiousness)).toInt))
+  //   }
+  //   if (i == 1) {
+  //     val purchase = Product.purchases(0)//scala.util.Random.nextInt(Product.purchases.size))
+  //     newRequest(purchase,(population/(purchase.price)).toInt)
+  //   }
   }
-  newRandomRequest(1)
+
   def updateConsumption() = {
     val needs = population*nutritiousNeeds
     if (scala.util.Random.nextInt(50) == 1 && (needs > (dietTime/6))) newRandomRequest(0)
