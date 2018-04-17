@@ -47,7 +47,6 @@ class Game(val map_width : Int, val map_height : Int)
 
 
   // game map
-  var game_graph = new Graph
   var map = new TileMap(map_width, map_height)
   map.fillBackground(Tile.Grass)
 
@@ -63,8 +62,9 @@ class Game(val map_width : Int, val map_height : Int)
 
 
   // game objects
-  var railManager = new RailManager(map, game_graph)
   var townManager = new TownManager(this)
+  var gameGraph = new Graph(townManager)
+  var railManager = new RailManager(map, gameGraph)
 
   var nb_structures = 0
   val mine_price = 200
@@ -190,7 +190,7 @@ class Game(val map_width : Int, val map_height : Int)
       structures += struct
       map.addStructure(struct)
       nb_structures += 1
-      game_graph.newStructure(struct)
+      gameGraph.newStructure(struct)
 
       struct match {
         case town: Town => {townManager.newTown(town)}

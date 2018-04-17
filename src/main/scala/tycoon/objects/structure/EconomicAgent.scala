@@ -34,54 +34,37 @@ abstract class EconomicAgent(pos: GridLocation, id: Int, townManager: TownManage
   }
 
   def computeMultiplier(good: Good, multiplier: DoubleProperty) = {
-    var newMultiplier = 0.0
+    var totalStocks = 0.0
+    var totalRequests = 0.0
     for (p <- good.totalProducts) {
       val weighting = getWeighting(p._1).coeff
-      if (p._2.value == 0) newMultiplier += weighting
-      else newMultiplier += (p._3.value.toDouble/p._2.value)*weighting
-      println("stocks ="+p._2.value)
-      println("requests ="+p._3.value)
-      println("coeff ="+ newMultiplier)
+      totalStocks += p._2.value*weighting
+      totalRequests += p._3.value*weighting
+      //println("stocks ="+p._2.value)
+      //println("requests ="+p._3.value)
     }
+    var newMultiplier = 0.0
+    if (totalStocks > 0) newMultiplier = totalRequests/totalStocks
+    else newMultiplier = 1.0
     newMultiplier = (50.0*(multiplier.value+newMultiplier) + 0.5).toInt.toDouble/100
-    //newMultiplier = (newMultiplier * 100 + 5).toInt.toDouble/100
+    //newMultiplier = (newMultiplier * 100 + 0.5).toInt.toDouble/100
     multiplier.set(newMultiplier)
   }
 
   def updateEconomy() = {
     for (m <- multipliers) computeMultiplier(m._1, m._2)
   }
-//
-//   def computeMultiplier(goodData: (EconomicGood, DoubleProperty)) = {
-//     val prevMultiplier = goodData._2.value
-//     var totalRequests = 0.0
-//     var totalStocks = 0.0
-//     for (p <- goodData._1.totalProducts) {
-//       val coeff = getWeighting(p._1).coeff
-//       totalStocks += p._2.value*coeff
-//       totalRequests += p._3.value*coeff
-//     }
-//     if (totalStocks > 0) {
-//       // to edit : average
-//       val newMultiplier = (totalRequests/totalStocks).max(10.0)
-//       goodData._2.set(newMultiplier)
-//     }
-//     else goodData._2.set(1.0)
-//   }
-//
-//   def updateMultiplier(good: EconomicGood) = {
-//     val goodData = getGoodData(good)
-//     computeMultiplier(goodData)
-//   }
-//
-//   def initWeightings(structuresList: ListBuffer[Structure]) = {
-//     structuresList.foreach(newWeighting)
-//   }
-//
+
+  def updateWeightings() = {
+    weightings.foreach(w => w.updateWeighting(this, townManager))
+    normalize
+  }
+
   def newWeighting(s: EconomicAgent) = {
     val w = new Weighting(s, 0.0)
-    w.updateWeighting(this)
+    w.updateWeighting(this, townManager)
     weightings += w
+    normalize()
   }
 
   def getWeighting(s: EconomicAgent) : Weighting = {
@@ -91,6 +74,15 @@ abstract class EconomicAgent(pos: GridLocation, id: Int, townManager: TownManage
       newWeighting(s)
     }
     weightings(i)
+  }
+
+  def normalize() = {
+    var sum = 0.0
+    weightings.foreach(w => sum += w.coeff)
+    weightings.foreach(w => println(w.structure + " is weighted " + w.coeff))
+    println("sum = "+sum)
+    if (sum > 0) weightings.foreach(w => w.coeff /= sum)
+    weightings.foreach(w => println(w.structure + " is weighted " + w.coeff))
   }
 //
 
@@ -156,8 +148,11 @@ abstract class EconomicAgent(pos: GridLocation, id: Int, townManager: TownManage
 class Weighting(val structure: EconomicAgent, d: Double) {
   var coeff = d
 
-  def updateWeighting(s: EconomicAgent) = {
+  def updateWeighting(s: EconomicAgent, townManager: TownManager) = {
       if (structure == s) coeff = 1.0
-      else coeff = 0.0
+      else townManager.determineRailwayDistance(structure, s) match {
+        case Some(d) => coeff = 1.0/d
+        case None => coeff = 0.0
+      }
     }
 }

@@ -29,11 +29,10 @@ class TownManager(game: Game) {
       t.waitersInt += IntegerProperty(0)
     }
 
-    structuresList += structure
-
     // add to every agent the new structure's weighting and to the new structure every agent's weighting
     structure match {
       case agent: EconomicAgent => {
+        agent.newWeighting(agent)
         for (s <- structuresList) {
           s match {
             case a: EconomicAgent => {
@@ -46,6 +45,7 @@ class TownManager(game: Game) {
       }
       case _ => ()
     }
+    structuresList += structure
   }
 
   def newTown(town: Town) {
@@ -103,7 +103,7 @@ class TownManager(game: Game) {
   def determineRailwayDistance(s1: Structure, s2: Structure) : Option[Int] = {
     // DFS
     var stack : List[Road] = List()
-    val graph = game.game_graph
+    val graph = game.gameGraph
     var notVisited = graph.content.clone()
     var distance : Option[Int] = None
     determineVertex(s1.structureId, graph) match {
@@ -124,17 +124,6 @@ class TownManager(game: Game) {
 
   def throwEvent(s: String) = game.setInfoText(s, 3)
 
+  def updateWeightings(s: EconomicAgent) = s.updateWeightings()
 
-  // ECONOMY
-
-  // val economicGoods = new ListBuffer[EconomicGood]
-  //
-  // def getEconomicGood(good: Good) : EconomicGood = {
-  //   var i = 0
-  //   while (i < economicGoods.length && economicGoods(i).kind != good) i += 1
-  //   if (i == economicGoods.length) {
-  //     economicGoods += new EconomicGood(good)
-  //   }
-  //   economicGoods(i)
-  // }
 }
