@@ -43,14 +43,14 @@ abstract class EconomicAgent(pos: GridLocation, id: Int, townManager: TownManage
       val weighting = getWeighting(p._1).coeff
       totalStocks += p._2.value*weighting
       totalRequests += p._3.value*weighting
-      println("stocks ="+p._2.value)
-      println("requests ="+p._3.value)
+      //println("stocks ="+p._2.value)
+      //println("requests ="+p._3.value)
     }
     var newMultiplier = 0.0
     if (totalStocks > 0) newMultiplier = totalRequests/totalStocks
     else newMultiplier = maxInflation
-    //newMultiplier = ((50.0*(multiplier.value+newMultiplier) + 0.5).toInt.toDouble/100).min(maxInflation)
-    newMultiplier = ((newMultiplier * 100 + 0.5).toInt.toDouble/100).min(maxInflation)
+    newMultiplier = ((50.0*(multiplier.value+newMultiplier) + 0.5).toInt.toDouble/100).min(maxInflation)
+    //newMultiplier = ((newMultiplier * 100 + 0.5).toInt.toDouble/100).min(maxInflation)
     multiplier.set(newMultiplier)
   }
 
@@ -82,10 +82,10 @@ abstract class EconomicAgent(pos: GridLocation, id: Int, townManager: TownManage
   def normalize() = {
     var sum = 0.0
     weightings.foreach(w => sum += w.coeff)
-    weightings.foreach(w => println(w.structure + " is weighted " + w.coeff))
-    println("sum = "+sum)
+    //weightings.foreach(w => println(w.structure + " is weighted " + w.coeff))
+    //println("sum = "+sum)
     if (sum > 0) weightings.foreach(w => w.coeff /= sum)
-    weightings.foreach(w => println(w.structure + " is weighted " + w.coeff))
+    //weightings.foreach(w => println(w.structure + " is weighted " + w.coeff))
   }
 //
 
