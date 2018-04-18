@@ -202,7 +202,7 @@ class Game(val map_width : Int, val map_height : Int)
     else {
       struct match {
         case m: Mine => setInfoText("You can create mines only on deposits!", 2)
-        case m: Dock => setInfoText("You can create Docks only on Water and Sand!", 2)
+        case m: Dock => setInfoText("You can create Docks only on water or sand!", 2)
         case _ => ()
       }
       false
@@ -229,6 +229,7 @@ class Game(val map_width : Int, val map_height : Int)
                   town.hasAirport = true
                   airport.dependanceTown = Some(town)
                   town.airport = Some(airport)
+                  townManager.updatePortWeightings(0)
                 }
               }
               case _ => ()
@@ -245,6 +246,7 @@ class Game(val map_width : Int, val map_height : Int)
                   town.hasDock = true
                   dock.dependanceTown = Some(town)
                   town.dock = Some(dock)
+                  townManager.updatePortWeightings(1)
                 }
               }
               case _ => ()

@@ -8,6 +8,9 @@ import tycoon.objects.good._
 import scalafx.beans.property.{DoubleProperty, IntegerProperty}
 
 abstract class EconomicAgent(pos: GridLocation, id: Int, townManager: TownManager) extends Structure(pos, id) {
+
+  val maxInflation = 20.0
+
    val stock = new Stock(this)
    val weightings = new ListBuffer[Weighting]
    val multipliers = new ListBuffer[(Good, DoubleProperty)]
@@ -40,14 +43,14 @@ abstract class EconomicAgent(pos: GridLocation, id: Int, townManager: TownManage
       val weighting = getWeighting(p._1).coeff
       totalStocks += p._2.value*weighting
       totalRequests += p._3.value*weighting
-      //println("stocks ="+p._2.value)
-      //println("requests ="+p._3.value)
+      println("stocks ="+p._2.value)
+      println("requests ="+p._3.value)
     }
     var newMultiplier = 0.0
     if (totalStocks > 0) newMultiplier = totalRequests/totalStocks
-    else newMultiplier = 1.0
-    newMultiplier = (50.0*(multiplier.value+newMultiplier) + 0.5).toInt.toDouble/100
-    //newMultiplier = (newMultiplier * 100 + 0.5).toInt.toDouble/100
+    else newMultiplier = maxInflation
+    //newMultiplier = ((50.0*(multiplier.value+newMultiplier) + 0.5).toInt.toDouble/100).min(maxInflation)
+    newMultiplier = ((newMultiplier * 100 + 0.5).toInt.toDouble/100).min(maxInflation)
     multiplier.set(newMultiplier)
   }
 
@@ -148,11 +151,24 @@ abstract class EconomicAgent(pos: GridLocation, id: Int, townManager: TownManage
 class Weighting(val structure: EconomicAgent, d: Double) {
   var coeff = d
 
+  val airportBonus = 10.0
+  val dockBonus = 4.0
+
   def updateWeighting(s: EconomicAgent, townManager: TownManager) = {
       if (structure == s) coeff = 1.0
       else townManager.determineRailwayDistance(structure, s) match {
         case Some(d) => coeff = 1.0/d
-        case None => coeff = 0.0
+        case None => {
+          var d = 1.0
+          (structure, s) match {
+            case (t1: Town, t2: Town) => {
+              if (t1.hasAirport && t2.hasAirport) d = airportBonus
+              else if (t1.hasDock && t2.hasDock) d = dockBonus
+            }
+            case _ => ()
+          }
+          coeff = (d/Math.pow(townManager.determineEuclidianDistance(structure, s), 2)).min(1.0)
+        }
       }
     }
 }

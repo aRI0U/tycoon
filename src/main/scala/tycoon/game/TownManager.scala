@@ -126,4 +126,13 @@ class TownManager(game: Game) {
 
   def updateWeightings(s: EconomicAgent) = s.updateWeightings()
 
+  def updatePortWeightings(i: Int) = {
+    for (s <- structuresList) {
+      s match {
+        case t: Town => if (i == 0 && t.hasAirport || i == 1 && t.hasDock) t.updateWeightings()
+        case _ => ()
+      }
+    }
+  }
+
 }
