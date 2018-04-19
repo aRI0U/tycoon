@@ -34,11 +34,12 @@ class Product() {}
 object Product {
   // RawMaterial
   val Coal = new RawMaterial("Coal", 1, 1, false)
-  val Iron = new RawMaterial("Iron", 1, 1, false)
-  val Sand = new RawMaterial("Sand", 1, 1, false)
-  val Oil = new RawMaterial("Oil", 10, 1, true)
-  val Wood = new RawMaterial("Wood", 1, 1, false)
+  val Iron = new RawMaterial("Iron", 5, 1, false)
   val Leather = new RawMaterial("Leather", 5, 1, false)
+  val Oil = new RawMaterial("Oil", 10, 1, true)
+  val Sand = new RawMaterial("Sand", 0.5, 1, true)
+  val Wood = new RawMaterial("Wood", 1, 1, false)
+
 
   // PreciousMetal
   val Gold = new RawMaterial("Gold", 25, 1, false)

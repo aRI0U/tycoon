@@ -22,10 +22,13 @@ class Engine(_owner: Player) extends Renderable(new GridLocation(-1, -1)) {
   private var _upgradeLevel = IntegerProperty(0)
   def upgradeLevel: IntegerProperty = _upgradeLevel
 
+  var crusadeDistance = 10
+
   def upgrade(): Boolean = {
     if (_upgradeLevel.value < Engine.MaxUpgradeLevel && owner.pay(Engine.Price(upgradeLevel.value + 1))) {
-      _upgradeLevel.set(_upgradeLevel.value + 1)
+      upgradeLevel.set(upgradeLevel.value + 1)
       thrust.set(Engine.Thrust(upgradeLevel.value))
+      crusadeDistance = Engine.CrusadeDistance(upgradeLevel.value)
       true
     }
     else false
@@ -37,5 +40,6 @@ object Engine {
   val MaxUpgradeLevel: Int = 5
 
   val Thrust = Array(200, 300, 400, 500, 600, 700)
+  val CrusadeDistance = Array(10, 8, 6, 4, 2, 1)
   val Price = Array(100, 200, 300, 400, 500, 600)
 }

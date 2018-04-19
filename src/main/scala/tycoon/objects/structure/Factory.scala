@@ -27,6 +27,7 @@ case class Factory(pos: GridLocation, id: Int, townManager: TownManager) extends
   )
 
   def recipesList = _recipesList
+  
   setName("Factory " + id.toString)
 
 
