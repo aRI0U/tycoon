@@ -28,10 +28,12 @@ class Train(_id: Int, initialTown: Structure, val owner: Player) extends TrainEl
   carriageList foreach (_.gridPos = location.gridPos.right)
 
   def update(dt: Double, dirIndicator: Int) = {
-    if (move(dt, dirIndicator))
+    if (!elementArrived && move(dt, dirIndicator))
       maybeDisplayNewCarriage()
     for (c <- carriageList)
       c.update(dt, dirIndicator)
+    if (elementArrived && carriageList.forall { c: Carriage => c.elementArrived || !(c.visible) })
+      arrived = true
   }
 
   def maybeDisplayNewCarriage() = {
@@ -76,6 +78,7 @@ class Train(_id: Int, initialTown: Structure, val owner: Player) extends TrainEl
     gridPos = firstRail.gridPos.clone()
 
     for (carr <- carriageList) {
+      carr.elementArrived = false
       carr.currentRail = Some(firstRail)
       carr.savedRail = Some(firstRail)
       carr.gridPos = firstRail.gridPos.clone()
@@ -99,7 +102,7 @@ class Train(_id: Int, initialTown: Structure, val owner: Player) extends TrainEl
   }
 
   override def landing() = {
-    carriageList.foreach(_.debark(location))
+    carriageList.foreach (_.debark(location))
     super.landing()
   }
 }

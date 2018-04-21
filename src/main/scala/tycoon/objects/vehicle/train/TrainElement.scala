@@ -14,8 +14,9 @@ import tycoon.ui.DraggableTiledPane
 
 abstract class TrainElement(_id: Int, initialTown: Structure, _owner: Player) extends Vehicle(_id, initialTown, _owner) {
   val tiles: Array[Tile]
-  var currentRail : Option[Rail] = None
-  var savedRail : Option[Rail] = None
+  var currentRail: Option[Rail] = None
+  var savedRail: Option[Rail] = None
+  var elementArrived: Boolean = false
 
   var speedLimitIndicator = 0
 
@@ -40,6 +41,7 @@ abstract class TrainElement(_id: Int, initialTown: Structure, _owner: Player) ex
 
   override def departure() = {
     speedLimitIndicator = 0
+    elementArrived = false
     super.departure()
   }
 
@@ -65,7 +67,7 @@ abstract class TrainElement(_id: Int, initialTown: Structure, _owner: Player) ex
 
         if (rail.nextInDir(dirIndicator) == rail) { // last rail (can also be first rail)
           if (stabilize(gridPos, dt, speed.value))
-            arrived = true
+            elementArrived = true
         }
         else {
           var dir: Direction =
