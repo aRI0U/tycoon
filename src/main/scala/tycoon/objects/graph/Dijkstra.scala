@@ -66,16 +66,30 @@ object Dijkstra {
       else ListBuffer[GridLocation]()
     }
 
+    def getCoinPos(pos : GridLocation) : ListBuffer[GridLocation] = {
+      if (pos.col > 0 && pos.row > 0 && pos.row< map.height -2 && pos.col < map.width -2) {
+        var neighbors = ListBuffer[GridLocation]()
+        var potential = ListBuffer[GridLocation](pos.top.right,pos.bottom.right,pos.top.bottom,pos.bottom.left)
+        for (po <- potential) {
+          if (map.checkBgTile(po,authorizedTile) || isStruct(po)) {
+            neighbors += po
+          }
+        }
+        neighbors
+      }
+      else ListBuffer[GridLocation]()
+    }
+
     var lastPos = struct2.gridPos
     var initPos = struct1.gridPos
 
-    def diff(loc : GridLocation) = Math.abs(lastPos.col-loc.col) + Math.abs(lastPos.row-loc.row)//(Math.sqrt(Math.pow((lastPos.col-loc.col),2) + Math.pow(lastPos.row-loc.row,2)))
+    def diff(loc : GridLocation) = (Math.sqrt(Math.pow((lastPos.col-loc.col),2) + Math.pow(lastPos.row-loc.row,2)))
 
     var distanceTable = Array.fill[Option[Int]](map.width, map.height)(None)
-    var heuristicTable : Array[Array[Int]] = Array.fill[Int](map.width, map.height)(0)
+    var heuristicTable : Array[Array[Double]] = Array.fill[Double](map.width, map.height)(0)
     //unifie
     for ((col, row) <- new GridRectangle(0, 0, map.width, map.height).iterateTuple) {
-      heuristicTable(col)(row) = diff(new GridLocation(col,row)).toInt + 2000
+      heuristicTable(col)(row) = diff(new GridLocation(col,row)).toInt + map.height + map.width
     }
     var notVisited : ListBuffer[GridLocation] = new ListBuffer[GridLocation]
     for ((col, row) <- new GridRectangle(0, 0, map.width, map.height).iterateTuple) {
@@ -83,19 +97,19 @@ object Dijkstra {
         notVisited += new GridLocation(col, row)
       }
     }
-    heuristicTable(initPos.col)(initPos.row) = diff(new GridLocation(initPos.col,initPos.row)).toInt
+    heuristicTable(initPos.col)(initPos.row) = diff(new GridLocation(initPos.col,initPos.row))
     distanceTable(initPos.col)(initPos.row) = Some(0)
     notVisited -= initPos
     var previous : Array[Array[Option[GridLocation]]]= Array.fill[Option[GridLocation]](map.width, map.height)(None)
 
     for (pos <- getSurroundingPos(initPos)) {
-      heuristicTable(pos.col)(pos.row) = diff(pos).toInt + 1
+      heuristicTable(pos.col)(pos.row) = diff(pos) + 1
       distanceTable(pos.col)(pos.row) = Some(1)
       previous(pos.col)(pos.row) = Some(initPos)
     }
 
     while (notVisited.nonEmpty) {
-      var mini : Int = Int.MaxValue
+      var mini : Double = Int.MaxValue
       var nextPos : GridLocation = notVisited(0)
       for (pos <- notVisited) {
         val heuristic = heuristicTable(pos.col)(pos.row)
@@ -113,7 +127,7 @@ object Dijkstra {
       for (neighbor <- getSurroundingPos(nextPos)) {
         val newDistance = optionSum(distanceTable(nextPos.col)(nextPos.row),Some(1))
         if (optionMin(newDistance, distanceTable(neighbor.col)(neighbor.row))) {
-          heuristicTable(neighbor.col)(neighbor.row) = diff(neighbor).toInt + newDistance.get
+          heuristicTable(neighbor.col)(neighbor.row) = diff(neighbor) + newDistance.get
           distanceTable(neighbor.col)(neighbor.row) = newDistance
           previous(neighbor.col)(neighbor.row) = Some(nextPos)
         }

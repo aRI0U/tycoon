@@ -54,7 +54,7 @@ class Game(val map_width : Int, val map_height : Int)
   def fillNewGame() {
     map.sprinkleTile(Tile.Tree, 5)
     map.sprinkleTile(Tile.Rock, 1)
-    map.generateLakes(4, 500) //SLOW
+    map.generateLakes(5, 200) //SLOW
   }
 
   val tiledPane = new DraggableTiledPane(map)
