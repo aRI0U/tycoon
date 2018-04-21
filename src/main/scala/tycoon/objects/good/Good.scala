@@ -3,26 +3,43 @@ package tycoon.objects.good
 import scala.collection.immutable.List
 import scala.collection.mutable.ListBuffer
 
-abstract class Good(val label: String, val price: Double, val size: Double, val liquid: Boolean) { }
+import tycoon.objects.structure.EconomicAgent
 
-case class RawMaterial(override val label: String, override val price: Double, override val size: Double, override val liquid: Boolean) extends Good(label, price, size, liquid) { }
+import scalafx.beans.property.{DoubleProperty, IntegerProperty}
 
-class PreciousMetal(override val label: String, override val price: Double, override val size: Double, override val liquid: Boolean) extends RawMaterial(label, price, size, liquid) { }
+abstract class Good(val label: String, priceDb: Double, val size: Double, val liquid: Boolean) {
+  val totalProducts = new ListBuffer[(EconomicAgent, IntegerProperty, IntegerProperty)]
 
-case class ProcessedGood(override val label: String, override val price: Double, override val size: Double, override val liquid: Boolean) extends Good(label, price, size, liquid) { }
+  def newEmergence(s: EconomicAgent, stocks: IntegerProperty, requests: IntegerProperty) = {
+    val stocksSaved = new IntegerProperty
+    val requestsSaved = new IntegerProperty
+    stocksSaved <== stocks
+    requestsSaved <== requests
+    totalProducts += new Tuple3(s, stocksSaved, requestsSaved)
+  }
 
-case class Food(override val label: String, override val price: Double, override val size: Double, override val liquid: Boolean, val storageTime: Double, val nutritiousness: Double, val packaging: Good) extends Good(label, price, size, liquid) { }
+  val price = DoubleProperty(priceDb)
+}
+
+case class RawMaterial(override val label: String, priceDb: Double, override val size: Double, override val liquid: Boolean) extends Good(label, priceDb, size, liquid) { }
+
+class PreciousMetal(override val label: String, priceDb: Double, override val size: Double, override val liquid: Boolean) extends RawMaterial(label, priceDb, size, liquid) { }
+
+case class ProcessedGood(override val label: String, priceDb: Double, override val size: Double, override val liquid: Boolean) extends Good(label, priceDb, size, liquid) { }
+
+case class Food(override val label: String, priceDb: Double, override val size: Double, override val liquid: Boolean, val storageTime: Double, val nutritiousness: Double, val packaging: Good) extends Good(label, priceDb, size, liquid) { }
 
 class Product() {}
 
 object Product {
   // RawMaterial
   val Coal = new RawMaterial("Coal", 1, 1, false)
-  val Iron = new RawMaterial("Iron", 1, 1, false)
-  val Sand = new RawMaterial("Sand", 1, 1, false)
-  val Oil = new RawMaterial("Oil", 10, 1, true)
-  val Wood = new RawMaterial("Wood", 1, 1, false)
+  val Iron = new RawMaterial("Iron", 5, 1, false)
   val Leather = new RawMaterial("Leather", 5, 1, false)
+  val Oil = new RawMaterial("Oil", 10, 1, true)
+  val Sand = new RawMaterial("Sand", 0.5, 1, true)
+  val Wood = new RawMaterial("Wood", 1, 1, false)
+
 
   // PreciousMetal
   val Gold = new RawMaterial("Gold", 25, 1, false)
@@ -44,6 +61,6 @@ object Product {
   val Egg = new Food("Egg", 1, 1, false, 50, 1, Cardboard)
   val Milk = new Food("Milk", 1, 1, true, 20, 1, Glass)
 
-  val foods = ListBuffer[Food](Cake,Cheese,Corn,Egg,Milk,PopCorn)
-  val purchases = ListBuffer[ProcessedGood](Revolver,Hat,RabbitFoot,Ring)
+  val foods = ListBuffer[Food](Cake, Milk, Egg)
+  val purchases = ListBuffer[ProcessedGood](Revolver)
 }

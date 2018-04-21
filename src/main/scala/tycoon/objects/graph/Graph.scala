@@ -5,7 +5,7 @@ import scala.Array._
 
 import tycoon.objects.structure._
 import tycoon.objects.railway._
-import tycoon.game.Game
+import tycoon.game.{Game, TownManager}
 
 class Vertex(s: Structure) {
   val origin : Int = s.structureId
@@ -14,28 +14,36 @@ class Vertex(s: Structure) {
 
 // Each game has an abstract graph, whose nodes are structures and edges are roads. This graph is used to compute the shortest routes from different towns.
 
-class Graph {
+class Graph(townManager: TownManager) {
   var content : ListBuffer[Vertex] = new ListBuffer
 
-  def newStructure(s:Structure) : Unit = {
+  def newStructure(s: Structure) : Unit = {
     content += new Vertex(s)
     println("tycoon > objects > graph > Graph.scala > newStructure: added structure n° " + s.structureId)
   }
 
-  def newRoad(road:Road) : Unit = {
+  def newRoad(road: Road) : Unit = {
     if (road.finished) {
       road.startStructure match {
         case None => ()
-        case Some(s_town) => road.endStructure match {
+        case Some(s) => road.endStructure match {
           case None => ()
-          case Some(e_town) => {
-            val s_id = s_town.structureId
-            val e_id = e_town.structureId
+          case Some(e) => {
+            val s_id = s.structureId
+            val e_id = e.structureId
             for (vertex <- content) {
               if (vertex.origin == s_id) vertex.links += ((e_id, road))
               else {if (vertex.origin == e_id) vertex.links += ((s_id, road))}
             }
             println("tycoon > objects > graph > Graph.scala > newRoad: added road from " + s_id + " to " + e_id)
+            s match {
+              case a: EconomicAgent => townManager.updateWeightings(a)
+              case _ => ()
+            }
+            e match {
+              case a: EconomicAgent => townManager.updateWeightings(a)
+              case _ => ()
+            }
           }
         }
       }

@@ -47,14 +47,17 @@ class Game(val map_width : Int, val map_height : Int)
 
 
   // game map
-  var game_graph = new Graph
   var map = new TileMap(map_width, map_height)
   map.fillBackground(Tile.Grass)
 
   def fillNewGame() {
     map.sprinkleTile(Tile.Tree, 5)
     map.sprinkleTile(Tile.Rock, 1)
+<<<<<<< HEAD
     map.generateLakes(5, 200) //SLOW
+=======
+    map.generateLakes(4, 20) //SLOW
+>>>>>>> 282a6d3c9a5667587194f1b940e24ebcb22998dc
   }
 
   val tiledPane = new DraggableTiledPane(map)
@@ -63,8 +66,9 @@ class Game(val map_width : Int, val map_height : Int)
 
 
   // game objects
-  var railManager = new RailManager(map, game_graph)
   var townManager = new TownManager(this)
+  var gameGraph = new Graph(townManager)
+  var railManager = new RailManager(map, gameGraph)
 
   var nb_structures = 0
   val mine_price = 200
@@ -190,7 +194,7 @@ class Game(val map_width : Int, val map_height : Int)
       structures += struct
       map.addStructure(struct)
       nb_structures += 1
-      game_graph.newStructure(struct)
+      gameGraph.newStructure(struct)
 
       struct match {
         case town: Town => {townManager.newTown(town)}
@@ -202,7 +206,7 @@ class Game(val map_width : Int, val map_height : Int)
     else {
       struct match {
         case m: Mine => setInfoText("You can create mines only on deposits!", 2)
-        case m: Dock => setInfoText("You can create Docks only on Water and Sand!", 2)
+        case m: Dock => setInfoText("You can create Docks only on water or sand!", 2)
         case _ => ()
       }
       false
@@ -229,6 +233,7 @@ class Game(val map_width : Int, val map_height : Int)
                   town.hasAirport = true
                   airport.dependanceTown = Some(town)
                   town.airport = Some(airport)
+                  townManager.updatePortWeightings(0)
                 }
               }
               case _ => ()
@@ -245,6 +250,7 @@ class Game(val map_width : Int, val map_height : Int)
                   town.hasDock = true
                   dock.dependanceTown = Some(town)
                   town.dock = Some(dock)
+                  townManager.updatePortWeightings(1)
                 }
               }
               case _ => ()

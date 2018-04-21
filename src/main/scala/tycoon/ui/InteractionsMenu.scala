@@ -836,7 +836,7 @@ class InteractionsMenu(val game: Game) extends TabPane
           }
           else if (routeStops.length < routeMaxSize && town != routeStops.last) {
             try {
-              routeRoads ++= game.game_graph.shortestRoute(routeStops.last, town)
+              routeRoads ++= game.gameGraph.shortestRoute(routeStops.last, town)
               routeStops += town
               game.setInfoText("[Train Route Creation] Now select from 1 to " + routeMaxSize.toString + " stops (last one must be a town) (" + (routeStops.length - 1).toString + ").", -1)
               if (routeStops.length + 1 == routeMaxSize)
@@ -852,7 +852,7 @@ class InteractionsMenu(val game: Game) extends TabPane
       case facility: Facility => {
         if (creatingTrainRoute && routeStops.nonEmpty && routeStops.length < routeMaxSize && facility != routeStops.last) {
           try {
-            routeRoads ++= game.game_graph.shortestRoute(routeStops.last, facility)
+            routeRoads ++= game.gameGraph.shortestRoute(routeStops.last, facility)
             routeStops += facility
             if (routeStops.length == routeMaxSize)
               finishTrainRouteCreation()

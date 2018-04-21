@@ -12,7 +12,7 @@ import scala.collection.mutable.ListBuffer
 
 abstract class Vehicle(_id: Int, struct: Structure, owner: Player) extends Renderable(new GridLocation(-1, -1)) {
   var weight: Double
-  var consumption : Double 
+  var consumption : Double
 
   def id: Int = _id
 
@@ -42,12 +42,19 @@ abstract class Vehicle(_id: Int, struct: Structure, owner: Player) extends Rende
 
   protected var _engine: ObjectProperty[Engine] = ObjectProperty(new Engine(owner))
   protected var _engineThrust: DoubleProperty = _engine.value.thrust
-  def engineThrust: DoubleProperty = _engineThrust
+  def engineThrust : DoubleProperty = _engineThrust
+  
+  protected var _crusadeDistance : Int = _engine.value.crusadeDistance
+  def crusadeDistance : Int = _crusadeDistance
+
   def engineUpgradeLevel: IntegerProperty = _engine.value.upgradeLevel
   def upgradeEngine(): Boolean = _engine.value.upgrade()
 
   protected var _speed = DoubleProperty(0)
   def speed: DoubleProperty = _speed
+
+  protected var _speedLimit = DoubleProperty(1)
+  def speedLimit : DoubleProperty = _speedLimit
 
   def departure() = {
     owner.pay((weight * consumption).toInt)
@@ -55,7 +62,7 @@ abstract class Vehicle(_id: Int, struct: Structure, owner: Player) extends Rende
     visible = true
     moving.set(true)
     stabilized = false
-    speed <== engineThrust
+    speed <== engineThrust*speedLimit
   }
 
   def arrival() = {
@@ -91,7 +98,7 @@ abstract class Vehicle(_id: Int, struct: Structure, owner: Player) extends Rende
   }
 
   // returns true iff the move lead to a change of case (ie percentage outbounds 0/100)
-  def move(pos: GridLocation, dir: Direction, dt: Double, speed: Double): Boolean = {
+  def move(pos: GridLocation, dir: Direction, dt: Double, speed: Double) : Boolean = {
     var changedSquare: Boolean = false
     dir match {
       case North =>

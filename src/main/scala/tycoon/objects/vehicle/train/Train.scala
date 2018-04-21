@@ -72,10 +72,12 @@ class Train(_id: Int, initialTown: Structure, val owner: Player) extends TrainEl
 
   def departure(firstRail: Rail) = {
     currentRail = Some(firstRail)
+    savedRail = Some(firstRail)
     gridPos = firstRail.gridPos.clone()
 
     for (carr <- carriageList) {
       carr.currentRail = Some(firstRail)
+      carr.savedRail = Some(firstRail)
       carr.gridPos = firstRail.gridPos.clone()
       carr.visible = false
     }

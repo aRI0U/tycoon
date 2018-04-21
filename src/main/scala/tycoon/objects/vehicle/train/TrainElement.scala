@@ -15,6 +15,9 @@ import tycoon.ui.DraggableTiledPane
 abstract class TrainElement(_id: Int, initialTown: Structure, _owner: Player) extends Vehicle(_id, initialTown, _owner) {
   val tiles: Array[Tile]
   var currentRail : Option[Rail] = None
+  var savedRail : Option[Rail] = None
+
+  var speedLimitIndicator = 0
 
   def rotate(dirIndicator: Int) = {
     currentRail match {
@@ -35,11 +38,28 @@ abstract class TrainElement(_id: Int, initialTown: Structure, _owner: Player) ex
     }
   }
 
+  override def departure() = {
+    speedLimitIndicator = 0
+    super.departure()
+  }
+
+  override def arrival() = {
+    super.arrival()
+    speedLimitIndicator = 0
+  }
+
   // train movement
   def move(dt: Double, dirIndicator: Int): Boolean = {
     var result: Boolean = false
     currentRail match {
       case Some(rail) => {
+        val limit = (crusadeDistance - speedLimitIndicator).max(crusadeDistance - rail.road.length + speedLimitIndicator).max(1)
+        if (limit > 1) speedLimit.set(Math.sqrt(-(limit+crusadeDistance-1)*(limit-crusadeDistance-1))/crusadeDistance)
+        if (currentRail != savedRail) {
+          speedLimitIndicator += 1
+          savedRail = currentRail
+        }
+
         if (rail.nextInDir((dirIndicator + 1) % 2) == rail) // first rail
           rotate(dirIndicator)
 

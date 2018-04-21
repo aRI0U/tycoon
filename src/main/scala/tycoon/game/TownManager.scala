@@ -28,12 +28,22 @@ class TownManager(game: Game) {
         t.destinations += structure
       t.waitersInt += IntegerProperty(0)
     }
-    for (s <- structuresList) {
-      s match {
-        case t: Town => t.newWeighting(s)
-        case f: Facility => f.newWeighting(s)
-        case _ => ()
+
+    // add to every agent the new structure's weighting and to the new structure every agent's weighting
+    structure match {
+      case agent: EconomicAgent => {
+        agent.newWeighting(agent)
+        for (s <- structuresList) {
+          s match {
+            case a: EconomicAgent => {
+              agent.newWeighting(a)
+              a.newWeighting(agent)
+            }
+            case _ => ()
+          }
+        }
       }
+      case _ => ()
     }
     structuresList += structure
   }
@@ -63,7 +73,7 @@ class TownManager(game: Game) {
     if (vertex == arrival) {
       var distance = 0
       var stackCopy = stack
-      while (!stack.isEmpty) {
+      while (!stackCopy.isEmpty) {
         distance += stackCopy.head.length
         stackCopy = stackCopy.tail
       }
@@ -93,7 +103,7 @@ class TownManager(game: Game) {
   def determineRailwayDistance(s1: Structure, s2: Structure) : Option[Int] = {
     // DFS
     var stack : List[Road] = List()
-    val graph = game.game_graph
+    val graph = game.gameGraph
     var notVisited = graph.content.clone()
     var distance : Option[Int] = None
     determineVertex(s1.structureId, graph) match {
@@ -114,29 +124,15 @@ class TownManager(game: Game) {
 
   def throwEvent(s: String) = game.setInfoText(s, 3)
 
+  def updateWeightings(s: EconomicAgent) = s.updateWeightings()
 
-  // ECONOMY
-
-  val economicGoods = new ListBuffer[EconomicGood]
-
-  def getEconomicGood(good: Good) : EconomicGood = {
-    var i = 0
-    while (i < economicGoods.length && economicGoods(i).kind != good) i += 1
-    if (i == economicGoods.length) {
-      economicGoods += new EconomicGood(good)
-    }
-    economicGoods(i)
-  }
-
-  def getReport(s: Structure, kind: Good, stocks: IntegerProperty, requests: IntegerProperty) = {
-    val good = getEconomicGood(kind)
-    good.newEmergence(s, stocks, requests)
-    s match {
-      case t: Town => {
-        t.newEconomicGood(good)
+  def updatePortWeightings(i: Int) = {
+    for (s <- structuresList) {
+      s match {
+        case t: Town => if (i == 0 && t.hasAirport || i == 1 && t.hasDock) t.updateWeightings()
+        case _ => ()
       }
-      case f: Facility => f.newEconomicGood(good)
-      case _ => ()
     }
   }
+
 }
