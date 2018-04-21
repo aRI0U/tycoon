@@ -12,7 +12,7 @@ import scala.math
 import scala.collection.mutable.Set
 
 object Dijkstra {
-  def tileGraph(struct1 : Structure ,struct2 : Structure ,authorizedTile : Array[Tile],map : TileMap) : ListBuffer[GridLocation] = {
+  def tileGraph(struct1 : Structure ,struct2 : Structure ,authorizedTile : Array[Tile],map : TileMap, diagonal : Int) : ListBuffer[GridLocation] = {
 
     def optionMin(m: Option[Int], n: Option[Int]) : Boolean = {
       m match {
@@ -139,8 +139,23 @@ object Dijkstra {
       var predecessor = previous(lastPos.col)(lastPos.row)
       predecessor match {
         case Some(p) => {
-          finalPath+=p
-          lastPos = p
+          // In case of diagonal direction
+          var tempBool = false
+          if (finalPath.size>1) {
+            println("looking for the coin")
+            println(getCoinPos(p))
+            val queu = finalPath(finalPath.size - 2)
+            for (coin <- getCoinPos(p)) {
+              if (coin.col == queu.col && coin.row == queu.row) tempBool = true
+            }
+          }
+          if (tempBool && diagonal==1) {
+            finalPath(finalPath.size - 1) = p
+            lastPos = p
+          } else {
+            finalPath+=p
+            lastPos = p
+          }
         }
         case None => {
           validity = false

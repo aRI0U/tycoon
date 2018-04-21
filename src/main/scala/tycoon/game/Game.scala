@@ -53,11 +53,7 @@ class Game(val map_width : Int, val map_height : Int)
   def fillNewGame() {
     map.sprinkleTile(Tile.Tree, 5)
     map.sprinkleTile(Tile.Rock, 1)
-<<<<<<< HEAD
-    map.generateLakes(5, 200) //SLOW
-=======
-    map.generateLakes(4, 20) //SLOW
->>>>>>> 282a6d3c9a5667587194f1b940e24ebcb22998dc
+    map.generateLakes(4, 200) //SLOW
   }
 
   val tiledPane = new DraggableTiledPane(map)
@@ -379,10 +375,10 @@ class Game(val map_width : Int, val map_height : Int)
 
     veh match {
       case _: Truck =>
-        trip.roadPositions = Dijkstra.tileGraph(origin, destination, Array(Tile.Asphalt), map)
+        trip.roadPositions = Dijkstra.tileGraph(origin, destination, Array(Tile.Asphalt), map,0)
         isDijkstra = true
       case _: Boat =>
-        trip.roadPositions = Dijkstra.tileGraph(origin, destination, Tile.Water, map)
+        trip.roadPositions = Dijkstra.tileGraph(origin, destination, Tile.Water, map,1)
         isDijkstra = true
       case _ => ()
     }
@@ -511,7 +507,7 @@ class Game(val map_width : Int, val map_height : Int)
         var is = false
         (connection \\ "Rail") foreach (i => is = true)
         if (is) {
-          val path = Dijkstra.tileGraph(town1,town2,(Tile.Grass),map)
+          val path = Dijkstra.tileGraph(town1,town2,(Tile.Grass),map,0)
           for (pos <- path) {
             //in order to counter some priority cases with the factories
             if (pos == town1.gridPos.left.left.top || pos == town1.gridPos.left.left.bottom ) {
@@ -527,7 +523,7 @@ class Game(val map_width : Int, val map_height : Int)
         is = false
         (connection \\ "Road") foreach (i => is = true)
         if (is) {
-          val path = Dijkstra.tileGraph(town1,town2,(Tile.Grass ++ Array(Tile.Asphalt)),map)
+          val path = Dijkstra.tileGraph(town1,town2,(Tile.Grass ++ Array(Tile.Asphalt)),map,0)
           for (pos <- path) {
             if (!(pos == town1.gridRect.pos || pos == town2.gridRect.pos))
               map.setBackgroundTile(pos,Tile.Asphalt)
@@ -536,7 +532,7 @@ class Game(val map_width : Int, val map_height : Int)
         is = false
         (connection \\ "Canal") foreach (i => is = true)
         if (is) {
-          val path = Dijkstra.tileGraph(town1,town2,(Tile.Grass ++ Tile.Water),map)
+          val path = Dijkstra.tileGraph(town1,town2,(Tile.Grass ++ Tile.Water),map,0)
           for (pos <- path) {
             if (!(pos == town1.gridRect.pos || pos == town2.gridRect.pos))
               map.setBackgroundTile(pos,Tile.Water(0))
