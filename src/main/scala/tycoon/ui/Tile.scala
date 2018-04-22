@@ -58,6 +58,7 @@ object Tile {
   val PackingPlant = new Tile("packing plant", 5, 1)
   val Airport = new Tile("airport", 6, 3)
   val Dock = new Tile("dock", 4, 7)
+  val Wind = new Tile("windmill",10,7)
   val Field = Array(
     new Tile("field1", 2, 8),
     new Tile("field2", 1, 8),
@@ -67,6 +68,12 @@ object Tile {
     new Tile("farm1", 2, 7, width = 2),
     new Tile("farm2", 1, 7, width = 2),
     new Tile("farm3", 3, 7, width = 2)
+  )
+  val WindMill = Array(
+    new Tile("windMill1", 9, 7, height = 2),
+    new Tile("windMill2", 9, 8, height = 2),
+    new Tile("windMill2", 9, 9, height = 2),
+    new Tile("windMill2", 9, 10, height = 2)
   )
 
   // rails

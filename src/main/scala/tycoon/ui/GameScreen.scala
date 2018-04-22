@@ -41,6 +41,7 @@ class GameScreen(val game: Game) extends BorderPane
   interactionsMenu.addBuyableStruct(BuyableStruct.Farm)
   interactionsMenu.addBuyableStruct(BuyableStruct.Factory)
   interactionsMenu.addBuyableStruct(BuyableStruct.PackingPlant)
+  interactionsMenu.addBuyableStruct(BuyableStruct.WindMill)
   interactionsMenu.addBuyableStruct(BuyableStruct.Airport)
   interactionsMenu.addBuyableStruct(BuyableStruct.Field)
   interactionsMenu.addBuyableStruct(BuyableStruct.Dock)

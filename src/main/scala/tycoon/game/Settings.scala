@@ -17,6 +17,7 @@ object Settings {
   val CostFarm = 100
   val CostFactory = 150
   val CostPackingPlant = 80
+  val CostWindMill = 100
   val CostAirport = 1000
   val CostField = 40
   val CostDock = 70

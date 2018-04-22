@@ -142,8 +142,6 @@ object Dijkstra {
           // In case of diagonal direction
           var tempBool = false
           if (finalPath.size>1) {
-            println("looking for the coin")
-            println(getCoinPos(p))
             val queu = finalPath(finalPath.size - 2)
             for (coin <- getCoinPos(p)) {
               if (coin.col == queu.col && coin.row == queu.row) tempBool = true
@@ -152,7 +150,9 @@ object Dijkstra {
           if (tempBool && diagonal==1) {
             finalPath(finalPath.size - 1) = p
             lastPos = p
-          } else {
+          }
+          //otherwise no deletion of coiner tile
+          else {
             finalPath+=p
             lastPos = p
           }

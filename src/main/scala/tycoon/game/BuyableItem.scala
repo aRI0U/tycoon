@@ -35,6 +35,7 @@ object BuyableStruct {
   def newFarm(pos: GridLocation, id: Int, townManager: TownManager): Farm = new Farm(pos, id, townManager)
   def newFactory(pos: GridLocation, id: Int, townManager: TownManager): Factory = new Factory(pos, id, townManager)
   def newPackingPlant(pos: GridLocation, id: Int, townManager: TownManager) : PackingPlant = new PackingPlant(pos, id, townManager)
+  def newWindMill(pos: GridLocation, id: Int, townManager: TownManager): WindMill = new WindMill(pos, id,townManager)
   def newAirport(pos: GridLocation, id: Int, townManager: TownManager): Airport = new Airport(pos, id)
   def newField(pos: GridLocation, id: Int, townManager: TownManager): Field = new Field(pos, id)
   def newDock(pos: GridLocation, id: Int, townManager: TownManager): Dock = new Dock(pos, id)
@@ -49,6 +50,7 @@ object BuyableStruct {
   val Airport = new BuyableStruct("Airport", Settings.CostAirport, Tile.Airport, newAirport)
   val Field = new BuyableStruct("Field", Settings.CostField, Tile.Field(0), newField)
   val Dock = new BuyableStruct("Dock", Settings.CostDock, Tile.Dock, newDock)
+  val WindMill = new BuyableStruct("WindMill", Settings.CostWindMill, Tile.Wind, newWindMill)
 }
 
 

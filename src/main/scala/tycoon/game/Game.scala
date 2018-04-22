@@ -218,6 +218,7 @@ class Game(val map_width : Int, val map_height : Int)
         case farm: Farm => bought = createStruct(farm, Tile.Grass)
         case packingPlant: PackingPlant => bought = createStruct(packingPlant, Tile.Grass)
         case factory: Factory => bought = createStruct(factory, Tile.Grass)
+        case windMill: WindMill => bought = createStruct(windMill, Tile.Grass)
         case airport: Airport => {
           //Airport is a Town facility, has to be contained in a town.
           val around = map.getSurroundingStructures(pos,1)
