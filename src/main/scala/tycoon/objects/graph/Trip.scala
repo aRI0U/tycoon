@@ -27,6 +27,8 @@ class Trip(var origin: Structure, var destination: Structure, val veh: Vehicle, 
     i = 0
   }
 
+
+
   def update (dt: Double) {
     if (active) {
 

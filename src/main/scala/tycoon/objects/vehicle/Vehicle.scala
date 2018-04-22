@@ -43,7 +43,7 @@ abstract class Vehicle(_id: Int, struct: Structure, owner: Player) extends Rende
   protected var _engine: ObjectProperty[Engine] = ObjectProperty(new Engine(owner))
   protected var _engineThrust: DoubleProperty = _engine.value.thrust
   def engineThrust : DoubleProperty = _engineThrust
-  
+
   protected var _crusadeDistance : Int = _engine.value.crusadeDistance
   def crusadeDistance : Int = _crusadeDistance
 
@@ -62,7 +62,7 @@ abstract class Vehicle(_id: Int, struct: Structure, owner: Player) extends Rende
     visible = true
     moving.set(true)
     stabilized = false
-    speed <== engineThrust*speedLimit
+    speed <== engineThrust//*speedLimit
   }
 
   def arrival() = {

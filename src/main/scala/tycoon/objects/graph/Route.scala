@@ -22,6 +22,7 @@ class Route(private var itinerary: ListBuffer[Road], var stops: ListBuffer[Struc
   private var currentStruct: Structure = stops(0)
 
   private var dirIndicator: Int = 0 // for trains only
+  private var currentBreakTime: Double = 0.0
 
   def start() = {
     departure()
@@ -49,6 +50,8 @@ class Route(private var itinerary: ListBuffer[Road], var stops: ListBuffer[Struc
       }
       case _ => vehicle.departure()
     }
+
+    currentBreakTime = 0.0
   }
 
   def arrival() = {
@@ -72,14 +75,20 @@ class Route(private var itinerary: ListBuffer[Road], var stops: ListBuffer[Struc
       vehicle.landing()
     }
 
-    if (currentStopIndex < stops.length - 1)
-      departure()
+
+    //if (currentStopIndex < stops.length - 1)
+      // departure()
+    currentBreakTime = 5.0
   }
 
   def update (dt: Double) {
-    if (active) {
-      if (vehicle.arrived)
-        arrival()
+    if (currentBreakTime > 0)
+      currentBreakTime -= dt
+    else if (active) {
+      if (vehicle.arrived) {
+        if (currentBreakTime == 0) arrival()
+        else if (currentBreakTime < 0) departure()
+      }
       else
         vehicle.update(dt, dirIndicator)
     }
