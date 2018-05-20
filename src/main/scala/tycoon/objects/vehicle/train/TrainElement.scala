@@ -18,7 +18,13 @@ abstract class TrainElement(_id: Int, initialTown: Structure, _owner: Player) ex
   var savedRail: Option[Rail] = None
   var elementArrived: Boolean = false
 
-  var speedLimitIndicator = 0
+  // dynamic values
+  accDistance = 2.0
+  decDistance = 3.0
+  initialSpeed = 0.1
+
+  def accFunction (d: Double) : Double = Math.sqrt(d)
+  def decFunction (d: Double) : Double = Math.sqrt(d)
 
   def rotate(dirIndicator: Int) = {
     currentRail match {
@@ -40,14 +46,12 @@ abstract class TrainElement(_id: Int, initialTown: Structure, _owner: Player) ex
   }
 
   override def departure() = {
-    speedLimitIndicator = 0
     elementArrived = false
     super.departure()
   }
 
   override def arrival() = {
     super.arrival()
-    speedLimitIndicator = 0
   }
 
   // train movement
@@ -55,13 +59,6 @@ abstract class TrainElement(_id: Int, initialTown: Structure, _owner: Player) ex
     var result: Boolean = false
     currentRail match {
       case Some(rail) => {
-        val limit = (crusadeDistance - speedLimitIndicator).max(crusadeDistance - rail.road.length + speedLimitIndicator).max(1)
-        if (limit > 1) speedLimit.set(Math.sqrt(-(limit+crusadeDistance-1)*(limit-crusadeDistance-1))/crusadeDistance)
-        if (currentRail != savedRail) {
-          speedLimitIndicator += 1
-          savedRail = currentRail
-        }
-
         if (rail.nextInDir((dirIndicator + 1) % 2) == rail) // first rail
           rotate(dirIndicator)
 

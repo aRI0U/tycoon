@@ -27,7 +27,8 @@ class Train(_id: Int, initialTown: Structure, val owner: Player) extends TrainEl
   carriageList foreach (_.visible = false)
   carriageList foreach (_.gridPos = location.gridPos.right)
 
-  def update(dt: Double, dirIndicator: Int) = {
+  override def update(dt: Double, dirIndicator: Int) = {
+    super.update(dt, dirIndicator)
     if (!elementArrived && move(dt, dirIndicator))
       maybeDisplayNewCarriage()
     for (c <- carriageList)

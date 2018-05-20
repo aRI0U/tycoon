@@ -14,6 +14,16 @@ import tycoon.game.Settings
 
 
 class Plane(_id: Int, airport: Structure, val owner: Player) extends Vehicle(_id, airport, owner) with Container {
+
+  // dynamic values
+  accDistance = 3.0
+  decDistance = 5.0
+  initialSpeed = 0.2
+
+  def accFunction (d: Double) : Double = Math.sqrt(d)
+  def decFunction (d: Double) : Double = Math.sqrt(d)
+
+
   val maxSpace : Double = 100
   var remainingSpace : Double = maxSpace
   val merchandises = new ListBuffer[Merchandise]
@@ -29,7 +39,7 @@ class Plane(_id: Int, airport: Structure, val owner: Player) extends Vehicle(_id
   consumption = 20
 
   override def departure() = {
-
+    println("departure")
     super.departure()
   }
 
@@ -43,7 +53,7 @@ class Plane(_id: Int, airport: Structure, val owner: Player) extends Vehicle(_id
     debark(location)
   }
 
-  def update(dt: Double, dirIndicator: Int) = {
-
-  }
+  // def update(dt: Double, dirIndicator: Int) = {
+  //
+  // }
 }

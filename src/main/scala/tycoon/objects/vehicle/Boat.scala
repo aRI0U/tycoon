@@ -19,6 +19,14 @@ class Boat(_id: Int, dock: Structure, val owner: Player) extends Vehicle(_id, do
   val merchandises = new ListBuffer[Merchandise]
   val mManager = new MerchandisesManager
 
+  // dynamic values
+  accDistance = 8.0
+  decDistance = 3.0
+  initialSpeed = 0.1
+
+  def accFunction (d: Double) : Double = Math.sqrt(d)
+  def decFunction (d: Double) : Double = Math.sqrt(d)
+
   var onTheRoad = BooleanProperty(false)
   tile = Tile.Boat
   speed.set(Settings.SpeedBoat)
@@ -36,7 +44,7 @@ class Boat(_id: Int, dock: Structure, val owner: Player) extends Vehicle(_id, do
     debark(location)
   }
 
-  def update(dt: Double, dirIndicator: Int) = {
-
-  }
+  // def update(dt: Double, dirIndicator: Int) = {
+  //
+  // }
 }

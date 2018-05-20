@@ -78,7 +78,7 @@ class Route(private var itinerary: ListBuffer[Road], var stops: ListBuffer[Struc
 
     //if (currentStopIndex < stops.length - 1)
       // departure()
-    currentBreakTime = 5.0
+    currentBreakTime = 2.0
   }
 
   def update (dt: Double) {

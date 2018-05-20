@@ -14,6 +14,15 @@ abstract class Vehicle(_id: Int, struct: Structure, owner: Player) extends Rende
   var weight: Double
   var consumption : Double
 
+  // dynamic values
+  var accDistance : Double = 1.0 // determine the necesary distance to travel to get maximal speed
+
+  var decDistance : Double = 1.0// determine the distance to the next stop where the vehicle must brake
+  var initialSpeed : Double = 1.0
+
+  def accFunction (d: Double) : Double
+  def decFunction (d: Double) : Double
+
   def id: Int = _id
 
   protected var _moving = BooleanProperty(false)
@@ -21,14 +30,31 @@ abstract class Vehicle(_id: Int, struct: Structure, owner: Player) extends Rende
 
   protected var _location: ObjectProperty[Structure] = ObjectProperty(struct)
   protected var _locationName = StringProperty(struct.name)
-  _location.onChange { _locationName.set(_location.value.name) }
+  _location.onChange {
+    println("change location")
+    println(locationPos)
+    _locationName.set(_location.value.name)
+    locationPos = location.gridPos
+    println(locationPos)
+  }
+  var locationPos = location.gridPos
 
   protected var _nextLocation: ObjectProperty[Option[Structure]] = ObjectProperty(None)
   protected var _nextLocationName = StringProperty("-")
+  var nextLocationPos : Option[GridLocation] = None
   _nextLocation.onChange {
     _nextLocation.value match {
-      case Some(struct) => _nextLocationName.set(struct.name)
-      case None => _nextLocationName.set("-")
+      case Some(struct) => {
+        println("change nextLocationPos")
+        _nextLocationName.set(struct.name)
+        println(nextLocationPos)
+        nextLocationPos = Some(struct.gridPos)
+        println(nextLocationPos)
+      }
+      case None => {
+        _nextLocationName.set("-")
+        nextLocationPos = None
+      }
     }
   }
 
@@ -37,6 +63,7 @@ abstract class Vehicle(_id: Int, struct: Structure, owner: Player) extends Rende
 
   def location: Structure = _location.value
   def location_=(newStruct: Structure) = _location.set(newStruct)
+  def nextLocation: Option[Structure] = _nextLocation.value
   def locationName: StringProperty = _locationName
   def nextLocationName: StringProperty = _nextLocationName
 
@@ -44,28 +71,30 @@ abstract class Vehicle(_id: Int, struct: Structure, owner: Player) extends Rende
   protected var _engineThrust: DoubleProperty = _engine.value.thrust
   def engineThrust : DoubleProperty = _engineThrust
 
-  protected var _crusadeDistance : Int = _engine.value.crusadeDistance
-  def crusadeDistance : Int = _crusadeDistance
-
   def engineUpgradeLevel: IntegerProperty = _engine.value.upgradeLevel
   def upgradeEngine(): Boolean = _engine.value.upgrade()
 
   protected var _speed = DoubleProperty(0)
   def speed: DoubleProperty = _speed
 
+  // speedLimit is a coefficient between 0 and 1 to implement acceleration and breaking
   protected var _speedLimit = DoubleProperty(1)
   def speedLimit : DoubleProperty = _speedLimit
 
   def departure() = {
+    println("departure")
+    println(location)
+    println(nextLocation)
     owner.pay((weight * consumption).toInt)
     arrived = false
     visible = true
     moving.set(true)
     stabilized = false
-    speed <== engineThrust//*speedLimit
+    speed <== engineThrust*speedLimit
   }
 
   def arrival() = {
+    println("arrival")
     moving.set(false)
     speed <== DoubleProperty(0)
     _nextLocation.set(None)
@@ -75,11 +104,16 @@ abstract class Vehicle(_id: Int, struct: Structure, owner: Player) extends Rende
     _nextLocation.set(Some(stops(0)))
   }
 
-  def landing() = {
+  def landing() = { }
 
+  def update(dt: Double, dirIndicator: Int) = {
+    if (moving.value) {
+      nextLocationPos match {
+        case Some(pos) => determineSpeedLimit(this.gridPos, locationPos, pos)
+        case None => println("forgot to update nextLocationPos")
+      }
+    }
   }
-
-  def update(dt: Double, dirIndicator: Int): Unit
 
   def getDirs(origin: GridLocation, destination: GridLocation): ListBuffer[Direction] = {
     val dirs = new ListBuffer[Direction]()
@@ -95,6 +129,28 @@ abstract class Vehicle(_id: Int, struct: Structure, owner: Player) extends Rende
     pos.percentageHeight = Math.max(pos.percentageHeight - dt * speed, 0)
 
     (pos.percentageHeight == 0 && pos.percentageWidth == 0)
+  }
+
+  def euclidianDistance(p1: GridLocation, p2: GridLocation) : Double = Math.sqrt(Math.pow(p1.col - p2.col, 2) + Math.pow(p1.row - p2.row, 2))
+
+  def determineSpeedLimit(pos: GridLocation, previousStop: GridLocation, nextStop: GridLocation) = {
+    val distancePreviousStop = euclidianDistance(pos, previousStop)
+    val distanceNextStop = euclidianDistance(pos, nextStop)
+    if (distancePreviousStop < accDistance) {
+      if (distanceNextStop < decDistance) {
+        speedLimit.set(accFunction(distancePreviousStop/accDistance).min(decFunction(distanceNextStop/decDistance)).max(initialSpeed))
+      }
+      else {
+        speedLimit.set(accFunction(distancePreviousStop/accDistance).max(initialSpeed))
+      }
+
+    }
+    else {
+      if (distanceNextStop < decDistance) {
+        speedLimit.set(decFunction(distanceNextStop/decDistance).max(initialSpeed))
+      }
+      else speedLimit.set(1.0)
+    }
   }
 
   // returns true iff the move lead to a change of case (ie percentage outbounds 0/100)
