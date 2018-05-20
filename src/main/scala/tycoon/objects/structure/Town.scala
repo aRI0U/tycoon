@@ -145,7 +145,7 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
     waitersInt.foreach(_.set(0))
     hunger = 0
     for (i <- 0 to stock.requestsInt.length-1) stock.requestsInt(i).set(0)
-    townManager.throwEvent("["+name+"] Everyone is dead here...")
+    throwEvent("["+name+"] Everyone is dead here...")
   }
 
   def update(dt: Double) = {
@@ -157,7 +157,7 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
         updateJobSeekers()
         updateWaiters()
         updateConsumption()
-        if (stock.updateExpiredProducts(townManager.getTime())) townManager.throwEvent("["+name+"] Be careful! Some of your food is expiring!")
+        if (stock.updateExpiredProducts(townManager.getTime())) throwEvent("["+name+"] Be careful! Some of your food is expiring!")
         updateEconomy()
         newRandomRequest(4)
       }
@@ -232,7 +232,7 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
       if (hunger > starvingTime) {
         population -= hunger*2
         if (!alreadyStarving) {
-          townManager.throwEvent("["+name+"] People are starving, nur ein Gott kann sie retten...")
+          throwEvent("["+name+"] People are starving, nur ein Gott kann sie retten...")
           newRequest(Product.Corn, ((stayingNeeds/(5*Product.Corn.nutritiousness)).toInt))
         }
         alreadyStarving = true

@@ -43,8 +43,4 @@ class Truck(_id: Int, initialStruct: Structure, val owner: Player) extends Vehic
     super.landing
     debark(location)
   }
-
-  // def update(dt: Double, dirIndicator: Int) = {
-  //
-  // }
 }

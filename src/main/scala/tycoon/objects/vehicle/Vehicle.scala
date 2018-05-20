@@ -23,6 +23,11 @@ abstract class Vehicle(_id: Int, struct: Structure, owner: Player) extends Rende
   def accFunction (d: Double) : Double
   def decFunction (d: Double) : Double
 
+  var defaultBrakeTime : Double = 1.0
+  var currentBrakeTime : Double = 0.0
+
+  def brake() = currentBrakeTime = defaultBrakeTime
+
   def id: Int = _id
 
   protected var _moving = BooleanProperty(false)
@@ -67,7 +72,7 @@ abstract class Vehicle(_id: Int, struct: Structure, owner: Player) extends Rende
   def locationName: StringProperty = _locationName
   def nextLocationName: StringProperty = _nextLocationName
 
-  protected var _engine: ObjectProperty[Engine] = ObjectProperty(new Engine(owner))
+  protected var _engine: ObjectProperty[Engine] = ObjectProperty(new Engine(owner, this))
   protected var _engineThrust: DoubleProperty = _engine.value.thrust
   def engineThrust : DoubleProperty = _engineThrust
 
@@ -83,18 +88,19 @@ abstract class Vehicle(_id: Int, struct: Structure, owner: Player) extends Rende
 
   def departure() = {
     println("departure")
-    println(location)
-    println(nextLocation)
     owner.pay((weight * consumption).toInt)
     arrived = false
     visible = true
     moving.set(true)
     stabilized = false
     speed <== engineThrust*speedLimit
+    println("start = " + location)
+    println("destination = " + nextLocation)
   }
 
   def arrival() = {
     println("arrival")
+    brake()
     moving.set(false)
     speed <== DoubleProperty(0)
     _nextLocation.set(None)
@@ -107,10 +113,14 @@ abstract class Vehicle(_id: Int, struct: Structure, owner: Player) extends Rende
   def landing() = { }
 
   def update(dt: Double, dirIndicator: Int) = {
-    if (moving.value) {
-      nextLocationPos match {
-        case Some(pos) => determineSpeedLimit(this.gridPos, locationPos, pos)
-        case None => println("forgot to update nextLocationPos")
+    if (currentBrakeTime > 0) currentBrakeTime -= dt
+    else {
+      currentBrakeTime = 0
+      if (moving.value) {
+        nextLocationPos match {
+          case Some(pos) => determineSpeedLimit(this.gridPos, locationPos, pos)
+          case None => println("forgot to update nextLocationPos")
+        }
       }
     }
   }
@@ -139,9 +149,11 @@ abstract class Vehicle(_id: Int, struct: Structure, owner: Player) extends Rende
     if (distancePreviousStop < accDistance) {
       if (distanceNextStop < decDistance) {
         speedLimit.set(accFunction(distancePreviousStop/accDistance).min(decFunction(distanceNextStop/decDistance)).max(initialSpeed))
+        //println("start + end")
       }
       else {
         speedLimit.set(accFunction(distancePreviousStop/accDistance).max(initialSpeed))
+        //println("start")
       }
 
     }
@@ -176,5 +188,11 @@ abstract class Vehicle(_id: Int, struct: Structure, owner: Player) extends Rende
       case Undefined => ()
     }
     changedSquare
+  }
+
+  def unfortunateEvent() : String = {
+    brake()
+    locationPos = this.gridPos
+    "suck my dick motherfucker"
   }
 }

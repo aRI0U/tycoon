@@ -102,12 +102,12 @@ case class Factory(pos: GridLocation, id: Int, townManager: TownManager) extends
       if (r.nextInt((7000-workers).max(100)) == 0) {
         val deads = 1+r.nextInt(workers.min(10))
         workers -= deads
-        townManager.throwEvent("[Factory n°"+id+"] Industrial accident: "+deads+" workers tragically passed away...")
+        throwEvent("[Factory n°"+id+"] Industrial accident: "+deads+" workers tragically passed away...")
       }
       internTime += dt
       if (internTime > productionTime) {
         updateProduction()
-        if (stock.updateExpiredProducts(townManager.getTime())) townManager.throwEvent("["+name+"] Be careful! Some of your food is expiring!")
+        if (stock.updateExpiredProducts(townManager.getTime())) throwEvent("["+name+"] Be careful! Some of your food is expiring!")
         internTime -= productionTime
       }
     }

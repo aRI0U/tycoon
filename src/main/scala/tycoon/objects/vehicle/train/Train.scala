@@ -29,12 +29,14 @@ class Train(_id: Int, initialTown: Structure, val owner: Player) extends TrainEl
 
   override def update(dt: Double, dirIndicator: Int) = {
     super.update(dt, dirIndicator)
-    if (!elementArrived && move(dt, dirIndicator))
-      maybeDisplayNewCarriage()
-    for (c <- carriageList)
-      c.update(dt, dirIndicator)
-    if (elementArrived && carriageList.forall { c: Carriage => c.elementArrived || !(c.visible) })
-      arrived = true
+    if (currentBrakeTime == 0) {
+      if (!elementArrived && move(dt, dirIndicator))
+        maybeDisplayNewCarriage()
+      for (c <- carriageList)
+        c.update(dt, dirIndicator)
+      if (elementArrived && carriageList.forall { c: Carriage => c.elementArrived || !(c.visible) })
+        arrived = true
+    }
   }
 
   def maybeDisplayNewCarriage() = {

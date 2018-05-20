@@ -21,7 +21,6 @@ class Trip(var origin: Structure, var destination: Structure, val veh: Vehicle, 
   var roadPositions = new ListBuffer[GridLocation]()
 
   def start() = {
-    println("start")
     veh.boarding(ListBuffer[Structure](destination))
     veh.location = origin
     origin.removeVehicle(veh)

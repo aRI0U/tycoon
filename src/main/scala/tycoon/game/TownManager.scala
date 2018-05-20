@@ -134,5 +134,4 @@ class TownManager(game: Game) {
       }
     }
   }
-
 }

@@ -19,8 +19,8 @@ abstract class TrainElement(_id: Int, initialTown: Structure, _owner: Player) ex
   var elementArrived: Boolean = false
 
   // dynamic values
-  accDistance = 2.0
-  decDistance = 3.0
+  accDistance = 3.0
+  decDistance = 5.0
   initialSpeed = 0.1
 
   def accFunction (d: Double) : Double = Math.sqrt(d)
@@ -53,6 +53,8 @@ abstract class TrainElement(_id: Int, initialTown: Structure, _owner: Player) ex
   override def arrival() = {
     super.arrival()
   }
+
+  //override def determineSpeedLimit()
 
   // train movement
   def move(dt: Double, dirIndicator: Int): Boolean = {
