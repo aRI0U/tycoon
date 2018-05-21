@@ -26,6 +26,8 @@ class Route(private var itinerary: ListBuffer[Road], var stops: ListBuffer[Struc
 
   protected val r = scala.util.Random
 
+  def getRoads : ListBuffer[Road] = itinerary
+
   def start() = {
     departure()
   }

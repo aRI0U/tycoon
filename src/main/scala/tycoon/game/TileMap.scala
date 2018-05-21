@@ -66,6 +66,7 @@ class TileMap (val width: Int, val height: Int) {
 
   /** set background tiles (ie grass, rock, tree, water, sand..) */
   def setBackgroundTile(pos: GridLocation, tile: Tile) = backgroundLayer(pos.col)(pos.row) = tile
+  def setBackgroundTile(x : Int,y : Int, tile: Tile) = backgroundLayer(x)(y) = tile
   /** get tiles from background layer */
   def getBackgroundTile(col: Int, row: Int): Tile = backgroundLayer(col)(row)
   def getBackgroundTile(pos: GridLocation): Tile = getBackgroundTile(pos.col, pos.row)

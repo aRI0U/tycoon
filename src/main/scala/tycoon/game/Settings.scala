@@ -3,8 +3,8 @@ package tycoon.game
 
 object Settings {
   val GameTitle = "Tycoon Game"
-  val GameWidth = 200
-  val GameHeight = 200
+  val GameWidth = 50
+  val GameHeight = 50
   val ScreenMaximized = false
   val ScreenMinWidth = 900
   val ScreenMinHeight = 600
@@ -54,6 +54,6 @@ object Settings {
   val PlaneMaxPassengers = 300
 
   // AI
-  val AIReactionTime = 5.0
-  val AIDecisionTime = 0.2
+  val AIDecisionTime = 10.0
+  val AIReactionTime = 0.2
 }

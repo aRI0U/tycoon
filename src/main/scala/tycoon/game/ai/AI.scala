@@ -14,16 +14,26 @@ class AI(game: Game) extends Player {
 
   var active : Boolean = false
 
+  money = 1000000
+
+  val decisionTree = Node.Root
+
   def update(dt: Double) = {
     if (!active) {
       internTime += dt
       if (internTime > decisionTime) {
-        game.setInfoText("AI is alive!")
-        val col = r.nextInt(game.map_width)
-        val row = r.nextInt(game.map_height)
-        val pos = new GridLocation(col, row)
-        if (game.buyStruct(BuyableStruct.SmallTown, pos, this)) {
-          game.setInfoText("AI created a town in " + col+row)
+        internTime -= decisionTime
+        decisionTree.randomSearch() match {
+          case StructureBuying(s) => {
+            val col = r.nextInt(game.map_width)
+            val row = r.nextInt(game.map_height)
+            val pos = new GridLocation(col, row)
+            if (game.buyStruct(BuyableStruct.SmallTown, pos, this)) {
+              game.setInfoText("AI created a town in " + col+row)
+            }
+          }
+
+          case _ => ()
         }
       }
     }

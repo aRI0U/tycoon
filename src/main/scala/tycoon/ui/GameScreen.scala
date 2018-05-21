@@ -65,7 +65,7 @@ class GameScreen(val game: Game) extends BorderPane
       margin = Insets(5)
       text <== game.informationText
     }
-    left = new QuitButton
+    left = new QuitButton (game)
     right = new HBox {
       alignment = Pos.Center
       children = Seq(
