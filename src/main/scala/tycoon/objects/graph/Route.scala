@@ -1,6 +1,7 @@
 package tycoon.objects.graph
 
 import scala.collection.mutable.ListBuffer
+import scala.util.Random
 
 import tycoon.ui.Renderable
 import tycoon.ui.Tile
@@ -22,7 +23,8 @@ class Route(private var itinerary: ListBuffer[Road], var stops: ListBuffer[Struc
   private var currentStruct: Structure = stops(0)
 
   private var dirIndicator: Int = 0 // for trains only
-  private var currentBreakTime: Double = 0.0
+
+  protected val r = scala.util.Random
 
   def getRoads : ListBuffer[Road] = itinerary
 
@@ -52,8 +54,6 @@ class Route(private var itinerary: ListBuffer[Road], var stops: ListBuffer[Struc
       }
       case _ => vehicle.departure()
     }
-
-    currentBreakTime = 0.0
   }
 
   def arrival() = {
@@ -80,19 +80,27 @@ class Route(private var itinerary: ListBuffer[Road], var stops: ListBuffer[Struc
 
     //if (currentStopIndex < stops.length - 1)
       // departure()
-    currentBreakTime = 5.0
   }
 
   def update (dt: Double) {
-    if (currentBreakTime > 0)
-      currentBreakTime -= dt
-    else if (active) {
-      if (vehicle.arrived) {
-        if (currentBreakTime == 0) arrival()
-        else if (currentBreakTime < 0) departure()
+    // if (currentBrakeTime > 0)
+    //   currentBrakeTime -= dt
+    if (active) {
+      vehicle.update(dt, dirIndicator)
+      val i = r.nextInt(100000)
+      if (i == 0) {
+        currentStruct match {
+          case a: EconomicAgent => a.throwEvent(vehicle.unfortunateEvent())
+          case _ => ()
+        }
       }
-      else
-        vehicle.update(dt, dirIndicator)
+      else {
+        if (vehicle.arrived) {
+          if (vehicle.currentBrakeTime == 0) arrival()
+          else if (vehicle.currentBrakeTime < 0) departure()
+        }
+      }
+
     }
     else if (repeated) {
       stops = stops.reverse

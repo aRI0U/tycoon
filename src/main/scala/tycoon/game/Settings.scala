@@ -39,12 +39,17 @@ object Settings {
   val CostTankCar = 35
 
   // Vehicle Speeds
-  val SpeedTruck = 200.0
-  val SpeedPlane = 400.0
-  val SpeedBoat = 400.0
+  val TruckSpeed = 100.0
+  val PlaneSpeed = 1000.0
+  val BoatSpeed = 400.0
 
-  // Trains
+  // Passengers
   val TrainTicketPrice = 20
   val TrainMaxPassengers = 100
 
+  val BoatTicketPrice = 25
+  val BoatMaxPassengers = 500
+
+  val PlaneTicketPrice = 100
+  val PlaneMaxPassengers = 300
 }

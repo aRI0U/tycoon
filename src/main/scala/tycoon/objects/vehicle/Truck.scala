@@ -21,9 +21,16 @@ class Truck(_id: Int, initialStruct: Structure, val owner: Player) extends Vehic
   val merchandises = new ListBuffer[Merchandise]
   val mManager = new MerchandisesManager
 
+  // dynamic values
+  accDistance = 2.0
+  decDistance = 1.0
+  initialSpeed = 0.2
+
+  def accFunction (d: Double) : Double = Math.sqrt(d)
+  def decFunction (d: Double) : Double = Math.sqrt(d)
+
   var onTheRoad = BooleanProperty(false)
   tile = Tile.Truck
-  speed.set(Settings.SpeedTruck)
   gridPos = location.gridPos.clone()
 
   override def boarding(stops: ListBuffer[Structure]) = {
@@ -34,9 +41,5 @@ class Truck(_id: Int, initialStruct: Structure, val owner: Player) extends Vehic
   override def landing() = {
     super.landing
     debark(location)
-  }
-
-  def update(dt: Double, dirIndicator: Int) = {
-
   }
 }

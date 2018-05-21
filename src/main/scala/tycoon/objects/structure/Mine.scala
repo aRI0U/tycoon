@@ -61,7 +61,7 @@ case class Mine(pos: GridLocation, id: Int, townManager: TownManager) extends Fa
 
       if (stock.stocks(i) >= extractableAmount(i)) {
         allExtracted(i) = true
-        townManager.throwEvent("[Mine n°"+id+"] "+stock.productsTypes(i).label+"s: everything has been extracted in this mine")
+        throwEvent("[Mine n°"+id+"] "+stock.productsTypes(i).label+"s: everything has been extracted in this mine")
       }
     }
   }
@@ -71,7 +71,7 @@ case class Mine(pos: GridLocation, id: Int, townManager: TownManager) extends Fa
       // random rockslides can kill workers
       if (r.nextInt(10000) == 0) {
         workers = 0
-        townManager.throwEvent("[Mine n°"+id+"] Rockslide: All diggers died!")
+        throwEvent("[Mine n°"+id+"] Rockslide: All diggers died!")
       }
       internTime += dt*workers
       if(internTime > productionTime) {

@@ -13,7 +13,8 @@ abstract class Carriage(_id: Int, initialTown: Structure, _owner: Player) extend
   var stops = new ListBuffer[Structure]
   def owner: Player = _owner
 
-  def update(dt: Double, dirIndicator: Int) = {
+  override def update(dt: Double, dirIndicator: Int) = {
+    super.update(dt, dirIndicator)
     if (visible)
       move(dt, dirIndicator)
   }

@@ -11,23 +11,14 @@ abstract class EconomicAgent(pos: GridLocation, id: Int, townManager: TownManage
 
   val maxInflation = 20.0
 
-   val stock = new Stock(this)
-   val weightings = new ListBuffer[Weighting]
-   val multipliers = new ListBuffer[(Good, DoubleProperty)]
+  val stock = new Stock(this)
+  val weightings = new ListBuffer[Weighting]
+  val multipliers = new ListBuffer[(Good, DoubleProperty)]
 //
-   def report(good: Good, stocks: IntegerProperty, requests: IntegerProperty) = good.newEmergence(this, stocks, requests)
-//
-//   def getGoodData(good: EconomicGood) : (EconomicGood, DoubleProperty) = {
-//     var i = 0
-//     while (i < goods.length && goods(i)._1.kind != good.kind) i += 1
-//     if (i == goods.length) {
-//       val goodData = new Tuple2(good, DoubleProperty(1))
-//       computeMultiplier(goodData)
-//       goods += goodData
-//     }
-//     goods(i)
-//   }
-//
+
+  def throwEvent(s: String) = townManager.throwEvent(s)
+
+  def report(good: Good, stocks: IntegerProperty, requests: IntegerProperty) = good.newEmergence(this, stocks, requests)
 
   def getMultiplier(good: Good) : DoubleProperty = {
     var i = 0
