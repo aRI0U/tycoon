@@ -24,6 +24,8 @@ class Route(private var itinerary: ListBuffer[Road], var stops: ListBuffer[Struc
   private var dirIndicator: Int = 0 // for trains only
   private var currentBreakTime: Double = 0.0
 
+  def getRoads : ListBuffer[Road] = itinerary
+
   def start() = {
     departure()
   }

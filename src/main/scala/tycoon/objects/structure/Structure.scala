@@ -47,4 +47,5 @@ abstract class Structure(pos: GridLocation, id: Int) extends Renderable(pos) {
 
   var internTime: Double = 0
   def update(dt: Double)
+
 }

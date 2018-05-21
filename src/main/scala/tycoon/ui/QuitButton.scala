@@ -1,5 +1,8 @@
 package tycoon.ui // #
 
+import tycoon.game.{Game, GridLocation, GridRectangle}
+import tycoon.objects.structure._
+
 import scalafx.Includes._
 import scalafx.application.Platform
 import scalafx.geometry.{Insets, Pos}
@@ -8,6 +11,8 @@ import scalafx.scene.input.MouseEvent
 import scalafx.scene.layout.{HBox, VBox}
 import scalafx.scene.text.Text
 import scala.xml._
+import scala.xml.transform.RuleTransformer
+import scala.xml.transform.RewriteRule
 import scalafx.stage.FileChooser
 import scalafx.application.JFXApp.PrimaryStage
 import scalafx.stage.{FileChooser, Stage}
@@ -17,7 +22,7 @@ import java.io.File
 import java.io.PrintWriter
 
 
-class QuitButton extends VBox
+class QuitButton(game : Game) extends VBox
 {
   alignment = Pos.BottomCenter
 
@@ -46,29 +51,12 @@ class QuitButton extends VBox
         text = "Save game"
         margin = Insets(5)
         onMouseClicked = (e: MouseEvent) => {
-          // val fileChooser = new FileChooser()
-          // val file = fileChooser.showOpenDialog(new Stage())
-          // val myXMLFile = XML.loadFile(file)
           val dialog = new TextInputDialog()
           dialog.setTitle("Save Game")
           dialog.setHeaderText("Name of your game :")
-          // dialog.setContentText("Name of your game :");
           val result = dialog.showAndWait()
           val file = new File(result.get + ".xml")
-          val pw = new PrintWriter(file)
-          try pw.write("<mxfile>\n</mxfile>") finally pw.close()
-          val myXMLFile = XML.loadFile(file)
-          val myXML =
-            <City>
-              <Factory attribut="rien">
-                Premier contenu
-              </Factory>
-              <Factory>
-                Second contenu
-              </Factory>
-            </City>
-          (myXML \\ "contenu").foreach(myContenu => println(myContenu.text))
-          XML.save(result.get, myXMLFile)
+          game.saver.createSaveFile(file,result.get())
         }
       }
     )

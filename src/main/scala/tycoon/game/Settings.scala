@@ -3,8 +3,8 @@ package tycoon.game
 
 object Settings {
   val GameTitle = "Tycoon Game"
-  val GameWidth = 200
-  val GameHeight = 200
+  val GameWidth = 50
+  val GameHeight = 50
   val ScreenMaximized = false
   val ScreenMinWidth = 900
   val ScreenMinHeight = 600
