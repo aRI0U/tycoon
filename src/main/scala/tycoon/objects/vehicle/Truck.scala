@@ -31,7 +31,6 @@ class Truck(_id: Int, initialStruct: Structure, val owner: Player) extends Vehic
 
   var onTheRoad = BooleanProperty(false)
   tile = Tile.Truck
-  speed.set(Settings.SpeedTruck)
   gridPos = location.gridPos.clone()
 
   override def boarding(stops: ListBuffer[Structure]) = {

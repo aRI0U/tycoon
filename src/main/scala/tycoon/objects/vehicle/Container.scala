@@ -5,7 +5,6 @@ import scala.collection.mutable.ListBuffer
 import tycoon.objects.good._
 import tycoon.objects.structure._
 
-// maybe useless
 trait Container {
   val maxSpace : Double
   var remainingSpace : Double
@@ -41,6 +40,7 @@ trait Container {
         case Some(town) => includeRequests(town)
         case None => ()
       }
+      case _ => ()
     }
   }
 

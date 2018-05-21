@@ -7,8 +7,8 @@ import tycoon.ui.Renderable
 import tycoon.objects.structure._
 import tycoon.objects.railway._
 import tycoon.objects.vehicle.train._
-import tycoon.game.{GridLocation, Player}
-import scalafx.beans.property._
+import tycoon.game.{GridLocation, Player, Settings}
+import scalafx.beans.property.{DoubleProperty,IntegerProperty}
 
 
 
@@ -20,9 +20,9 @@ class Engine(_owner: Player, kind: Vehicle) extends Renderable(new GridLocation(
   def thrust: DoubleProperty = {
     kind match {
       case train: TrainElement => thrust = Engine.Thrust(upgradeLevel.value)
-      case boat: Boat => thrust = Engine.BoatThrust
-      case plane: Plane => thrust = Engine.PlaneThrust
-      case truck: Truck => thrust = Engine.TruckThrust
+      case boat: Boat => thrust = Settings.BoatSpeed
+      case plane: Plane => thrust = Settings.PlaneSpeed
+      case truck: Truck => thrust = Settings.TruckSpeed
       case _ => ()
     }
     _thrust
@@ -49,8 +49,4 @@ object Engine {
 
   val Thrust = Array(200, 300, 400, 500, 600, 700)
   val Price = Array(100, 200, 300, 400, 500, 600)
-
-  val PlaneThrust = 1000
-  val BoatThrust = 400
-  val TruckThrust = 100
 }
