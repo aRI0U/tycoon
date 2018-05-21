@@ -423,26 +423,26 @@ class Game(val map_width : Int, val map_height : Int)
     } else false
   }
 
-  def createTrain (train: Train, town: Town, player: Player): Unit = {
+  def createTrain (train: Train, town: Town, player: Player = player): Unit = {
     town.addVehicle(train)
     trains += train
     map.addEntity(train)
     nbTrains.set(nbTrains.value + 1)
   }
 
-  def createPlane (plane: Plane, airport: Airport, player: Player): Unit = {
+  def createPlane (plane: Plane, airport: Airport, player: Player = player): Unit = {
     airport.addVehicle(plane)
     planes += plane
     map.addEntity(plane)
   }
 
-  def createBoat (boat: Boat, port: Dock, player: Player): Unit = {
+  def createBoat (boat: Boat, port: Dock, player: Player = player): Unit = {
     port.addVehicle(boat)
     boats += boat
     map.addEntity(boat)
   }
 
-  def createTruck (truck: Truck, struct: Structure, player: Player): Unit = {
+  def createTruck (truck: Truck, struct: Structure, player: Player = player): Unit = {
     struct.addVehicle(truck)
     trucks += truck
     map.addEntity(truck)

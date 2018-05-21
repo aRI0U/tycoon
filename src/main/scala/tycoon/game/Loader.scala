@@ -2,8 +2,11 @@ package tycoon.game
 
 import tycoon.game._
 import tycoon.ui.Tile
+import tycoon.objects.vehicle._
+import tycoon.objects.vehicle.train._
 import tycoon.objects.railway._
 import tycoon.objects.structure._
+
 import scala.xml.XML
 import scala.collection.mutable.ListBuffer
 
@@ -55,23 +58,43 @@ class Loader (game : Game) {
         }
         case "farm" => {
           var pos = new GridLocation((struct \ "@x").text.toInt,(struct \ "@y").text.toInt)
-          var farm = new Farm(pos,id,townManager); id+=1
+          var farm = new Farm(pos,id,townManager)
           if (game.createStruct(farm,Tile.Grass)) id+=1
           farm.workers_=((struct \ "@population").text.toInt)
           farm.setName((struct \ "@name").text)
         }
         case "mine" => {
           var pos = new GridLocation((struct \ "@x").text.toInt,(struct \ "@y").text.toInt)
-          var mine = new Mine(pos,id,townManager); id+=1
+          var mine = new Mine(pos,id,townManager)
           if (game.createStruct(mine,Array(Tile.Rock))) id+=1
           mine.workers_=((struct \ "@population").text.toInt)
           mine.setName((struct \ "@name").text)
         }
-        // case "rail" => {
-        //   var pos = new GridLocation((struct \ "@x").text.toInt,(struct \ "@y").text.toInt)
-        //   var rail = new Rail(pos)
-        //   railManager.createRail(rail)
-        // }
+        case "airport" => {
+          var pos = new GridLocation((struct \ "@x").text.toInt,(struct \ "@y").text.toInt)
+          var airport = new Airport(pos,id)
+          if (game.createStruct(airport,Tile.Grass)) id+=1
+          airport.setName((struct \ "@name").text)
+        }
+        case "dock" => {
+          var pos = new GridLocation((struct \ "@x").text.toInt,(struct \ "@y").text.toInt)
+          var dock = new Dock(pos,id)
+          if (game.createStruct(dock,Tile.Sand ++ Tile.Water)) id+=1
+          dock.setName((struct \ "@name").text)
+        }
+        case "windmill" => {
+          var pos = new GridLocation((struct \ "@x").text.toInt,(struct \ "@y").text.toInt)
+          var windmill = new WindMill(pos,id,townManager)
+          if (game.createStruct(windmill,Tile.Grass)) id+=1
+          windmill.setName((struct \ "@name").text)
+        }
+        case "paking" => {
+          var pos = new GridLocation((struct \ "@x").text.toInt,(struct \ "@y").text.toInt)
+          var paking = new PackingPlant(pos,id,townManager)
+          if (game.createStruct(paking,Tile.Grass)) id+=1
+          paking.workers_=((struct \ "@population").text.toInt)
+          paking.setName((struct \ "@name").text)
+        }
         case _ => {}
       }
     }
@@ -79,11 +102,37 @@ class Loader (game : Game) {
       for (railx <- (road \\ "Rail")) {
         var pos = new GridLocation((railx \ "@x").text.toInt,(railx \ "@y").text.toInt)
         var rail = new Rail(pos)
-        railManager.createRail(rail)
+          (map.maybeGetStructureAt((road \ "@beginx").text.toInt,(road \"@beginy").text.toInt),map.maybeGetStructureAt((road \ "@endx").text.toInt,(road \"@endy").text.toInt)) match {
+          case (Some(ss : Structure),Some(s : Structure)) => railManager.createRail(rail,target = Some(ss.structureId,s.structureId))
+          case _ => railManager.createRail(rail)
+        }
       }
     }
-
-
+    id = 0
+    for (train <- (mapXML \\ "Train")) {
+      map.maybeGetStructureAt((train \ "@locationx").text.toInt,(train \"@locationy").text.toInt) match {
+        case Some(s : Town) => game.createTrain(new Train(id,s,game.player), s) ; id += 1
+        case _ => ()
+      }
+    }
+    for (plane <- (mapXML \\ "Plane")) {
+      map.maybeGetStructureAt((plane \ "@locationx").text.toInt,(plane \"@locationy").text.toInt) match {
+        case Some(a : Airport) => game.createPlane(new Plane(id,a,game.player),a) ; id+=1
+        case _ => ()
+      }
+    }
+    for (boat <- (mapXML \\ "Boat")) {
+      map.maybeGetStructureAt((boat \ "@locationx").text.toInt,(boat \"@locationy").text.toInt) match {
+        case Some(a : Dock) => game.createBoat(new Boat(id,a,game.player),a) ; id+=1
+        case _ => ()
+      }
+    }
+    for (truck <- (mapXML \\ "Truck")) {
+      map.maybeGetStructureAt((truck \ "@locationx").text.toInt,(truck \"@locationy").text.toInt) match {
+        case Some(t : Town) => game.createTruck(new Truck(id,t,game.player),t) ; id+=1
+        case _ => ()
+      }
+    }
 
 
     // Upload from xml map given by teacher

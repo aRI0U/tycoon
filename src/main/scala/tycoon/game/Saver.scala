@@ -67,6 +67,11 @@ class Saver(game : Game) {
           case Some(f : Factory) => {x = x + makeStringStruc(col,row,"factory",f.workers, f.name)}
           case Some(f : Farm) => {x = x + makeStringStruc(col,row,"farm",f.workers, f.name)}
           case Some(m : Mine) => {x = x + makeStringStruc(col,row,"mine",m.workers, m.name)}
+          case Some(a : Airport) => {x = x + makeStringStruc(col,row,"airport",0, a.name)}
+          case Some(f : Field) => {x = x + makeStringStruc(col,row,"field",0,f.name)}
+          case Some(p : PackingPlant) => {x = x + makeStringStruc(col,row,"paking",p.workers,p.name)}
+          case Some(d : Dock) => {x = x + makeStringStruc(col,row,"dock",0,d.name)}
+          case Some(w : WindMill) => {x = x + makeStringStruc(col,row,"windmill",0,w.name)}
           // case Some(r : Rail) => {x = x + makeStringStruc(col,row,"rail",0,"")}
           case _ => {}
         }
@@ -78,7 +83,6 @@ class Saver(game : Game) {
       var x : String = "<Roads datatype=\"nothing\">\n"
       for (vertex <- game.gameGraph.content) {
         for ((i,road) <- vertex.links ) {
-          // x = x + "<Road beginx=\"" + "1" + "\"> " + "</Road>\n"
           x = x + "<Road beginx=\"" + road.startStructure.get.gridPos.col.toString +"\" beginy=\"" + road.startStructure.get.gridPos.row.toString +"\" endx=\"" + road.endStructure.get.gridPos.col.toString +"\" endy=\"" + road.endStructure.get.gridPos.row.toString +"\">"
           for (rail <- road.rails ) {
             x = x + "<Rail x=\"" + rail.gridPos.col.toString + "\" y=\"" + rail.gridPos.row.toString + "\"> </Rail>"
@@ -88,6 +92,24 @@ class Saver(game : Game) {
       }
       println(x)
       x + "</Roads>"
+    }
+    def getXmlVehicle() : String = {
+      var x : String = "<Vehicles datatype=\"nothing\">\n"
+      for (train <- game.trains){
+        x = x + "<Train locationx=\"" + train.location.gridPos.col.toString + "\" locationy=\"" + train.location.gridPos.row.toString + "\"> </Train>"
+        // add type of train ect..
+      }
+      for (plane <- game.planes) {
+        x = x + "<Plane locationx=\"" + plane.location.gridPos.col.toString + "\" locationy=\"" + plane.location.gridPos.row.toString + "\"> </Plane>"
+      }
+      for (boat <- game.boats) {
+        x = x + "<Boat locationx=\"" + boat.location.gridPos.col.toString + "\" locationy=\"" + boat.location.gridPos.row.toString + "\"> </Boat>"
+      }
+      for (truck <- game.trucks) {
+        x = x + "<Truck locationx=\"" + truck.location.gridPos.col.toString + "\" locationy=\"" + truck.location.gridPos.row.toString + "\"> </Truck>"
+      }
+      println(x)
+      x + "</Vehicles>\n"
     }
     def addXml(xmlString : String) = {
       val add = new RewriteRule {
@@ -110,6 +132,10 @@ class Saver(game : Game) {
 
     var b = getXmlRails()
     transform = new RuleTransformer(addXml(b))
+    xmld = transform(xmld)
+
+    var c = getXmlVehicle()
+    transform = new RuleTransformer(addXml(c))
     xmld = transform(xmld)
 
     // Final treatment of xml

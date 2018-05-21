@@ -56,7 +56,7 @@ class QuitButton(game : Game) extends VBox
           dialog.setHeaderText("Name of your game :")
           val result = dialog.showAndWait()
           val file = new File(result.get + ".xml")
-          game.saver.createSaveFile(file,result.get())
+          game.saver.createSaveFile(file,result.get)
         }
       }
     )

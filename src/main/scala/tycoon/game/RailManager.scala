@@ -16,7 +16,7 @@ class RailManager(map: TileMap, gameGraph: Graph) {
   private val rails: ListBuffer[Rail] = new ListBuffer()
   var nbNeighborRails: Int = 0
 
-  def createRail(rail: Rail) : Boolean = {
+  def createRail(rail: Rail, target : Option[(Int,Int)] = None ) : Boolean = {
     val pos: GridLocation = rail.gridPos
     var created = false
     if (map.gridContains(rail.gridRect) && map.isUnused(rail.gridRect) && map.checkBgTile(pos, Tile.Grass)) {
@@ -57,12 +57,14 @@ class RailManager(map: TileMap, gameGraph: Graph) {
               case airport : Airport => {}
               case field : Field => {}
               case neighborStruct: Structure => {
-                if (!rail.road.finished)
-                  if(lookAround(rail, neighborStruct)) {
-                    created = true
-                    if (firstDir == -1) firstDir = i
-                    else secondDir = i
-                  }
+                if (target == None || neighborStruct.structureId == target.get._1 || neighborStruct.structureId == target.get._2) {
+                  if (!rail.road.finished)
+                    if(lookAround(rail, neighborStruct)) {
+                      created = true
+                      if (firstDir == -1) firstDir = i
+                      else secondDir = i
+                    }
+                }
               }
               case _ => ()
             }
