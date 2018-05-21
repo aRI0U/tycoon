@@ -5,7 +5,7 @@ import tycoon.objects.railway._
 import tycoon.objects.vehicle.train._
 import tycoon.objects.vehicle._
 import tycoon.objects.graph._
-import tycoon.game._
+import tycoon.game.ai._
 import tycoon.ui.{Tile, Renderable, DraggableTiledPane}
 
 import scalafx.beans.property._
@@ -85,6 +85,9 @@ class Game(val map_width : Int, val map_height : Int)
   private val _player = new Player
   def player: Player = _player
 
+  private val _ai = new AI(this)
+  def ai: AI = _ai
+
 
   // game loop
 
@@ -151,6 +154,8 @@ class Game(val map_width : Int, val map_height : Int)
     trips = trips filter { t: Trip => t.active || t.repeated }
     structures foreach { _.update(dt * speedMultiplier.value)}
 
+    ai.update(dt * speedMultiplier.value)
+
     tiledPane.render()
 
     if (infoTextTimer > 0) {
@@ -213,7 +218,7 @@ class Game(val map_width : Int, val map_height : Int)
     var bought: Boolean = false
     if (player.money.value >= struct.price) {
       struct.newInstance(pos, nb_structures, townManager) match {
-        case town: Town => bought = createStruct(town, Tile.Grass)
+        case town: Town => bought = createStruct(town, Tile.Water)
         case mine: Mine => bought = createStruct(mine, Array(Tile.Rock))
         case farm: Farm => bought = createStruct(farm, Tile.Grass)
         case packingPlant: PackingPlant => bought = createStruct(packingPlant, Tile.Grass)

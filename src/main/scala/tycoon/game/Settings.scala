@@ -52,4 +52,8 @@ object Settings {
 
   val PlaneTicketPrice = 100
   val PlaneMaxPassengers = 300
+
+  // AI
+  val AIReactionTime = 5.0
+  val AIDecisionTime = 0.2
 }

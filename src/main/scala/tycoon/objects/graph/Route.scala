@@ -85,7 +85,7 @@ class Route(private var itinerary: ListBuffer[Road], var stops: ListBuffer[Struc
     //   currentBrakeTime -= dt
     if (active) {
       vehicle.update(dt, dirIndicator)
-      val i = r.nextInt(100000)
+      val i = r.nextInt(10000)
       if (i == 0) {
         currentStruct match {
           case a: EconomicAgent => a.throwEvent(vehicle.unfortunateEvent())
