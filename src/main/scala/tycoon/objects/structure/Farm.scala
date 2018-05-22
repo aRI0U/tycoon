@@ -7,7 +7,7 @@ import tycoon.objects.good._
 import tycoon.game._
 import tycoon.ui.Tile
 
-case class Farm(pos: GridLocation, id: Int, townManager: TownManager) extends Facility(pos, id, townManager) {
+case class Farm(pos: GridLocation, id: Int, townManager: TownManager, owner: Player) extends Facility(pos, id, townManager, owner) {
   tile = Tile.Farm(0)
   setName("Farm " + id.toString)
   var tileType = 0

@@ -22,23 +22,23 @@ sealed abstract class BuyableItem(val name: String, val price: Int, val tile: Ti
 }
 
 
-case class BuyableStruct(override val name: String, override val price: Int, override val tile: Tile, val newInstance: (GridLocation, Int, TownManager) => Structure)
+case class BuyableStruct(override val name: String, override val price: Int, override val tile: Tile, val newInstance: (GridLocation, Int, TownManager, Player) => Structure)
 extends BuyableItem(name, price, tile) {
   createByDragging = false
 }
 
 object BuyableStruct {
-  def newSmallTown(pos: GridLocation, id: Int, townManager: TownManager): SmallTown = new SmallTown(pos, id, townManager)
-  def newMediumTown(pos: GridLocation, id: Int, townManager: TownManager): MediumTown = new MediumTown(pos, id, townManager)
-  def newLargeTown(pos: GridLocation, id: Int, townManager: TownManager): LargeTown = new LargeTown(pos, id, townManager)
-  def newMine(pos: GridLocation, id: Int, townManager: TownManager): Mine = new Mine(pos, id, townManager)
-  def newFarm(pos: GridLocation, id: Int, townManager: TownManager): Farm = new Farm(pos, id, townManager)
-  def newFactory(pos: GridLocation, id: Int, townManager: TownManager): Factory = new Factory(pos, id, townManager)
-  def newPackingPlant(pos: GridLocation, id: Int, townManager: TownManager) : PackingPlant = new PackingPlant(pos, id, townManager)
-  def newWindMill(pos: GridLocation, id: Int, townManager: TownManager): WindMill = new WindMill(pos, id,townManager)
-  def newAirport(pos: GridLocation, id: Int, townManager: TownManager): Airport = new Airport(pos, id)
-  def newField(pos: GridLocation, id: Int, townManager: TownManager): Field = new Field(pos, id)
-  def newDock(pos: GridLocation, id: Int, townManager: TownManager): Dock = new Dock(pos, id)
+  def newSmallTown(pos: GridLocation, id: Int, townManager: TownManager, player: Player): SmallTown = new SmallTown(pos, id, townManager, player)
+  def newMediumTown(pos: GridLocation, id: Int, townManager: TownManager, player: Player): MediumTown = new MediumTown(pos, id, townManager, player)
+  def newLargeTown(pos: GridLocation, id: Int, townManager: TownManager, player: Player): LargeTown = new LargeTown(pos, id, townManager, player)
+  def newMine(pos: GridLocation, id: Int, townManager: TownManager, player: Player): Mine = new Mine(pos, id, townManager, player)
+  def newFarm(pos: GridLocation, id: Int, townManager: TownManager, player: Player): Farm = new Farm(pos, id, townManager, player)
+  def newFactory(pos: GridLocation, id: Int, townManager: TownManager, player: Player): Factory = new Factory(pos, id, townManager, player)
+  def newPackingPlant(pos: GridLocation, id: Int, townManager: TownManager, player: Player) : PackingPlant = new PackingPlant(pos, id, townManager, player)
+  def newWindMill(pos: GridLocation, id: Int, townManager: TownManager, player: Player): WindMill = new WindMill(pos, id,townManager, player)
+  def newAirport(pos: GridLocation, id: Int, townManager: TownManager, player: Player): Airport = new Airport(pos, id, player)
+  def newField(pos: GridLocation, id: Int, townManager: TownManager, player: Player): Field = new Field(pos, id, player)
+  def newDock(pos: GridLocation, id: Int, townManager: TownManager, player: Player): Dock = new Dock(pos, id, player)
 
   val SmallTown = new BuyableStruct("Small Town", Settings.CostSmallTown, Tile.Town, newSmallTown)
   val MediumTown = new BuyableStruct("Medium Town", Settings.CostMediumTown, Tile.Town, newMediumTown)

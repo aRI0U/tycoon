@@ -8,7 +8,7 @@ import scalafx.beans.binding.Bindings
 class Player {
   private val formatter = java.text.NumberFormat.getIntegerInstance
 
-  private val _name: StringProperty = StringProperty("")
+  private val _name: StringProperty = StringProperty("You")
   private val _money: IntegerProperty = IntegerProperty(0)
   private val _formattedMoney = StringProperty("0")
 

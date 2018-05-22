@@ -65,7 +65,7 @@ class Game(val map_width : Int, val map_height : Int)
   var townManager = new TownManager(this)
   var gameGraph = new Graph(townManager)
   var railManager = new RailManager(map, gameGraph)
-  var loader = new Loader(this)
+  // var loader = new Loader(this)
   var saver = new Saver(this)
 
   var nb_structures = 0
@@ -219,7 +219,7 @@ class Game(val map_width : Int, val map_height : Int)
   def buyStruct(struct: BuyableStruct, pos: GridLocation, player: Player = _player): Boolean = {
     var bought: Boolean = false
     if (player.money.value >= struct.price) {
-      struct.newInstance(pos, nb_structures, townManager) match {
+      struct.newInstance(pos, nb_structures, townManager, player) match {
         case town: Town => towns += town ; bought = createStruct(town, Tile.Grass)
         case mine: Mine => bought = createStruct(mine, Array(Tile.Rock))
         case farm: Farm => bought = createStruct(farm, Tile.Grass)
@@ -457,9 +457,9 @@ class Game(val map_width : Int, val map_height : Int)
     println ("tycoon > game > Game.scala > create Fly: creation of a fly betwenn to to airport with a plane ")
   }
 
-  def loadMap(filepath: String) : Boolean = {
-    Try {
-      loader.loadMap(filepath)
-    }
-  }.isSuccess
+  // def loadMap(filepath: String) : Boolean = {
+  //   Try {
+  //     loader.loadMap(filepath)
+  //   }
+  // }.isSuccess
 }

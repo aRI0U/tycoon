@@ -11,7 +11,7 @@ import scalafx.beans.property.{IntegerProperty, StringProperty}
 
 // once built, a mine can produce a limited quantity of iron (iron_amount), the quantity of extracted iron depends on the number of diggers and on the quantity that has already been extracted (it is harder and harder to find iron)
 
-case class Mine(pos: GridLocation, id: Int, townManager: TownManager) extends Facility(pos, id, townManager) {
+case class Mine(pos: GridLocation, id: Int, townManager: TownManager, owner: Player) extends Facility(pos, id, townManager, owner) {
   tile = Tile.Mine
 
   setName("Mine n°"+id)
