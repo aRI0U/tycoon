@@ -41,6 +41,7 @@ object Tile {
   val PopCorn = new Tile("popcorn",7,10)
   val Cheese = new Tile("cheese",10,5)
 
+  val Money = new Tile("money",6,10)
   val Job = new Tile("job",10,1)
   val Person = new Tile("person",8,4)
   val Gold = new Tile("gold",7,1)

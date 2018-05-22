@@ -137,7 +137,7 @@ class GameScreen(val game: Game) extends BorderPane
     id = "menu"
 
     minWidth = 175
-    maxWidth = 175
+    maxWidth = 200
 
     bottom = new VBox {
       children = Seq(
@@ -150,10 +150,12 @@ class GameScreen(val game: Game) extends BorderPane
           text <== StringProperty("Player: ").concat(game.playerName)
           margin = Insets(5)
         },
-        new Text {
-          text <== StringProperty("Balance: $").concat(game.playerFormattedMoney)
-          fill <== when (game.playerMoney > 0) choose Green otherwise Red
-          margin = Insets(5)
+        new HBox {
+          children = Seq(Tile.getImageView(Tile.Money),new Text {
+            text <== StringProperty("Balance: $").concat(game.playerFormattedMoney)
+            fill <== when (game.playerMoney > 0) choose Green otherwise Red
+            margin = Insets(5)
+          })
         }
 
       )
@@ -217,7 +219,6 @@ class GameScreen(val game: Game) extends BorderPane
                   rankedElt match {
                     case p: PrintableTownProduct => {
                       fill <== when (p.valueInt > 0) choose Green otherwise Red
-                      // children.add(p.icon)
                     }
                     case _ => ()
                   }
