@@ -3,7 +3,7 @@ package tycoon.objects.structure
 import scala.collection.mutable.ListBuffer
 import scala.Array
 
-import tycoon.game.GridLocation
+import tycoon.game.{GridLocation, Player}
 import tycoon.game.{Game, TownManager}
 import tycoon.objects.structure._
 import tycoon.objects.good._
@@ -14,7 +14,7 @@ import tycoon.ui.Tile
 import scalafx.beans.property.{BooleanProperty, DoubleProperty, IntegerProperty, StringProperty}
 
 
-abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extends EconomicAgent(pos, id, townManager) {
+abstract class Town(pos: GridLocation, id: Int, townManager: TownManager, owner: Player) extends EconomicAgent(pos, id, townManager, owner) {
 
   tile = Tile.Town
 
@@ -35,7 +35,7 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
 
   chooseName()
 
-  printData += new PrintableData(name)
+  printData += new PrintableData(name + " (" + owner.name.value + ")")
   printData += new PrintableData("Products")
   printData += new PrintableData("Waiting passengers")
 

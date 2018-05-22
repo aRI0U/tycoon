@@ -7,7 +7,7 @@ import tycoon.objects.good._
 import tycoon.game._
 import tycoon.ui.Tile
 
-case class WindMill(pos: GridLocation, id: Int, townManager: TownManager) extends Facility(pos, id, townManager) {
+case class WindMill(pos: GridLocation, id: Int, townManager: TownManager, owner: Player) extends Facility(pos, id, townManager, owner) {
   tile = Tile.WindMill(0)
   setName("WindMill " + id.toString)
   var tileType = 0

@@ -8,6 +8,8 @@ class AI(game: Game) extends Player {
 
   val r = scala.util.Random
 
+  name = "AI"
+
   val reactionTime : Double = Settings.AIReactionTime
   val decisionTime : Double = Settings.AIDecisionTime
   var internTime : Double = 0.0

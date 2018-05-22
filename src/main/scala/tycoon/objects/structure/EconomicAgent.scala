@@ -7,7 +7,7 @@ import tycoon.objects.good._
 
 import scalafx.beans.property.{DoubleProperty, IntegerProperty}
 
-abstract class EconomicAgent(pos: GridLocation, id: Int, townManager: TownManager) extends Structure(pos, id) {
+abstract class EconomicAgent(pos: GridLocation, id: Int, townManager: TownManager, owner: Player) extends Structure(pos, id, owner) {
 
   val maxInflation = 20.0
 
