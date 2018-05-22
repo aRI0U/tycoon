@@ -25,11 +25,9 @@ import java.text.SimpleDateFormat
 
 
 
-class Charts(val game: Game) extends Tab
+class Charts(val p: Player, val tabName: String) extends Tab
 {
-  text = "Fancy Charts"
-
-  private val p = game.player
+  text = tabName
 
   private val container = new HBox()
   this.setContent(container)
@@ -101,7 +99,7 @@ class Charts(val game: Game) extends Tab
     val dataPairsTrains = for (i <- 0 until p.trainsMoneyMonitoring.length) yield (i.toString, p.trainsMoneyMonitoring(i))
     val dataPairsBoats = for (i <- 0 until p.boatsMoneyMonitoring.length) yield (i.toString, p.boatsMoneyMonitoring(i))
     val dataPairsPlanes = for (i <- 0 until p.planesMoneyMonitoring.length) yield (i.toString, p.planesMoneyMonitoring(i))
-    new LineChart(CategoryAxis("Time"), NumberAxis("Net income ($)")) {
+    new LineChart(CategoryAxis("Time (h)"), NumberAxis("Net income ($)")) {
       title = "Real-Time Financial Report"
       createSymbols = false
       horizontalGridLinesVisible = false
