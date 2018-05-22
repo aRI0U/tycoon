@@ -109,9 +109,15 @@ class Loader (game : Game) {
       }
     }
     id = 0
-    for (train <- (mapXML \\ "Train")) {
-      map.maybeGetStructureAt((train \ "@locationx").text.toInt,(train \"@locationy").text.toInt) match {
-        case Some(s : Town) => game.createTrain(new Train(id,s,game.player), s) ; id += 1
+    for (trainx <- (mapXML \\ "Train")) {
+      map.maybeGetStructureAt((trainx \ "@locationx").text.toInt,(trainx \"@locationy").text.toInt) match {
+        case Some(s : Town) => {
+          var train = new Train(id,s,game.player)
+          game.createTrain(train, s) ; id += 1
+          for (car <- (trainx \\ "TankCar")) game.buyTankCar(train)
+          for (car <- (trainx \\ "GoodsCarriage")) game.buyGoodsCarriage(train)
+          for (car <- (trainx \\ "PassengerCarriage")) game.buyPassengerCarriage(train)
+        }
         case _ => ()
       }
     }

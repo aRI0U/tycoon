@@ -3,6 +3,7 @@ package tycoon.objects.vehicle.train
 import scala.collection.mutable.ListBuffer
 
 import tycoon.game.Player
+import tycoon.ui.Tile
 import tycoon.objects.structure._
 import tycoon.objects.vehicle.LiquidContainer
 

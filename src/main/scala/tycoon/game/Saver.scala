@@ -3,6 +3,7 @@ package tycoon.game
 import tycoon.game._
 import tycoon.ui.Tile
 import tycoon.objects.railway._
+import tycoon.objects.vehicle.train._
 import tycoon.objects.structure._
 import scala.xml.XML
 import scala.collection.mutable.ListBuffer
@@ -64,12 +65,12 @@ class Saver(game : Game) {
         }
         game.map.maybeGetStructureAt(col,row) match {
           case Some(t : Town) => {x = x + makeStringStruc(col,row,"town",t.population,t.name)}
+          case Some(p : PackingPlant) => {x = x + makeStringStruc(col,row,"paking",p.workers,p.name)}
           case Some(f : Factory) => {x = x + makeStringStruc(col,row,"factory",f.workers, f.name)}
           case Some(f : Farm) => {x = x + makeStringStruc(col,row,"farm",f.workers, f.name)}
           case Some(m : Mine) => {x = x + makeStringStruc(col,row,"mine",m.workers, m.name)}
           case Some(a : Airport) => {x = x + makeStringStruc(col,row,"airport",0, a.name)}
           case Some(f : Field) => {x = x + makeStringStruc(col,row,"field",0,f.name)}
-          case Some(p : PackingPlant) => {x = x + makeStringStruc(col,row,"paking",p.workers,p.name)}
           case Some(d : Dock) => {x = x + makeStringStruc(col,row,"dock",0,d.name)}
           case Some(w : WindMill) => {x = x + makeStringStruc(col,row,"windmill",0,w.name)}
           // case Some(r : Rail) => {x = x + makeStringStruc(col,row,"rail",0,"")}
@@ -96,8 +97,16 @@ class Saver(game : Game) {
     def getXmlVehicle() : String = {
       var x : String = "<Vehicles datatype=\"nothing\">\n"
       for (train <- game.trains){
-        x = x + "<Train locationx=\"" + train.location.gridPos.col.toString + "\" locationy=\"" + train.location.gridPos.row.toString + "\"> </Train>"
-        // add type of train ect..
+        x = x + "<Train locationx=\"" + train.location.gridPos.col.toString + "\" locationy=\"" + train.location.gridPos.row.toString + "\">\n"
+        for (carriage <- train.carriageList){
+          carriage match {
+            case l : TankCar => x = x + "<TankCar> </TankCar> \n"
+            case g : GoodsCarriage => x = x + "<GoodsCarriage> </GoodsCarriage>\n"
+            case p : PassengerCarriage => x = x + "<PassengerCarriage> </PassengerCarriage>\n"
+          }
+
+        }
+        x = x + " </Train>"
       }
       for (plane <- game.planes) {
         x = x + "<Plane locationx=\"" + plane.location.gridPos.col.toString + "\" locationy=\"" + plane.location.gridPos.row.toString + "\"> </Plane>"
