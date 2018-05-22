@@ -49,7 +49,7 @@ object Product {
   val Glass = new ProcessedGood("Glass", 5, 1, false)
   val Hat = new ProcessedGood("Hat",50,5,false)
   val Plastic = new ProcessedGood("Plastic", 5, 1, false)
-  val RabbitFoot = new ProcessedGood("rabbitFoot",10,1,false)
+  val RabbitFoot = new ProcessedGood("RabbitFoot",10,1,false)
   val Revolver = new ProcessedGood("Revolver",100,5,false)
   val Ring = new ProcessedGood("Ring",1000,1,false)
 
@@ -61,6 +61,6 @@ object Product {
   val Egg = new Food("Egg", 1, 1, false, 50, 1, Cardboard)
   val Milk = new Food("Milk", 1, 1, true, 20, 1, Glass)
 
-  val foods = ListBuffer[Food](Cake, Milk, Egg)
-  val purchases = ListBuffer[ProcessedGood](Revolver)
+  val foods = ListBuffer[Food](Cake, Milk, Egg,Corn,PopCorn,Cheese)
+  val purchases = ListBuffer[ProcessedGood](Revolver,Ring,RabbitFoot,Plastic,Hat)
 }

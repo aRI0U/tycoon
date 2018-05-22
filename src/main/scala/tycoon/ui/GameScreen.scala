@@ -137,7 +137,7 @@ class GameScreen(val game: Game) extends BorderPane
     id = "menu"
 
     minWidth = 175
-    maxWidth = 175
+    maxWidth = 200
 
     bottom = new VBox {
       children = Seq(
@@ -150,10 +150,12 @@ class GameScreen(val game: Game) extends BorderPane
           text <== StringProperty("Player: ").concat(game.playerName)
           margin = Insets(5)
         },
-        new Text {
-          text <== StringProperty("Balance: $").concat(game.playerFormattedMoney)
-          fill <== when (game.playerMoney > 0) choose Green otherwise Red
-          margin = Insets(5)
+        new HBox {
+          children = Seq(Tile.getImageView(Tile.Money),new Text {
+            text <== StringProperty("Balance: $").concat(game.playerFormattedMoney)
+            fill <== when (game.playerMoney > 0) choose Green otherwise Red
+            margin = Insets(5)
+          })
         }
 
       )
@@ -209,18 +211,22 @@ class GameScreen(val game: Game) extends BorderPane
         }
         children.add(txt)
         content.data foreach { elt =>
-          val item = new Text {
-            elt match {
-              case rankedElt: PrintableRankedElement => {
-                text <== when (rankedElt.visible) choose (StringProperty(elt.name + ": ").concat(elt.valueStr)) otherwise (StringProperty(""))
-                rankedElt match {
-                  case p: PrintableTownProduct => fill <== when (p.valueInt > 0) choose Green otherwise Red
-                  case _ => ()
+          val item = new HBox {
+            children = Seq (elt.icon,new Text {
+              elt match {
+                case rankedElt: PrintableRankedElement => {
+                  text <== when (rankedElt.visible) choose (StringProperty(elt.name + ": ").concat(elt.valueStr)) otherwise (StringProperty(""))
+                  rankedElt match {
+                    case p: PrintableTownProduct => {
+                      fill <== when (p.valueInt > 0) choose Green otherwise Red
+                    }
+                    case _ => ()
+                  }
                 }
+                case _ => text <== StringProperty(elt.name + ": ").concat(elt.valueStr)
               }
-              case _ => text <== StringProperty(elt.name + ": ").concat(elt.valueStr)
-            }
-            margin = Insets(8)
+              margin = Insets(8)
+            })
           }
           children.add(item)
         }

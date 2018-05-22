@@ -30,6 +30,33 @@ object Tile {
   /** TILES */
 
   val Default = new Tile("default", 0, 0)
+  // val Empty = new Tile("empty", 0, 0)
+
+  // Goods Icons
+  val Corn = new Tile("corn",8,3)
+  val Egg = new Tile("egg",7,2)
+  val Cake = new Tile("cake",10,3)
+  val Bread = new Tile("bread",7,3)
+  val Milk = new Tile("milk",10,4)
+  val PopCorn = new Tile("popcorn",7,10)
+  val Cheese = new Tile("cheese",10,5)
+
+  val Money = new Tile("money",6,10)
+  val Job = new Tile("job",10,1)
+  val Person = new Tile("person",8,4)
+  val Gold = new Tile("gold",7,1)
+  val Coal = new Tile("coal",8,1)
+  val Iron = new Tile("iron",8,2)
+  val Sands = new Tile("sand", 10,2)
+  val Lether = new Tile("lether", 10,6)
+  val Hat = new Tile("hat", 2,9)
+  val RabbitFoot = new Tile("rabbit", 3,9)
+  val Revolver = new Tile("revolver",7,8)
+  val Ring = new Tile("ring",5,9)
+  val Boot = new Tile("boot",4,9)
+  val Glass = new Tile("glass",6,9)
+  val Oil = new Tile("oil",7,9)
+  val Plastic = new Tile("plastic",9,1)
 
   //flags
   val RedFlag = new Tile("redFlag",9,3)
