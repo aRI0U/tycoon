@@ -121,7 +121,7 @@ class Game(val map_width : Int, val map_height : Int)
   private val loop = new GameLoop()
 
   def start () : Unit = {
-    playerMoney = 1000000 // move into player.init()
+    // playerMoney = 1000000 // move into player.init()
     loop.init()
     loop.start()
   }

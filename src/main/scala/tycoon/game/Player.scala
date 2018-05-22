@@ -20,6 +20,7 @@ class Player {
   def money : IntegerProperty = _money
   def money_=(new_money: Int) = _money.set(new_money)
   def formattedMoney: StringProperty = _formattedMoney
+  money_=(1000000)
 
   def pay(price: Int): Boolean = {
     if (money.value >= price) { _money.set(_money.value - price) ; true }

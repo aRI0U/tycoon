@@ -15,6 +15,7 @@ class Loader (game : Game) {
     val map = game.map
     val railManager = game.railManager
     val townManager = game.townManager
+    game.player.money_=(Int.MaxValue)
     val xml = XML.loadFile(filepath)
     //map treatment
     val mapXML = (xml \ "Map")
@@ -42,9 +43,10 @@ class Loader (game : Game) {
     for (struct <- (mapXML \\ "Structure")) {
       (struct \ "@type").text match {
         case "town" => {
-          println(id)
           var pos = new GridLocation((struct \ "@x").text.toInt,(struct \ "@y").text.toInt)
-          var town = new LargeTown(pos,id,townManager)
+          var town : Town = new SmallTown(pos,id,townManager)
+          if ((struct \ "@typebis").text.toInt == 10000 ) town = new MediumTown(pos,id,townManager)
+          else if ((struct \ "@typebis").text.toInt == 100000 ) town = new LargeTown(pos,id,townManager)
           if (game.createStruct(town,Tile.Grass)) id+=1
           town.setName((struct \ "@name").text)
           town.population_=((struct \ "@population").text.toInt)
@@ -117,6 +119,7 @@ class Loader (game : Game) {
           for (car <- (trainx \\ "TankCar")) game.buyTankCar(train)
           for (car <- (trainx \\ "GoodsCarriage")) game.buyGoodsCarriage(train)
           for (car <- (trainx \\ "PassengerCarriage")) game.buyPassengerCarriage(train)
+          for (i <- 1 to (trainx \ "@enginelevel").text.toInt) train.upgradeEngine()
         }
         case _ => ()
       }
@@ -139,6 +142,18 @@ class Loader (game : Game) {
         case _ => ()
       }
     }
+
+    var playerName = (mapXML \\ "Player" \ "@name").text
+    var playerMoney = (mapXML \\ "Player" \ "@money").text.toInt
+    var playerTime = (mapXML \\ "Player" \ "@time").text.toFloat
+    game.totalElapsedTime = playerTime
+    game.player.money_=(playerMoney)
+    game.player.name_=(playerName)
+
+
+
+
+
 
 
     // Upload from xml map given by teacher
