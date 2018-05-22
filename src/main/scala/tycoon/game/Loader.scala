@@ -16,7 +16,10 @@ class Loader (game : Game) {
     val railManager = game.railManager
     val townManager = game.townManager
     game.player.money_=(Int.MaxValue)
+    var player = game.player
+    println("Will load xml")
     val xml = XML.loadFile(filepath)
+    println("Juste successed reading xml")
     //map treatment
     val mapXML = (xml \ "Map")
     // mapName = ((mapXML \ "@name").text)
@@ -41,58 +44,64 @@ class Loader (game : Game) {
       }
     }
     for (struct <- (mapXML \\ "Structure")) {
+      println((struct \ "@owner").text)
+      var owner = player
+      (struct \ "@owner").text match {
+        case "AI" => owner = game.ai
+        case _ => ()
+      }
       (struct \ "@type").text match {
         case "town" => {
           var pos = new GridLocation((struct \ "@x").text.toInt,(struct \ "@y").text.toInt)
-          var town : Town = new SmallTown(pos,id,townManager)
-          if ((struct \ "@typebis").text.toInt == 10000 ) town = new MediumTown(pos,id,townManager)
-          else if ((struct \ "@typebis").text.toInt == 100000 ) town = new LargeTown(pos,id,townManager)
+          var town : Town = new SmallTown(pos,id,townManager,owner)
+          if ((struct \ "@typebis").text.toInt == 10000 ) town = new MediumTown(pos,id,townManager,owner)
+          else if ((struct \ "@typebis").text.toInt == 100000 ) town = new LargeTown(pos,id,townManager,owner)
           if (game.createStruct(town,Tile.Grass)) id+=1
           town.setName((struct \ "@name").text)
           town.population_=((struct \ "@population").text.toInt)
         }
         case "factory" => {
           var pos = new GridLocation((struct \ "@x").text.toInt,(struct \ "@y").text.toInt)
-          var factory = new Factory(pos,id,townManager)
+          var factory = new Factory(pos,id,townManager,owner)
           if (game.createStruct(factory,Tile.Grass)) id+=1
           factory.workers_=((struct \ "@population").text.toInt)
           factory.setName((struct \ "@name").text)
         }
         case "farm" => {
           var pos = new GridLocation((struct \ "@x").text.toInt,(struct \ "@y").text.toInt)
-          var farm = new Farm(pos,id,townManager)
+          var farm = new Farm(pos,id,townManager,owner)
           if (game.createStruct(farm,Tile.Grass)) id+=1
           farm.workers_=((struct \ "@population").text.toInt)
           farm.setName((struct \ "@name").text)
         }
         case "mine" => {
           var pos = new GridLocation((struct \ "@x").text.toInt,(struct \ "@y").text.toInt)
-          var mine = new Mine(pos,id,townManager)
+          var mine = new Mine(pos,id,townManager,owner)
           if (game.createStruct(mine,Array(Tile.Rock))) id+=1
           mine.workers_=((struct \ "@population").text.toInt)
           mine.setName((struct \ "@name").text)
         }
         case "airport" => {
           var pos = new GridLocation((struct \ "@x").text.toInt,(struct \ "@y").text.toInt)
-          var airport = new Airport(pos,id)
+          var airport = new Airport(pos,id,owner)
           if (game.createStruct(airport,Tile.Grass)) id+=1
           airport.setName((struct \ "@name").text)
         }
         case "dock" => {
           var pos = new GridLocation((struct \ "@x").text.toInt,(struct \ "@y").text.toInt)
-          var dock = new Dock(pos,id)
+          var dock = new Dock(pos,id,owner)
           if (game.createStruct(dock,Tile.Sand ++ Tile.Water)) id+=1
           dock.setName((struct \ "@name").text)
         }
         case "windmill" => {
           var pos = new GridLocation((struct \ "@x").text.toInt,(struct \ "@y").text.toInt)
-          var windmill = new WindMill(pos,id,townManager)
+          var windmill = new WindMill(pos,id,townManager,owner)
           if (game.createStruct(windmill,Tile.Grass)) id+=1
           windmill.setName((struct \ "@name").text)
         }
         case "paking" => {
           var pos = new GridLocation((struct \ "@x").text.toInt,(struct \ "@y").text.toInt)
-          var paking = new PackingPlant(pos,id,townManager)
+          var paking = new PackingPlant(pos,id,townManager,owner)
           if (game.createStruct(paking,Tile.Grass)) id+=1
           paking.workers_=((struct \ "@population").text.toInt)
           paking.setName((struct \ "@name").text)
@@ -161,19 +170,19 @@ class Loader (game : Game) {
       var nbFactories = 0
       for (factory <- (city \\ "Factory")) nbFactories += 1
       var pos = new GridLocation((city \ "@x").text.toInt % map.width,(city \ "@y").text.toInt % map.height)
-      var town = new LargeTown(pos,id,townManager) ; id+=1
+      var town = new LargeTown(pos,id,townManager,player) ; id+=1
       game.createStruct(town,Tile.Grass)
       town.setName((city \ "@name").text)
       town.population_=((city \ "@population").text.toInt)
       if (nbFactories>0) {
-        var factory = new Factory(pos.left,id,townManager); id+=1
+        var factory = new Factory(pos.left,id,townManager,player); id+=1
         game.createStruct(factory,Tile.Grass)
         factory.workers_=(nbFactories*100)
         railManager.createRail(new Rail(pos.left.bottom))
         railManager.createRail(new Rail(pos.bottom))
 
       }
-      ( city \\ "Airport") foreach (i => {game.createStruct(new Airport(pos.left.top,id),Tile.Grass)/*; id+=1*/ ; town.hasAirport = true })
+      ( city \\ "Airport") foreach (i => {game.createStruct(new Airport(pos.left.top,id,player),Tile.Grass)/*; id+=1*/ ; town.hasAirport = true })
     }
 
     // map.sprinkleTile(Tile.Tree, 5)

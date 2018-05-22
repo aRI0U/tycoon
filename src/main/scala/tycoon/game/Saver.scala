@@ -49,8 +49,8 @@ class Saver(game : Game) {
     def makeStringTile(x : Int ,y : Int, s : String) : String = {
       "<Tile type=\"" + s + "\" x=\"" + x.toString + "\" y=\"" + y.toString + "\">\n</Tile> \n"
     }
-    def makeStringStruc(x : Int ,y : Int, s : String, pop : Int, name : String ,typebis : String) : String = {
-      "<Structure type=\"" + s + "\" population=\"" + pop.toString + "\" name=\"" + name + "\" x=\"" + x.toString + "\" y=\"" + y.toString + "\" typebis=\"" + typebis + "\">\n</Structure> \n"
+    def makeStringStruc(x : Int ,y : Int, s : String, pop : Int, name : String ,typebis : String, owner : Player) : String = {
+      "<Structure type=\"" + s + "\" population=\"" + pop.toString + "\" name=\"" + name + "\" x=\"" + x.toString + "\" y=\"" + y.toString + "\" typebis=\"" + typebis + "\" owner=\"" + owner.name.value + "\">\n</Structure> \n"
     }
     def getXml () : String = {
       var x : String = "<Tiles datatype=\"buisness\">\n"
@@ -67,15 +67,15 @@ class Saver(game : Game) {
           }
         }
         game.map.maybeGetStructureAt(col,row) match {
-          case Some(t : Town) => {x = x + makeStringStruc(col,row,"town",t.population,t.name,t.max_population.toString)}
-          case Some(p : PackingPlant) => {x = x + makeStringStruc(col,row,"paking",p.workers,p.name,"")}
-          case Some(f : Factory) => {x = x + makeStringStruc(col,row,"factory",f.workers, f.name,"")}
-          case Some(f : Farm) => {x = x + makeStringStruc(col,row,"farm",f.workers, f.name,"")}
-          case Some(m : Mine) => {x = x + makeStringStruc(col,row,"mine",m.workers, m.name,"")}
-          case Some(a : Airport) => {x = x + makeStringStruc(col,row,"airport",0, a.name,"")}
-          case Some(f : Field) => {x = x + makeStringStruc(col,row,"field",0,f.name,"")}
-          case Some(d : Dock) => {x = x + makeStringStruc(col,row,"dock",0,d.name,"")}
-          case Some(w : WindMill) => {x = x + makeStringStruc(col,row,"windmill",0,w.name,"")}
+          case Some(t : Town) => {x = x + makeStringStruc(col,row,"town",t.population,t.name,t.max_population.toString,t.getOwner)}
+          case Some(p : PackingPlant) => {x = x + makeStringStruc(col,row,"paking",p.workers,p.name,"",p.getOwner)}
+          case Some(f : Factory) => {x = x + makeStringStruc(col,row,"factory",f.workers, f.name,"",f.getOwner)}
+          case Some(f : Farm) => {x = x + makeStringStruc(col,row,"farm",f.workers, f.name,"",f.getOwner)}
+          case Some(m : Mine) => {x = x + makeStringStruc(col,row,"mine",m.workers, m.name,"",m.getOwner)}
+          case Some(a : Airport) => {x = x + makeStringStruc(col,row,"airport",0, a.name,"",a.getOwner)}
+          case Some(f : Field) => {x = x + makeStringStruc(col,row,"field",0,f.name,"",f.getOwner)}
+          case Some(d : Dock) => {x = x + makeStringStruc(col,row,"dock",0,d.name,"",d.getOwner)}
+          case Some(w : WindMill) => {x = x + makeStringStruc(col,row,"windmill",0,w.name,"",w.getOwner)}
           // case Some(r : Rail) => {x = x + makeStringStruc(col,row,"rail",0,"")}
           case _ => {}
         }

@@ -65,7 +65,7 @@ class Game(val map_width : Int, val map_height : Int)
   var townManager = new TownManager(this)
   var gameGraph = new Graph(townManager)
   var railManager = new RailManager(map, gameGraph)
-  // var loader = new Loader(this)
+  var loader = new Loader(this)
   var saver = new Saver(this)
 
   var nb_structures = 0
@@ -195,6 +195,10 @@ class Game(val map_width : Int, val map_height : Int)
         && map.isUnused(struct.gridRect)
         && map.checkBgTiles(struct.gridRect, tilesAllowed)) {
       structures += struct
+      struct.getOwner.name.value match {
+        case "AI" => map.addEntity(new Flag(struct.gridPos,1))
+        case _ => map.addEntity(new Flag(struct.gridPos,0))
+      }
       map.addStructure(struct)
       nb_structures += 1
       gameGraph.newStructure(struct)
@@ -457,9 +461,9 @@ class Game(val map_width : Int, val map_height : Int)
     println ("tycoon > game > Game.scala > create Fly: creation of a fly betwenn to to airport with a plane ")
   }
 
-  // def loadMap(filepath: String) : Boolean = {
-  //   Try {
-  //     loader.loadMap(filepath)
-  //   }
-  // }.isSuccess
+  def loadMap(filepath: String) : Boolean = {
+    Try {
+      loader.loadMap(filepath)
+    }
+  }.isSuccess
 }

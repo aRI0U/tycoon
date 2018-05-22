@@ -57,16 +57,16 @@ object Main extends JFXApp {
       var selectedFile = fileChooser.showOpenDialog(stage)
       do {
         try {
-          // if (game.loadMap(selectedFile.toString())) {
-          //   switchScreen(gameScreen)
-          //   gameScreen.init()
-          //   game.start()
-          //   selectedFile = null
-          // }
-          // else {
+          if (game.loadMap(selectedFile.toString())) {
+            switchScreen(gameScreen)
+            gameScreen.init()
+            game.start()
+            selectedFile = null
+          }
+          else {
             println("Game backup couldn't be opened or read.")
             selectedFile = fileChooser.showOpenDialog(stage)
-          //}
+          }
         } catch {
           case e: NullPointerException => ()
         }

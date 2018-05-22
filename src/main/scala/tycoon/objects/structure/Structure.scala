@@ -20,6 +20,8 @@ abstract class Structure(pos: GridLocation, id: Int, owner: Player) extends Rend
   var boatList = new ListBuffer[Vehicle]()
   var truckList = new ListBuffer[Vehicle]()
 
+  def getOwner : Player = owner
+
   def addVehicle(v: Vehicle): Unit = {
     v match {
       case train: Train => trainList += train
