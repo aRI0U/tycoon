@@ -14,7 +14,7 @@ import tycoon.ui.Tile
 import scalafx.beans.property.{BooleanProperty, DoubleProperty, IntegerProperty, StringProperty}
 
 
-abstract class Town(pos: GridLocation, id: Int, townManager: TownManager, owner: Player) extends EconomicAgent(pos, id, townManager, owner) {
+abstract class Town(pos: GridLocation, id: Int, townManager: TownManager, override val owner: Player) extends EconomicAgent(pos, id, townManager, owner) {
 
   tile = Tile.Town
 

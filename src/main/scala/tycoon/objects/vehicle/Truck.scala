@@ -13,7 +13,7 @@ import tycoon.ui.DraggableTiledPane
 import tycoon.game.Settings
 
 
-class Truck(_id: Int, initialStruct: Structure, val owner: Player) extends Vehicle(_id, initialStruct, owner) with Container {
+class Truck(_id: Int, initialStruct: Structure, override val owner: Player) extends Vehicle(_id, initialStruct, owner) with Container {
   val maxSpace : Double = 100
   var weight = 50
   var consumption = 1

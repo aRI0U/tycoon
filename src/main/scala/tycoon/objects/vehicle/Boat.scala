@@ -13,7 +13,7 @@ import tycoon.ui.DraggableTiledPane
 import tycoon.game.Settings
 
 
-class Boat(_id: Int, dock: Structure, val owner: Player) extends Vehicle(_id, dock, owner) with Container with PassengerTransporter {
+class Boat(_id: Int, dock: Structure, override val owner: Player) extends Vehicle(_id, dock, owner) with Container with PassengerTransporter {
   val maxSpace : Double = 100
   var remainingSpace : Double = maxSpace
   val merchandises = new ListBuffer[Merchandise]

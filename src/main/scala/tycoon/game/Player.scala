@@ -1,5 +1,8 @@
 package tycoon.game
 
+import scala.collection.mutable.ListBuffer
+
+import tycoon.objects.structure._
 
 import scalafx.Includes._
 import scalafx.beans.property.{StringProperty, IntegerProperty}
@@ -11,6 +14,12 @@ class Player {
   private val _name: StringProperty = StringProperty("You")
   private val _money: IntegerProperty = IntegerProperty(0)
   private val _formattedMoney = StringProperty("0")
+
+  val towns = new ListBuffer[Town]
+  val facilities = new ListBuffer[Facility]
+  val farms = new ListBuffer[Farm]
+  val docks = new ListBuffer[Dock]
+  val airports = new ListBuffer[Airport]
 
   _money.onChange { _formattedMoney.set(formatter.format(_money.value)) }
 
@@ -28,4 +37,14 @@ class Player {
   def earn(amount: Int) = _money.set(_money.value + amount)
 
   def canAffordPaying(amount: Int): Boolean = money.value >= amount
+
+  def get(s: Structure) = {
+    s match {
+      case a: Airport => airports += a
+      case d: Dock => docks += d
+      case f: Farm => farms += f
+      case f: Facility => facilities += f
+      case t: Town => towns += t
+    }
+  }
 }

@@ -26,6 +26,7 @@ class TownManager(game: Game) {
       // add the new structure to potential destinations
       if (structure != t)
         t.destinations += structure
+
       t.waitersInt += IntegerProperty(0)
     }
 
@@ -46,6 +47,7 @@ class TownManager(game: Game) {
       case _ => ()
     }
     structuresList += structure
+    structure.owner.get(structure)
   }
 
   def newTown(town: Town) {
@@ -53,6 +55,7 @@ class TownManager(game: Game) {
     for (t <- townsList) t.printData(2).newRankedElement(town.name, t.waitersInt.last)
     town.displayWaiters()
     townsList += town
+    town.owner.towns += town
   }
 
 

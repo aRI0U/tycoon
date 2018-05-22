@@ -12,7 +12,7 @@ import tycoon.game.{Game, GridLocation, Player}
 import tycoon.ui.DraggableTiledPane
 
 
-abstract class TrainElement(_id: Int, initialTown: Structure, _owner: Player) extends Vehicle(_id, initialTown, _owner) {
+abstract class TrainElement(_id: Int, initialTown: Structure, override val owner: Player) extends Vehicle(_id, initialTown, owner) {
   val tiles: Array[Tile]
   var currentRail: Option[Rail] = None
   var savedRail: Option[Rail] = None

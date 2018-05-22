@@ -8,7 +8,7 @@ import tycoon.objects.vehicle.PassengerTransporter
 import tycoon.game.{GridLocation, Player, Settings}
 import tycoon.ui.Tile
 
-case class PassengerCarriage(_id: Int, initialTown: Structure, _owner: Player) extends Carriage(_id, initialTown, _owner) with PassengerTransporter {
+case class PassengerCarriage(_id: Int, initialTown: Structure, override val owner: Player) extends Carriage(_id, initialTown, owner) with PassengerTransporter {
 
   tile = Tile.PassengerWagonR
   val tiles = Array(Tile.PassengerWagonT, Tile.PassengerWagonR, Tile.PassengerWagonB, Tile.PassengerWagonL)

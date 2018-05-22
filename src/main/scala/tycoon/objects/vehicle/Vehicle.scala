@@ -10,7 +10,7 @@ import tycoon.game._
 import scala.collection.mutable.ListBuffer
 
 
-abstract class Vehicle(_id: Int, struct: Structure, owner: Player) extends Renderable(new GridLocation(-1, -1)) {
+abstract class Vehicle(_id: Int, struct: Structure, val owner: Player) extends Renderable(new GridLocation(-1, -1)) {
   var weight: Double
   var consumption : Double
 

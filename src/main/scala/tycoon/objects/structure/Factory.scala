@@ -8,7 +8,7 @@ import tycoon.game._
 import tycoon.ui.Tile
 import tycoon.objects.good._
 
-case class Factory(pos: GridLocation, id: Int, townManager: TownManager, owner: Player) extends Facility(pos, id, townManager, owner) {
+case class Factory(pos: GridLocation, id: Int, townManager: TownManager, override val owner: Player) extends Facility(pos, id, townManager, owner) {
   tile = Tile.Factory
 
   val productionTime = 5

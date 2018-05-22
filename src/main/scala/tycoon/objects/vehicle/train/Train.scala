@@ -14,7 +14,7 @@ import tycoon.ui.DraggableTiledPane
 
 
 
-class Train(_id: Int, initialTown: Structure, val owner: Player) extends TrainElement(_id, initialTown, owner) {
+class Train(_id: Int, initialTown: Structure, override val owner: Player) extends TrainElement(_id, initialTown, owner) {
   val tiles = Array(Tile.LocomotiveT, Tile.LocomotiveR, Tile.LocomotiveB, Tile.LocomotiveL)
 
   tile = Tile.LocomotiveT

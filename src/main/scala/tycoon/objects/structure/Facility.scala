@@ -8,7 +8,7 @@ import tycoon.ui.{PrintableData, PrintableElement}
 
 import scalafx.beans.property.{BooleanProperty, DoubleProperty, IntegerProperty, StringProperty}
 
-abstract class Facility(pos: GridLocation, id: Int, townManager: TownManager, owner: Player) extends EconomicAgent(pos, id, townManager, owner) {
+abstract class Facility(pos: GridLocation, id: Int, townManager: TownManager, override val owner: Player) extends EconomicAgent(pos, id, townManager, owner) {
 
   // workers
   protected var _workers = IntegerProperty(0)

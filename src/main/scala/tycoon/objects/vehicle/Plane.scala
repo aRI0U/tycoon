@@ -13,7 +13,7 @@ import tycoon.ui.DraggableTiledPane
 import tycoon.game.Settings
 
 
-class Plane(_id: Int, airport: Structure, val owner: Player) extends Vehicle(_id, airport, owner) with Container with PassengerTransporter {
+class Plane(_id: Int, airport: Structure, override val owner: Player) extends Vehicle(_id, airport, owner) with Container with PassengerTransporter {
 
   // dynamic values
   accDistance = 3.0

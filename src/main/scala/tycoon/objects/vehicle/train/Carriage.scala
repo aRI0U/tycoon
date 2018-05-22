@@ -9,9 +9,8 @@ import tycoon.game.{GridLocation, Player}
 import tycoon.objects.vehicle._
 import scalafx.beans.property._
 
-abstract class Carriage(_id: Int, initialTown: Structure, _owner: Player) extends TrainElement(_id, initialTown, _owner) {
+abstract class Carriage(_id: Int, initialTown: Structure, override val owner: Player) extends TrainElement(_id, initialTown, owner) {
   var stops = new ListBuffer[Structure]
-  def owner: Player = _owner
 
   override def update(dt: Double, dirIndicator: Int) = {
     super.update(dt, dirIndicator)

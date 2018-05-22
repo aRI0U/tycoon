@@ -12,7 +12,7 @@ import tycoon.ui.{PrintableData,PrintableElement,Renderable}
 import scalafx.beans.property.{IntegerProperty, StringProperty}
 
 
-abstract class Structure(pos: GridLocation, id: Int, owner: Player) extends Renderable(pos) {
+abstract class Structure(pos: GridLocation, id: Int, val owner: Player) extends Renderable(pos) {
 
   val structureId = id
   var trainList = new ListBuffer[Train]()

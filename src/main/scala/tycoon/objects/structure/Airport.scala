@@ -10,7 +10,7 @@ import tycoon.objects.vehicle.Plane
 
 import tycoon.ui.Tile
 
-case class Airport(pos: GridLocation, id: Int, owner: Player) extends Structure(pos, id, owner) {
+case class Airport(pos: GridLocation, id: Int, override val owner: Player) extends Structure(pos, id, owner) {
   tile = Tile.Airport
   var dependanceTown : Option[Town] = None
   setName("Airport " + id.toString)
