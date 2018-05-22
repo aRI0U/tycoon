@@ -38,7 +38,7 @@ object Tile {
   val Cake = new Tile("cake",10,3)
   val Bread = new Tile("bread",7,3)
   val Milk = new Tile("milk",10,4)
-  val PopCorn = new Tile("popcorn",0,0)
+  val PopCorn = new Tile("popcorn",7,10)
   val Cheese = new Tile("cheese",10,5)
 
   val Job = new Tile("job",10,1)
@@ -50,6 +50,12 @@ object Tile {
   val Lether = new Tile("lether", 10,6)
   val Hat = new Tile("hat", 2,9)
   val RabbitFoot = new Tile("rabbit", 3,9)
+  val Revolver = new Tile("revolver",7,8)
+  val Ring = new Tile("ring",5,9)
+  val Boot = new Tile("boot",4,9)
+  val Glass = new Tile("glass",6,9)
+  val Oil = new Tile("oil",7,9)
+  val Plastic = new Tile("plastic",9,1)
 
   //flags
   val RedFlag = new Tile("redFlag",9,3)

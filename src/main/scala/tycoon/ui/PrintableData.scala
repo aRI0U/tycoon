@@ -22,9 +22,17 @@ class PrintableElement(val name: String, val valueInt: IntegerProperty) {
       case "Coal" => Tile.getImageView(Tile.Coal)
       case "Iron" => Tile.getImageView(Tile.Iron)
       case "RabbitFoot" => Tile.getImageView(Tile.RabbitFoot)
+      case "Hat" => Tile.getImageView(Tile.Hat)
+      case "Ring" => Tile.getImageView(Tile.Ring)
       case "Cheese" => Tile.getImageView(Tile.Cheese)
       case "Population" => Tile.getImageView(Tile.Person)
-      case "JobSeekers" => Tile.getImageView(Tile.Job)
+      case "Job seekers" => Tile.getImageView(Tile.Job)
+      case "Lether" => Tile.getImageView(Tile.Lether)
+      case "Revolver" => Tile.getImageView(Tile.Revolver)
+      case "Boot" => Tile.getImageView(Tile.Boot)
+      case "Glass" => Tile.getImageView(Tile.Glass)
+      case "Oil" => Tile.getImageView(Tile.Oil)
+      case "Plastic" => Tile.getImageView(Tile.Plastic)
       case _ => Tile.getImageView(Tile.Default)
     }
   }
