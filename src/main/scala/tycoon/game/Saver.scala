@@ -16,7 +16,7 @@ import scalafx.beans.property._
 
 class Saver(game : Game) {
   def createSaveFile(file : File, name : String) {
-    game.setInfoText("[SAVING GAME] Could take a few second, don't switch down the Tycoon ...", 5)
+    game.setInfoText("[SAVING GAME] Loading might take a few second, don't quit the game...", 5)
     val pw = new PrintWriter(file)
     try pw.write("<mxfile>\n</mxfile>") finally pw.close()
     val myXMLFile = XML.loadFile(file)

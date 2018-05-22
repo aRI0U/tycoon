@@ -34,7 +34,7 @@ class Boat(_id: Int, dock: Structure, val owner: Player) extends Vehicle(_id, do
 
   var onTheRoad = BooleanProperty(false)
   tile = Tile.Boat
-  var weight = 50
+  var weight = 100
   var consumption = 0.1
   gridPos = location.gridPos.clone()
 
@@ -73,6 +73,7 @@ class Boat(_id: Int, dock: Structure, val owner: Player) extends Vehicle(_id, do
           val linkedStops = link(stops)
           println("linked = "+ linkedStops)
           super.embark(town, linkedStops) // goods
+          owner.setCurrentVehicle(this)
           embarkP(town, linkedStops) // passengers
           println(mManager.stops)
         }
