@@ -94,6 +94,7 @@ class Game(val map_width : Int, val map_height : Int)
   // game loop
 
   var totalElapsedTime: Double = 0
+  var secondsCount: Double = 0
   val elapsedTimeStr = StringProperty("")
 
   var speedMultiplier = DoubleProperty(1.0)
@@ -130,6 +131,11 @@ class Game(val map_width : Int, val map_height : Int)
 
   private def update(dt : Double) : Unit = {
     totalElapsedTime += dt * speedMultiplier.value
+    secondsCount += dt
+    if (secondsCount > 1) {
+      player.tick()
+      secondsCount -= 1
+    }
 
     var currentDuration: Int = totalElapsedTime.toInt
     val nbYears = currentDuration / 8640
@@ -293,7 +299,7 @@ class Game(val map_width : Int, val map_height : Int)
         case _ => ()
       }
     }
-    if (bought) player.pay(struct.price)
+    if (bought) player.pay(struct.price, 0)
     bought
   }
 
@@ -323,7 +329,7 @@ class Game(val map_width : Int, val map_height : Int)
         case _ => ()
       }
     }
-    if (bought) player.pay(road.price)
+    if (bought) player.pay(road.price, 1)
     bought
   }
 
@@ -368,7 +374,7 @@ class Game(val map_width : Int, val map_height : Int)
         case None => ()
       }
     }
-    if (bought) { nbVehicles += 1 ; player.pay(vehicle.price) }
+    if (bought) { nbVehicles += 1 ; player.pay(vehicle.price, 2) }
     bought
   }
 
@@ -414,19 +420,19 @@ class Game(val map_width : Int, val map_height : Int)
     nbVehicles += 1
   }
   def buyPassengerCarriage(train: Train): Boolean = {
-    if (!train.moving.value && player.pay(Settings.CostPassengerCarriage)) {
+    if (!train.moving.value && player.pay(Settings.CostPassengerCarriage, 2)) {
       addCarriage(new PassengerCarriage(nbVehicles, train.location, _player), train)
       true
     } else false
   }
   def buyGoodsCarriage(train: Train): Boolean = {
-    if (!train.moving.value && player.pay(Settings.CostGoodsCarriage)) {
+    if (!train.moving.value && player.pay(Settings.CostGoodsCarriage, 2)) {
       addCarriage(new GoodsCarriage(nbVehicles, train.location, _player), train)
       true
     } else false
   }
   def buyTankCar(train: Train): Boolean = {
-    if (!train.moving.value && player.pay(Settings.CostTankCar)) {
+    if (!train.moving.value && player.pay(Settings.CostTankCar, 2)) {
       addCarriage(new TankCar(nbVehicles, train.location, _player), train)
       true
     } else false

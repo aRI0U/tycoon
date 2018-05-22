@@ -36,10 +36,8 @@ class Plane(_id: Int, airport: Structure, val owner: Player) extends Vehicle(_id
   var onTheRoad = BooleanProperty(false)
   tile = Tile.Plane
   var weight = 500
-  var consumption = 2
+  var consumption = 6
   gridPos = location.gridPos.clone()
-
-  consumption = 20
 
   override def departure() = {
     println("departure")

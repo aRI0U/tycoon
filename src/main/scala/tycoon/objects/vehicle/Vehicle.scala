@@ -89,7 +89,7 @@ abstract class Vehicle(_id: Int, struct: Structure, owner: Player) extends Rende
   def departure() = {
     println("departure")
     owner.setCurrentVehicle(this)
-    owner.pay((weight * consumption).toInt)
+    owner.pay((weight * consumption).toInt, 3)
     arrived = false
     visible = true
     moving.set(true)

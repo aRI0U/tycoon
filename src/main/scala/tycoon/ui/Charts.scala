@@ -20,6 +20,9 @@ import scalafx.scene.control._
 import scalafx.scene.chart._
 import scalafx.scene.Node
 
+import java.util.Date
+import java.text.SimpleDateFormat
+
 
 
 class Charts(val game: Game) extends Tab
@@ -33,41 +36,93 @@ class Charts(val game: Game) extends Tab
 
   def openChartDialog(content: Node) = {
     val dialog = new Dialog
-    dialog.title = "Your finances"
+    dialog.title = "Current Financial Report"
     dialog.dialogPane.value.buttonTypes = Seq(ButtonType.Close)
     dialog.dialogPane().content = content
     dialog.showAndWait()
   }
 
-  def getTextChart(): Chart = {
-    new PieChart {
+  def getTextChart(): VBox = {
+    new VBox {
+      minWidth = 400
+      children = Seq(
+        new Text("PROFITS (PASSENGER AND GOOD TRANSPORT)"),
+        new Text("Trains: $" + p.trainProfits),
+        new Text("Boats: $" + p.boatProfits),
+        new Text("Planes: $" + p.planeProfits),
+        new Text(""),
+        new Text("EXPENSES (FUEL AND MAINTENANCE)"),
+        new Text("Trains: $" + p.trainExpenses),
+        new Text("Boats: $" + p.boatExpenses),
+        new Text("Planes: $" + p.planeExpenses),
+        new Text(""),
+        new Text("SPENDINGS"),
+        new Text("Structures: $" + p.structSpendings),
+        new Text("Roads: $" + p.roadSpendings),
+        new Text("Vehicles: $" + p.vehicleSpendings),
+        new Text(""),
+        new Text("RANDOM"),
+        new Text(p.nbRoadsBuilt + " miles of road placed"),
+      )
     }
   }
 
-  def getProfitsPieChart(): Chart = {
-    val dataPairs = Seq(("Trains", p.trainProfits), ("Planes", p.planeProfits), ("Boat", p.boatProfits))
-    new PieChart {
-      title = "Current Financial Report (Profits)"
+  def getPieChart(): VBox = {
+    var dataPairs = Seq(("Trains", p.trainProfits), ("Planes", p.planeProfits), ("Boat", p.boatProfits))
+    val profitsPie = new PieChart {
+      title = "Profits"
       clockwise = false
       data = ObservableBuffer(dataPairs.map {case (x, y) => PieChart.Data(x, y)})
     }
-  }
-  def getExpensesPieChart(): Chart = {
-    val dataPairs = Seq(("Trains", p.trainExpenses), ("Planes", p.planeExpenses), ("Boat", p.boatExpenses))
-    new PieChart {
-      title = "Current Financial Report (Expenses)"
+    dataPairs = Seq(("Trains", p.trainExpenses), ("Planes", p.planeExpenses), ("Boat", p.boatExpenses))
+    val expensesPie = new PieChart {
+      title = "Expenses"
       clockwise = false
       data = ObservableBuffer(dataPairs.map {case (x, y) => PieChart.Data(x, y)})
+    }
+    dataPairs = Seq(("Structures", p.structSpendings), ("Vehicles", p.vehicleSpendings), ("Roads", p.roadSpendings))
+    val spendingsPie = new PieChart {
+      title = "Spendings"
+      clockwise = false
+      data = ObservableBuffer(dataPairs.map {case (x, y) => PieChart.Data(x, y)})
+    }
+    new VBox {
+      children = Seq(
+        new HBox {
+          children = Seq(profitsPie, expensesPie)
+        },
+        spendingsPie
+      )
     }
   }
 
   def getLineChart(): Chart = {
-    val dataPairs = Seq(("Alpha", 50), ("Beta", 80), ("RC1", 90), ("RC2", 30), ("1.0", 122), ("1.1", 10))
-    new LineChart(CategoryAxis("X Axis"), NumberAxis("Y Axis")) {
-      title = "Current Financial Report"
-      data = XYChart.Series[String, Number](
-        "Series 1",
-        ObservableBuffer(dataPairs.map {case (x, y) => XYChart.Data[String, Number](x, y)})
+    val dataPairsMoney = for (i <- 0 until p.moneyMonitoring.length) yield (i.toString, p.moneyMonitoring(i))
+    val dataPairsTrains = for (i <- 0 until p.trainsMoneyMonitoring.length) yield (i.toString, p.trainsMoneyMonitoring(i))
+    val dataPairsBoats = for (i <- 0 until p.boatsMoneyMonitoring.length) yield (i.toString, p.boatsMoneyMonitoring(i))
+    val dataPairsPlanes = for (i <- 0 until p.planesMoneyMonitoring.length) yield (i.toString, p.planesMoneyMonitoring(i))
+    new LineChart(CategoryAxis("Time"), NumberAxis("Net income ($)")) {
+      title = "Real-Time Financial Report"
+      createSymbols = false
+      horizontalGridLinesVisible = false
+      verticalGridLinesVisible = false
+      data = ObservableBuffer(
+        XYChart.Series[String, Number](
+          "Global",
+          ObservableBuffer(dataPairsMoney.map {case (x, y) => XYChart.Data[String, Number](x, y)})
+        ),
+        XYChart.Series[String, Number](
+          "Trains",
+          ObservableBuffer(dataPairsTrains.map {case (x, y) => XYChart.Data[String, Number](x, y)})
+        ),
+        XYChart.Series[String, Number](
+          "Boats",
+          ObservableBuffer(dataPairsBoats.map {case (x, y) => XYChart.Data[String, Number](x, y)})
+        ),
+        XYChart.Series[String, Number](
+          "Planes",
+          ObservableBuffer(dataPairsPlanes.map {case (x, y) => XYChart.Data[String, Number](x, y)})
+        ),
       )
     }
   }
@@ -101,9 +156,8 @@ class Charts(val game: Game) extends Tab
   }
 
   container.children = Seq(
-    newChartBt("Text Chart", getTextChart _),
-    newChartBt("Profits Pie Chart", getProfitsPieChart _),
-    newChartBt("Expenses Pie Chart", getExpensesPieChart _),
+    newChartBt("Stats", getTextChart _),
+    newChartBt("Pie Charts", getPieChart _),
     newChartBt("Line Chart", getLineChart _),
     newChartBt("Bar Chart", getBarChart _)
   )
