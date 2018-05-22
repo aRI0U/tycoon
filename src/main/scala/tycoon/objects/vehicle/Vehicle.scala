@@ -88,6 +88,7 @@ abstract class Vehicle(_id: Int, struct: Structure, owner: Player) extends Rende
 
   def departure() = {
     println("departure")
+    owner.setCurrentVehicle(this)
     owner.pay((weight * consumption).toInt)
     arrived = false
     visible = true
@@ -103,14 +104,15 @@ abstract class Vehicle(_id: Int, struct: Structure, owner: Player) extends Rende
     brake()
     moving.set(false)
     speed <== DoubleProperty(0)
-    _nextLocation.set(None)
   }
 
   def boarding(stops: ListBuffer[Structure]) = {
     _nextLocation.set(Some(stops(0)))
   }
 
-  def landing() = { }
+  def landing() = {
+    _nextLocation.set(None)
+  }
 
   def update(dt: Double, dirIndicator: Int) = {
     if (currentBrakeTime > 0) currentBrakeTime -= dt

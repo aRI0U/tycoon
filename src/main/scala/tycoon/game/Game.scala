@@ -156,7 +156,7 @@ class Game(val map_width : Int, val map_height : Int)
     trips = trips filter { t: Trip => t.active || t.repeated }
     structures foreach { _.update(dt * speedMultiplier.value)}
 
-    ai.update(dt * speedMultiplier.value)
+    ai.update(dt)
 
     tiledPane.render()
 
@@ -464,6 +464,6 @@ class Game(val map_width : Int, val map_height : Int)
   def loadMap(filepath: String) : Boolean = {
     Try {
       loader.loadMap(filepath)
-    }
-  }.isSuccess
+    }.isSuccess
+  }
 }

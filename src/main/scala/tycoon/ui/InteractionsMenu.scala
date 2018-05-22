@@ -51,6 +51,7 @@ class InteractionsMenu(val game: Game) extends TabPane
   this += vehiclesTab
   this += trainsTab
   this += routesTab
+  this += new Charts(game)
 
   private var currentTemporaryTab: Option[Tab] = None
 
