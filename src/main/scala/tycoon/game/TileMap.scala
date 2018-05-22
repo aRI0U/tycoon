@@ -34,6 +34,12 @@ class TileMap (val width: Int, val height: Int) {
     else None
   }
   /** return structures found in the 8 surrounding cases (modulo grid borders) */
+
+  def getSurroundingPos(pos: GridLocation, authorizedTiles: Array[Tile]) : ListBuffer[GridLocation] = {
+    val neighbors = ListBuffer[GridLocation](pos.top,pos.right,pos.bottom,pos.left)
+    neighbors.filter(p => gridContains(p) && isFreeToBuild(p) && checkBgTile(p,authorizedTiles))
+  }
+
   def getSurroundingStructures(pos: GridLocation, ind : Int ) : Array[Renderable] = {
     if (ind == 1) {
       Array(pos.top, pos.top.right, pos.right, pos.bottom.right,
@@ -76,6 +82,13 @@ class TileMap (val width: Int, val height: Int) {
   def checkBgTile(col: Int, row: Int, tile: Tile) : Boolean = checkBgTile(new GridLocation(col, row), tile)
   def checkBgTile(col: Int, row: Int, tiles: Array[Tile]) : Boolean = tiles.exists(checkBgTile(col, row, _))
   def checkBgTiles(rect: GridRectangle, tiles: Array[Tile]) : Boolean = rect.iterate.forall(checkBgTile(_, tiles))
+
+  def isFreeToBuild(pos: GridLocation) : Boolean = {
+    maybeGetStructureAt(pos) match {
+      case Some(r) => false
+      case None => true
+    }
+  }
 
   /** randomly fill background layer of map using tiles */
   def fillBackground(tiles: Array[Tile]) : Unit = {

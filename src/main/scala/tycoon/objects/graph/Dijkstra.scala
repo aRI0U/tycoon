@@ -12,7 +12,7 @@ import scala.math
 import scala.collection.mutable.Set
 
 object Dijkstra {
-  def tileGraph(struct1 : Structure ,struct2 : Structure ,authorizedTile : Array[Tile],map : TileMap, diagonal : Int) : ListBuffer[GridLocation] = {
+  def tileGraph(struct1: Structure, struct2: Structure, authorizedTile: Array[Tile], map: TileMap, diagonal : Int) : ListBuffer[GridLocation] = {
 
     def optionMin(m: Option[Int], n: Option[Int]) : Boolean = {
       m match {

@@ -17,7 +17,10 @@ case class PassengerCarriage(_id: Int, initialTown: Structure, override val owne
   val price = Settings.TrainTicketPrice
   val salesman = owner
 
-  def embark(departureStruct: Structure, stops: ListBuffer[Structure]) = embarkP(departureStruct, stops)
+  def embark(departureStruct: Structure, stops: ListBuffer[Structure]) = {
+    owner.setCurrentVehicle(this)
+    embarkP(departureStruct, stops)
+  }
 
   def debark(s: Structure) = debarkP(s)
 }

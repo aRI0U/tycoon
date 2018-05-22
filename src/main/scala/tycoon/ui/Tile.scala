@@ -31,6 +31,10 @@ object Tile {
 
   val Default = new Tile("default", 0, 0)
 
+  //flags
+  val RedFlag = new Tile("redFlag",9,3)
+  val BlueFlag = new Tile("blueFlag",9,2)
+
   // vehicles
   val Boat = new Tile("boat", 6, 4)
   val Plane = new Tile("plane", 6, 2)
@@ -49,7 +53,10 @@ object Tile {
   val GoodsWagonB = new Tile("goodsWagonB", 3, 3)
   val GoodsWagonL = new Tile("goodsWagonL", 7, 4)
   val GoodsWagonT = new Tile("goodsWagonT", 7, 6)
-  val LiquidWagon = new Tile("liquidWagon", 6, 1)
+  val LiquidWagonT = new Tile("liquidWagonT", 6, 1)
+  val LiquidWagonR = new Tile("liquidWagonR", 9, 4)
+  val LiquidWagonB = new Tile("liquidWagonB", 9, 5)
+  val LiquidWagonL = new Tile("liquidWagonL", 9, 6)
 
   // structures
   val Town = new Tile("town", 4, 1, width = 2)

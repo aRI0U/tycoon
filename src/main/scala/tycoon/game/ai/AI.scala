@@ -1,12 +1,17 @@
 package tycoon.game.ai
 
+import scala.collection.mutable.ListBuffer
 import scala.util.Random
 
 import tycoon.game._
+import tycoon.objects.structure._
+import tycoon.ui.Tile
 
 class AI(game: Game) extends Player {
 
   val r = scala.util.Random
+
+  val map = game.map
 
   name = "AI"
 
@@ -22,75 +27,101 @@ class AI(game: Game) extends Player {
 
   var waitingActions : List[Leaf] = List()
 
-  def chooseAction(tree: DecisionTree = decisionTree, actions: List[Leaf] = waitingActions) : List[Leaf] = {
-    val action = tree.searchAction()
-    action match {
+  def chooseRandomElement[A](l: ListBuffer[A]) : A = l(r.nextInt(l.length))
 
-      case BuyStruct(s) => {
-        s match {
-          case BuyableStruct.Airport => {
-            // if (towns.isEmpty) chooseAction(Node.BuyTownNode, action :: actions)
-            // else action :: actions
-            List()
+  def chooseAction(tree: DecisionTree = decisionTree, actions: List[Leaf] = waitingActions) : List[Leaf] = {
+
+    println(actions)
+
+    tree match {
+      case action: Leaf => {
+
+        action match {
+
+          case BuyStruct(s) => {
+            s match {
+              case BuyableStruct.Airport => {
+                if (towns.filter(!_.hasAirport).isEmpty) chooseAction(Node.BuyTownNode, action :: actions)
+                else action :: actions
+              }
+              case BuyableStruct.Dock => {
+                // if (towns.isEmpty) chooseAction(Node.BuyTownNode, action :: actions)
+                // else action :: actions
+                List()
+              }
+              case BuyableStruct.Field => {
+                if (farms.isEmpty) chooseAction(Node.BuyTownNode, action :: actions)
+                else action :: actions
+              }
+              case _ => action :: actions
+            }
           }
-          case BuyableStruct.Dock => {
-            // if (towns.isEmpty) chooseAction(Node.BuyTownNode, action :: actions)
-            // else action :: actions
-            List()
+
+          case BuyVehicle(v) => {
+            v match {
+              case BuyableVehicle.Boat => {
+                if (docks.isEmpty) chooseAction(BuyStruct.Dock, action :: actions)
+                else action :: actions
+              }
+              case BuyableVehicle.Plane => {
+                if (airports.isEmpty) chooseAction(BuyStruct.Airport, action :: actions)
+                else action :: actions
+              }
+              case _ => {
+                if (towns.isEmpty) chooseAction(Node.BuyTownNode, action :: actions)
+                else action :: actions
+              }
+            }
           }
-          case BuyableStruct.Field => {
-            if (farms.isEmpty) chooseAction(Node.BuyTownNode, action :: actions)
-            else action :: actions
-          }
+
           case _ => action :: actions
         }
       }
 
-      case BuyVehicle(v) => {
-        v match {
-          case BuyableVehicle.Boat => {
-            if (docks.isEmpty) chooseAction(BuyStruct.Dock, action :: actions)
-            else action :: actions
-          }
-          case BuyableVehicle.Plane => {
-            if (airports.isEmpty) chooseAction(BuyStruct.Airport, action :: actions)
-            else action :: actions
-          }
-          case _ => {
-            if (towns.isEmpty) chooseAction(Node.BuyTownNode, action :: actions)
-            else action :: actions
-          }
-        }
+      case Node(sons) => {
+        chooseAction(sons(r.nextInt(sons.length)), actions)
       }
-
-      case _ => List() // should be "action :: actions" but there are bugs for the moment
     }
   }
 
   def executeAction() : List[Leaf] = {
     if (waitingActions.isEmpty) {
-      waitingActions = chooseAction()
       internTime -= decisionTime
-      waitingActions
+      chooseAction()
     }
     else {
       println(waitingActions)
+      active -= reactionTime
       waitingActions.head match {
         case BuyStruct(s) => {
-          val col = r.nextInt(game.map_width)
-          val row = r.nextInt(game.map_height)
-          val pos = new GridLocation(col, row)
-          if (game.buyStruct(s, pos, this)) {
-            game.setInfoText("AI created a new structure in " + col+row)
+          s match {
+            case BuyableStruct.Airport => {
+              val potentialPos = new ListBuffer[GridLocation]
+              for (t <- towns) {
+                if (!t.hasAirport) {
+                  potentialPos ++= map.getSurroundingPos(t.gridPos, Tile.Grass)
+                }
+              }
+              if (game.buyStruct(s, chooseRandomElement(potentialPos), this)) {
+                game.setInfoText("AI created a new airport!")
+              }
+            }
+
+            case _ => {
+              val col = r.nextInt(game.map_width)
+              val row = r.nextInt(game.map_height)
+              val pos = new GridLocation(col, row)
+              if (game.buyStruct(s, pos, this)) {
+                game.setInfoText("AI created a new structure in " + col+row)
+              }
+            }
           }
         }
 
         case BuyVehicle(v) => {
           val structure = {
             v match {
-              case BuyableVehicle.Boat => docks(r.nextInt(docks.length))
-              case BuyableVehicle.Plane => airports(r.nextInt(airports.length))
-              case _ => towns(r.nextInt(towns.length))
+              case _ => chooseRandomElement(towns)
             }
           }
           if (game.buyVehicle(v, structure.gridPos, this)) {
@@ -100,7 +131,6 @@ class AI(game: Game) extends Player {
 
         case _ => ()
       }
-      active -= reactionTime
       waitingActions.tail
     }
   }

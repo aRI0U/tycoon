@@ -35,7 +35,7 @@ class Plane(_id: Int, airport: Structure, override val owner: Player) extends Ve
 
   var onTheRoad = BooleanProperty(false)
   tile = Tile.Plane
-  var weight = 50
+  var weight = 500
   var consumption = 2
   gridPos = location.gridPos.clone()
 
@@ -80,6 +80,7 @@ class Plane(_id: Int, airport: Structure, override val owner: Player) extends Ve
           val linkedStops = link(stops)
           println("linked = "+ linkedStops)
           super.embark(town, linkedStops) // goods
+          owner.setCurrentVehicle(this)
           embarkP(town, linkedStops) // passengers
           println(mManager.stops)
         }

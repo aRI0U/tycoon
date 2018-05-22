@@ -54,6 +54,6 @@ object Settings {
   val PlaneMaxPassengers = 300
 
   // AI
-  val AIDecisionTime = 10.0
+  val AIDecisionTime = 5.0
   val AIReactionTime = 0.2
 }
