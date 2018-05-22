@@ -5,7 +5,7 @@ import tycoon.objects.railway._
 import tycoon.objects.vehicle.train._
 import tycoon.objects.vehicle._
 import tycoon.objects.graph._
-import tycoon.game._
+import tycoon.game.ai._
 import tycoon.ui.{Tile, Renderable, DraggableTiledPane}
 
 import scalafx.beans.property._
@@ -87,6 +87,9 @@ class Game(val map_width : Int, val map_height : Int)
   private val _player = new Player
   def player: Player = _player
 
+  private val _ai = new AI(this)
+  def ai: AI = _ai
+
 
   // game loop
 
@@ -152,6 +155,8 @@ class Game(val map_width : Int, val map_height : Int)
     routes = routes filter { r: Route => r.active || r.repeated }
     trips = trips filter { t: Trip => t.active || t.repeated }
     structures foreach { _.update(dt * speedMultiplier.value)}
+
+    ai.update(dt * speedMultiplier.value)
 
     tiledPane.render()
 

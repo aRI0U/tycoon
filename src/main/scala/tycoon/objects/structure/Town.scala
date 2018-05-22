@@ -29,7 +29,6 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager) extend
     catch {
       case e: Exception => {
         _name.set("random name")
-        println("Town.scala:you've created too many towns")
       }
     }
   }

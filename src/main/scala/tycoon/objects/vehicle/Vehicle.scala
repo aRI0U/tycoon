@@ -190,9 +190,11 @@ abstract class Vehicle(_id: Int, struct: Structure, owner: Player) extends Rende
     changedSquare
   }
 
+  val whyBrake = "Technical problem: necesary to stop for a while"
+
   def unfortunateEvent() : String = {
     brake()
     locationPos = this.gridPos
-    "suck my dick motherfucker"
+    whyBrake
   }
 }
