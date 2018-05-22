@@ -34,7 +34,7 @@ class Engine(_owner: Player, kind: Vehicle) extends Renderable(new GridLocation(
   def upgradeLevel: IntegerProperty = _upgradeLevel
 
   def upgrade(): Boolean = {
-    if (_upgradeLevel.value < Engine.MaxUpgradeLevel && owner.pay(Engine.Price(upgradeLevel.value + 1))) {
+    if (_upgradeLevel.value < Engine.MaxUpgradeLevel && owner.pay(Engine.Price(upgradeLevel.value + 1), 2)) {
       upgradeLevel.set(upgradeLevel.value + 1)
       thrust.set(Engine.Thrust(upgradeLevel.value))
       true

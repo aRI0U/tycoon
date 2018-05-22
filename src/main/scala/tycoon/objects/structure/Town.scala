@@ -210,15 +210,15 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager, overri
   }
 
   def newRandomRequest(i : Int) {
-    newRequest(Product.Iron, 5)
-  //   if (i == 0) {
-  //     val food = Product.foods(scala.util.Random.nextInt(Product.foods.size))
-  //     newRequest(food, ((feedPopulation(population*nutritiousNeeds)/(5*food.nutritiousness)).toInt))
-  //   }
-  //   if (i == 1) {
-  //     val purchase = Product.purchases(0)//scala.util.Random.nextInt(Product.purchases.size))
-  //     newRequest(purchase,(population/(purchase.price)).toInt)
-  //   }
+    // newRequest(Product.Iron, 5)
+    if (i == 0) {
+      val food = Product.foods(scala.util.Random.nextInt(Product.foods.size))
+      newRequest(food, ((feedPopulation(population*nutritiousNeeds)/(5*food.nutritiousness)).toInt))
+    }
+    if (i == 1) {
+      val purchase = Product.purchases(0)//scala.util.Random.nextInt(Product.purchases.size))
+      newRequest(purchase,(population/(purchase.price.value)).toInt)
+    }
   }
 
   def updateConsumption() = {

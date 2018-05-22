@@ -29,6 +29,7 @@ case class WindMill(pos: GridLocation, id: Int, townManager: TownManager, overri
         tileType = (tileType +1) % Tile.WindMill.size
         tile = Tile.WindMill(tileType)
         internTime -= productionTime
+        internTime = 0
         // stock.updateExpiredProducts(townManager.getTime())
       }
     // }

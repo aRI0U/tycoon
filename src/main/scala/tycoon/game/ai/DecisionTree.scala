@@ -5,6 +5,7 @@ import scala.collection.immutable.List
 import scala.util.Random
 
 import tycoon.game._
+import tycoon.ui.Tile
 
 sealed abstract class DecisionTree
 
@@ -14,7 +15,10 @@ sealed abstract class Leaf extends DecisionTree
 
 case class BuyStruct(s: BuyableStruct) extends Leaf
 case class BuyVehicle(v: BuyableVehicle) extends Leaf
-case class BuyRoad(r: BuyableRoad) extends Leaf
+case class BuyRoad(r: BuyableItem) extends Leaf
+case class OtherAction() extends Leaf
+case class RouteLeaf(l: List[GridLocation], tile: Tile) extends Leaf
+
 
 object BuyStruct {
   val SmallTown = new BuyStruct(BuyableStruct.SmallTown)
@@ -38,7 +42,14 @@ object BuyRoad {
   val Rail = new BuyRoad(BuyableRoad.Rail)
   val Way = new BuyRoad(BuyableRoad.Asphalt)
   val Canal = new BuyRoad(BuyableRoad.Water)
-  val Flight = new BuyStruct(BuyableStruct.Airport)
+  val Flight = new BuyRoad(BuyableStruct.Airport)
+}
+
+object OtherAction {
+  val TownToTown = new OtherAction()
+  val TownToFacility = new OtherAction()
+  val FacilityToFacility = new OtherAction()
+  val Trip = new OtherAction()
 }
 
 object Node {
@@ -54,7 +65,9 @@ object Node {
 
   val TownToFacilityNode = new Node(Array(BuyRoad.Rail, BuyRoad.Way))
 
-  val ConnectionNode = new Node(Array(TownToTownNode, TownToFacilityNode))
+  val FacilityToFacilityNode = new Node(Array(BuyRoad.Rail, BuyRoad.Way))
 
-  val Root = new Node(Array(BuyVehicle.Plane))
+  val ConnectionNode = new Node(Array(TownToTownNode, TownToFacilityNode, FacilityToFacilityNode))
+
+  val Root = new Node(Array(TownToTownNode))
 }
