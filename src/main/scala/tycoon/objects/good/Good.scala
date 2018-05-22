@@ -61,6 +61,6 @@ object Product {
   val Egg = new Food("Egg", 1, 1, false, 50, 1, Cardboard)
   val Milk = new Food("Milk", 1, 1, true, 20, 1, Glass)
 
-  val foods = ListBuffer[Food](Cake, Milk, Egg)
-  val purchases = ListBuffer[ProcessedGood](Revolver)
+  val foods = ListBuffer[Food](Cake, Milk, Egg,Corn,PopCorn,Cheese)
+  val purchases = ListBuffer[ProcessedGood](Revolver,Ring,RabbitFoot,Plastic,Hat)
 }

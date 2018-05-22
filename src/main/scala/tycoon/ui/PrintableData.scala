@@ -2,12 +2,32 @@ package tycoon.ui // #
 
 import scala.collection.mutable.ListBuffer
 
+import scalafx.scene.image.{Image, ImageView}
 import scalafx.beans.property._
 
 
 class PrintableElement(val name: String, val valueInt: IntegerProperty) {
   val valueStr = new StringProperty
   valueStr <== valueInt.asString
+  def icon : ImageView = {
+    name match {
+      case "Corn" => Tile.getImageView(Tile.Corn)
+      case "Egg" => Tile.getImageView(Tile.Egg)
+      case "Cake" => Tile.getImageView(Tile.Cake)
+      case "Bread" => Tile.getImageView(Tile.Bread)
+      case "Sand" => Tile.getImageView(Tile.Sands)
+      case "Milk" => Tile.getImageView(Tile.Milk)
+      case "PopCorn" => Tile.getImageView(Tile.PopCorn)
+      case "Gold" => Tile.getImageView(Tile.Gold)
+      case "Coal" => Tile.getImageView(Tile.Coal)
+      case "Iron" => Tile.getImageView(Tile.Iron)
+      case "RabbitFoot" => Tile.getImageView(Tile.RabbitFoot)
+      case "Cheese" => Tile.getImageView(Tile.Cheese)
+      case "Population" => Tile.getImageView(Tile.Person)
+      case "JobSeekers" => Tile.getImageView(Tile.Job)
+      case _ => Tile.getImageView(Tile.Default)
+    }
+  }
 }
 
 class PrintableRankedElement(override val name: String, override val valueInt: IntegerProperty)
