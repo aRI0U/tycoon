@@ -243,10 +243,9 @@ class AI(game: Game) extends Player {
           case TripLeaf(v) => {
             v match {
               case BuyableVehicle.Plane => {
-                val accessibles = towns.filter(_.hasAirport)
-                if (accessibles.exists(!_.planeList.isEmpty)) {
-                  val t1 = chooseRandomElement(accessibles.filter(!_.planeList.isEmpty))
-                  val t2 = chooseRandomElement(accessibles.filter(_ != t1))
+                if (airports.length > 1 && airports.exists(!_.planeList.isEmpty)) {
+                  val t1 = chooseRandomElement(airports.filter(!_.planeList.isEmpty))
+                  val t2 = chooseRandomElement(airports.filter(_ != t1))
                   game.createTrip(t1, t2, t1.planeList(0), r.nextInt(2) %2 == 0)
                   waitingActions.tail
                 }

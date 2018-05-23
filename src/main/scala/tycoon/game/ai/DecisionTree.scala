@@ -26,6 +26,8 @@ object BuyStruct {
   val MediumTown = new BuyStruct(BuyableStruct.MediumTown)
   val LargeTown = new BuyStruct(BuyableStruct.LargeTown)
 
+  val Factory = new BuyStruct(BuyableStruct.Factory)
+  val Farm = new BuyStruct(BuyableStruct.Farm)
   val WindMill = new BuyStruct(BuyableStruct.WindMill)
 
   val Airport = new BuyStruct(BuyableStruct.Airport)
@@ -56,7 +58,7 @@ object OtherAction {
 object Node {
   val BuyTownNode = new Node(Array(BuyStruct.SmallTown, BuyStruct.MediumTown, BuyStruct.LargeTown))
 
-  val BuyFacilityNode = new Node(Array(BuyStruct.WindMill))
+  val BuyFacilityNode = new Node(Array(BuyStruct.Factory, BuyStruct.Farm, BuyStruct.WindMill))
 
   val BuyStructNode = new Node(Array(BuyTownNode, BuyFacilityNode))
 
