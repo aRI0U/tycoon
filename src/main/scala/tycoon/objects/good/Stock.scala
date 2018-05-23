@@ -122,7 +122,7 @@ class Stock(s: EconomicAgent) {
   def giveMerchandises(kind: Good, receiver: ListBuffer[Merchandise], quantity: Int) = {
     var i = getIndex(kind)
     if (i == -1) {
-      println("tycoon > objects > good > Stock: you cannot give something you don't have")
+      // println("tycoon > objects > good > Stock: you cannot give something you don't have")
       i = productsTypes.length
       newProduct(kind, 0)
     }

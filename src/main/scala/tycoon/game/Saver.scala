@@ -31,21 +31,7 @@ class Saver(game : Game) {
         case n => n
       }
     }
-    // val city = game.towns(0)
 
-    // def addTown(town : Town) = {
-    //   println(town.max_population.toString)
-    //   val add = new RewriteRule {
-    //     override def transform(n: Node): Seq[Node] = n match {
-    //       case elem: Elem if elem.label == "Map" =>
-    //         elem.copy(child = (elem.child ++
-    //         <City name={town.name} x={town.gridPos.row.toString} y={town.gridPos.col.toString} population={town.population.toString} type={town.max_population.toString}>
-    //         </City> ))
-    //       case n => n
-    //     }
-    //   }
-    //   add
-    // }
     def makeStringTile(x : Int ,y : Int, s : String) : String = {
       "<Tile type=\"" + s + "\" x=\"" + x.toString + "\" y=\"" + y.toString + "\">\n</Tile> \n"
     }
@@ -79,7 +65,6 @@ class Saver(game : Game) {
           // case Some(r : Rail) => {x = x + makeStringStruc(col,row,"rail",0,"")}
           case _ => {}
         }
-        println(col,row)
       }
       x + "</Tiles>"
     }

@@ -116,7 +116,6 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager, overri
           while (totalWaiters > population/2) {
             try {
               if (waiters(i) > 0) {
-                println(diedWaiters, i, waiters(i))
                 var newDeads = waiters(i).min(diedWaiters/5+1)
                 waitersInt(i).set((waiters(i) - newDeads))
                 totalWaiters -= newDeads

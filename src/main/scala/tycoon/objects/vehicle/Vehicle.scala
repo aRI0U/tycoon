@@ -36,11 +36,8 @@ abstract class Vehicle(_id: Int, struct: Structure, val owner: Player) extends R
   protected var _location: ObjectProperty[Structure] = ObjectProperty(struct)
   protected var _locationName = StringProperty(struct.name)
   _location.onChange {
-    println("change location")
-    println(locationPos)
     _locationName.set(_location.value.name)
     locationPos = location.gridPos
-    println(locationPos)
   }
   var locationPos = location.gridPos
 
@@ -50,11 +47,8 @@ abstract class Vehicle(_id: Int, struct: Structure, val owner: Player) extends R
   _nextLocation.onChange {
     _nextLocation.value match {
       case Some(struct) => {
-        println("change nextLocationPos")
         _nextLocationName.set(struct.name)
-        println(nextLocationPos)
         nextLocationPos = Some(struct.gridPos)
-        println(nextLocationPos)
       }
       case None => {
         _nextLocationName.set("-")
@@ -87,7 +81,6 @@ abstract class Vehicle(_id: Int, struct: Structure, val owner: Player) extends R
   def speedLimit : DoubleProperty = _speedLimit
 
   def departure() = {
-    println("departure")
     owner.setCurrentVehicle(this)
     owner.pay((weight * consumption).toInt, 3)
     arrived = false
@@ -95,12 +88,9 @@ abstract class Vehicle(_id: Int, struct: Structure, val owner: Player) extends R
     moving.set(true)
     stabilized = false
     speed <== engineThrust*speedLimit
-    println("start = " + location)
-    println("destination = " + nextLocation)
   }
 
   def arrival() = {
-    println("arrival")
     brake()
     moving.set(false)
     speed <== DoubleProperty(0)
@@ -121,7 +111,7 @@ abstract class Vehicle(_id: Int, struct: Structure, val owner: Player) extends R
       if (moving.value) {
         nextLocationPos match {
           case Some(pos) => determineSpeedLimit(this.gridPos, locationPos, pos)
-          case None => println("forgot to update nextLocationPos")
+          case None => ()
         }
       }
     }
@@ -151,11 +141,9 @@ abstract class Vehicle(_id: Int, struct: Structure, val owner: Player) extends R
     if (distancePreviousStop < accDistance) {
       if (distanceNextStop < decDistance) {
         speedLimit.set(accFunction(distancePreviousStop/accDistance).min(decFunction(distanceNextStop/decDistance)).max(initialSpeed))
-        //println("start + end")
       }
       else {
         speedLimit.set(accFunction(distancePreviousStop/accDistance).max(initialSpeed))
-        //println("start")
       }
 
     }

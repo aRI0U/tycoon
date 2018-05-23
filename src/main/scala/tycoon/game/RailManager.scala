@@ -124,8 +124,6 @@ class RailManager(map: TileMap, gameGraph: Graph) {
           correctRotation(rail)
         }
 
-        println(firstDir, secondDir, rail.previousDir, rail.nextDir)
-
       }
     }
     created
@@ -165,7 +163,7 @@ class RailManager(map: TileMap, gameGraph: Graph) {
       rail.road.endStructure = Some(s)
       rail.road.finished = true
       gameGraph.newRoad(rail.road)
-      println("tycoon > game > RailManager.scala > lookAround > new road of " + rail.road.length + " tracks")
+      // println("tycoon > game > RailManager.scala > lookAround > new road of " + rail.road.length + " tracks")
       true
     }
     else false
@@ -202,7 +200,7 @@ class RailManager(map: TileMap, gameGraph: Graph) {
         rail.road.length += previousRail.road.length
         previousRail.road = rail.road
         gameGraph.newRoad(rail.road)
-        println("tycoon > game > RailManager.scala > lookAround > new road of " + rail.road.length + " tracks")
+        // println("tycoon > game > RailManager.scala > lookAround > new road of " + rail.road.length + " tracks")
       }
       true
     }

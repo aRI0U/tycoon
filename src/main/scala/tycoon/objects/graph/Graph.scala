@@ -19,7 +19,7 @@ class Graph(townManager: TownManager) {
 
   def newStructure(s: Structure) : Unit = {
     content += new Vertex(s)
-    println("tycoon > objects > graph > Graph.scala > newStructure: added structure n°" + s.structureId)
+    // println("tycoon > objects > graph > Graph.scala > newStructure: added structure n°" + s.structureId)
   }
 
   def newRoad(road: Road) : Unit = {
@@ -35,7 +35,7 @@ class Graph(townManager: TownManager) {
               if (vertex.origin == s_id) vertex.links += ((e_id, road))
               else {if (vertex.origin == e_id) vertex.links += ((s_id, road))}
             }
-            println("tycoon > objects > graph > Graph.scala > newRoad: added road from " + s_id + " to " + e_id)
+            // println("tycoon > objects > graph > Graph.scala > newRoad: added road from " + s_id + " to " + e_id)
             s match {
               case a: EconomicAgent => townManager.updateWeightings(a)
               case _ => ()

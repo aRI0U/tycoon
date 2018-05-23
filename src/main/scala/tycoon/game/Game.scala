@@ -384,7 +384,7 @@ class Game(val map_width : Int, val map_height : Int)
   }
 
   def createTrip(origin: Structure, destination: Structure, veh: Vehicle, repeatTrip: Boolean) = {
-    println("from " + origin.name + " to " + destination.name + " with " + veh + " (repeated: " + repeatTrip + ")")
+    // println("from " + origin.name + " to " + destination.name + " with " + veh + " (repeated: " + repeatTrip + ")")
     val trip = new Trip(origin, destination, veh, repeatTrip)
 
     var isDijkstra: Boolean = false
@@ -459,10 +459,6 @@ class Game(val map_width : Int, val map_height : Int)
     struct.addVehicle(truck)
     trucks += truck
     map.addEntity(truck)
-  }
-
-  def createFly (departure: Structure, arrival: Structure, plane : Plane) {
-    println ("tycoon > game > Game.scala > create Fly: creation of a fly between to to airport with a plane ")
   }
 
   def loadMap(filepath: String) : Boolean = {

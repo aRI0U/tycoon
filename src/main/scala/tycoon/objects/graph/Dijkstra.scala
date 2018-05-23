@@ -163,7 +163,6 @@ object Dijkstra {
         }
       }
     }
-    println("Tycoon > objects > graph > Dijkstra > validity of the path:", validity)
     if (validity) finalPath.reverse
     else new ListBuffer[GridLocation]()
   }

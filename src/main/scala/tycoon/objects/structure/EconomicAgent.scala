@@ -34,8 +34,6 @@ abstract class EconomicAgent(pos: GridLocation, id: Int, townManager: TownManage
       val weighting = getWeighting(p._1).coeff
       totalStocks += p._2.value*weighting
       totalRequests += p._3.value*weighting
-      //println("stocks ="+p._2.value)
-      //println("requests ="+p._3.value)
     }
     var newMultiplier = 0.0
     if (totalStocks > 0) newMultiplier = totalRequests/totalStocks

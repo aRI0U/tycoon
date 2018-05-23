@@ -40,7 +40,6 @@ class Plane(_id: Int, airport: Structure, override val owner: Player) extends Ve
   gridPos = location.gridPos.clone()
 
   override def departure() = {
-    println("departure")
     super.departure()
   }
 
@@ -74,13 +73,10 @@ class Plane(_id: Int, airport: Structure, override val owner: Player) extends Ve
     structure match {
       case a: Airport => a.dependanceTown match {
         case Some(town) => {
-          println("stops = " + stops)
           val linkedStops = link(stops)
-          println("linked = "+ linkedStops)
           super.embark(town, linkedStops) // goods
           owner.setCurrentVehicle(this)
           embarkP(town, linkedStops) // passengers
-          println(mManager.stops)
         }
         case None => ()
       }
@@ -89,7 +85,6 @@ class Plane(_id: Int, airport: Structure, override val owner: Player) extends Ve
   }
 
   override def debark(structure: Structure) = {
-    println(mManager.stops)
     structure match {
       case a: Airport => a.dependanceTown match {
         case Some(town) => {

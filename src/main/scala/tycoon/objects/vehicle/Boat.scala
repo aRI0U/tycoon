@@ -69,13 +69,10 @@ class Boat(_id: Int, dock: Structure, override val owner: Player) extends Vehicl
     structure match {
       case d: Dock => d.dependanceTown match {
         case Some(town) => {
-          println("stops = " + stops)
           val linkedStops = link(stops)
-          println("linked = "+ linkedStops)
           super.embark(town, linkedStops) // goods
           owner.setCurrentVehicle(this)
           embarkP(town, linkedStops) // passengers
-          println(mManager.stops)
         }
         case None => ()
       }
@@ -84,7 +81,6 @@ class Boat(_id: Int, dock: Structure, override val owner: Player) extends Vehicl
   }
 
   override def debark(structure: Structure) = {
-    println(mManager.stops)
     structure match {
       case d: Dock => d.dependanceTown match {
         case Some(town) => {
