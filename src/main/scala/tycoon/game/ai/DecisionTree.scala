@@ -16,8 +16,9 @@ sealed abstract class Leaf extends DecisionTree
 case class BuyStruct(s: BuyableStruct) extends Leaf
 case class BuyVehicle(v: BuyableVehicle) extends Leaf
 case class BuyRoad(r: BuyableItem) extends Leaf
-case class OtherAction() extends Leaf
-case class RouteLeaf(l: List[GridLocation], tile: Tile) extends Leaf
+case class OtherAction(s: String) extends Leaf
+case class RouteLeaf(l: List[GridLocation], r: BuyableRoad) extends Leaf
+case class TripLeaf(v: BuyableVehicle) extends Leaf
 
 
 object BuyStruct {
@@ -46,10 +47,10 @@ object BuyRoad {
 }
 
 object OtherAction {
-  val TownToTown = new OtherAction()
-  val TownToFacility = new OtherAction()
-  val FacilityToFacility = new OtherAction()
-  val Trip = new OtherAction()
+  val TownToTown = new OtherAction("tt")
+  val TownToFacility = new OtherAction("tf")
+  val FacilityToFacility = new OtherAction("ff")
+  val Trip = new OtherAction("trip")
 }
 
 object Node {
@@ -69,5 +70,6 @@ object Node {
 
   val ConnectionNode = new Node(Array(TownToTownNode, TownToFacilityNode, FacilityToFacilityNode))
 
-  val Root = new Node(Array(TownToTownNode))
+  val Root = new Node(Array(BuyStructNode, BuyVehicleNode, ConnectionNode, OtherAction.Trip))
+
 }

@@ -19,7 +19,7 @@ class Graph(townManager: TownManager) {
 
   def newStructure(s: Structure) : Unit = {
     content += new Vertex(s)
-    println("tycoon > objects > graph > Graph.scala > newStructure: added structure n° " + s.structureId)
+    println("tycoon > objects > graph > Graph.scala > newStructure: added structure n°" + s.structureId)
   }
 
   def newRoad(road: Road) : Unit = {
@@ -51,7 +51,10 @@ class Graph(townManager: TownManager) {
   }
 
   def removeStructure(s: Structure) = {
-    val id = s.structureId
+    removeStructureID(s.structureId)
+  }
+
+  def removeStructureID(id: Int) = {
     for (vertex <- content) {
       if (vertex.origin == id) content -= vertex
       else {

@@ -69,8 +69,6 @@ class Game(val map_width : Int, val map_height : Int)
   var saver = new Saver(this)
 
   var nb_structures = 0
-  val mine_price = 200
-  val rail_price = 10
 
   var rails = new ListBuffer[Rail]()
   var structures = new ListBuffer[Structure]()
@@ -162,7 +160,7 @@ class Game(val map_width : Int, val map_height : Int)
     trips = trips filter { t: Trip => t.active || t.repeated }
     structures foreach { _.update(dt * speedMultiplier.value)}
 
-    ai.update(dt)
+    ai.update(dt * speedMultiplier.value)
 
     tiledPane.render()
 
@@ -214,7 +212,6 @@ class Game(val map_width : Int, val map_height : Int)
         case mine: Mine => { mines += mine ; townManager.newStructure(mine) }
         case s: Structure => townManager.newStructure(s)
       }
-      println("airports: " + _player.airports)
       true
     }
     else {
@@ -465,7 +462,7 @@ class Game(val map_width : Int, val map_height : Int)
   }
 
   def createFly (departure: Structure, arrival: Structure, plane : Plane) {
-    println ("tycoon > game > Game.scala > create Fly: creation of a fly betwenn to to airport with a plane ")
+    println ("tycoon > game > Game.scala > create Fly: creation of a fly between to to airport with a plane ")
   }
 
   def loadMap(filepath: String) : Boolean = {

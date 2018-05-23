@@ -55,5 +55,5 @@ object Settings {
 
   // AI
   val AIDecisionTime = 5.0
-  val AIReactionTime = 1.0
+  val AIReactionTime = 0.2
 }
