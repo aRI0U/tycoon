@@ -343,6 +343,11 @@ class Game(val map_width : Int, val map_height : Int)
               case train: Train => struct match {
                 case town: Town =>
                   createTrain(train, town, player)
+                  if (player.name == "AI") {
+                    buyPassengerCarriage(train)
+                    buyPassengerCarriage(train)
+                    buyPassengerCarriage(train)
+                  }
                   bought = true
                 case _ => ()
               }
@@ -418,19 +423,19 @@ class Game(val map_width : Int, val map_height : Int)
     nbVehicles += 1
   }
   def buyPassengerCarriage(train: Train): Boolean = {
-    if (!train.moving.value && player.pay(Settings.CostPassengerCarriage, 2)) {
+    if (!train.moving.value && train.owner.pay(Settings.CostPassengerCarriage, 2)) {
       addCarriage(new PassengerCarriage(nbVehicles, train.location, _player), train)
       true
     } else false
   }
   def buyGoodsCarriage(train: Train): Boolean = {
-    if (!train.moving.value && player.pay(Settings.CostGoodsCarriage, 2)) {
+    if (!train.moving.value && train.owner.pay(Settings.CostGoodsCarriage, 2)) {
       addCarriage(new GoodsCarriage(nbVehicles, train.location, _player), train)
       true
     } else false
   }
   def buyTankCar(train: Train): Boolean = {
-    if (!train.moving.value && player.pay(Settings.CostTankCar, 2)) {
+    if (!train.moving.value && train.owner.pay(Settings.CostTankCar, 2)) {
       addCarriage(new TankCar(nbVehicles, train.location, _player), train)
       true
     } else false

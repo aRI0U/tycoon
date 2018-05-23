@@ -96,7 +96,6 @@ class AI(game: Game) extends Player {
                   }
 
                   case _ => {
-                    println(actions)
                     if (actions.isEmpty || actions.head == OtherAction.TownToTown) {
                       if (towns.length < 2) chooseAction(Node.BuyTownNode, actions)
                       else {
@@ -147,7 +146,7 @@ class AI(game: Game) extends Player {
               val agents = towns ++ facilities
               val graphCopy = graph
               for (v <- graphCopy.content) {
-                if (!agents.exists(_.structureId == v.origin)) graphCopy.removeStructureID(v.origin)
+              //  if (!agents.exists(_.structureId == v.origin)) graphCopy.removeStructureID(v.origin)
               }
               if (graphCopy.content.exists(!_.links.isEmpty)) {
                 val trip = new TripLeaf(BuyableVehicle.Train)
