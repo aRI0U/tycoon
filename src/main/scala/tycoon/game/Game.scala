@@ -132,6 +132,7 @@ class Game(val map_width : Int, val map_height : Int)
     secondsCount += dt
     if (secondsCount > 1) {
       player.tick()
+      ai.tick()
       secondsCount -= 1
     }
 
@@ -343,7 +344,7 @@ class Game(val map_width : Int, val map_height : Int)
               case train: Train => struct match {
                 case town: Town =>
                   createTrain(train, town, player)
-                  if (player.name == "AI") {
+                  if (player == ai) {
                     buyPassengerCarriage(train)
                     buyPassengerCarriage(train)
                     buyPassengerCarriage(train)
@@ -424,19 +425,19 @@ class Game(val map_width : Int, val map_height : Int)
   }
   def buyPassengerCarriage(train: Train): Boolean = {
     if (!train.moving.value && train.owner.pay(Settings.CostPassengerCarriage, 2)) {
-      addCarriage(new PassengerCarriage(nbVehicles, train.location, _player), train)
+      addCarriage(new PassengerCarriage(nbVehicles, train.location, train.owner), train)
       true
     } else false
   }
   def buyGoodsCarriage(train: Train): Boolean = {
     if (!train.moving.value && train.owner.pay(Settings.CostGoodsCarriage, 2)) {
-      addCarriage(new GoodsCarriage(nbVehicles, train.location, _player), train)
+      addCarriage(new GoodsCarriage(nbVehicles, train.location, train.owner), train)
       true
     } else false
   }
   def buyTankCar(train: Train): Boolean = {
     if (!train.moving.value && train.owner.pay(Settings.CostTankCar, 2)) {
-      addCarriage(new TankCar(nbVehicles, train.location, _player), train)
+      addCarriage(new TankCar(nbVehicles, train.location, train.owner), train)
       true
     } else false
   }

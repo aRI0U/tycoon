@@ -17,9 +17,7 @@ class Loader (game : Game) {
     val townManager = game.townManager
     game.player.money_=(Int.MaxValue)
     var player = game.player
-    println("Will load xml")
     val xml = XML.loadFile(filepath)
-    println("Juste successed reading xml")
     //map treatment
     val mapXML = (xml \ "Map")
     // mapName = ((mapXML \ "@name").text)
@@ -44,7 +42,6 @@ class Loader (game : Game) {
       }
     }
     for (struct <- (mapXML \\ "Structure")) {
-      println((struct \ "@owner").text)
       var owner = player
       (struct \ "@owner").text match {
         case "AI" => owner = game.ai
@@ -190,7 +187,6 @@ class Loader (game : Game) {
     for (connection <- (mapXML \\ "Connection")){
       var upstream = (connection  \ "@upstream").text
       var downstream = (connection  \ "@downstream").text
-      println("tycoon > game > loadMap > names of towns in connection:", upstream,downstream)
       var town1 = townManager.townsList(0)
       var town2 = townManager.townsList(1)
       for (town <- townManager.townsList){

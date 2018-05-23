@@ -22,9 +22,11 @@ trait PassengerTransporter {
             stop match {
               case town: Town => {
                 val i = departureTown.destinations.indexOf(town)
-                newPassengers = remainingPlaces.min(departureTown.waiters(i))
-                departureTown.waitersInt(i).set(departureTown.waiters(i) - newPassengers)
-                departureTown.totalWaiters -= newPassengers
+                if (departureTown.waiters(i) > -1) {
+                  newPassengers = remainingPlaces.min(departureTown.waiters(i))
+                  departureTown.waitersInt(i).set(departureTown.waiters(i) - newPassengers)
+                  departureTown.totalWaiters -= newPassengers
+                }
               }
               case facility: Facility => {
                 newPassengers = remainingPlaces.min(departureTown.jobSeekers)

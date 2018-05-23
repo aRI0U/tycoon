@@ -79,7 +79,11 @@ abstract class Town(pos: GridLocation, id: Int, townManager: TownManager, overri
     }
   }
 
-  def waiters(i: Int) : Int = waitersInt(i).value
+  def waiters(i: Int) : Int = {
+    if (i >= 0 && i < waitersInt.length)
+      waitersInt(i).value
+    else -1
+  }
 
   def updatePopulation () = {
     if (population < max_population) {

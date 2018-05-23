@@ -218,7 +218,7 @@ class InteractionsMenu(val game: Game) extends TabPane
   routesTab.setContent(routesTabContainer)
 
   val showTrainsBt = new Button {
-    text <== StringProperty("Trains (").concat(game.nbTrains.asString) + " owned)"
+    text = "Your Trains"
     margin = Insets(10)
     vgrow = Priority.Always
     maxHeight = Double.MaxValue
@@ -306,7 +306,7 @@ class InteractionsMenu(val game: Game) extends TabPane
 
   def openCarriagesBuyingDialog() = {
     val stoppedTrains: ListBuffer[Train] = game.trains filter (!_.moving.value)
-    val stoppedTrainsTable: TableView[Train] = getTrainsTableView(stoppedTrains)
+    val stoppedTrainsTable: TableView[Train] = getTrainsTableView(stoppedTrains filter (_.owner == game.player))
     stoppedTrainsTable.selectionModel.value.selectFirst()
 
     val passengerCarriagesSpinner = new Spinner[Integer](0, 5, 0)
@@ -388,7 +388,7 @@ class InteractionsMenu(val game: Game) extends TabPane
 
   def openEngineUpgradingDialog() = {
     val upgradableTrains: ListBuffer[Train] = game.trains filter (_.engineUpgradeLevel.value < Engine.MaxUpgradeLevel)
-    val upgradableTrainsTable: TableView[Train] = getTrainsTableView(upgradableTrains)
+    val upgradableTrainsTable: TableView[Train] = getTrainsTableView(upgradableTrains filter (_.owner == game.player))
 
     val costStr = StringProperty("")
     def updateCostStr() = {
@@ -623,7 +623,7 @@ class InteractionsMenu(val game: Game) extends TabPane
     val dialog = new Dialog
     dialog.title = "Your Trains"
     dialog.dialogPane.value.buttonTypes = Seq(ButtonType.Close)
-    dialog.dialogPane().content = getTrainsTableView(game.trains)
+    dialog.dialogPane().content = getTrainsTableView(game.trains filter (_.owner == game.player))
     dialog.showAndWait()
   }
 
@@ -783,7 +783,7 @@ class InteractionsMenu(val game: Game) extends TabPane
     else if (!routeStops.last.isInstanceOf[Town])
       game.setInfoText("[Train Route Creation] The last stop isn't a town. The route couldn't be created.")
     else {
-      val trainsView: TableView[Train] = getTrainsTableView(routeStops(0).trainList)
+      val trainsView: TableView[Train] = getTrainsTableView(routeStops(0).trainList filter (_.owner == game.player))
       trainsView.selectionModel.value.selectFirst()
       val repeatRouteCb = new CheckBox("Repeat Route Indefinitely")
       repeatRouteCb.selected = false
