@@ -56,13 +56,13 @@ object OtherAction {
 }
 
 object Node {
-  val BuyTownNode = new Node(Array(BuyStruct.SmallTown, BuyStruct.MediumTown, BuyStruct.LargeTown))
+  val BuyTownNode = new Node(Array(BuyStruct.MediumTown, BuyStruct.LargeTown))
 
   val BuyFacilityNode = new Node(Array(BuyStruct.Factory, BuyStruct.Farm, BuyStruct.WindMill))
 
   val BuyStructNode = new Node(Array(BuyTownNode, BuyFacilityNode))
 
-  val BuyVehicleNode = new Node(Array(BuyVehicle.Train, BuyVehicle.Boat, BuyVehicle.Plane, BuyVehicle.Truck))
+  val BuyVehicleNode = new Node(Array(BuyVehicle.Train, BuyVehicle.Plane, BuyVehicle.Truck))
 
   val TownToTownNode = new Node(Array(BuyRoad.Rail, BuyRoad.Way, BuyRoad.Canal, BuyRoad.Flight))
 
@@ -70,8 +70,8 @@ object Node {
 
   val FacilityToFacilityNode = new Node(Array(BuyRoad.Rail, BuyRoad.Way))
 
-  val ConnectionNode = new Node(Array(TownToTownNode, TownToFacilityNode, FacilityToFacilityNode))
+  val ConnectionNode = new Node(Array(TownToTownNode, TownToFacilityNode)0)
 
   val Root = new Node(Array(BuyStructNode, BuyVehicleNode, ConnectionNode, OtherAction.Trip))
-
+  //val Root = OtherAction.Trip
 }

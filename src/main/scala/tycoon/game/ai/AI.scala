@@ -76,8 +76,9 @@ class AI(game: Game) extends Player {
           case BuyRoad(item) => {
             item match {
               case BuyableStruct.Airport => {
-                if (towns.length < 2) chooseAction(Node.BuyTownNode, actions)
-                else if (towns.filter(_.hasAirport).length < 2) chooseAction(BuyStruct.Airport, actions)
+                if (towns.isEmpty) chooseAction(Node.BuyTownNode,(chooseAction(Node.BuyTownNode, (chooseAction(BuyStruct.Airport, actions)))))
+                else if (towns.length == 1) chooseAction(Node.BuyTownNode, (chooseAction(BuyStruct.Airport, actions)))
+                else if (airports.length < towns.length) chooseAction(BuyStruct.Airport, actions)
                 else actions
               }
 
@@ -135,21 +136,31 @@ class AI(game: Game) extends Player {
           }
 
           case OtherAction.Trip => {
+
             if (towns.length < 2) { // not enough towns
               chooseAction(Node.BuyTownNode, actions)
             }
-            else if (airports.length > 1) {
-              val trip = new TripLeaf(BuyableVehicle.Plane)
-              trip :: actions
-            }
-            else { // train trip?
+            else {
+              println("towns: " + towns)
+              val potential = new ListBuffer[BuyableVehicle]
+
+              if (airports.length > 1 && airports.exists(!_.planeList.isEmpty)) {
+                potential += BuyableVehicle.Plane
+              }
+               // train trip?
               val agents = towns ++ facilities
               val graphCopy = graph
               for (v <- graphCopy.content) {
               //  if (!agents.exists(_.structureId == v.origin)) graphCopy.removeStructureID(v.origin)
               }
               if (graphCopy.content.exists(!_.links.isEmpty)) {
-                val trip = new TripLeaf(BuyableVehicle.Train)
+                potential += BuyableVehicle.Train
+              }
+              if ((towns ++ facilities).exists(!_.truckList.isEmpty))
+              potential += BuyableVehicle.Truck
+
+              if (!potential.isEmpty) {
+                val trip = new TripLeaf(chooseRandomElement(potential))
                 trip :: actions
               }
               else chooseAction(Node.ConnectionNode, actions)
@@ -208,9 +219,8 @@ class AI(game: Game) extends Player {
                 val pos = new GridLocation(col, row)
                 if (game.buyStruct(s, pos, this)) {
                   game.setInfoText("AI created a new structure in " + col+row)
-                  waitingActions.tail
                 }
-                else List()
+                waitingActions.tail
               }
             }
           }
@@ -249,7 +259,7 @@ class AI(game: Game) extends Player {
                   game.createTrip(t1, t2, t1.planeList(0), r.nextInt(2) %2 == 0)
                   waitingActions.tail
                 }
-                else BuyVehicle.Plane :: waitingActions
+                else chooseAction(BuyRoad.Flight, waitingActions)
               }
 
               case BuyableVehicle.Train => {
@@ -271,8 +281,21 @@ class AI(game: Game) extends Player {
                     case e: IllegalStateException => waitingActions.tail
                   }
                 }
-                else BuyVehicle.Train :: waitingActions
+                else chooseAction(BuyRoad.Rail, waitingActions)
               }
+
+              case BuyableVehicle.Truck => {
+                val agents = towns ++ facilities
+                val s1 = chooseRandomElement(agents.filter(!_.truckList.isEmpty))
+                val s2 = chooseRandomElement(agents.filter(_ != s1))
+                val path = Dijkstra.tileGraph(s1, s2, Array(Tile.Asphalt), map, 0)
+                if (path.isEmpty) chooseAction(BuyRoad.Way)
+                else {
+                  game.createTrip(s1, s2, s1.truckList(0), r.nextInt(2) == 0 % 2)
+                  waitingActions.tail
+                }
+              }
+
               case _ => waitingActions.tail
             }
           }

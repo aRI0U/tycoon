@@ -47,6 +47,7 @@ class TownManager(game: Game) {
       case _ => ()
     }
     structuresList += structure
+    println("creating structure")
     structure.owner.get(structure)
   }
 
@@ -55,7 +56,6 @@ class TownManager(game: Game) {
     for (t <- townsList) t.printData(2).newRankedElement(town.name, t.waitersInt.last)
     town.displayWaiters()
     townsList += town
-    town.owner.towns += town
   }
 
 
